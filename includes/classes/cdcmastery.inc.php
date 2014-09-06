@@ -102,4 +102,8 @@ class CDCMastery
 			return false;
 		}
 	}
+	
+	function __destruct(){
+		//nada
+	}
 }

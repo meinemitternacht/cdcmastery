@@ -28,7 +28,13 @@ if($router->parseURI()){
 		$log->saveEntry();
 	}
 	
+	if($router->showTheme)
+		include BASE_PATH . '/theme/header.inc.php';
+	
 	include $router->outputPage;
+	
+	if($router->showTheme)
+		include BASE_PATH . '/theme/footer.inc.php';
 }
 
 ob_end_flush();
