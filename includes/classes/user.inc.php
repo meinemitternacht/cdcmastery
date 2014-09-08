@@ -20,7 +20,8 @@ class user extends CDCMastery
 	public $userFirstName;		//varchar 64
 	public $userLastName;		//varchar 64
 	public $userHandle;			//varchar 64
-	protected $userPassword;	//varchar 255
+	protected $userPassword;	//varchar 255 (SHA512)
+	protected $userLegacyPassword;	//varchar 255 (SHA1)
 	public $userEmail;			//varchar 255
 	public $userRank;			//varchar 255
 	public $userDateRegistered;	//datetime
@@ -76,6 +77,7 @@ class user extends CDCMastery
 											userLastName,
 											userHandle,
 											userPassword,
+											userLegacyPassword,
 											userEmail,
 											userRank,
 											userDateRegistered,
@@ -95,6 +97,7 @@ class user extends CDCMastery
 							$userLastName,
 							$userHandle,
 							$userPassword,
+							$userLegacyPassword,
 							$userEmail,
 							$userRank,
 							$userDateRegistered,
@@ -112,6 +115,7 @@ class user extends CDCMastery
 			$this->userLastName = $userLastName;
 			$this->userHandle = $userHandle;
 			$this->userPassword = $userPassword;
+			$this->userLegacyPassword = $userLegacyPassword;
 			$this->userEmail = $userEmail;
 			$this->userRank = $userRank;
 			$this->userDateRegistered = $userDateRegistered;
@@ -132,9 +136,8 @@ class user extends CDCMastery
 			$this->error = "That user does not exist";
 			$ret = false;
 		}
-		else{
-			return $ret;
-		}
+		
+		return $ret;
 	}
 
 	public function saveUser(){
@@ -143,6 +146,7 @@ class user extends CDCMastery
 															userLastName,
 															userHandle,
 															userPassword,
+															userLegacyPassword,
 															userEmail,
 															userRank,
 															userDateRegistered,
@@ -153,13 +157,14 @@ class user extends CDCMastery
 															userBase,
 															userSupervisor,
 															userDisabled )
-									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 									ON DUPLICATE KEY UPDATE
 															uuid=VALUES(uuid),
 															userFirstName=VALUES(userFirstName),
 															userLastName=VALUES(userLastName),
 															userHandle=VALUES(userHandle),
 															userPassword=VALUES(userPassword),
+															userLegacyPassword=VALUES(userLegacyPassword),
 															userEmail=VALUES(userEmail),
 															userRank=VALUES(userRank),
 															userDateRegistered=VALUES(userDateRegistered),
@@ -171,25 +176,23 @@ class user extends CDCMastery
 															userSupervisor=VALUES(userSupervisor),
 															userDisabled=VALUES(userDisabled)");
 
-		$stmt->bind_param("ssssssssss", $this->uuid,
-										$this->userFirstName,
-										$this->userLastName,
-										$this->userHandle,
-										$this->userPassword,
-										$this->userEmail,
-										$this->userRank,
-										$this->userDateRegistered,
-										$this->userLastLogin,
-										$this->userTimeZone,
-										$this->userRole,
-										$this->userOfficeSymbol,
-										$this->userBase,
-										$this->userSupervisor,
-										$this->userDisabled);
-
-		/*
-		 * @todo log execute errors
-		 */
+		$stmt->bind_param("ssssssssssssssss", 	$this->uuid,
+												$this->userFirstName,
+												$this->userLastName,
+												$this->userHandle,
+												$this->userPassword,
+												$this->userLegacyPassword,
+												$this->userEmail,
+												$this->userRank,
+												$this->userDateRegistered,
+												$this->userLastLogin,
+												$this->userTimeZone,
+												$this->userRole,
+												$this->userOfficeSymbol,
+												$this->userBase,
+												$this->userSupervisor,
+												$this->userDisabled);
+		
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
 			$stmt->close();
@@ -229,6 +232,10 @@ class user extends CDCMastery
 
 	public function getUserPassword(){
 		return $this->userPassword;
+	}
+	
+	public function getUserLegacyPassword(){
+		return $this->userLegacyPassword;
 	}
 
 	public function getUserEmail(){
@@ -275,6 +282,11 @@ class user extends CDCMastery
 	/* Setters */
 	/***********/
 	
+	public function setUUID($uuid){
+		$this->uuid = $uuid;
+		return true;
+	}
+	
 	public function setUserFirstName($userFirstName){
 		$this->userFirstName = $userFirstName;
 		return true;
@@ -282,10 +294,6 @@ class user extends CDCMastery
 	
 	public function setUserLastName($userLastName){
 		$this->userLastName = $userLastName;
-		return true;
-	}
-	public function setUUID($uuid){
-		$this->uuid = $uuid;
 		return true;
 	}
 
@@ -297,6 +305,10 @@ class user extends CDCMastery
 	public function setUserPassword($userPassword){
 		$this->userPassword = $this->hashUserPassword($userPassword);
 		return true;
+	}
+	
+	public function setUserLegacyPassword($userLegacyPassword){
+		$this->userLegacyPassword = $this->hashUserLegacyPassword($userLegacyPassword);
 	}
 
 	public function setUserEmail($userEmail){

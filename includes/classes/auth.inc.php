@@ -2,19 +2,37 @@
 
 class auth extends user
 {
-	protected $log;
+	protected $roles;
 
 	public $activationStatus;
 
-	function __construct($uuid, log $log, mysqli $db){
+	function __construct($uuid, log $log, mysqli $db, roles $roles){
 		parent::__construct($log,$db);
 		parent::loadUser($uuid);
+		
+		$this->roles = $roles;
 	}
 
 	function comparePassword($password){
 		$userHash = $this->getHash($password);
 
-		if($userHash === $this->userPassword){
+		if(empty($this->userPassword)){
+			if($this->hashUserLegacyPassword($password) == $this->userLegacyPassword){
+				$this->setUserPassword($password);
+				$this->userLegacyPassword = NULL;
+				$this->saveUser();
+				
+				$this->log->setAction("MIGRATED_PASSWORD");
+				$this->log->setUserID($this->uuid);
+				$this->log->saveEntry();
+				
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		elseif($userHash === $this->userPassword){
 			return true;
 		}
 		else{
@@ -71,7 +89,7 @@ class auth extends user
 				return true;
 			}
 			else{
-				if($_SESSION['limitAttempts'] < 5){
+				if($_SESSION['limitAttempts'] < 10){
 					return true;
 				}
 				else{
@@ -90,6 +108,8 @@ class auth extends user
 	function login($password){
 		if(empty($password)){
 			$this->error = "You must provide a password.";
+			$this->log->setAction("LOGIN_FAILURE");
+			$this->log->saveEntry();
 
 			return false;
 		}
@@ -97,8 +117,8 @@ class auth extends user
 			$this->error = "You have made too many login attempts recently.  Please try again soon.<br /><br />While you wait, would you like to <a href=\"/auth/reset\">reset your password</a>?";
 
 			if(!isset($_SESSION['rateLimitRecorded'])){
-				$log->setAction("LOGIN_RATE_LIMIT_REACHED");
-				$log->saveEntry();
+				$this->log->setAction("LOGIN_RATE_LIMIT_REACHED");
+				$this->log->saveEntry();
 				$_SESSION['rateLimitRecorded'] = true;
 			}
 
@@ -107,11 +127,16 @@ class auth extends user
 		elseif(!$this->comparePassword($password)){
 			$this->error = "Your password is incorrect";
 			$this->limitLogins(true);
+			
+			$this->log->setAction("LOGIN_FAILURE");
+			$this->log->saveEntry();
 
 			return false;
 		}
 		elseif(!$this->getActivationStatus()){
-			$this->error = "Your account has not been activated.";
+			$this->error = "Your account has not been activated. <a href=\"/auth/activate\">Click Here</a> to activate your account.";
+			$this->log->setAction("UNACTIVATED_ACCOUNT");
+			$this->log->saveEntry();
 
 			return false;
 		}
@@ -122,8 +147,18 @@ class auth extends user
 			/*
 			 * @todo make roles class
 			 */
-			if($roles->isAdminRole($this->getUserRole()))
-				$_SESSION['admin'] = true;
+			if($this->roles->getRoleType($this->getUserRole()) == "admin"){
+				$_SESSION['cdcMasteryAdmin'] = true;
+			}
+			elseif($this->roles->getRoleType($this->getUserRole()) == "trainingManager"){
+				$_SESSION['trainingManager'] = true;
+			}
+			elseif($this->roles->getRoleType($this->getUserRole()) == "supervisor"){
+				$_SESSION['supervisor'] = true;
+			}
+			elseif($this->roles->getRoleType($this->getUserRole()) == "editor"){
+				$_SESSION['editor'] = true;
+			}
 
 			$_SESSION['auth']		= true;
 			$_SESSION['userUUID']	= $this->getUUID();

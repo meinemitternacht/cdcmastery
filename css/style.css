@@ -382,4 +382,132 @@
 	{
 		text-decoration: none;
 		color: rgba(255,255,255,.3);
-	}	
+	}
+
+/*****************************/
+/* Custom Declarations		 */
+/*****************************/
+
+/*  Forms  */
+
+.light-form h2 { /* The header tag. e.x. "Contact Me" */
+	color:#2F2F2F;
+	margin:0;
+}
+
+.light-form hr { /* The horizontal line between the title and the form. */
+	border:none;
+	border-bottom:1px dashed #356AA0;
+}
+
+.light-form { /* The form itself. */
+	position:relative;
+	float:left;  /*float:left makes sure the forms width is optimal */
+	width: 95%;
+}
+
+.light-form label.bold {
+	font-weight: 900;
+}
+
+.light-form label.pretty { /* Forms labels. */
+	float:left;
+	display:block;
+	width:100px; /* this width sets the distance between the label and the input fields */
+	font-size:13px;
+	font-weight:900;
+	color:black;
+}
+
+.light-form input.radio {
+	padding:4px;
+}
+
+.light-form input.pretty, .light-form textarea.pretty { /* The input fields. */
+	width:60%; /* You can change the field width */
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border:none; /* This declaration makes sure no auto borders appear. */
+	font-size:14px;
+	padding:4px;
+	-moz-box-shadow: 0 0 3px #808080; /* This gives the effect of the glow around the input fields. */
+	box-shadow:0 0 3px #808080;
+	-webkit-box-shadow: 0 0 3px #808080;
+}
+
+.light-form input.pretty:hover, textarea.pretty:hover { /* Input fields hover */
+	-moz-box-shadow: 0 0 3px #333333; /* On hover glow */
+	box-shadow: 0 0 3px #333333;
+	-webkit-box-shadow: 0 0 3px #333333;
+}
+
+.light-form input.pretty:focus, textarea.pretty:focus {
+	-moz-box-shadow: 0 0 3px #4096EE; /* On focus glow */
+	box-shadow: 0 0 3px #4096EE;
+	-webkit-box-shadow:0 0 3px #4096EE;
+}
+
+.light-form div{ /* This is for the divs that contains the labels and inputs  */
+	padding-left:5px;
+	padding-top:6px;
+	padding-bottom: 6px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	position:relative;
+	max-width: 700px;
+}
+
+.light-form div:hover { /* The divs on hover. */
+	background-color: #C3D9FF;
+	background-image:-moz-linear-gradient(#C3D9FF,#A7C7FF);
+	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#C3D9FF),to(#A7C7FF));
+}
+
+.light-form .submit input { /* Forms submit element */
+	display:inline-block;
+	color:#ffffff;
+	text-decoration:none;
+	line-height:1;
+	font-weight:bold;
+	-moz-box-shadow:0 1px 3px #999999;
+	-webkit-box-shadow:0 1px 3px #999999;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	text-shadow:0 0 2px #222222;
+	cursor:pointer;
+	font-family:sans-serif;
+	padding:6px 16px 8px;
+	font-size:13px;
+	width:auto;
+	background-color: #4f8ace;
+	background-image:-moz-linear-gradient(#4f8ace,#2d629d);
+	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#4f8ace),to(#2d629d));
+  	border:#2d629d solid 1px;
+}
+
+.light-form .submit input:hover {  /* Forms submit button hover. */
+	background-color: #609bdf;
+	background-image:-moz-linear-gradient(#609bdf,#2d629d);
+	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#609bdf),to(#2d629d));
+}
+
+.light-form .submit input:active {  /* Forms submit button pressed. */
+	background-color: #2d629d;
+	background-image:-moz-linear-gradient(#2d629d,#4f8ace);
+	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#2d629d),to(#4f8ace));
+}
+
+/*  Tables  */
+
+.tablecloth table, .tablecloth td{
+	font:100% Arial, Helvetica, sans-serif; 
+}
+.tablecloth table{width:100%;border-collapse:collapse;margin:1em 0;}
+.tablecloth th, .tablecloth td{text-align:left;padding:.5em;border:1px solid #fff;}
+.tablecloth th{background:#328aa4;color:#fff;}
+.tablecloth td{background:#e5f1f4;}
+
+.tablecloth tr.even td{background:#e5f1f4;}
+.tablecloth tr.odd td{background:#f8fbfc;}
+
+.tablecloth tr:hover td {background:#4a98af;color:#fff;cursor:pointer;}

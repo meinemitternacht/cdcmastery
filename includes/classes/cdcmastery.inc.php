@@ -59,8 +59,21 @@ class CDCMastery
 		return hash('sha512',$userPassword);
 	}
 	
+	function hashUserLegacyPassword( $userLegacyPassword ){
+		return hash('sha1',$userLegacyPassword);
+	}
+	
 	function isTimeEmpty($time){
 		if($time == "0000-00-00 00:00:00" || $time == "0000-00-00"){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	function loggedIn(){
+		if(isset($_SESSION['auth'])){
 			return true;
 		}
 		else{
@@ -96,6 +109,33 @@ class CDCMastery
 	
 	function verifyAdmin(){
 		if(isset($_SESSION['cdcMasteryAdmin']) && $_SESSION['cdcMasteryAdmin'] == true){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	function verifyTrainingManager(){
+		if(isset($_SESSION['trainingManager']) && $_SESSION['trainingManager'] == true){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	function verifySupervisor(){
+		if(isset($_SESSION['supervisor']) && $_SESSION['supervisor'] == true){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	function verifyEditor(){
+		if(isset($_SESSION['editor']) && $_SESSION['editor'] == true){
 			return true;
 		}
 		else{
