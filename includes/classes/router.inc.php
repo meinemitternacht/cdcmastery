@@ -86,9 +86,9 @@ class router extends CDCMastery
 			}
 		}
 		elseif(isset($requestArray)){
-			if($requestCount > 3){
-				for($i=0;$i<($requestCount - 3);$i++){
-					$_SESSION['vars'][$i] = $requestArray[($i + 3)];
+			if($requestCount > 2){
+				for($i=0;$i<($requestCount - 2);$i++){
+					$_SESSION['vars'][$i] = $requestArray[($i + 2)];
 				}
 			}
 		

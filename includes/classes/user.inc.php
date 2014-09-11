@@ -44,15 +44,16 @@ class user extends CDCMastery
 	}
 
 	public function listUsers(){
-		$res = $this->db->query("SELECT uuid, userHandle, userFirstName, userLastName FROM userData ORDER BY userLastName ASC");
+		$res = $this->db->query("SELECT uuid, userHandle, userFirstName, userLastName, userRank FROM userData ORDER BY userLastName ASC");
 
 		$userArray = Array();
 
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
-				$userArray[$row['uuid']]['handle'] = $row['userHandle'];
-				$userArray[$row['uuid']]['firstName'] = $row['userFirstName'];
-				$userArray[$row['uuid']]['lastName'] = $row['userLastName'];
+				$userArray[$row['uuid']]['userHandle'] = $row['userHandle'];
+				$userArray[$row['uuid']]['userFirstName'] = $row['userFirstName'];
+				$userArray[$row['uuid']]['userLastName'] = $row['userLastName'];
+				$userArray[$row['uuid']]['userRank'] = $row['userRank'];
 			}
 
 			$noResults = false;

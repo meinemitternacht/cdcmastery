@@ -111,8 +111,20 @@ class bases extends CDCMastery
 		return $this->uuid;
 	}
 	
-	public function getBaseName(){
-		return htmlspecialchars($this->baseName);
+	public function getBaseName($uuid = false){
+		if(!empty($uuid)){
+			$_bases = new bases($this->db, $this->log);
+			if(!$_bases->loadBase($uuid)){
+				$this->error = $_bases->error;
+				return false;
+			}
+			else{
+				return htmlspecialchars($_bases->getBaseName());
+			}
+		}
+		else{
+			return htmlspecialchars($this->baseName);
+		}
 	}
 	
 	public function getOldID(){

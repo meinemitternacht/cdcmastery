@@ -118,7 +118,7 @@ class roles extends CDCMastery
 	}
 	
 	public function getRoleType($uuid = false){
-		if(isset($uuid)){
+		if(!empty($uuid)){
 			$_roles = new roles($this->db, $this->log);
 			
 			if($_roles->loadRole($uuid)){
@@ -159,8 +159,21 @@ class roles extends CDCMastery
 		}
 	}
 	
-	public function getRoleName(){
-		return htmlspecialchars($this->roleName);
+	public function getRoleName($uuid=false){
+		if(!empty($uuid)){
+			$_roles = new roles($this->db, $this->log);
+			
+			if(!$_roles->loadRole($uuid)){
+				$this->error = $_roles->error;
+				return false;
+			}
+			else{
+				return htmlspecialchars($_roles->getRoleName());
+			}
+		}
+		else{
+			return htmlspecialchars($this->roleName);
+		}
 	}
 	
 	public function getRoleDescription(){
