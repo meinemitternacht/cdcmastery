@@ -14,6 +14,8 @@ require BASE_PATH . '/includes/classes/bases.inc.php';
 require BASE_PATH . '/includes/classes/officeSymbol.inc.php';
 require BASE_PATH . '/includes/classes/userStatistics.inc.php';
 require BASE_PATH . '/includes/classes/testManager.inc.php';
+require BASE_PATH . '/includes/classes/answerManager.inc.php';
+require BASE_PATH . '/includes/classes/questionManager.inc.php';
 
 $db = new mysqli($cfg['db']['host'], $cfg['db']['user'], $cfg['db']['pass'], $cfg['db']['name'], $cfg['db']['port'], $cfg['db']['socket']);
 

@@ -29,11 +29,11 @@ class CDCMastery
 		}
 	}
 	
-	function formatDateTime($dateTime, $format="F j, Y, g:i a"){
+	public function formatDateTime($dateTime, $format="F j, Y, g:i a"){
 		return date($format,strtotime($dateTime));
 	}
 	
-	function genUUID() {
+	public function genUUID() {
 		return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 				// 32 bits for "time_low"
 				mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
@@ -55,15 +55,19 @@ class CDCMastery
 		);
 	}
 	
-	function hashUserPassword( $userPassword ){
+	public function getEncryptionKey(){
+		return $cfg['db']['aes-key'];
+	}
+	
+	public function hashUserPassword( $userPassword ){
 		return hash('sha512',$userPassword);
 	}
 	
-	function hashUserLegacyPassword( $userLegacyPassword ){
+	public function hashUserLegacyPassword( $userLegacyPassword ){
 		return hash('sha1',$userLegacyPassword);
 	}
 	
-	function isTimeEmpty($time){
+	public function isTimeEmpty($time){
 		if($time == "0000-00-00 00:00:00" || $time == "0000-00-00"){
 			return true;
 		}
@@ -72,7 +76,7 @@ class CDCMastery
 		}
 	}
 	
-	function loggedIn(){
+	public function loggedIn(){
 		if(isset($_SESSION['auth'])){
 			return true;
 		}
@@ -81,14 +85,14 @@ class CDCMastery
 		}
 	}
 	
-	function redirect($destination){
+	public function redirect($destination){
 		unset($_SESSION['vars']);
 		header("Location: ".$destination);
 		ob_end_flush();
 		exit();
 	}
 	
-	function replaceEmptyField($input){
+	public function replaceEmptyField($input){
 		if(empty($input)){
 			return "N/A";
 		}
@@ -97,7 +101,7 @@ class CDCMastery
 		}
 	}
 	
-	function trimString($string,$length){
+	public function trimString($string,$length){
 		if(strlen($string) > $length){
 			$string = substr($string,0,$length) . "...";
 			return $string;
@@ -107,7 +111,7 @@ class CDCMastery
 		}
 	}
 	
-	function verifyAdmin(){
+	public function verifyAdmin(){
 		if(isset($_SESSION['cdcMasteryAdmin']) && $_SESSION['cdcMasteryAdmin'] == true){
 			return true;
 		}
@@ -116,7 +120,7 @@ class CDCMastery
 		}
 	}
 	
-	function verifyTrainingManager(){
+	public function verifyTrainingManager(){
 		if(isset($_SESSION['trainingManager']) && $_SESSION['trainingManager'] == true){
 			return true;
 		}
@@ -125,7 +129,7 @@ class CDCMastery
 		}
 	}
 	
-	function verifySupervisor(){
+	public function verifySupervisor(){
 		if(isset($_SESSION['supervisor']) && $_SESSION['supervisor'] == true){
 			return true;
 		}
@@ -134,7 +138,7 @@ class CDCMastery
 		}
 	}
 	
-	function verifyEditor(){
+	public function verifyEditor(){
 		if(isset($_SESSION['editor']) && $_SESSION['editor'] == true){
 			return true;
 		}
