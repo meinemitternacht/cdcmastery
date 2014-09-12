@@ -7,7 +7,7 @@ class auth extends user
 	public $activationStatus;
 
 	function __construct($uuid, log $log, mysqli $db, roles $roles){
-		parent::__construct($log,$db);
+		parent::__construct($db,$log);
 		parent::loadUser($uuid);
 		
 		$this->roles = $roles;
@@ -23,7 +23,7 @@ class auth extends user
 				$this->saveUser();
 				
 				$this->log->setAction("MIGRATED_PASSWORD");
-				$this->log->setUserID($this->uuid);
+				$this->log->setUserUUID($this->uuid);
 				$this->log->saveEntry();
 				
 				return true;
@@ -166,7 +166,7 @@ class auth extends user
 			$_SESSION['userEmail']	= $this->getUserEmail();
 
 			$this->log->setAction("LOGIN_SUCCESS");
-			$this->log->setUserID($_SESSION['userUUID']);
+			$this->log->setUserUUID($_SESSION['userUUID']);
 			$this->log->saveEntry();
 
 			$this->updateLastLogin($this->getUUID());

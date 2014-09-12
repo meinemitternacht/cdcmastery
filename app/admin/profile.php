@@ -65,8 +65,14 @@ if(isset($_SESSION['vars'][0])):
 										<?php
 										$afscList = $userStatistics->getAFSCAssociations();
 										
-										foreach($afscList as $userAFSC){
-											echo $afsc->getAFSCName($userAFSC)."<br />";
+										if(!$afscList){
+											echo "No associations.";
+											echo $afsc->error;
+										}
+										else{
+											foreach($afscList as $userAFSC){
+												echo $afsc->getAFSCName($userAFSC)."<br />";
+											}
 										}
 										?>
 									</td>
@@ -77,8 +83,14 @@ if(isset($_SESSION['vars'][0])):
 										<?php
 										$afscList = $userStatistics->getPendingAFSCAssociations();
 										
-										foreach($afscList as $userAFSC){
-											echo $afsc->getAFSCName($userAFSC)."<br />";
+										if(!$afscList){
+											echo "No pending associations.";
+											echo $afsc->error;
+										}
+										else{
+											foreach($afscList as $userAFSC){
+												echo $afsc->getAFSCName($userAFSC)."<br />";
+											}
 										}
 										?>
 									</td>

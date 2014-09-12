@@ -506,7 +506,7 @@ class userStatistics extends CDCMastery
 	}
 	
 	public function queryAFSCAssociations(){
-		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 1");
+		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 1 AND userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
@@ -532,7 +532,7 @@ class userStatistics extends CDCMastery
 	}
 	
 	public function queryPendingAFSCAssociations(){
-		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 0");
+		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 0 AND userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 	
 		if($stmt->execute()){

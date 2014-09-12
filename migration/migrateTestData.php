@@ -22,7 +22,7 @@ $i=1;
 $rowCount=0;
 
 if($res->num_rows > 0){
-	$td_stmt = $oldDB->prepare("SELECT q_uuid, a_uuid FROM test_data_migration WHERE t_id = ?");
+	$td_stmt = $oldDB->prepare("SELECT q_uuid, a_uuid FROM test_data WHERE t_id = ?");
 	while($row = $res->fetch_assoc()){
 		$td_stmt->bind_param("s",$row['oldTestID']);
 		$td_stmt->bind_result($questionUUID, $answerUUID);
