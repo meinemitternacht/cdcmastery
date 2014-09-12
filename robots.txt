@@ -1,0 +1,8 @@
+User-agent: *
+Crawl-delay: 5
+# Directories
+Disallow: /app/
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /migration/
+Disallow: /theme/

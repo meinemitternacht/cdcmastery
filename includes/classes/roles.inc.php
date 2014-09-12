@@ -113,6 +113,18 @@ class roles extends CDCMastery
 		}
 	}
 	
+	public function verifyUserRole($userUUID){
+		$_user = new user($this->db, $this->log);
+		
+		if(!$_user->loadUser($userUUID)){
+			$this->error = $_user->error;
+			return false;
+		}
+		else{
+			return $this->getRoleType($_user->getUserRole());
+		}
+	}
+	
 	public function getUUID(){
 		return $this->uuid;
 	}

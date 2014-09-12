@@ -16,7 +16,7 @@ class log extends CDCMastery
 	public $uuid;				//uuid of the log entry
 	public $timestamp;			//timestamp of the log entry
 	public $action;				//log entry action
-	public $userID;				//id of the user
+	public $userUUID;				//id of the user
 	public $ip;					//ip of the user
 
 	public $uuidDetail;			//uuid of the log detail
@@ -33,11 +33,11 @@ class log extends CDCMastery
 		$this->timestamp = date("Y-m-d H:i:s",time());
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
-			$this->setUserID($logUID);
+			$this->setuserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
 		}
 		else{
-			$this->setUserID("SYSTEM");
+			$this->setuserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
 		}
 	}
@@ -46,7 +46,7 @@ class log extends CDCMastery
 		$this->uuid				= NULL;
 		$this->timestamp		= NULL;
 		$this->action			= NULL;
-		$this->userID			= NULL;
+		$this->userUUID			= NULL;
 		$this->ip				= NULL;
 		$this->uuidDetail		= NULL;
 		$this->timestampDetail	= NULL;
@@ -57,11 +57,11 @@ class log extends CDCMastery
 
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
-			$this->setUserID($logUID);
+			$this->setuserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
 		}
 		else{
-			$this->setUserID("SYSTEM");
+			$this->setuserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
 		}
 
@@ -80,8 +80,8 @@ class log extends CDCMastery
 		$this->i = 0;
 		while ($this->stmt->fetch()) {
 			$this->detailArray[$this->i]['uuid'] = $logUUID;
-			$this->detailArray[$this->i]['dataType'] = $dataType;
-			$this->detailArray[$this->i]['data'] = $data;
+			$this->detailArray[$this->i]['dataType'] = htmlspecialchars($dataType);
+			$this->detailArray[$this->i]['data'] = htmlspecialchars($data);
 
 			$this->i++;
 		}
@@ -90,7 +90,7 @@ class log extends CDCMastery
 	}
 
 	function getAction() {
-		return $this->action;
+		return htmlspecialchars($this->action);
 	}
 
 	function getIP() {
@@ -105,10 +105,10 @@ class log extends CDCMastery
 		*/
 		$warningArray = Array(
 			'ACCESS_DENIED',
-			'DATABASE_ERROR',
 			'LOGIN_FAIL_BAD_PASSWORD',
 			'LOGIN_FAIL_UNKNOWN_USER',
 			'LOGIN_RATE_LIMIT_REACHED',
+			'MYSQL_ERROR',
 			'USER_ADD',
 			'USER_DELETE',
 			'USER_EDIT');
@@ -154,24 +154,24 @@ class log extends CDCMastery
 		return $this->uuid;
 	}
 
-	function getUserID() {
-		return $this->userID;
+	function getUserUUID() {
+		return $this->userUUID;
 	}
 
 	function loadEntry($uuid) {
-		$this->stmt = $this->logDB->prepare('SELECT uuid, timestamp, action, userID, ip FROM systemLog WHERE uuid = ?');
+		$this->stmt = $this->logDB->prepare('SELECT uuid, timestamp, action, userUUID, ip FROM systemLog WHERE uuid = ?');
 		$this->stmt->bind_param("s",$uuid);
 		$this->stmt->execute();
 
 		/* bind result variables */
-		$this->stmt->bind_result($logUUID, $timestamp, $action, $userID, $ip);
+		$this->stmt->bind_result($logUUID, $timestamp, $action, $userUUID, $ip);
 
 		/* fetch values */
 		while ($this->stmt->fetch()) {
 			$this->uuid = $logUUID;
 			$this->timestamp = $timestamp;
 			$this->action = $action;
-			$this->userID = $userID;
+			$this->userUUID = $userUUID;
 			$this->ip = $ip;
 		}
 
@@ -184,7 +184,7 @@ class log extends CDCMastery
 	}
 
 	function printEntry() {
-		$string = "UUID: " . $this->uuid . " Timestamp: " . $this->timestamp . " Action: " . $this->action . " User ID: " . $this->userID . " IP: " . $this->ip;
+		$string = "UUID: " . $this->uuid . " Timestamp: " . $this->timestamp . " Action: " . $this->action . " User ID: " . $this->userUUID . " IP: " . $this->ip;
 
 		if(isset($this->detailArray) && !empty($this->detailArray))
 		{
@@ -192,7 +192,7 @@ class log extends CDCMastery
 			{
 				foreach($row as $key => $var)
 				{
-					$string .= " ".$key.": ".$var;
+					$string .= " ".htmlspecialchars($key).": ".htmlspecialchars($var);
 				}
 			}
 		}
@@ -206,11 +206,11 @@ class log extends CDCMastery
 	}
 
 	function saveEntry() {
-		$this->stmt = $this->logDB->prepare('INSERT INTO systemLog (uuid, timestamp, userID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-		$this->stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userID, $this->action, $this->ip);
+		$this->stmt = $this->logDB->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+		$this->stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
 		if(!$this->stmt->execute()) {
 			printf("Error Message: %s\n<br />", $this->stmt->error);
-			printf("UUID: %s Timestamp: %s UserID: %s Action: %s IP: %s", $this->uuid, $this->timestamp, $this->userID, $this->action, $this->ip);
+			printf("UUID: %s Timestamp: %s userUUID: %s Action: %s IP: %s", $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
 			return false;
 		}
 
@@ -239,26 +239,26 @@ class log extends CDCMastery
 	}
 
 	function setIP($ip) {
-		$this->ip = htmlspecialchars($ip);
+		$this->ip = htmlspecialchars_decode($ip);
 		return true;
 	}
 
 	function setAction($action) {
-		$this->action = htmlspecialchars($action);
+		$this->action = htmlspecialchars_decode($action);
 		return true;
 	}
 
 	function setDetail($type, $data) {
 		$this->uuidDetail = $this->genUUID();
 		$this->timestampDetail = date("Y-m-d H:i:s",time());
-		$this->typeDetail = htmlspecialchars($type);
+		$this->typeDetail = htmlspecialchars_decode($type);
 
 		if(is_array($data)) {
 			$this->dataDetail = implode(",",$data);
-			$this->dataDetail = htmlspecialchars($this->dataDetail);
+			$this->dataDetail = htmlspecialchars_decode($this->dataDetail);
 		}
 		else {
-			$this->dataDetail = htmlspecialchars($data);
+			$this->dataDetail = htmlspecialchars_decode($data);
 		}
 
 		$this->detailArray[] = Array(	"uuid" => $this->uuidDetail,
@@ -273,8 +273,8 @@ class log extends CDCMastery
 		return true;
 	}
 
-	function setUserID($userID) {
-		$this->userID = htmlspecialchars($userID);
+	function setUserUUID($userUUID) {
+		$this->userUUID = htmlspecialchars_decode($userUUID);
 		return true;
 	}
 

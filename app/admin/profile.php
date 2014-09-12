@@ -1,19 +1,21 @@
 <?php
 if(isset($_SESSION['vars'][0])):
-	$userProfile = new user($log, $db);
-	if(!$userProfile->loadUser($_SESSION['vars'][0])){
+	$targetUUID = $_SESSION['vars'][0];
+	$userProfile = new user($db, $log);
+	if(!$userProfile->loadUser($targetUUID)){
 		echo "That user does not exist.";
 	}
 	else{
+		$userStatistics->setUserUUID($targetUUID);
 		?>
 		<a href="/admin/profile">&laquo; return to user list</a>
 		<br />
 		<br />
+		<h2><?php echo $userProfile->getFullName(); ?></h2>
 		<div class="container">
 			<div class="row">
 				<div class="6u">
 					<section>
-						<h2><?php echo $userProfile->getFullName(); ?></h2>
 						<div class="tablecloth maxWidth">
 							<table cellspacing="0" cellpadding="0">
 								<tr>
@@ -54,6 +56,172 @@ if(isset($_SESSION['vars'][0])):
 									<td><strong>Username</strong></td>
 									<td><?php echo $userProfile->getUserHandle(); ?></td>
 								</tr>
+								<tr>
+									<th colspan="2">AFSC Associations</th>
+								</tr>
+								<tr>
+									<td><strong>Associated With</strong></td>
+									<td>
+										<?php
+										$afscList = $userStatistics->getAFSCAssociations();
+										
+										foreach($afscList as $userAFSC){
+											echo $afsc->getAFSCName($userAFSC)."<br />";
+										}
+										?>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Pending Associations</strong></td>
+									<td>
+										<?php
+										$afscList = $userStatistics->getPendingAFSCAssociations();
+										
+										foreach($afscList as $userAFSC){
+											echo $afsc->getAFSCName($userAFSC)."<br />";
+										}
+										?>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</section>
+				</div>
+				<div class="6u">
+					<section>
+						<div class="tablecloth">
+							<table cellspacing="0" cellpadding="0">
+								<tr>
+									<th colspan="2">General Statistics</th>
+								</tr>
+								<tr>
+									<td><strong>Log Entries</strong></td>
+									<td><?php echo $userStatistics->getLogEntries(); ?></td>
+								</tr>
+								<tr>
+									<th colspan="2">Testing Statistics</th>
+								</tr>
+								<tr>
+									<td><strong>Average Score</strong></td>
+									<td><?php echo $userStatistics->getAverageScore(); ?></td>
+								</tr>
+								<tr>
+									<td><strong>Completed Tests</strong></td>
+									<td><?php echo $userStatistics->getCompletedTests(); ?></td>
+								</tr>
+								<tr>
+									<td><strong>Incomplete Tests</strong></td>
+									<td><?php echo $userStatistics->getIncompleteTests(); ?></td>
+								</tr>
+								<tr>
+									<td><strong>Total Tests</strong></td>
+									<td><?php echo $userStatistics->getTotalTests(); ?></td>
+								</tr>
+								<tr>
+									<td><strong>Questions Answered</strong></td>
+									<td><?php echo $userStatistics->getQuestionsAnswered(); ?></td>
+								</tr>
+								<tr>
+									<td><strong>Questions Missed</strong></td>
+									<td><?php echo $userStatistics->getQuestionsMissed(); ?></td>
+								</tr>
+								<tr>
+									<th colspan="2">User Associations</th>
+								</tr>
+								<?php
+								$userRole = $roles->verifyUserRole($targetUUID);
+								if($userRole == "supervisor"): ?>
+								<tr>
+									<td><strong>Supervisor For</strong></td>
+									<td>
+										<div class="associationList">
+										<?php
+										$supervisorAssociations = $userStatistics->getSupervisorAssociations();
+										
+										if(!empty($supervisorAssociations) && is_array($supervisorAssociations)){
+											$supervisorAssociations = $userProfile->resolveUserNames($supervisorAssociations);
+											
+											foreach($supervisorAssociations as $key => $subordinate){
+												echo '<a href="/admin/profile/'.$key.'">'.$subordinate.'</a>';
+												echo "<br />\n";
+											}
+										}
+										else{
+											echo "No associations in database.";
+										}
+										?>
+										</div>
+									</td>
+								</tr>
+								<?php elseif($userRole == "trainingManager"): ?>
+								<tr>
+									<td><strong>Training Manager For</strong></td>
+									<td>
+										<div class="associationList">
+										<?php
+										$trainingManagerAssociations = $userStatistics->getTrainingManagerAssociations();
+										
+										if(!empty($trainingManagerAssociations) && is_array($trainingManagerAssociations)){
+											$trainingManagerAssociations = $userProfile->resolveUserNames($trainingManagerAssociations);
+											
+											foreach($trainingManagerAssociations as $key => $subordinate){
+												echo '<a href="/admin/profile/'.$key.'">'.$subordinate.'</a>';
+												echo "<br />\n";
+											}
+										}
+										else{
+											echo "No associations in database.";
+										}
+										?>
+										</div>
+									</td>
+								</tr>
+								<?php else: ?>
+								<tr>
+									<td><strong>Supervisors</strong></td>
+									<td>
+										<div class="associationList">
+										<?php
+										$userSupervisors = $userStatistics->getUserSupervisors();
+										
+										if(!empty($userSupervisors) && is_array($userSupervisors)){
+											$userSupervisors = $userProfile->resolveUserNames($userSupervisors);
+											
+											foreach($userSupervisors as $key => $supervisor){
+												echo '<a href="/admin/profile/'.$key.'">'.$supervisor.'</a>';
+												echo "<br />\n";
+											}
+										}
+										else{
+											echo "No associations in database.";
+										}
+										?>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Training Managers</strong></td>
+									<td>
+										<div class="associationList">
+										<?php
+										$userTrainingManagers = $userStatistics->getUserTrainingManagers();
+										
+										if(!empty($userTrainingManagers) && is_array($userTrainingManagers)){
+											$userTrainingManagers = $userProfile->resolveUserNames($userTrainingManagers);
+											
+											foreach($userTrainingManagers as $key => $trainingManager){
+												echo '<a href="/admin/profile/'.$key.'">'.$trainingManager.'</a>';
+												echo "<br />\n";
+											}
+										}
+										else{
+											echo "No associations in database.";
+										}
+										?>
+										</div>
+									</td>
+								</tr>
+								<?php endif; ?>
 							</table>
 						</div>
 					</section>

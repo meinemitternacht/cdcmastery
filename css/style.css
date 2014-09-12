@@ -510,4 +510,6 @@
 .tablecloth tr.even td{background:#e5f1f4;}
 .tablecloth tr.odd td{background:#f8fbfc;}
 
-.tablecloth tr:hover td {background:#4a98af;color:#fff;cursor:pointer;}
+/* miscellaneous */
+
+.associationList {max-height:200px !important; overflow:auto}

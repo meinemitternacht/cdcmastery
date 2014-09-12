@@ -33,7 +33,7 @@ class user extends CDCMastery
 	public $userSupervisor;		//varchar 40
 	public $userDisabled;		//bool
 
-	public function __construct(log $log, mysqli $db) {
+	public function __construct(mysqli $db, log $log) {
 		$this->db = $db;
 		$this->log = $log;
 		$this->uuid = parent::genUUID();
@@ -433,7 +433,7 @@ class user extends CDCMastery
 	}
 
 	public function getUserByUUID($uuid){
-		$_user = new user($this->log, $this->db);
+		$_user = new user($this->db, $this->log);
 		if(!$_user->loadUser($uuid)){
 			return false;
 		}
@@ -462,6 +462,45 @@ class user extends CDCMastery
 			}
 			else{
 				return $ret;
+			}
+		}
+	}
+	
+	public function resolveUserNames($uuidArray){
+		if(!is_array($uuidArray)){
+			return false;
+		}
+		else{
+			$stmt = $this->db->prepare("SELECT userRank, userFirstName, userLastName FROM userData WHERE uuid = ?");
+			foreach($uuidArray as $userUUID){
+				$stmt->bind_param("s",$userUUID);
+				$stmt->bind_result($userRank, $userFirstName, $userLastName);
+				
+				if($stmt->execute()){
+					while($stmt->fetch()){
+						$resultArray[$userUUID] = $userRank . ' ' . $userFirstName . ' ' . $userLastName;
+					}
+				}
+				else{
+					$this->error = $stmt->error;
+					$this->log->setAction("MYSQL_ERROR");
+					$this->log->setDetail("CALLING FUNCTION", "user->resolveUserNames()");
+					$this->log->setDetail("userUUID", $userUUID);
+					$this->log->setDetail("MYSQL ERROR", $this->error);
+					$this->log->saveEntry();
+					
+					break;
+				}
+			}
+			
+			$stmt->close();
+			
+			if(empty($resultArray)){
+				return false;
+			}
+			else{
+				natcasesort($resultArray);
+				return $resultArray;
 			}
 		}
 	}
