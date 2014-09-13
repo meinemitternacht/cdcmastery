@@ -8,6 +8,8 @@ class testManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
+	protected $afsc;
+	protected $answer;
 	protected $question;
 	
 	public $error;
@@ -39,10 +41,12 @@ class testManager extends CDCMastery
 	public $incompleteUserUUID;			//varchar 40
 	public $incompleteCombinedTest;		//bool
 	
-	public function __construct(mysqli $db, log $log, question $question){
+	public function __construct(mysqli $db, log $log, afsc $afsc){
 		$this->db = $db;
 		$this->log = $log;
-		$this->question = $question;
+		$this->afsc = $afsc;
+		$this->answer = new answerManager($this->db, $this->log);
+		$this->question = new questionManager($this->db, $this->log, $this->afsc, $this->answer);
 	}
 	
 	/*
@@ -278,6 +282,9 @@ class testManager extends CDCMastery
 	}
 	
 	public function saveIncompleteTest(){
+		$this->incompleteQuestionList = serialize($this->incompleteQuestionList);
+		$this->incompleteAFSCList = serialize($this->incompleteAFSCList);
+		
 		$stmt = $this->db->prepare("INSERT INTO testManager (	testUUID,
 																timeStarted,
 																questionList,
@@ -300,11 +307,11 @@ class testManager extends CDCMastery
 																combinedTest=VALUES(combinedTest)");
 		$stmt->bind_param("sssiiissi",	$this->incompleteTestUUID,
 										$this->incompleteTimeStarted,
-										serialize($this->incompleteQuestionList),
+										$this->incompleteQuestionList,
 										$this->incompleteCurrentQuestion,
 										$this->incompleteQuestionsAnswered,
 										$this->incompleteTotalQuestions,
-										serialize($this->incompleteAFSCList),
+										$this->incompleteAFSCList,
 										$this->incompleteUserUUID,
 										$this->incompleteCombinedTest);
 		
@@ -396,7 +403,17 @@ class testManager extends CDCMastery
 	public function newTest(){
 		$this->setIncompleteUserUUID($_SESSION['userUUID']);
 		$this->setIncompleteTestUUID($this->genUUID());
-		$this->setIncompleteTimeStarted($timeStarted);
+		$this->setIncompleteTimeStarted(date("Y-m-d H:i:s",time()));
+		$this->setIncompleteCurrentQuestion(1);
+		$this->setIncompleteTotalQuestions(0);
+		$this->setIncompleteQuestionsAnswered(0);
+		
+		if(count($this->afscList) > 1){
+			$this->setIncompleteCombinedTest(true);
+		}
+		else{
+			$this->setIncompleteCombinedTest(false);
+		}
 		
 		return true;
 	}
@@ -407,6 +424,80 @@ class testManager extends CDCMastery
 		}
 		else{
 			return true;
+		}
+	}
+	
+	public function populateQuestions(){
+		if(!$this->afscList){
+			return false;
+		}
+		else{
+			if($this->incompleteCombinedTest){
+				$count = count($this->afscList);
+				$in_params = trim(str_repeat('?, ', $count), ', ');
+				
+				$query = "
+				SELECT    
+				    uuid
+				FROM 
+				    questionData
+				WHERE
+				    afscUUID IN ({$in_params}) ORDER BY Rand() LIMIT 0, ?;";
+				
+				$stmt = $this->db->prepare($query);
+								
+				if($this->db->execute($stmt, $this->afscList, parent::getMaxQuestions())){
+					$stmt->bind_result($questionUUID);
+					
+					while($stmt->fetch()){
+						$this->addQuestion($questionUUID);
+					}
+					
+					return true;
+				}
+				else{
+					$this->log->setAction("MYSQL_ERROR");
+					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
+					$this->log->setDetail("COMBINED TEST", "TRUE");
+					$this->log->setDetail("ERROR",$stmt->error);
+					$this->log->saveEntry();
+					
+					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
+					return false;
+				}
+			}
+			else{
+				$query = "
+				SELECT
+					uuid
+				FROM
+					questionData
+				WHERE
+					afscUUID = ? ORDER BY Rand() LIMIT 0, ?;";
+				
+				$stmt = $this->db->prepare($query);
+				$stmt->bind_param("si",$this->afscList[0],parent::getMaxQuestions());
+				
+				if($stmt->execute()){
+					$stmt->bind_result($questionUUID);
+						
+					while($stmt->fetch()){
+						$this->addQuestion($questionUUID);
+					}
+					
+					return true;
+				}
+				else{
+					$this->log->setAction("MYSQL_ERROR");
+					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
+					$this->log->setDetail("COMBINED TEST", "TRUE");
+					$this->log->setDetail("ERROR",$stmt->error);
+					$this->log->saveEntry();
+						
+					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
+				return false;
+				}
+			}
 		}
 	}
 	

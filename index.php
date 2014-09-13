@@ -39,4 +39,3 @@ if($router->parseURI()){
 
 ob_end_flush();
 $router->__destruct();
-$db->close();

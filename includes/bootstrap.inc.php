@@ -36,4 +36,5 @@ $userStatistics = new userStatistics($db, $log, $roles);
 
 if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
 	$user->loadUser($_SESSION['userUUID']);
+	$userStatistics->setUserUUID($_SESSION['userUUID']);
 }

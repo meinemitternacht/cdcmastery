@@ -1,6 +1,9 @@
 <?php
 class CDCMastery 
 {
+	public $aesKey = "***REMOVED***";
+	public $maxQuestions = 100;
+	
 	public function __construct(){
 		
 	}
@@ -56,7 +59,11 @@ class CDCMastery
 	}
 	
 	public function getEncryptionKey(){
-		return $cfg['db']['aes-key'];
+		return $this->aesKey;
+	}
+	
+	public function getMaxQuestions(){
+		return $this->maxQuestions;
 	}
 	
 	public function hashUserPassword( $userPassword ){

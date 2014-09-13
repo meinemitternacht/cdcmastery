@@ -2,11 +2,12 @@
 if(isset($_SESSION['vars'][0])):
 	$targetUUID = $_SESSION['vars'][0];
 	$userProfile = new user($db, $log);
+	$userProfileStatistics = new userStatistics($db, $log, $roles);
 	if(!$userProfile->loadUser($targetUUID)){
 		echo "That user does not exist.";
 	}
 	else{
-		$userStatistics->setUserUUID($targetUUID);
+		$userProfileStatistics->setUserUUID($targetUUID);
 		?>
 		<a href="/admin/profile">&laquo; return to user list</a>
 		<br />
@@ -63,7 +64,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><strong>Associated With</strong></td>
 									<td>
 										<?php
-										$afscList = $userStatistics->getAFSCAssociations();
+										$afscList = $userProfileStatistics->getAFSCAssociations();
 										
 										if(!$afscList){
 											echo "No associations.";
@@ -81,7 +82,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><strong>Pending Associations</strong></td>
 									<td>
 										<?php
-										$afscList = $userStatistics->getPendingAFSCAssociations();
+										$afscList = $userProfileStatistics->getPendingAFSCAssociations();
 										
 										if(!$afscList){
 											echo "No pending associations.";
@@ -108,34 +109,34 @@ if(isset($_SESSION['vars'][0])):
 								</tr>
 								<tr>
 									<td><strong>Log Entries</strong></td>
-									<td><?php echo $userStatistics->getLogEntries(); ?></td>
+									<td><?php echo $userProfileStatistics->getLogEntries(); ?></td>
 								</tr>
 								<tr>
 									<th colspan="2">Testing Statistics</th>
 								</tr>
 								<tr>
 									<td><strong>Average Score</strong></td>
-									<td><?php echo $userStatistics->getAverageScore(); ?></td>
+									<td><?php echo $userProfileStatistics->getAverageScore(); ?></td>
 								</tr>
 								<tr>
 									<td><strong>Completed Tests</strong></td>
-									<td><?php echo $userStatistics->getCompletedTests(); ?></td>
+									<td><?php echo $userProfileStatistics->getCompletedTests(); ?></td>
 								</tr>
 								<tr>
 									<td><strong>Incomplete Tests</strong></td>
-									<td><?php echo $userStatistics->getIncompleteTests(); ?></td>
+									<td><?php echo $userProfileStatistics->getIncompleteTests(); ?></td>
 								</tr>
 								<tr>
 									<td><strong>Total Tests</strong></td>
-									<td><?php echo $userStatistics->getTotalTests(); ?></td>
+									<td><?php echo $userProfileStatistics->getTotalTests(); ?></td>
 								</tr>
 								<tr>
 									<td><strong>Questions Answered</strong></td>
-									<td><?php echo $userStatistics->getQuestionsAnswered(); ?></td>
+									<td><?php echo $userProfileStatistics->getQuestionsAnswered(); ?></td>
 								</tr>
 								<tr>
 									<td><strong>Questions Missed</strong></td>
-									<td><?php echo $userStatistics->getQuestionsMissed(); ?></td>
+									<td><?php echo $userProfileStatistics->getQuestionsMissed(); ?></td>
 								</tr>
 								<tr>
 									<th colspan="2">User Associations</th>
@@ -148,7 +149,7 @@ if(isset($_SESSION['vars'][0])):
 									<td>
 										<div class="associationList">
 										<?php
-										$supervisorAssociations = $userStatistics->getSupervisorAssociations();
+										$supervisorAssociations = $userProfileStatistics->getSupervisorAssociations();
 										
 										if(!empty($supervisorAssociations) && is_array($supervisorAssociations)){
 											$supervisorAssociations = $userProfile->resolveUserNames($supervisorAssociations);
@@ -171,7 +172,7 @@ if(isset($_SESSION['vars'][0])):
 									<td>
 										<div class="associationList">
 										<?php
-										$trainingManagerAssociations = $userStatistics->getTrainingManagerAssociations();
+										$trainingManagerAssociations = $userProfileStatistics->getTrainingManagerAssociations();
 										
 										if(!empty($trainingManagerAssociations) && is_array($trainingManagerAssociations)){
 											$trainingManagerAssociations = $userProfile->resolveUserNames($trainingManagerAssociations);
@@ -194,7 +195,7 @@ if(isset($_SESSION['vars'][0])):
 									<td>
 										<div class="associationList">
 										<?php
-										$userSupervisors = $userStatistics->getUserSupervisors();
+										$userSupervisors = $userProfileStatistics->getUserSupervisors();
 										
 										if(!empty($userSupervisors) && is_array($userSupervisors)){
 											$userSupervisors = $userProfile->resolveUserNames($userSupervisors);
@@ -216,7 +217,7 @@ if(isset($_SESSION['vars'][0])):
 									<td>
 										<div class="associationList">
 										<?php
-										$userTrainingManagers = $userStatistics->getUserTrainingManagers();
+										$userTrainingManagers = $userProfileStatistics->getUserTrainingManagers();
 										
 										if(!empty($userTrainingManagers) && is_array($userTrainingManagers)){
 											$userTrainingManagers = $userProfile->resolveUserNames($userTrainingManagers);

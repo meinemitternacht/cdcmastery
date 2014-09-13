@@ -10,3 +10,4 @@ php migrateUserSupervisorAssociations.php
 php migrateUserTrainingManagerAssociations.php
 php migrateAFSCs.php
 php migrateAFSCAssociations.php
+php migrateQuestionsAnswers.php

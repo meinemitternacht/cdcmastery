@@ -1,7 +1,7 @@
 <?php
 if(!empty($_SESSION['userUUID'])) {
 	$log->setAction("LOGOUT_SUCCESS");
-	$log->setUserID($_SESSION['userUUID']);
+	$log->setUserUUID($_SESSION['userUUID']);
 	$log->saveEntry();
 }
 

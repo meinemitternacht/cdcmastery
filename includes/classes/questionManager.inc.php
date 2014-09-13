@@ -1,5 +1,5 @@
 <?php
-class question extends CDCMastery
+class questionManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -16,7 +16,7 @@ class question extends CDCMastery
 	
 	public $answerData;
 	
-	public function __construct(mysqli $db, log $log, afsc $afsc, answer $answer){
+	public function __construct(mysqli $db, log $log, afsc $afsc, answerManager $answer){
 		$this->db = $db;
 		$this->log = $log;
 		$this->afsc = $afsc;

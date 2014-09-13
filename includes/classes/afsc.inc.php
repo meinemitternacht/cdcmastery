@@ -13,6 +13,7 @@ class afsc extends CDCMastery
 	public $afscVersion;
 	public $afscFOUO;
 	public $afscHidden;
+	public $oldID;
 	
 	public function __construct(mysqli $db, log $log){
 		$this->db = $db;
@@ -20,7 +21,7 @@ class afsc extends CDCMastery
 	}
 	
 	public function listAFSC(){
-		$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden FROM afscList ORDER BY afscName ASC");
+		$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
 		
 		$afscArray = Array();
 		
@@ -31,6 +32,7 @@ class afsc extends CDCMastery
 				$afscArray[$row['uuid']]['afscVersion'] = $row['afscVersion'];
 				$afscArray[$row['uuid']]['afscFOUO'] = $row['afscFOUO'];
 				$afscArray[$row['uuid']]['afscHidden'] = $row['afscHidden'];
+				$afscArray[$row['uuid']]['oldID'] = $row['oldID'];
 			}
 			
 			$noResults = false;
@@ -55,7 +57,8 @@ class afsc extends CDCMastery
 											afscDescription,
 											afscVersion,
 											afscFOUO,
-											afscHidden
+											afscHidden,
+											oldID
 									FROM afscList
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
@@ -65,7 +68,8 @@ class afsc extends CDCMastery
 							$afscDescription,
 							$afscVersion,
 							$afscFOUO,
-							$afscHidden );
+							$afscHidden,
+							$oldID );
 		
 		while($stmt->fetch()){
 			$this->uuid = $uuid;
@@ -74,6 +78,7 @@ class afsc extends CDCMastery
 			$this->afscVersion = $afscVersion;
 			$this->afscFOUO = $afscFOUO;
 			$this->afscHidden = $afscHidden;
+			$this->oldID = $oldID;
 			
 			$ret = true;
 		}
@@ -185,6 +190,10 @@ class afsc extends CDCMastery
 	
 	public function getAFSCHidden(){
 		return $this->afscHidden;
+	}
+	
+	public function getOldID(){
+		return $this->oldID;
 	}
 	
 	public function setUUID($uuid){

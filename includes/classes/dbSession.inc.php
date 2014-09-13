@@ -147,7 +147,7 @@ class dbSession
     }
 
     function __destruct(){
-    	//$this->db->close();
+    	$this->db->close();
     }
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-class answer extends CDCMastery
+class answerManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
