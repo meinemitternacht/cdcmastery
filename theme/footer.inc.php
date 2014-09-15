@@ -1,15 +1,17 @@
 				</div>
 			</div>
+			<!--
 			<div class="container">
 				<div class="row">
 					<div class="12u">
 						<section>
 							<h2>Debug Information</h2>
-							<p><?php var_dump($_SESSION); ?></p>
+							<p><?php /*var_dump($_SESSION);*/ ?></p>
 						</section>
 					</div>
 				</div>
 			</div>
+			-->
 		</div>
 		<!-- Footer -->
 		<div id="footer">

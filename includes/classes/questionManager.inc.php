@@ -14,9 +14,8 @@ class questionManager extends CDCMastery
 	public $volumeUUID;
 	public $setUUID;
 	
-	public $answerData;
-	
 	public function __construct(mysqli $db, log $log, afsc $afsc, answerManager $answer){
+		$this->uuid = parent::genUUID();
 		$this->db = $db;
 		$this->log = $log;
 		$this->afsc = $afsc;
@@ -44,8 +43,8 @@ class questionManager extends CDCMastery
 		}
 	}
 	
-public function loadQuestion($uuid){
-		if($this->fouo){
+	public function loadQuestion($uuid){
+		if($this->queryQuestionFOUO($uuid)){
 			$stmt = $this->db->prepare("SELECT uuid, afscUUID, AES_DECRYPT(questionText,'".$this->getEncryptionKey()."') AS questionText, volumeUUID, setUUID FROM questionData WHERE uuid = ?");
 		}
 		else{
@@ -137,12 +136,84 @@ public function loadQuestion($uuid){
 		}
 	}
 	
+	public function queryQuestionFOUO($questionUUID){
+		$stmt = $this->db->prepare("SELECT `afscList`.`afscFOUO` FROM `questionData` LEFT JOIN `afscList` ON `afscList`.`uuid` = `questionData`.`afscUUID` WHERE `questionData`.`uuid` = ?");
+		$stmt->bind_param("s",$questionUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($fouoStatus);
+			
+			while($stmt->fetch()){
+				$tempFOUO = $fouoStatus;
+			}
+			
+			$stmt->close();
+			return $tempFOUO;
+		}
+		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION", "questionManager->queryQuestionFOUO");
+			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("QUESTION UUID",$questionUUID);
+			$this->log->saveEntry();
+			
+			$stmt->close();
+			return false;
+		}
+	}
+	
+	public function getUUID(){
+		return $this->uuid;
+	}
+	
 	public function getFOUO(){
 		return $this->fouo;
 	}
 	
+	public function getAFSCUUID(){
+		return $this->afscUUID;
+	}
+	
+	public function getQuestionText(){
+		return htmlspecialchars($this->questionText);
+	}
+	
+	public function getVolumeUUID(){
+		return $this->volumeUUID;
+	}
+	
+	public function getSetUUID(){
+		return $this->setUUID;
+	}
+	
+	public function setUUID($uuid){
+		$this->uuid = $uuid;
+		return true;
+	}
+	
 	public function setFOUO($fouo){
 		$this->fouo = $fouo;
+		return true;
+	}
+	
+	public function setAFSCUUID($afscUUID){
+		$this->afscUUID = $afscUUID;
+		return true;
+	}
+	
+	public function setQuestionText($questionText){
+		$this->questionText = htmlspecialchars_decode($questionText);
+		return true;
+	}
+	
+	public function setVolumeUUID($volumeUUID){
+		$this->volumeUUID = $volumeUUID;
+		return true;
+	}
+	
+	public function setSetUUID($setUUID){
+		$this->setUUID = $setUUID;
+		return true;
 	}
 	
 	public function __destruct(){

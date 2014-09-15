@@ -513,3 +513,30 @@
 /* miscellaneous */
 
 .associationList {max-height:200px !important; overflow:auto}
+
+/* Testing Pages */
+#loading img {
+    position: fixed; /* forces the element to stay fixed in relation to the viewport */
+    top: 50%; /* sets the top of the image 50% of the page height */
+    left: 50%; /* sets the left side of the image 50% across the page */
+    margin-left: -33px; /* moves the image half of its own width to the left-side of the page */
+    margin-top: -33px; /* moves the image half its height 'up' the page */
+    box-shadow: 0.5em 0.5em 0.7em #333; /* to give the illusion of 'floating' */
+    border-radius: 1em;
+}
+
+#questionAnswer{min-height:100px;}
+
+.test-nav{margin:0 auto;text-align:center;}
+.test-nav .test-nav-button{background-color:#f2f2f2;border:1px solid #069;color:#069;cursor:pointer;font-weight:700;margin-left:3px;padding:2px 6px;width:50px;text-align:center;}
+.test-nav .test-nav-button:hover{background-color:#069;color:#fff;cursor:pointer}
+.clearfix:after {content: ".";display: block;clear: both;visibility: hidden;line-height: 0;height: 0;}
+
+.displayQuestion{min-height:60px;padding-left:2%;color:#666;text-align:left;background-color:#ddd;border-bottom:2px solid #bbb;border-top:2px solid #bbb;}
+
+#list-answers{}
+#list-answers ul{list-style:none;padding:0}
+#list-answers ul li {margin-bottom:5px;padding:5px;border-top:1px solid #999}
+#list-answers ul li.list-answer-normal{background-color:#eee;color:#000}
+#list-answers ul li.list-answer-selected{background-color:#bbb;color:#000}
+#list-answers ul li:hover{background-color:#8C9FFF!important;color:#fff;cursor:pointer}

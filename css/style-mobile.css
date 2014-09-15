@@ -247,4 +247,6 @@
 		padding-bottom: 2em;
 		font-size: 1.4em;
 	}
-	
+
+/* testing pages */
+#list-answers ul li {margin-bottom:5px;padding:5px;width:100%;}

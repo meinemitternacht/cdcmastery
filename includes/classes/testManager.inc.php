@@ -265,14 +265,17 @@ class testManager extends CDCMastery
 			while($stmt->fetch()){
 				$this->incompleteTestUUID = $incompleteTestUUID;
 				$this->incompleteTimeStarted = $incompleteTimeStarted;
-				$this->incompleteQuestionList = unserialize($incompleteQuestionList);
+				$serializedQuestionList = $incompleteQuestionList;
 				$this->incompleteCurrentQuestion = $incompleteCurrentQuestion;
 				$this->incompleteQuestionsAnswered = $incompleteQuestionsAnswered;
 				$this->incompleteTotalQuestions = $incompleteTotalQuestions;
-				$this->incompleteAFSCList = unserialize($incompleteAFSCList);
+				$serializedAFSCList = $incompleteAFSCList;
 				$this->incompleteUserUUID = $incompleteUserUUID;
 				$this->incompleteCombinedTest = $incompleteCombinedTest;
 			}
+			
+			$this->incompleteQuestionList = unserialize($serializedQuestionList);
+			$this->incompleteAFSCList = unserialize($serializedAFSCList);
 			
 			return true;
 		}
@@ -281,9 +284,9 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function saveIncompleteTest(){
-		$this->incompleteQuestionList = serialize($this->incompleteQuestionList);
-		$this->incompleteAFSCList = serialize($this->incompleteAFSCList);
+	public function saveIncompleteTest(){		
+		$serializedQuestionList = serialize($this->incompleteQuestionList);
+		$serializedAFSCList = serialize($this->incompleteAFSCList);
 		
 		$stmt = $this->db->prepare("INSERT INTO testManager (	testUUID,
 																timeStarted,
@@ -307,11 +310,11 @@ class testManager extends CDCMastery
 																combinedTest=VALUES(combinedTest)");
 		$stmt->bind_param("sssiiissi",	$this->incompleteTestUUID,
 										$this->incompleteTimeStarted,
-										$this->incompleteQuestionList,
+										$serializedQuestionList,
 										$this->incompleteCurrentQuestion,
 										$this->incompleteQuestionsAnswered,
 										$this->incompleteTotalQuestions,
-										$this->incompleteAFSCList,
+										$serializedAFSCList,
 										$this->incompleteUserUUID,
 										$this->incompleteCombinedTest);
 		
@@ -408,13 +411,6 @@ class testManager extends CDCMastery
 		$this->setIncompleteTotalQuestions(0);
 		$this->setIncompleteQuestionsAnswered(0);
 		
-		if(count($this->afscList) > 1){
-			$this->setIncompleteCombinedTest(true);
-		}
-		else{
-			$this->setIncompleteCombinedTest(false);
-		}
-		
 		return true;
 	}
 	
@@ -428,12 +424,13 @@ class testManager extends CDCMastery
 	}
 	
 	public function populateQuestions(){
-		if(!$this->afscList){
+		if(!$this->incompleteAFSCList){
+			$this->error = "No AFSCs were selected.";
 			return false;
 		}
 		else{
 			if($this->incompleteCombinedTest){
-				$count = count($this->afscList);
+				$count = count($this->incompleteAFSCList);
 				$in_params = trim(str_repeat('?, ', $count), ', ');
 				
 				$query = "
@@ -446,7 +443,7 @@ class testManager extends CDCMastery
 				
 				$stmt = $this->db->prepare($query);
 								
-				if($this->db->execute($stmt, $this->afscList, parent::getMaxQuestions())){
+				if($this->db->execute($stmt, $this->incompleteAFSCList, $this->maxQuestions)){
 					$stmt->bind_result($questionUUID);
 					
 					while($stmt->fetch()){
@@ -476,7 +473,7 @@ class testManager extends CDCMastery
 					afscUUID = ? ORDER BY Rand() LIMIT 0, ?;";
 				
 				$stmt = $this->db->prepare($query);
-				$stmt->bind_param("si",$this->afscList[0],parent::getMaxQuestions());
+				$stmt->bind_param("si",$this->incompleteAFSCList[0],$this->maxQuestions);
 				
 				if($stmt->execute()){
 					$stmt->bind_result($questionUUID);
@@ -490,18 +487,19 @@ class testManager extends CDCMastery
 				else{
 					$this->log->setAction("MYSQL_ERROR");
 					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
-					$this->log->setDetail("COMBINED TEST", "TRUE");
+					$this->log->setDetail("COMBINED TEST", "FALSE");
 					$this->log->setDetail("ERROR",$stmt->error);
 					$this->log->saveEntry();
 						
 					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
-				return false;
+					return false;
 				}
 			}
 		}
 	}
 	
 	public function answerQuestion($questionUUID, $answerUUID){
+		$rowUUID = $this->genUUID();
 		$stmt = $this->db->prepare("INSERT INTO testData (	uuid,
 															testUUID,
 															questionUUID,
@@ -512,7 +510,7 @@ class testManager extends CDCMastery
 															testUUID=VALUES(testUUID),
 															questionUUID=VALUES(questionUUID),
 															answerUUID=VALUES(answerUUID)");
-		$stmt->bind_param("ssss",$this->genUUID(),$this->incompleteTestUUID,$questionUUID,$answerUUID);
+		$stmt->bind_param("ssss",$rowUUID,$this->incompleteTestUUID,$questionUUID,$answerUUID);
 		
 		if(!$stmt->execute()){
 			$this->log->setAction("MYSQL_ERROR");
@@ -533,6 +531,14 @@ class testManager extends CDCMastery
 	
 	public function addAFSC($afscUUID){
 		$this->incompleteAFSCList[] = $afscUUID;
+		
+		if(count($this->incompleteAFSCList) > 1){
+			$this->setIncompleteCombinedTest(true);
+		}
+		else{
+			$this->setIncompleteCombinedTest(false);
+		}
+		
 		return true;
 	}
 	
@@ -548,18 +554,156 @@ class testManager extends CDCMastery
 	
 	public function addQuestion($questionUUID){
 		$this->incompleteQuestionList[] = $questionUUID;
+		echo $questionUUID;
+		$this->incompleteTotalQuestions++;
 		return true;
 	}
 	
 	public function removeQuestion($questionUUID){
 		if(($key = array_search($questionUUID, $this->incompleteQuestionList)) !== false) {
 			unset($this->incompleteQuestionList[$key]);
+			$this->incompleteTotalQuestions--;
 			return true;
 		}
 		else{
 			return false;
 		}
 	}
+	
+	public function outputQuestionData($questionUUID){
+		$questionFOUO = $this->question->queryQuestionFOUO($questionUUID);
+		
+		if($this->question->loadQuestion($questionUUID)){
+			$output = "<div class=\"displayQuestion\">";
+			$output .= $this->question->getQuestionText();
+			$output .= "</div><br style=\"clear:both;\">";
+			
+			$this->answer->setFOUO($questionFOUO);
+			$this->answer->setQuestionUUID($questionUUID);
+			
+			$answerArray = $this->answer->listAnswersByQuestion();
+			
+			if($answerArray){
+				$output .= "<div id=\"list-answers\">";
+				$output .= "<ul>";
+				$i=1;
+				foreach($answerArray as $answerUUID => $answerData){
+					$previouslyAnsweredUUID = $this->queryQuestionPreviousAnswer($questionUUID);
+					
+					if(!empty($previouslyAnsweredUUID) && $previouslyAnsweredUUID == $answerUUID){
+						$answerClass = "list-answer-selected";
+					}
+					else{
+						$answerClass = "list-answer-normal";
+					}
+					
+					$output .= '<li p="'.$answerUUID.'" id="answer'.$i.'" class="'.$answerClass.'">'.$answerData['answerText'].'</li>';
+					$i++;
+				}
+				$output .= "</ul>";
+				$output .= "</div><br style=\"clear:both;\">";
+			}
+			else{
+				$output = "Sorry, we could not load the answers from the database.";
+			}
+		}
+		else{
+			$output = "Sorry, we could not load that question from the database.";
+		}
+		
+		return $output;
+	}
+	
+	public function queryQuestionPreviousAnswer($questionUUID){
+		$stmt = $this->db->prepare("SELECT answerUUID FROM testData WHERE questionUUID = ? AND testUUID = ?");
+		$stmt->bind_param("ss",$questionUUID, $this->incompleteTestUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($answerUUID);
+			
+			while($stmt->fetch()){
+				$tempAnswerUUID = $answerUUID;
+			}
+			
+			$stmt->close();
+			
+			if(isset($tempAnswerUUID)){
+				return $tempAnswerUUID;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","testManager->queryQuestionPreviousAnswer()");
+			$this->log->setDetail("TEST UUID",$this->incompleteTestUUID);
+			$this->log->setDetail("QUESTION UUID",$questionUUID);
+			$this->log->saveEntry();
+			
+			$stmt->close();
+			return false;
+		}
+	}
+	
+	/*
+	 * Test Navigation
+	 */
+	
+	public function navigateFirstQuestion(){
+		$this->incompleteCurrentQuestion = 1;
+		return true;
+	}
+	
+	public function navigatePreviousQuestion(){
+		if($this->incompleteCurrentQuestion > 1){
+			$this->incompleteCurrentQuestion--;
+		}
+		else{
+			$this->incompleteCurrentQuestion = 1;
+		}
+		
+		return true;
+	}
+	
+	public function navigateNextQuestion(){
+		if($this->incompleteCurrentQuestion < $this->incompleteTotalQuestions){
+			$this->incompleteCurrentQuestion++;
+		}
+		else{
+			$this->incompleteCurrentQuestion = $this->incompleteTotalQuestions;
+		}
+		
+		return true;
+	}
+	
+	public function navigateLastQuestion(){
+		$this->incompleteCurrentQuestion = $this->incompleteTotalQuestions;
+		return true;
+	}
+	
+	public function navigateSpecificQuestion($questionNumber){
+		if(is_int($questionNumber)){
+			if($questionNumber > $this->incompleteTotalQuestions){
+				$this->incompleteCurrentQuestion = $this->incompleteTotalQuestions;
+			}
+			elseif($questionNumber < 1){
+				$this->incompleteCurrentQuestion = 1;
+			}
+			else{
+				$this->incompleteCurrentQuestion = $questionNumber;
+			}
+			
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	/*
+	 * Getters and setters
+	 */
 	
 	public function getIncompleteTestUUID(){
 		return $this->incompleteTestUUID;
