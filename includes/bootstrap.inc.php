@@ -20,7 +20,7 @@ require BASE_PATH . '/includes/classes/questionManager.inc.php';
 $db = new mysqli($cfg['db']['host'], $cfg['db']['user'], $cfg['db']['pass'], $cfg['db']['name'], $cfg['db']['port'], $cfg['db']['socket']);
 
 if($db->connect_errno){
-	include APP_BASE . '/error/dbError.php';
+	include APP_BASE . '/errors/dbError.php';
 	exit();
 }
 

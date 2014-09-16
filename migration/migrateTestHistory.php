@@ -21,33 +21,13 @@ echo "Records processed: ";
 $i=1;
 $j=1;
 if($res->num_rows > 0){
-	//$qstmt = $oldDB->prepare("SELECT DISTINCT(q_uuid) AS q_uuid FROM test_data WHERE t_id = ?");
-	
 	while($row = $res->fetch_assoc()){
 		$userUUID = $user->getUUIDByHandle($row['username']);
 		
 		if($userUUID){
 			$uuid = $cdcMastery->genUUID();
 			$testArray[$uuid]['userUUID'] = $userUUID;
-			$testArray[$uuid]['afscList'] = serialize($row['afsc']);
-			
-			/*$qstmt->bind_param("s",$row['test_id']);
-			
-			if($qstmt->execute()){
-				$qstmt->bind_result($q_uuid);
-				
-				while($qstmt->fetch()){
-					$questionArray[] = $q_uuid;
-				}
-				
-				if(!empty($questionArray)){
-					$testArray[$uuid]['questionList'] = serialize($questionArray);
-				}
-			}
-			else{
-				$testArray[$uuid]['questionList'] = NULL;
-			}*/
-			
+			$testArray[$uuid]['afscList'] = serialize($row['afsc']);			
 			$testArray[$uuid]['questionList'] = NULL;
 			$testArray[$uuid]['totalQuestions'] = $row['questions'];
 			$testArray[$uuid]['questionsMissed'] = $row['missed'];

@@ -9,6 +9,11 @@ if(isset($_SESSION['vars'][0])):
 	else{
 		$userProfileStatistics->setUserUUID($targetUUID);
 		?>
+		<script>
+		$(function() {
+			$( "#history-tabs" ).tabs();
+		});
+		</script>
 		<a href="/admin/profile">&laquo; return to user list</a>
 		<br />
 		<br />
@@ -68,7 +73,6 @@ if(isset($_SESSION['vars'][0])):
 										
 										if(!$afscList){
 											echo "No associations.";
-											echo $afsc->error;
 										}
 										else{
 											foreach($afscList as $userAFSC){
@@ -86,7 +90,6 @@ if(isset($_SESSION['vars'][0])):
 										
 										if(!$afscList){
 											echo "No pending associations.";
-											echo $afsc->error;
 										}
 										else{
 											foreach($afscList as $userAFSC){
@@ -236,6 +239,95 @@ if(isset($_SESSION['vars'][0])):
 								</tr>
 								<?php endif; ?>
 							</table>
+						</div>
+					</section>
+				</div>
+				<div class="12u">
+					<section>
+						<header>
+							<h2>User History</h2>
+						</header>
+						<div id="history-tabs">
+							<ul>
+								<li><a href="#history-tabs-1">Last Ten Tests</a></li>
+								<li><a href="#history-tabs-2">Last Ten Incomplete Tests</a></li>
+								<li><a href="#history-tabs-3">Last Ten Log Entries</a></li>
+							</ul>
+							<div id="history-tabs-1">
+							<?php 
+							$testManager = new testManager($db, $log, $afsc);
+							$userTestArray = $testManager->listUserTests($targetUUID,10);
+							
+							if($userTestArray): ?>
+								<div class="tablecloth">
+									<table cellspacing="0" cellpadding="0">
+										<tr>
+											<th>Time Started</th>
+											<th>Time Completed</th>
+											<th>AFSC</th>
+											<th>Questions</th>
+											<th>Missed</th>
+											<th>Score</th>
+											<th>Actions</th>
+										</tr>
+										<?php foreach($userTestArray as $testUUID => $testData): ?>
+										<tr>
+											<td><?php echo $testData['testTimeStarted']; ?></td>
+											<td><?php echo $testData['testTimeCompleted']; ?></td>
+											<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
+											<td><?php echo $testData['totalQuestions']; ?></td>
+											<td><?php echo $testData['questionsMissed']; ?></td>
+											<td><?php echo $testData['testScore']; ?></td>
+											<td>
+												<a href="/test/delete/<?php echo $testUUID; ?>">Delete</a>,
+												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
+											</td>
+										</tr>
+										<?php endforeach; ?>
+									</table>
+								</div>
+							<?php else: ?>
+								<p>This user has no tests to show.</p>
+							<?php endif; ?>
+		  					</div>
+							<div id="history-tabs-2">
+							<?php
+							$userIncompleteTestArray = $testManager->listUserIncompleteTests($targetUUID,10);
+							
+							if($userIncompleteTestArray): ?>
+								<div class="tablecloth">
+									<table cellspacing="0" cellpadding="0">
+										<tr>
+											<th>Time Started</th>
+											<th>Current Question</th>
+											<th>Questions Answered</th>
+											<th>Total Questions</th>
+											<th>AFSC</th>
+											<th>Combined Test</th>
+											<th>Actions</th>
+										</tr>
+										<?php foreach($userIncompleteTestArray as $testUUID => $testData): ?>
+										<tr>
+											<td><?php echo $testData['timeStarted']; ?></td>
+											<td><?php echo $testData['currentQuestion']; ?></td>
+											<td><?php echo $testData['questionsAnswered']; ?></td>
+											<td><?php echo $testData['totalQuestions']; ?></td>
+											<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
+											<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
+											<td>
+												<a href="/test/delete/<?php echo $testUUID; ?>">Delete</a>,
+												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
+											</td>
+										</tr>
+										<?php endforeach; ?>
+									</table>
+								</div>
+							<?php else: ?>
+								<p>This user has no incomplete tests to show.</p>
+							<?php endif; ?>
+							</div>
+							<div id="history-tabs-3">
+							</div>
 						</div>
 					</section>
 				</div>
