@@ -135,11 +135,11 @@ if(isset($_SESSION['vars'][0])):
 			}
 			
 		</script>
+		<div id="loading"><img src="/images/loader.gif" /></div>
 		<div class="container">
 			<div class="row">
 				<div class="12u">
 					<section>
-						<div id="loading"><img src="/images/loader.gif" /></div>
 						<div id="questionAnswer"></div>
 					</section>
 				</div>

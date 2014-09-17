@@ -102,7 +102,7 @@
 				font-weight: 200;
 				font-size: 1em;
 				outline: 0;
-				color: rgba(255,255,255,.7);
+				color: #ddd;
 			}
 
 
@@ -114,9 +114,9 @@
 			#nav li.active a
 			{
 				background: none;
-				border-radius: 40px;
+				/*border-radius: 40px;*/
 				border: 2px solid;
-				border-color: rgba(255,255,255,.8);
+				border-color: #ddd;
 				color: #FFF;
 			}
 
@@ -141,12 +141,12 @@
 	
 	#content header
 	{
-		margin-bottom: 2em;
+		margin-bottom: 0.5em;
 	}
 	
 	#content header h2
 	{
-		font-size: 3em;
+		font-size: 2em;
 	}
 	
 	#content header .byline
@@ -177,7 +177,7 @@
 	#footer
 	{
 		position: relative;
-		padding: 6em 0em;
+		padding: 4em 0em;
 	}
 	
 	#footer h2
@@ -197,6 +197,9 @@
 
 /* Testing Pages */
 
-.displayQuestion{width:60%;margin:0 auto;}
+.displayQuestion{width:50%;margin:0 auto;}
+
+.testProgress{width:50%;margin:0 auto;padding-top:10px;}
+.smallSectionTitle{width:50%;margin:0 auto;padding:0;}
 
 #list-answers ul {margin:0 auto;width:50%;}

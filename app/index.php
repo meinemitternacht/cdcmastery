@@ -36,7 +36,9 @@
 	<div class="row">
 		<div class="8u">
 			<section>
-				<h2>Overview</h2>
+				<header>
+					<h2>Overview</h2>
+				</header>
 				<?php
 				$testManager = new testManager($db, $log, $afsc);
 				$userTestArray = $testManager->listUserTests($_SESSION['userUUID'],5);

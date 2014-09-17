@@ -12,3 +12,4 @@ php migrateAFSCs.php
 php migrateTestHistoryAFSCMappings.php
 php migrateAFSCAssociations.php
 php migrateQuestionsAnswers.php
+php migrateSystemLog.php

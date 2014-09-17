@@ -12,11 +12,13 @@ class log extends CDCMastery
 	private $tempRes;			//holds result set temporarily
 	private $stmt;				//holds statements
 	private $i;					//increment value
+	
+	public $error;				//error messages (array)
 
 	public $uuid;				//uuid of the log entry
 	public $timestamp;			//timestamp of the log entry
 	public $action;				//log entry action
-	public $userUUID;				//id of the user
+	public $userUUID;			//uuid of the user
 	public $ip;					//ip of the user
 
 	public $uuidDetail;			//uuid of the log detail
@@ -33,11 +35,11 @@ class log extends CDCMastery
 		$this->timestamp = date("Y-m-d H:i:s",time());
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
-			$this->setuserUUID($logUID);
+			$this->setUserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
 		}
 		else{
-			$this->setuserUUID("SYSTEM");
+			$this->setUserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
 		}
 	}
@@ -57,11 +59,11 @@ class log extends CDCMastery
 
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
-			$this->setuserUUID($logUID);
+			$this->setUserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
 		}
 		else{
-			$this->setuserUUID("SYSTEM");
+			$this->setUserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
 		}
 
@@ -209,8 +211,7 @@ class log extends CDCMastery
 		$this->stmt = $this->logDB->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
 		$this->stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
 		if(!$this->stmt->execute()) {
-			printf("Error Message: %s\n<br />", $this->stmt->error);
-			printf("UUID: %s Timestamp: %s userUUID: %s Action: %s IP: %s", $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
+			$this->error[] = $this->stmt->error;
 			return false;
 		}
 
@@ -221,12 +222,12 @@ class log extends CDCMastery
 			for($this->i=0;$this->i < $this->detailCount; $this->i++)
 			{
 				if(!$this->stmt->bind_param('ssss', $this->detailArray[$this->i]['uuid'], $this->uuid, $this->detailArray[$this->i]['type'], $this->detailArray[$this->i]['data'])) {
-					printf("Error Message: %s\n", $this->stmt->error);
+					$this->error[] = $this->stmt->error;
 					return false;
 				}
 
 				if(!$this->stmt->execute()) {
-					printf("Error Message: %s\n", $this->stmt->error);
+					$this->error[] = $this->stmt->error;
 					return false;
 				}
 			}

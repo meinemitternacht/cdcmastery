@@ -2,7 +2,7 @@
 /*
  * This class provides an interface for taking tests and reviewing previous tests.
  * All other functions for changing previous test variables will be administrative functions.
-*/
+ */
 
 class testManager extends CDCMastery
 {
@@ -646,24 +646,21 @@ class testManager extends CDCMastery
 		}
 		else{
 			if($this->incompleteCombinedTest){
-				$count = count($this->incompleteAFSCList);
-				$in_params = trim(str_repeat('?, ', $count), ', ');
+				$afscString = "'" . implode("','",$this->incompleteAFSCList) . "'";
 				
-				$query = "
+				$sqlQuery = "
 				SELECT    
 				    uuid
 				FROM 
 				    questionData
 				WHERE
-				    afscUUID IN ({$in_params}) ORDER BY Rand() LIMIT 0, ?;";
-				
-				$stmt = $this->db->prepare($query);
+				    afscUUID IN (".$afscString.") ORDER BY Rand() LIMIT 0, ".$this->maxQuestions;
 								
-				if($this->db->execute($stmt, $this->incompleteAFSCList, $this->maxQuestions)){
-					$stmt->bind_result($questionUUID);
-					
-					while($stmt->fetch()){
-						$this->addQuestion($questionUUID);
+				$res = $this->db->query($sqlQuery);
+				
+				if($res->num_rows > 0){
+					while($row = $res->fetch_assoc()){
+						$this->addQuestion($row['uuid']);
 					}
 					
 					return true;
@@ -672,7 +669,7 @@ class testManager extends CDCMastery
 					$this->log->setAction("MYSQL_ERROR");
 					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
 					$this->log->setDetail("COMBINED TEST", "TRUE");
-					$this->log->setDetail("ERROR",$stmt->error);
+					$this->log->setDetail("ERROR",$db->error);
 					$this->log->saveEntry();
 					
 					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
@@ -795,7 +792,8 @@ class testManager extends CDCMastery
 		$questionFOUO = $this->question->queryQuestionFOUO($questionUUID);
 		
 		if($this->question->loadQuestion($questionUUID)){
-			$output = "<div class=\"displayQuestion\">";
+			$output = "<div class=\"smallSectionTitle\">question</div>";
+			$output .= "<div class=\"displayQuestion\">";
 			$output .= $this->question->getQuestionText();
 			$output .= "</div><br style=\"clear:both;\">";
 			
@@ -805,6 +803,7 @@ class testManager extends CDCMastery
 			$answerArray = $this->answer->listAnswersByQuestion();
 			
 			if($answerArray){
+				$output .= "<div class=\"smallSectionTitle\">answers</div>";
 				$output .= "<div id=\"list-answers\">";
 				$output .= "<ul>";
 				$i=1;
@@ -822,7 +821,12 @@ class testManager extends CDCMastery
 					$i++;
 				}
 				$output .= "</ul>";
-				$output .= "</div><br style=\"clear:both;\">";
+				$output .= "</div>";
+				$output .= "<div class=\"testProgress\">
+								Question <strong>".$this->incompleteCurrentQuestion."</strong> of 
+								<strong>".$this->incompleteTotalQuestions."</strong>
+							</div>";
+				$output .= "<br style=\"clear:both;\">";
 			}
 			else{
 				$output = "Sorry, we could not load the answers from the database.";
@@ -995,6 +999,37 @@ class testManager extends CDCMastery
 	public function setIncompleteCombinedTest($combinedTest){
 		$this->incompleteCombinedTest = $combinedTest;
 		return true;
+	}
+	
+	/*
+	 * Miscellaneous
+	 */
+	
+	public function getMigratedTestUUID($oldTestID){
+		$stmt = $this->db->prepare("SELECT uuid FROM testHistory WHERE oldTestID = ?");
+		$stmt->bind_param("s",$oldTestID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($uuid);
+			
+			while($stmt->fetch()){
+				$ret = $uuid;
+			}
+			
+			if(isset($ret)){
+				return $ret;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->log->setAction("DATABASE_ERROR");
+			$this->log->setDetail("MySQL Provided Error",$stmt->error);
+			$this->log->setDetail("Calling Function","testManager->getMigratedTestUUID()");
+			$this->log->setDetail("oldTestID",$oldTestID);
+			$this->log->saveEntry();
+		}
 	}
 	
 	public function __destruct(){
