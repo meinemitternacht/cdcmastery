@@ -142,11 +142,7 @@ class auth extends user
 		}
 		else{ //authorization successful
 			$this->limitLogins(false,true); //reset rate limiter
-
 			
-			/*
-			 * @todo make roles class
-			 */
 			if($this->roles->getRoleType($this->getUserRole()) == "admin"){
 				$_SESSION['cdcMasteryAdmin'] = true;
 			}
@@ -164,6 +160,7 @@ class auth extends user
 			$_SESSION['userUUID']	= $this->getUUID();
 			$_SESSION['userName']	= $this->getFullName();
 			$_SESSION['userEmail']	= $this->getUserEmail();
+			$_SESSION['timeZone']	= $this->getUserTimeZone();
 
 			$this->log->setAction("LOGIN_SUCCESS");
 			$this->log->setUserUUID($_SESSION['userUUID']);

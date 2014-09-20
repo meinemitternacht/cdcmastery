@@ -13,8 +13,8 @@ if($oldDB->connect_errno){
 	exit();
 }
 
-function getUserHandle($userID){
-	$stmt = $oldDB->prepare("SELECT username FROM users WHERE id = ?");
+function getUserHandle($userID, $oldDBObject){
+	$stmt = $oldDBObject->prepare("SELECT username FROM users WHERE id = ?");
 	$stmt->bind_param("s",$userID);
 	
 	if($stmt->execute()){
@@ -36,15 +36,15 @@ function getUserHandle($userID){
 	}
 }
 
-$res = $oldDB->query("SELECT 	`logCopy`.`u_id`, 
-								`logCopy`.`action`, 
-								`logCopy`.`data`, 
-								`logCopy`.`data2`, 
-								`logCopy`.`timestamp`, 
-								`logCopy`.`ip`, 
-								`usersCopy`.`username` AS logEnteredBy 
-						FROM logCopy 
-						LEFT JOIN `usersCopy` ON `usersCopy`.`id`=`logCopy`.`u_id` 
+$res = $oldDB->query("SELECT 	`log`.`u_id`, 
+								`log`.`action`, 
+								`log`.`data`, 
+								`log`.`data2`, 
+								`log`.`timestamp`, 
+								`log`.`ip`, 
+								`users`.`username` AS logEnteredBy 
+						FROM log 
+						LEFT JOIN `users` ON `users`.`id`=`log`.`u_id` 
 						ORDER BY action ASC");
 $migrationArrayCount = $res->num_rows;
 $assocArray = Array();
@@ -148,7 +148,7 @@ if($migrationArrayCount > 0){
 			case "PASSWORD_RESET":
 				$workingLog->setAction("USER_PASSWORD_RESET");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
-				$userHandle = getUserHandle($row['data']);
+				$userHandle = getUserHandle($row['data'],$oldDB);
 				if($userHandle){
 					$userUUID = $user->getUUIDByHandle($userHandle);
 					if($userUUID){
@@ -200,7 +200,7 @@ if($migrationArrayCount > 0){
 						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
 					}
 					
-					$userHandle = getUserHandle($row['data']);
+					$userHandle = getUserHandle($row['data'],$oldDB);
 					if($userHandle){
 						$userUUID = $user->getUUIDByHandle($userHandle);
 						if($userUUID){
@@ -233,7 +233,7 @@ if($migrationArrayCount > 0){
 						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
 					}
 					
-					$userHandle = getUserHandle($row['data']);
+					$userHandle = getUserHandle($row['data'],$oldDB);
 					if($userHandle){
 						$userUUID = $user->getUUIDByHandle($userHandle);
 						if($userUUID){

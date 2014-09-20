@@ -29,6 +29,12 @@ class testManager extends CDCMastery
 	public $oldTestID;			//varchar 40
 	
 	/*
+	 * testData
+	 */
+	
+	public $testData;			//two dimensional array
+	
+	/*
 	 * testManager Table
 	 */
 	public $incompleteTestUUID;			//varchar 40
@@ -218,6 +224,38 @@ class testManager extends CDCMastery
 			
 			if(empty($this->uuid)){
 				$this->error = "That test does not exist.";
+				$ret = false;
+			}
+			
+			return $ret;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public function loadTestData($testUUID){
+		$this->testData = Array();
+		
+		$stmt = $this->db->prepare("SELECT	questionUUID,
+											answerUUID
+									FROM testData
+									WHERE testUUID = ?");
+		$stmt->bind_param("s",$testUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result( $questionUUID,
+								$answerUUID );
+				
+			while($stmt->fetch()){
+				$this->testData[$questionUUID] = $answerUUID;
+				$ret = true;
+			}
+				
+			$stmt->close();
+				
+			if(empty($this->testData)){
+				$this->error = "There is no data for that test.";
 				$ret = false;
 			}
 			
@@ -713,18 +751,13 @@ class testManager extends CDCMastery
 	
 	public function answerQuestion($questionUUID, $answerUUID){
 		$previouslyAnsweredUUID = $this->queryQuestionPreviousAnswer($questionUUID);
-		$rowUUID = $this->genUUID();
-		$stmt = $this->db->prepare("INSERT INTO testData (	uuid,
-															testUUID,
+		$stmt = $this->db->prepare("INSERT INTO testData (	testUUID,
 															questionUUID,
 															answerUUID )
-													VALUES (?,?,?,?)
+													VALUES (?,?,?)
 													ON DUPLICATE KEY UPDATE
-															uuid=VALUES(uuid),
-															testUUID=VALUES(testUUID),
-															questionUUID=VALUES(questionUUID),
 															answerUUID=VALUES(answerUUID)");
-		$stmt->bind_param("ssss",$rowUUID,$this->incompleteTestUUID,$questionUUID,$answerUUID);
+		$stmt->bind_param("sss",$this->incompleteTestUUID,$questionUUID,$answerUUID);
 		
 		if(!$stmt->execute()){
 			$this->log->setAction("MYSQL_ERROR");

@@ -23,6 +23,7 @@ if(isset($_SESSION['vars'][0])):
 			<a href="/admin/user/<?php echo $targetUUID; ?>/delete" class="button">Delete</a>
 			<a href="/admin/user/<?php echo $targetUUID; ?>/reset-password" class="button">Reset Password</a>
 			<a href="/admin/user/<?php echo $targetUUID; ?>/message" class="button">Message</a>
+			<a href="/admin/user/<?php echo $targetUUID; ?>" class="button">User Menu &raquo;</a>
 		</section>
 		<div class="container">
 			<div class="row">

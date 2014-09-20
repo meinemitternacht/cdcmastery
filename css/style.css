@@ -388,6 +388,15 @@
 /*****************************/
 /* Custom Declarations		 */
 /*****************************/
+/* Icons */
+.icon-display {margin:0;float:left;background-size: 16px 16px;}
+.icon-arrow-right-blue-32 {background: url('/images/icons/arrow-right-blue-32.png') no-repeat;}
+.icon-console-grid-32 {background: url('/images/icons/console-grid-32.png') no-repeat;}
+.icon-cross-red-32 {background: url('/images/icons/cross-red-32.png') no-repeat;}
+.icon-email-32 {background: url('/images/icons/email-32.png') no-repeat;}
+.icon-minus-red-32 {background: url('/images/icons/minus-red-32.png') no-repeat;}
+.icon-plus-32 {background: url('/images/icons/plus-32.png') no-repeat;}
+
 /* Text Alignment */
 .text-float-left { float:left; }
 .text-float-right { float:right; }

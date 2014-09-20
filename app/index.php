@@ -50,17 +50,13 @@
 							<tr>
 								<th>Time Completed</th>
 								<th>AFSC</th>
-								<th>Questions</th>
-								<th>Missed</th>
 								<th>Score</th>
 								<th>Actions</th>
 							</tr>
 							<?php foreach($userTestArray as $testUUID => $testData): ?>
 							<tr>
-								<td><?php echo $testData['testTimeCompleted']; ?></td>
+								<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
 								<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
-								<td><?php echo $testData['totalQuestions']; ?></td>
-								<td><?php echo $testData['questionsMissed']; ?></td>
 								<td><?php echo $testData['testScore']; ?></td>
 								<td>
 									<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -80,29 +76,26 @@
 						<table cellspacing="0" cellpadding="0">
 							<tr>
 								<th>Time Started</th>
-								<th>Current Question</th>
-								<th>Questions Answered</th>
-								<th>Total Questions</th>
+								<th>Progress</th>
 								<th>AFSC</th>
 								<th>Combined Test</th>
 								<th>Actions</th>
 							</tr>
 							<?php foreach($userIncompleteTestArray as $testUUID => $testData): ?>
 							<tr>
-								<td><?php echo $testData['timeStarted']; ?></td>
-								<td><?php echo $testData['currentQuestion']; ?></td>
-								<td><?php echo $testData['questionsAnswered']; ?></td>
-								<td><?php echo $testData['totalQuestions']; ?></td>
+								<td><?php echo $cdcMastery->outputDateTime($testData['timeStarted'],$_SESSION['timeZone']); ?></td>
+								<td><?php echo round((($testData['questionsAnswered']/$testData['totalQuestions']) * 100),2); ?> %</td>
 								<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
 								<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
 								<td>
-									<a href="/test/delete/<?php echo $testUUID; ?>">Delete</a>,
-									<a href="/test/resume/<?php echo $testUUID; ?>">Resume</a>
+									<a href="/test/delete/<?php echo $testUUID; ?>"><div class="icon-display icon-cross-red-32">&nbsp;</div></a>
+									<a href="/test/resume/<?php echo $testUUID; ?>"><div class="icon-display icon-arrow-right-blue-32">&nbsp;</div></a>
 								</td>
 							</tr>
 							<?php endforeach; ?>
 						</table>
 					</div>
+					<div class="text-right text-warning"><a href="/test/delete/incomplete/all">Delete Incomplete Tests</a></div>
 				<?php else: ?>
 					<p>You do not have any incomplete tests.</p>
 				<?php endif; ?>
@@ -110,9 +103,9 @@
 		</div>
 		<div class="4u">
 			<section>
-				<a href="#" class="button">Start Test</a><br>
-				<a href="#" class="button">My History</a><br>
-				<a href="#" class="button">My Profile</a>
+				<a href="/test/take" class="button">Start Test</a><br>
+				<a href="/user/history" class="button">My History</a><br>
+				<a href="/user/profile" class="button">My Profile</a>
 			</section>
 		</div>
 	</div>
