@@ -178,6 +178,13 @@ if($migrationArrayCount > 0){
 				$workingLog->setAction("USER_EDIT_PROFILE");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
 			break;
+			case "UPLOAD_FILE":
+				$workingLog->setAction("FILE_UPLOAD");
+				$workingLog->setDetail("File Name", $row['data']);
+				
+				if(!empty($row['data2'])){
+					$workingLog->setDetail("Description", $row['data2']);
+				}
 			case "USER_AFSC_ASSOC":
 				$workingLog->setAction("USER_ADD_AFSC_ASSOCIATION");
 				if(empty($row['data2'])){
