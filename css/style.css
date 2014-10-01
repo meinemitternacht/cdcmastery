@@ -388,16 +388,109 @@
 /*****************************/
 /* Custom Declarations		 */
 /*****************************/
-/* Icons */
-.icon-display {margin:0;float:left;background-size: 16px 16px;}
-.icon-arrow-right-blue-32 {background: url('/images/icons/arrow-right-blue-32.png') no-repeat;}
-.icon-console-grid-32 {background: url('/images/icons/console-grid-32.png') no-repeat;}
-.icon-cross-red-32 {background: url('/images/icons/cross-red-32.png') no-repeat;}
-.icon-email-32 {background: url('/images/icons/email-32.png') no-repeat;}
-.icon-minus-red-32 {background: url('/images/icons/minus-red-32.png') no-repeat;}
-.icon-plus-32 {background: url('/images/icons/plus-32.png') no-repeat;}
+/*
+ *  Page Title
+ */
+#page-title {
+	width: 100%;
+	margin: 0;
+	padding-bottom: 0.3em;
+	padding-left: 0;
+	padding-right: 0.5em;
+}
 
-/* Text Alignment */
+#page-title h1 {
+	font-size: 1.6em;
+	font-weight: 900;
+}
+
+/*
+ *  Form Styling
+ */
+.form-object-full {
+	width: 100%;
+}
+
+
+/*
+ *  Panel styles
+ */
+.panel-light-blue {
+	background-color: #66cccc;
+}
+
+
+/*
+ *	Sub Menus
+ */
+.sub-menu .menu-heading {
+	width:100%;
+	float:left;
+	color: #fff;
+	font-weight: 900;
+	background-color: #333;
+	border-left: 5px solid #666;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+	margin-bottom: 0.1em;
+	font-size: 1.1em;
+	padding: 0.5em;
+}
+
+.sub-menu ul {
+	list-style: none;
+}
+
+.sub-menu ul li { 
+	float:left;
+	width:100%;
+	color: #222;
+	font-weight: 900;
+	background-color: #ddd;
+	border-left: 5px solid #666;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+	margin-bottom: 0.1em;
+}
+
+.sub-menu ul li:last {
+	margin-bottom: 0;
+}
+
+.sub-menu ul li i {
+	margin-left: 0.7em;
+	margin-right: 0.7em;
+}
+
+.sub-menu ul li:hover {
+	color: #fff;
+	background-color: #99ccff;
+	border-left: 5px solid #cc6666;
+	border-top: 1px solid #666;
+	border-right: 1px solid #666;
+	border-bottom: 1px solid #666;	
+}
+
+.sub-menu ul li a {
+	padding: 0.5em;
+	text-decoration: none;
+	display: block;
+}
+
+.sub-menu ul li.menu-item-warning {
+	background-color: #ff9999;
+}
+ 
+/*
+ *	Button Tweaks
+ */
+.button i {margin-right:10px;}
+
+/*
+ *	Text Alignment
+ */
 .text-float-left { float:left; }
 .text-float-right { float:right; }
 
@@ -406,13 +499,17 @@
 .text-left { text-align:left; }
 .text-justify { text-align:justify; }
 
-/* Text Coloring */
+/*
+ *	Text Coloring
+ */
 .text-success, .text-success a { color: green !important; }
 .text-caution, .text-caution a { color: gold !important; }
 .text-warning, .text-warning a { color: crimson !important; }
 .text-white, .text-white a { color: white !important; }
 
-/*  Forms  */
+/*
+ *	Forms
+ */
 .light-form h2 { /* The header tag. e.x. "Contact Me" */
 	color:#2F2F2F;
 	margin:0;
@@ -520,8 +617,9 @@
 	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#2d629d),to(#4f8ace));
 }
 
-/*  Tables  */
-
+/*
+ *	Tables
+ */
 .tablecloth table, .tablecloth td{
 	font:100% Arial, Helvetica, sans-serif; 
 }
@@ -533,11 +631,15 @@
 .tablecloth tr.even td{background:#e5f1f4;}
 .tablecloth tr.odd td{background:#f8fbfc;}
 
-/* miscellaneous */
+/*
+ *	Miscellaneous
+ */
 
 .associationList {max-height:200px !important; overflow:auto}
 
-/* Testing Pages */
+/*
+ *	Test Pages
+ */
 #loading img {
     position: fixed; /* forces the element to stay fixed in relation to the viewport */
     top: 50%; /* sets the top of the image 50% of the page height */

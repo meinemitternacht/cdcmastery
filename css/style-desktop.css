@@ -43,7 +43,9 @@
 
 	#logo
 	{
+		padding-top: 0.9em;
 		margin-bottom: 1em;
+		float: left;
 	}
 	
 		#logo h1
@@ -77,8 +79,9 @@
 /* Nav                                                                           */
 /*********************************************************************************/
 
-	#nav
-	{
+	#nav{
+		padding-top: 0.9em;
+		float: right;
 	}
 
 		#nav > ul > li
@@ -196,7 +199,6 @@
 	}		
 
 /* Testing Pages */
-
 .displayQuestion{width:50%;margin:0 auto;}
 
 .testProgress{width:50%;margin:0 auto;padding-top:10px;}
