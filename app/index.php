@@ -88,14 +88,14 @@
 								<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
 								<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
 								<td>
-									<a href="/test/delete/<?php echo $testUUID; ?>"><div class="icon-display icon-cross-red-32">&nbsp;</div></a>
-									<a href="/test/resume/<?php echo $testUUID; ?>"><div class="icon-display icon-arrow-right-blue-32">&nbsp;</div></a>
+									<a href="/test/delete/<?php echo $testUUID; ?>" title="Delete Test"><i class="fa fa-trash fa-fw"></i></a>
+									<a href="/test/resume/<?php echo $testUUID; ?>" title="Resume Test"><i class="fa fa-external-link-square fa-fw"></i></a>
 								</td>
 							</tr>
 							<?php endforeach; ?>
 						</table>
 					</div>
-					<div class="text-right text-warning"><a href="/test/delete/incomplete/all">Delete Incomplete Tests</a></div>
+					<div class="text-right text-warning"><a href="/test/delete/incomplete/all"><i class="fa fa-trash fa-fw"></i>Delete Incomplete Tests</a></div>
 				<?php else: ?>
 					<p>You do not have any incomplete tests.</p>
 				<?php endif; ?>
@@ -103,9 +103,9 @@
 		</div>
 		<div class="4u">
 			<section>
-				<a href="/test/take" class="button">Start Test</a><br>
-				<a href="/user/history" class="button">My History</a><br>
-				<a href="/user/profile" class="button">My Profile</a>
+				<a href="/test/take" class="button" title="Start Test"><i class="fa fa-caret-square-o-right fa-fw"></i>Start Test</a><br>
+				<a href="/user/history" class="button" title="My History"><i class="fa fa-archive fa-fw"></i>My History</a><br>
+				<a href="/user/profile" class="button" title="My Profile"><i class="fa fa-user fa-fw"></i>My Profile</a>
 			</section>
 		</div>
 	</div>
