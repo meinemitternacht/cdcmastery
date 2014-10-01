@@ -6,7 +6,7 @@
 		<meta name="description" content="CDCMastery is a tool to help you succeed on the Air Force CDC EOC tests, Promotion Tests and other assessments of your career knowledge." />
 		<meta name="keywords" content="air force cdc, cdc pretest, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide" />
 		<meta name="revisit-after" content="30 days" />
-		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link href="http://fonts.googleapis.com/css?family=Arimo:400,700" rel="stylesheet" type="text/css">
 		<!--[if lte IE 8]><script src="/js/html5shiv.js"></script><![endif]-->
 		<script src="/js/jquery-1.11.1.min.js"></script>
 		<script src="/js/jquery-ui.min.js"></script>
@@ -16,9 +16,10 @@
 		<script src="/js/skel.min.js"></script>
 		<script src="/js/skel-panels.min.js"></script>
 		<script src="/js/init.js"></script>
-		<link rel="stylesheet" href="/css/jquery-ui.min.css" />
-		<link rel="stylesheet" href="/css/jquery-ui.structure.min.css" />
-		<link rel="stylesheet" href="/css/jquery-ui.theme.min.css" />
+		<link href="/includes/fontAwesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="/css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+		<link href="/css/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
+		<link href="/css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
 		<noscript>
 			<link rel="stylesheet" href="/css/skel-noscript.css" />
 			<link rel="stylesheet" href="/css/style.css" />
@@ -28,16 +29,13 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="/css/ie/v9.css" /><![endif]-->
 	</head>
 	<body>
-
 		<!-- Header -->
 		<div id="header">
-			<div class="container"> 
-				
+			<div class="container">
 				<!-- Logo -->
 				<div id="logo">
-					<h1><a href="/"><img src="/images/logo.png" alt="CDCMastery.com - Learning Enabled" title="CDCMastery.com - Learning Enabled" /></a></h1>
+					<h1><a href="/"><img src="/images/logo-20140930-230-60.png" alt="CDCMastery.com - Learning Enabled" title="CDCMastery.com - Learning Enabled" /></a></h1>
 				</div>
-				
 				<!-- Nav -->
 				<nav id="nav">
 					<ul>
@@ -58,9 +56,9 @@
 						<?php endif; ?>
 					</ul>
 				</nav>
+				<div class="clearfix"></div>
 			</div>
 		</div>
-		
 		<!-- Main -->
 		<div id="main">
 			<div class="container">
