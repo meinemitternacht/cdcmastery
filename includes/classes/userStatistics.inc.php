@@ -9,25 +9,49 @@ class userStatistics extends CDCMastery
 	public $error;
 	
 	public $userUUID;
-
+	
+	/*
+	 * System Statistics
+	 */
 	public $logEntries;
 	
+	/*
+	 * Testing Statistics
+	 */
 	public $averageScore;
 	public $completedTests;
 	public $incompleteTests;
 	public $totalTests;
-	
 	public $questionsAnswered;
 	public $questionsMissed;
 	
+	/*
+	 * Subordinate Users
+	 */
 	public $supervisorAssociations;
 	public $trainingManagerAssociations;
 	
+	/*
+	 * Parent Users
+	 */
 	public $userSupervisors;
 	public $userTrainingManagers;
 	
+	/*
+	 * AFSC Associations
+	 */
 	public $afscAssociations;
 	public $pendingAFSCAssociations;
+	
+	/*
+	 * Row Counts
+	 */
+	public $countAFSCAssociations;
+	public $countPendingAFSCAssociations;
+	public $countSupervisorSubordinates;
+	public $countTrainingManagerSubordinates;
+	public $countUserSupervisors;
+	public $countUserTrainingManagers;
 	
 	public function __construct(mysqli $db, log $log, roles $roles){
 		$this->db = $db;
@@ -237,6 +261,90 @@ class userStatistics extends CDCMastery
 			}
 			else{
 				return $this->pendingAFSCAssociations;
+			}
+		}
+	}
+	
+	public function getAFSCAssociationCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryCountAFSCAssociations()){
+				return false;
+			}
+			else{
+				return $this->countAFSCAssociations;
+			}
+		}
+	}
+	
+	public function getPendingAFSCAssociationCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryCountPendingAFSCAssociations()){
+				return false;
+			}
+			else{
+				return $this->countPendingAFSCAssociations;
+			}
+		}
+	}
+	
+	public function getSupervisorSubordinateCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryCountSupervisorSubordinates()){
+				return false;
+			}
+			else{
+				return $this->countSupervisorSubordinates;
+			}
+		}
+	}
+	
+	public function getTrainingManagerSubordinateCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryCountTrainingManagerSubordinates()){
+				return false;
+			}
+			else{
+				return $this->queryCountTrainingManagerSubordinates();
+			}
+		}
+	}
+	
+	public function getUserSupervisorCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryUserSupervisors()){
+				return false;
+			}
+			else{
+				return $this->countUserSupervisors;
+			}
+		}
+	}
+	
+	public function getUserTrainingManagerCount(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryUserTrainingManagers()){
+				return false;
+			}
+			else{
+				return $this->countUserTrainingManagers;
 			}
 		}
 	}
@@ -553,6 +661,162 @@ class userStatistics extends CDCMastery
 			$this->log->saveEntry();
 			$stmt->close();
 	
+			return false;
+		}
+	}
+	
+	public function queryCountAFSCAssociations(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE userAuthorized = 1 AND userUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+		
+			while($stmt->fetch()){
+				$this->countAFSCAssociations = $count;
+			}
+		
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountAFSCAssociations()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+		
+			return false;
+		}
+	}
+	
+	public function queryCountPendingAFSCAssociations(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE userAuthorized = 0 AND userUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+		
+			while($stmt->fetch()){
+				$this->countPendingAFSCAssociations = $count;
+			}
+		
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountPendingAFSCAssociations()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+		
+			return false;
+		}
+	}
+	
+	public function queryCountSupervisorSubordinates(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userSupervisorAssociations WHERE supervisorUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+				
+			while($stmt->fetch()){
+				$this->countSupervisorSubordinates = $count;
+			}
+				
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountSupervisorSubordinates()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+		
+			return false;
+		}
+	}
+	
+	public function queryCountTrainingManagerSubordinates(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userTrainingManagerAssociations WHERE trainingManagerUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+		
+			while($stmt->fetch()){
+				$this->countTrainingManagerSubordinates = $count;
+			}
+				
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountTrainingManagerSubordinates()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+				
+			return false;
+		}
+	}
+	
+	public function queryCountUserSupervisors(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userSupervisorAssociations WHERE userUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+		
+			while($stmt->fetch()){
+				$this->countUserSupervisors = $count;
+			}
+				
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountUserSupervisors()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+		
+			return false;
+		}
+	}
+	
+	public function queryCountUserTrainingManagers(){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userTrainingManagerAssociations WHERE userUUID = ?");
+		$stmt->bind_param("s",$this->userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+		
+			while($stmt->fetch()){
+				$this->countUserTrainingManagers = $count;
+			}
+				
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountUserTrainingManagers()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+		
 			return false;
 		}
 	}

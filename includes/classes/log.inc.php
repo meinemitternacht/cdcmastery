@@ -90,74 +90,9 @@ class log extends CDCMastery
 
 		return $this->detailArray;
 	}
-
-	function getAction() {
-		return htmlspecialchars($this->action);
-	}
-
-	function getIP() {
-		return $this->ip;
-	}
-
-	function getRowStyle( $action ){
-		/*
-		Warnings (Administrative functions, errors)
-		Background: Pink
-		Foreground: Black
-		*/
-		$warningArray = Array(
-			'ACCESS_DENIED',
-			'LOGIN_FAIL_BAD_PASSWORD',
-			'LOGIN_FAIL_UNKNOWN_USER',
-			'LOGIN_RATE_LIMIT_REACHED',
-			'MYSQL_ERROR',
-			'USER_ADD',
-			'USER_DELETE',
-			'USER_EDIT');
-
-		/*
-		Normal entries (UTM's, Supervisors)
-		Background: Light Green
-		Foreground: Black
-		*/
-		$generalArray = Array(
-			'LOGIN_SUCCESS',
-			'LOGOUT_SUCCESS',
-			'USER_EDIT_PROFILE',
-			'USER_PASSWORD_RESET',
-			'USER_REGISTER'
-			);
-
-		$cautionArray = Array(
-			'ROUTE_ERROR'
-		);
-
-		if(in_array($action,$warningArray)) {
-			$style = "background-color:Pink;";
-		}
-		elseif(in_array($action,$generalArray)) {
-			$style = "background-color:LightGreen;";
-		}
-		elseif(in_array($action,$cautionArray)) {
-			$style = "background-color:LightBlue;";
-		}
-		else {
-			$style = "background-color:White";
-		}
-
-		return $style;
-	}
-
-	function getTimestamp() {
-		return $this->timestamp;
-	}
-
-	function getUUID() {
-		return $this->uuid;
-	}
-
-	function getUserUUID() {
-		return $this->userUUID;
+	
+	function listEntries(){
+		$this->stmt = $this->logDB->prepare("SELECT uuid, timestamp, action, userUUID, ip FROM systemLog ORDER BY timestamp DESC LIMIT ");
 	}
 
 	function loadEntry($uuid) {
@@ -277,6 +212,75 @@ class log extends CDCMastery
 	function setUserUUID($userUUID) {
 		$this->userUUID = htmlspecialchars_decode($userUUID);
 		return true;
+	}
+
+	function getAction() {
+		return htmlspecialchars($this->action);
+	}
+
+	function getIP() {
+		return $this->ip;
+	}
+
+	function getRowStyle( $action ){
+		/*
+		Warnings (Administrative functions, errors)
+		Background: Pink
+		Foreground: Black
+		*/
+		$warningArray = Array(
+			'ACCESS_DENIED',
+			'LOGIN_FAIL_BAD_PASSWORD',
+			'LOGIN_FAIL_UNKNOWN_USER',
+			'LOGIN_RATE_LIMIT_REACHED',
+			'MYSQL_ERROR',
+			'USER_ADD',
+			'USER_DELETE',
+			'USER_EDIT');
+
+		/*
+		Normal entries (UTM's, Supervisors)
+		Background: Light Green
+		Foreground: Black
+		*/
+		$generalArray = Array(
+			'LOGIN_SUCCESS',
+			'LOGOUT_SUCCESS',
+			'USER_EDIT_PROFILE',
+			'USER_PASSWORD_RESET',
+			'USER_REGISTER'
+			);
+
+		$cautionArray = Array(
+			'ROUTE_ERROR'
+		);
+
+		if(in_array($action,$warningArray)) {
+			$style = "background-color:Pink;";
+		}
+		elseif(in_array($action,$generalArray)) {
+			$style = "background-color:LightGreen;";
+		}
+		elseif(in_array($action,$cautionArray)) {
+			$style = "background-color:LightBlue;";
+		}
+		else {
+			$style = "background-color:White";
+		}
+
+		return $style;
+	}
+
+	function getTimestamp() {
+		return $this->timestamp;
+	}
+
+	function getUUID() {
+		return $this->uuid;
+	}
+
+	function getUserUUID() {
+		return $this->userUUID;
 	}
 
 	function __destruct() {

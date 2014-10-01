@@ -19,11 +19,11 @@ if(isset($_SESSION['vars'][0])):
 				<h2><?php echo $userProfile->getFullName(); ?></h2>
 			</header>
 			<a href="/admin/profile" class="button">&laquo; Back</a>
-			<a href="/admin/user/<?php echo $targetUUID; ?>/edit" class="button">Edit</a>
-			<a href="/admin/user/<?php echo $targetUUID; ?>/delete" class="button">Delete</a>
-			<a href="/admin/user/<?php echo $targetUUID; ?>/reset-password" class="button">Reset Password</a>
-			<a href="/admin/user/<?php echo $targetUUID; ?>/message" class="button">Message</a>
-			<a href="/admin/user/<?php echo $targetUUID; ?>" class="button">User Menu &raquo;</a>
+			<a href="/admin/users/<?php echo $targetUUID; ?>/edit" class="button">Edit</a>
+			<a href="/admin/users/<?php echo $targetUUID; ?>/delete" class="button">Delete</a>
+			<a href="/admin/users/<?php echo $targetUUID; ?>/reset-password" class="button">Reset Password</a>
+			<a href="/admin/users/<?php echo $targetUUID; ?>/message" class="button">Message</a>
+			<a href="/admin/users/<?php echo $targetUUID; ?>" class="button">User Menu &raquo;</a>
 		</section>
 		<div class="container">
 			<div class="row">
@@ -70,7 +70,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><?php echo $userProfile->getUserHandle(); ?></td>
 								</tr>
 								<tr>
-									<th colspan="2"><div class="text-float-left">AFSC Associations</div><div class="text-float-right text-white"><a href="/admin/user/<?php echo $targetUUID; ?>/edit-afsc-associations">Edit &raquo;</a></div></th>
+									<th colspan="2"><div class="text-float-left">AFSC Associations</div><div class="text-float-right text-white"><a href="/admin/users/<?php echo $targetUUID; ?>/edit-afsc-associations">Edit &raquo;</a></div></th>
 								</tr>
 								<tr>
 									<td><strong>Associated With</strong></td>
@@ -119,7 +119,7 @@ if(isset($_SESSION['vars'][0])):
 								</tr>
 								<tr>
 									<td><strong>Log Entries</strong></td>
-									<td><div class="text-float-left"><?php echo $userProfileStatistics->getLogEntries(); ?></div><div class="text-float-right"><a href="/admin/user/<?php echo $targetUUID; ?>/log">View &raquo;</a></div></td>
+									<td><div class="text-float-left"><?php echo $userProfileStatistics->getLogEntries(); ?></div><div class="text-float-right"><a href="/admin/users/<?php echo $targetUUID; ?>/log">View &raquo;</a></div></td>
 								</tr>
 								<tr>
 									<th colspan="2">Testing Statistics</th>
@@ -149,7 +149,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><?php echo $userProfileStatistics->getQuestionsMissed(); ?></td>
 								</tr>
 								<tr>
-									<th colspan="2"><div class="text-float-left">User Associations</div><div class="text-float-right text-white"><a href="/admin/user/<?php echo $targetUUID; ?>/edit-user-associations">Edit &raquo;</a></div></th>
+									<th colspan="2"><div class="text-float-left">User Associations</div><div class="text-float-right text-white"><a href="/admin/users/<?php echo $targetUUID; ?>/edit-user-associations">Edit &raquo;</a></div></th>
 								</tr>
 								<?php
 								$userRole = $roles->verifyUserRole($targetUUID);
@@ -287,7 +287,7 @@ if(isset($_SESSION['vars'][0])):
 									</table>
 								</div>
 								<div class="text-right text-warning">
-									<a href="/admin/user/<?php echo $targetUUID; ?>/delete-tests">Delete All Tests</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-tests"><i class="fa fa-trash fa-fw"></i>Delete All Tests</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no tests to show.</p>
@@ -321,7 +321,7 @@ if(isset($_SESSION['vars'][0])):
 									</table>
 								</div>
 								<div class="text-right text-warning">
-									<a href="/admin/user/<?php echo $targetUUID; ?>/delete-incomplete-tests">Delete All Incomplete Tests</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-incomplete-tests"><i class="fa fa-trash fa-fw"></i>Delete All Incomplete Tests</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no incomplete tests to show.</p>
@@ -329,7 +329,7 @@ if(isset($_SESSION['vars'][0])):
 							</div>
 							<div id="history-tabs-3">
 								<div class="text-right text-warning">
-									<a href="/admin/user/<?php echo $targetUUID; ?>/delete-log-entries">Delete All Log Entries</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-log-entries"><i class="fa fa-trash fa-fw"></i>Delete All Log Entries</a>
 								</div>
 							</div>
 						</div>
@@ -344,103 +344,7 @@ else:
 	<h1>User Profile List</h1>
 	<br />
 	<?php
-	$alpha = Array(
-			1 => "A",
-			2 => "B",
-			3 => "C",
-			4 => "D",
-			5 => "E",
-			6 => "F",
-			7 => "G",
-			8 => "H",
-			9 => "I",
-			10 => "J",
-			11 => "K",
-			12 => "L",
-			13 => "M",
-			14 => "N",
-			15 => "O",
-			16 => "P",
-			17 => "Q",
-			18 => "R",
-			19 => "S",
-			20 => "T",
-			21 => "U",
-			22 => "V",
-			23 => "W",
-			24 => "X",
-			25 => "Y",
-			26 => "Z");
-	
-	$userList = $user->listUsers();
-	$userCount = count($userList) + 1;
-	
-	if($userList): ?>
-		<h2><?php echo $userCount; ?> Total Users</h2>
-		<div class="container">
-			<div class="row">
-				<div class="8u">
-					<section>
-						<p>
-						<?php
-						foreach($alpha as $val){
-							echo ' <a href="#'.$val.'">'.$val.'</a> ';
-						}
-						?>
-						</p>
-					</section>
-				</div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="4u">
-					<section>
-					<br />
-					<?php
-					$curLetter = "";
-					
-					$firstColComplete = false;
-					$secondColComplete = false;
-					
-					foreach($userList as $uuid => $userRow){
-						$letter = substr($userRow['userLastName'],0,1);
-						
-						if($letter == "H" && $firstColComplete == false){ ?>
-							</section>
-							</div>
-							<div class="4u">
-							<section>
-							<br />
-							<?php
-							$firstColComplete = true;
-						}
-						
-						if($letter == "Q" && $secondColComplete == false){ ?>
-							</section>
-							</div>
-							<div class="4u">
-							<section>
-							<br />
-							<?php
-							$secondColComplete = true;
-						}
-						
-						if($letter != $curLetter){
-							echo '<h2><a id="'.ucfirst($letter).'">'.$letter.'</a></h2>';
-							$curLetter = $letter;
-						}
-						
-						echo '<a href="/admin/profile/'.$uuid.'">'.$userRow['userLastName'].', '.$userRow['userFirstName'].' '.$userRow['userRank'].'</a><br />';
-					}
-					?>
-					</section>
-				</div>
-			</div>
-		</div>
-		<?php
-	else:
-		echo "There are no users in the database.";
-	endif;
+	$linkBaseURL = "admin/profile";
+	require BASE_PATH . "/includes/modules/admin/user/userAlphaList.inc.php";
 endif;
 ?>
