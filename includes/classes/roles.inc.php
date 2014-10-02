@@ -125,6 +125,61 @@ class roles extends CDCMastery
 		}
 	}
 	
+	public function listRoleUsers($roleName){
+		$roleUUID = $this->getRoleUUIDByName($roleName);
+		$stmt = $this->db->prepare("SELECT uuid FROM userData WHERE userRole = ?");
+		$stmt->bind_param("s",$roleUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($userUUID);
+				
+			while($stmt->fetch()){
+				$userArray[] = $userUUID;
+			}
+				
+			if(isset($userArray)){
+				return $userArray;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("Calling Function","roles->getRoleUUIDByType()");
+			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->saveEntry();
+		
+			$this->error = $stmt->error;
+			$stmt->close();
+			return false;
+		}
+	}
+	
+	public function listAdministrators(){
+		return $this->listRoleUsers("Administrators");
+	}
+	
+	public function listEditors(){
+		return $this->listRoleUsers("Question Editors");
+	}
+	
+	public function listSuperAdministrators(){
+		return $this->listRoleUsers("Super Administrators");
+	}
+	
+	public function listSupervisors(){
+		return $this->listRoleUsers("Supervisors");
+	}
+	
+	public function listTrainingManagers(){
+		return $this->listRoleUsers("Training Managers");
+	}
+	
+	public function listUsers(){
+		return $this->listRoleUsers("Users");
+	}
+	
 	public function getUUID(){
 		return $this->uuid;
 	}
@@ -145,6 +200,34 @@ class roles extends CDCMastery
 		}
 		else{
 			return htmlspecialchars($this->roleType);
+		}
+	}
+	
+	public function getRoleUUIDByName($roleName){
+		$stmt = $this->db->prepare("SELECT uuid FROM roleList WHERE roleName = ?");
+		$stmt->bind_param("s",$roleName);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($roleUUID);
+			$stmt->fetch();
+			
+			if(isset($roleUUID)){
+				return $roleUUID;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("Calling Function","roles->getRoleUUIDByName()");
+			$this->log->setDetail("Role Name",$roleName);
+			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->saveEntry();
+			
+			$this->error = $stmt->error;
+			$stmt->close();
+			return false;
 		}
 	}
 	

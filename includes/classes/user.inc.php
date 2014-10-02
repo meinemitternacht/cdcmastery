@@ -9,11 +9,6 @@ class user extends CDCMastery
 	protected $db;			//holds database object
 	protected $log;			//holds the log object
 
-	private $tempRow;		//holds rows temporarily
-	private $tempRes;		//holds result set temporarily
-	private $stmt;			//holds statements
-	private $i;				//increment value
-
 	public $error;			//holds error message(s)
 
 	public $uuid;				//varchar 40
@@ -505,22 +500,29 @@ class user extends CDCMastery
 		}
 	}
 
-	public function verifyUser($uuid){
+	public function verifyUser($userUUID){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE uuid = ?");
-		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
-		$stmt->bind_result($count);
-
-		while($stmt->fetch()){
-			$rowCount = $count;
-		}
-
-		$stmt->close();
-
-		if($rowCount > 0){
-			return true;
+		$stmt->bind_param("s",$userUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			
+			if($count > 0){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("Calling Function","user->verifyUser()");
+			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->saveEntry();
+			
+			$this->error = $stmt->error;
+			$stmt->close();
 			return false;
 		}
 	}

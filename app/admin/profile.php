@@ -70,7 +70,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><?php echo $userProfile->getUserHandle(); ?></td>
 								</tr>
 								<tr>
-									<th colspan="2"><div class="text-float-left">AFSC Associations</div><div class="text-float-right text-white"><a href="/admin/users/<?php echo $targetUUID; ?>/edit-afsc-associations">Edit &raquo;</a></div></th>
+									<th colspan="2"><div class="text-float-left">AFSC Associations</div><div class="text-float-right text-white"><a href="/admin/users/<?php echo $targetUUID; ?>/associations/afsc">Edit &raquo;</a></div></th>
 								</tr>
 								<tr>
 									<td><strong>Associated With</strong></td>
@@ -149,7 +149,7 @@ if(isset($_SESSION['vars'][0])):
 									<td><?php echo $userProfileStatistics->getQuestionsMissed(); ?></td>
 								</tr>
 								<tr>
-									<th colspan="2"><div class="text-float-left">User Associations</div><div class="text-float-right text-white"><a href="/admin/users/<?php echo $targetUUID; ?>/edit-user-associations">Edit &raquo;</a></div></th>
+									<th colspan="2"><div class="text-float-left">User Associations</div></th>
 								</tr>
 								<?php
 								$userRole = $roles->verifyUserRole($targetUUID);

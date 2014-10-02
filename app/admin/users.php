@@ -185,14 +185,16 @@ if(isset($_SESSION['vars'][0])){
 								Associations
 							</div>
 							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/afsc"><i class="fa fa-puzzle-piece fa-fw"></i>AFSC Associations</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/afsc"><i class="fa fa-puzzle-piece fa-fw"></i>AFSCs</a></li>
 								<?php if($roles->verifyUserRole($userUUID) == "trainingManager"): ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinate Associations</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
 								<?php elseif($roles->verifyUserRole($userUUID) == "supervisor"): ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinate Associations</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisors</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/trainingManager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
 								<?php else: ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/trainingManager"><i class="fa fa-sitemap fa-fw"></i>Training Manager Associations</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisor Associations</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisors</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/trainingManager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
 								<?php endif; ?>
 							</ul>
 						</div>

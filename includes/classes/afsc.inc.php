@@ -20,6 +20,33 @@ class afsc extends CDCMastery
 		$this->log = $log;
 	}
 	
+	public function verifyAFSC($afscUUID){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM afscList WHERE uuid = ?");
+		$stmt->bind_param("s",$afscUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+				
+			if($count > 0){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("Calling Function","afsc->verifyAFSC()");
+			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->saveEntry();
+				
+			$this->error = $stmt->error;
+			$stmt->close();
+			return false;
+		}
+	}
+	
 	public function listAFSC(){
 		$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
 		

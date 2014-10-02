@@ -316,7 +316,7 @@ class userStatistics extends CDCMastery
 				return false;
 			}
 			else{
-				return $this->queryCountTrainingManagerSubordinates();
+				return $this->countTrainingManagerSubordinates;
 			}
 		}
 	}
@@ -727,7 +727,7 @@ class userStatistics extends CDCMastery
 			while($stmt->fetch()){
 				$this->countSupervisorSubordinates = $count;
 			}
-				
+			
 			$stmt->close();
 			return true;
 		}

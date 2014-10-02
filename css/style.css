@@ -389,6 +389,20 @@
 /* Custom Declarations		 */
 /*****************************/
 /*
+ *  System Messages
+ */
+.systemMessages {
+	background-color: pink;
+	border: 1px solid red;
+	padding-top: 1em;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 0.3em;
+	margin-bottom: 1em;
+}
+
+
+/*
  *  Page Title
  */
 #page-title {

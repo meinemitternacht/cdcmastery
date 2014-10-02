@@ -2,13 +2,52 @@
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
 		case "addAssociation":
-			$message[] = "Would have added: ".implode(",",$_POST['afscUUID']);
+			$error = false;
+			
+			foreach($_POST['afscUUID'] as $afscUUID){
+				if(!$assoc->addAFSCAssociation($userUUID, $afscUUID)){
+					$error = true;
+				}
+			}
+			
+			if($error){
+				$messages[] = "There were errors while adding AFSC association(s) for this user.  Check the site log for details.";
+			}
+			else{
+				$messages[] = "AFSC association(s) added successfully.";
+			}
 		break;
 		case "removeAssociation":
-			$message[] = "Would have removed: ".implode(",",$_POST['afscUUID']);
+			$error = false;
+			
+			foreach($_POST['afscUUID'] as $afscUUID){
+				if(!$assoc->deleteAFSCAssociation($userUUID, $afscUUID)){
+					$error = true;
+				}
+			}
+			
+			if($error){
+				$messages[] = "There were errors while removing AFSC association(s) for this user.  Check the site log for details.";
+			}
+			else{
+				$messages[] = "AFSC association(s) removed successfully.";
+			}
 		break;
 		case "removePendingAssociation":
-			$message[] = "Would have removed: ".implode(",",$_POST['afscUUID']);
+			$error = false;
+			
+			foreach($_POST['afscUUID'] as $afscUUID){
+				if(!$assoc->deletePendingAFSCAssociation($userUUID, $afscUUID)){
+					$error = true;
+				}
+			}
+			
+			if($error){
+				$messages[] = "There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.";
+			}
+			else{
+				$messages[] = "Pending AFSC association(s) removed successfully.";
+			}
 		break;
 	}
 }
@@ -18,6 +57,15 @@ $userAFSCList = $userStatistics->getAFSCAssociations();
 $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 ?>
 <div class="container">
+	<?php if(isset($messages)): ?>
+	<div class="systemMessages">
+		<ul>
+		<?php foreach($messages as $message): ?>
+			<li><?php echo $message; ?></li>
+		<?php endforeach; ?>
+		</ul>
+	</div>
+	<?php endif; ?>
 	<div class="row">
 		<div class="4u">
 			<section>
@@ -43,7 +91,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			<?php if($userAFSCList): ?>
 			<ul>
 				<?php foreach($userAFSCList as $afscUUID): ?>
-				<li>&raquo;<?php echo $afsc->getAFSCName($afscUUID); ?></li>
+				<li>&raquo; <?php echo $afsc->getAFSCName($afscUUID); ?></li>
 				<?php endforeach; ?>
 			</ul>
 			<?php else: ?>
@@ -59,7 +107,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			<?php if($userPendingAFSCList): ?>
 			<ul>
 				<?php foreach($userPendingAFSCList as $pendingAFSCUUID): ?>
-				<li><?php echo $afsc->getAFSCName($pendingAFSCUUID); ?></li>
+				<li>&raquo; <?php echo $afsc->getAFSCName($pendingAFSCUUID); ?></li>
 				<?php endforeach; ?>
 			</ul>
 			<?php else: ?>
@@ -79,6 +127,12 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 				<?php
 				$afscList = $afsc->listAFSC();
 				
+				foreach($userAFSCList as $userAFSC){
+					if(isset($afscList[$userAFSC])){
+						unset($afscList[$userAFSC]);
+					}
+				}
+				
 				if($afscList): ?>
 				<select class="form-object-full" name="afscUUID[]" size="8" MULTIPLE>
 					<?php foreach($afscList as $listUUID => $listDetails): ?>
@@ -86,7 +140,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 					<?php endforeach; ?>
 				</select>
 				<br>
-				<input type="submit" value="Add Association">
+				<input type="submit" value="Add">
 				<p><em>An asterisk (*) denotes a FOUO AFSC</em></p>
 				<?php else: ?>
 				<em>There are no AFSCs in the database.</em>
@@ -108,12 +162,35 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 					<?php endforeach; ?>
 				</select>
 				<br>
-				<input type="submit" value="Remove Association">
+				<input type="submit" value="Remove">
 				<?php else: ?>
 				<em>This user has no AFSC associations.</em>
 				<?php endif; ?>
 			</form>
 		</div>
+		<div class="4u">
+			<section>
+				<header>
+					<h2>Approve Pending Associations</h2>
+				</header>
+			</section>
+			<form action="/admin/users/<?php echo $userUUID; ?>/associations/afsc" method="POST">
+				<input type="hidden" name="formAction" value="approvePendingAssociation">
+				<?php if($userPendingAFSCList): ?>
+				<select class="form-object-full" name="afscUUID[]" size="8" MULTIPLE>
+					<?php foreach($userPendingAFSCList as $listUUID): ?>
+					<option value="<?php echo $listUUID; ?>"><?php echo $afsc->getAFSCName($listUUID); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<br>
+				<input type="submit" value="Approve">
+				<?php else: ?>
+				<em>This user has no pending AFSC associations.</em>
+				<?php endif; ?>
+			</form>
+		</div>
+	</div>
+	<div class="row">
 		<div class="4u">
 			<section>
 				<header>
@@ -129,7 +206,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 					<?php endforeach; ?>
 				</select>
 				<br>
-				<input type="submit" value="Remove Association">
+				<input type="submit" value="Remove">
 				<?php else: ?>
 				<em>This user has no pending AFSC associations.</em>
 				<?php endif; ?>
