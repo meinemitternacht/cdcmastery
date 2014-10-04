@@ -59,9 +59,10 @@ class answerManager extends CDCMastery
 				return $answerArray;
 			}
 			else{
-				$this->log->setAction("MYSQL_ERROR");
+				$this->log->setAction("ERROR_ANSWERS_LIST");
 				$this->log->setDetail("CALLING FUNCTION","answer->listAnswersByQuestion()");
 				$this->log->setDetail("ERROR",$stmt->error);
+				$this->log->setDetail("Question UUID",$this->questionUUID);
 				$this->log->saveEntry();
 				
 				$this->error[] = "Sorry, we could not retrieve the answers from the database.";
@@ -97,9 +98,10 @@ class answerManager extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_ANSWERS_LOAD");
 			$this->log->setDetail("CALLING FUNCTION","answer->loadAnswer()");
 			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("UUID",$uuid);
 			$this->log->saveEntry();
 		
 			$this->error[] = "Sorry, we could not retrieve the answer from the database.";
@@ -134,7 +136,7 @@ class answerManager extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_ANSWERS_SAVE");
 			$this->log->setDetail("CALLING FUNCTION","answer->saveAnswer()");
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();

@@ -6,8 +6,8 @@ class auth extends user
 
 	public $activationStatus;
 
-	function __construct($uuid, log $log, mysqli $db, roles $roles){
-		parent::__construct($db,$log);
+	function __construct($uuid, log $log, mysqli $db, roles $roles, emailQueue $emailQueue){
+		parent::__construct($db,$log,$emailQueue);
 		parent::loadUser($uuid);
 		
 		$this->roles = $roles;
@@ -108,7 +108,7 @@ class auth extends user
 	function login($password){
 		if(empty($password)){
 			$this->error = "You must provide a password.";
-			$this->log->setAction("LOGIN_FAILURE");
+			$this->log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
 			$this->log->saveEntry();
 
 			return false;
@@ -117,7 +117,7 @@ class auth extends user
 			$this->error = "You have made too many login attempts recently.  Please try again soon.<br /><br />While you wait, would you like to <a href=\"/auth/reset\">reset your password</a>?";
 
 			if(!isset($_SESSION['rateLimitRecorded'])){
-				$this->log->setAction("LOGIN_RATE_LIMIT_REACHED");
+				$this->log->setAction("ERROR_LOGIN_RATE_LIMIT_REACHED");
 				$this->log->saveEntry();
 				$_SESSION['rateLimitRecorded'] = true;
 			}
@@ -128,14 +128,14 @@ class auth extends user
 			$this->error = "Your password is incorrect";
 			$this->limitLogins(true);
 			
-			$this->log->setAction("LOGIN_FAILURE");
+			$this->log->setAction("ERROR_LOGIN_INVALID_PASSWORD");
 			$this->log->saveEntry();
 
 			return false;
 		}
 		elseif(!$this->getActivationStatus()){
 			$this->error = "Your account has not been activated. <a href=\"/auth/activate\">Click Here</a> to activate your account.";
-			$this->log->setAction("UNACTIVATED_ACCOUNT");
+			$this->log->setAction("ERROR_LOGIN_UNACTIVATED_ACCOUNT");
 			$this->log->saveEntry();
 
 			return false;

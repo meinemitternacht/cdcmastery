@@ -73,6 +73,15 @@ class bases extends CDCMastery
 			return $ret;
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+			
+			$this->log->setAction("ERROR_BASES_LOAD");
+			$this->log->setDetail("CALLING FUNCTION", "bases->loadBase()");
+			$this->log->setDetail("ERROR",$this->error);
+			$this->log->setDetail("UUID",$uuid);
+			$this->log->saveEntry();
+			
 			return false;
 		}
 	}
@@ -94,7 +103,7 @@ class bases extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_BASES_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "bases->saveBase()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();

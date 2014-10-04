@@ -67,7 +67,7 @@ class questionManager extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_QUESTION_LOAD");
 			$this->log->setDetail("CALLING FUNCTION","question->loadQuestion()");
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
@@ -107,7 +107,7 @@ class questionManager extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_QUESTION_SAVE");
 			$this->log->setDetail("CALLING FUNCTION","question->saveQuestion()");
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
@@ -151,7 +151,7 @@ class questionManager extends CDCMastery
 			return $tempFOUO;
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_QUESTION_QUERY_FOUO");
 			$this->log->setDetail("CALLING FUNCTION", "questionManager->queryQuestionFOUO");
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("QUESTION UUID",$questionUUID);

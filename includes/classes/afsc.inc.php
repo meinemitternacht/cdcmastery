@@ -36,7 +36,7 @@ class afsc extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_AFSC_VERIFY");
 			$this->log->setDetail("Calling Function","afsc->verifyAFSC()");
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
@@ -89,31 +89,45 @@ class afsc extends CDCMastery
 									FROM afscList
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
-		$stmt->bind_result( $uuid,
-							$afscName,
-							$afscDescription,
-							$afscVersion,
-							$afscFOUO,
-							$afscHidden,
-							$oldID );
 		
-		while($stmt->fetch()){
-			$this->uuid = $uuid;
-			$this->afscName = $afscName;
-			$this->afscDescription = $afscDescription;
-			$this->afscVersion = $afscVersion;
-			$this->afscFOUO = $afscFOUO;
-			$this->afscHidden = $afscHidden;
-			$this->oldID = $oldID;
+		if($stmt->execute()){
+			$stmt->bind_result( $uuid,
+								$afscName,
+								$afscDescription,
+								$afscVersion,
+								$afscFOUO,
+								$afscHidden,
+								$oldID );
 			
-			$ret = true;
+			while($stmt->fetch()){
+				$this->uuid = $uuid;
+				$this->afscName = $afscName;
+				$this->afscDescription = $afscDescription;
+				$this->afscVersion = $afscVersion;
+				$this->afscFOUO = $afscFOUO;
+				$this->afscHidden = $afscHidden;
+				$this->oldID = $oldID;
+				
+				$ret = true;
+			}
+			
+			$stmt->close();
+
+			if(empty($this->uuid)){
+				$this->error = "That AFSC does not exist.";
+				$ret = false;
+			}
 		}
-		
-		$stmt->close();
-		
-		if(empty($this->uuid)){
-			$this->error = "That AFSC does not exist.";
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+				
+			$this->log->setAction("ERROR_AFSC_LOAD");
+			$this->log->setDetail("CALLING FUNCTION", "afsc->loadAFSC()");
+			$this->log->setDetail("ERROR",$this->error);
+			$this->log->setDetail("UUID",$uuid);
+			$this->log->saveEntry();
+			
 			$ret = false;
 		}
 		
@@ -146,7 +160,7 @@ class afsc extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_AFSC_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "afsc->saveAFSC()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();

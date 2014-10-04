@@ -6,10 +6,11 @@ This script provides a class interface for the site users
 
 class user extends CDCMastery
 {
-	protected $db;			//holds database object
-	protected $log;			//holds the log object
+	protected $db;
+	protected $log;
+	protected $emailQueue;
 
-	public $error;			//holds error message(s)
+	public $error;
 
 	public $uuid;				//varchar 40
 	public $userFirstName;		//varchar 64
@@ -28,9 +29,10 @@ class user extends CDCMastery
 	public $userSupervisor;		//varchar 40
 	public $userDisabled;		//bool
 
-	public function __construct(mysqli $db, log $log) {
+	public function __construct(mysqli $db, log $log, emailQueue $emailQueue) {
 		$this->db = $db;
 		$this->log = $log;
+		$this->emailQueue = $emailQueue;
 		$this->uuid = parent::genUUID();
 	}
 
@@ -193,7 +195,7 @@ class user extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USER_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "auth->saveUser()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
@@ -372,7 +374,7 @@ class user extends CDCMastery
 		$stmt = $this->db->prepare("UPDATE userData SET userLastLogin = ? WHERE uuid = ?");
 		$stmt->bind_param("ss",$timeVar,$user);
 		if(!$stmt->execute()){
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USER_UPDATE_LAST_LOGIN");
 			$this->log->setDetail("TARGET_USER", $user);
 			$this->log->setDetail("TARGET_TIME", $timeVar);
 			$this->log->setDetail("ERROR", $stmt->error);
@@ -478,7 +480,7 @@ class user extends CDCMastery
 				}
 				else{
 					$this->error = $stmt->error;
-					$this->log->setAction("MYSQL_ERROR");
+					$this->log->setAction("ERROR_USER_RESOLVE_NAMES");
 					$this->log->setDetail("CALLING FUNCTION", "user->resolveUserNames()");
 					$this->log->setDetail("userUUID", $userUUID);
 					$this->log->setDetail("MYSQL ERROR", $this->error);
@@ -516,7 +518,7 @@ class user extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USER_VERIFY");
 			$this->log->setDetail("Calling Function","user->verifyUser()");
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();

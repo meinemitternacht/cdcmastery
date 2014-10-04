@@ -69,6 +69,15 @@ class officeSymbol extends CDCMastery
 			return $ret;
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+				
+			$this->log->setAction("ERROR_OFFICE_SYMBOL_LOAD");
+			$this->log->setDetail("CALLING FUNCTION", "officeSymbol->loadOfficeSymbol()");
+			$this->log->setDetail("Office Symbol UUID",$uuid);
+			$this->log->setDetail("ERROR",$this->error);
+			$this->log->saveEntry();
+			
 			return false;
 		}
 	}
@@ -87,7 +96,7 @@ class officeSymbol extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_OFFICE_SYMBOL_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "officeSymbol->saveOfficeSymbol()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();

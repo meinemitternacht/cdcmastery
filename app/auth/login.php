@@ -7,7 +7,7 @@ if(!isset($_SESSION['auth'])):
 			echo $user->error;
 		}
 		else{
-			$a = new auth($userUUID,$log,$db,$roles);
+			$a = new auth($userUUID,$log,$db,$roles,$emailQueue);
 	
 			if(!$a->login($_POST['password'])){
 				echo $a->getError();

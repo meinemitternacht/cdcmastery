@@ -100,7 +100,7 @@ class roles extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_ROLE_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "roles->saveRole()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
@@ -145,8 +145,8 @@ class roles extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("Calling Function","roles->getRoleUUIDByType()");
+			$this->log->setAction("ERROR_ROLE_LIST_USERS");
+			$this->log->setDetail("Calling Function","roles->listRoleUsers()");
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
 		
@@ -219,7 +219,7 @@ class roles extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_ROLE_GET_UUID");
 			$this->log->setDetail("Calling Function","roles->getRoleUUIDByName()");
 			$this->log->setDetail("Role Name",$roleName);
 			$this->log->setDetail("MySQL Error",$stmt->error);

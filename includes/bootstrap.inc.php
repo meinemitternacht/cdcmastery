@@ -17,6 +17,11 @@ require BASE_PATH . '/includes/classes/testManager.inc.php';
 require BASE_PATH . '/includes/classes/answerManager.inc.php';
 require BASE_PATH . '/includes/classes/questionManager.inc.php';
 require BASE_PATH . '/includes/classes/associations.inc.php';
+require BASE_PATH . '/includes/classes/emailQueue.inc.php';
+require BASE_PATH . '/includes/classes/user/passwordReset.inc.php';
+require BASE_PATH . '/includes/classes/user/userActivation.inc.php';
+require 'Mail.php';
+require 'Mail/mime.php';
 
 $db = new mysqli($cfg['db']['host'], $cfg['db']['user'], $cfg['db']['pass'], $cfg['db']['name'], $cfg['db']['port'], $cfg['db']['socket']);
 
@@ -28,10 +33,11 @@ if($db->connect_errno){
 $cdcMastery = new CDCMastery();
 $session = new dbSession($db);
 $log = new log($db);
+$emailQueue = new emailQueue($db, $log, $cfg['smtp']['host'], $cfg['smtp']['port'], $cfg['smtp']['user'], $cfg['smtp']['pass']);
 $roles = new roles($db, $log);
 $bases = new bases($db, $log);
 $afsc = new afsc($db, $log);
-$user = new user($db, $log);
+$user = new user($db, $log, $emailQueue);
 $officeSymbol = new officeSymbol($db, $log);
 $userStatistics = new userStatistics($db, $log, $roles);
 $assoc = new associations($db, $log, $user, $afsc);
