@@ -1,7 +1,7 @@
 <?php
 if(isset($_SESSION['vars'][0])){
 	$userUUID = $_SESSION['vars'][0];
-	$objUser = new user($db, $log);
+	$objUser = new user($db, $log, $emailQueue);
 	
 	if(!$objUser->loadUser($userUUID)){
 		$_SESSION['error'][] = "That user does not exist.";
@@ -78,8 +78,8 @@ if(isset($_SESSION['vars'][0])){
 					elseif($subAction == "supervisor"){
 						require_once BASE_PATH . "/includes/modules/admin/user/associations/supervisor.inc.php";
 					}
-					elseif($subAction == "trainingmanager"){
-						require_once BASE_PATH . "/includes/modules/admin/user/associations/trainingManager.inc.php";
+					elseif($subAction == "training-manager"){
+						require_once BASE_PATH . "/includes/modules/admin/user/associations/training-manager.inc.php";
 					}
 				}
 			break;
@@ -87,36 +87,21 @@ if(isset($_SESSION['vars'][0])){
 			 * Messaging Functions
 			 */
 			case "message":
-				require_once BASE_PATH . "/includes/modules/admin/user/messaging/send.inc.php";
-			break;
-			/*
-			 * Support Ticket Functions
-			 */
-			case "tickets":
-				if($subAction){
-					if($subAction == "delete"){
-						require_once BASE_PATH . "/includes/modules/admin/user/tickets/delete.inc.php";
-					}
-					elseif($subAction == "new"){
-						require_once BASE_PATH . "/includes/modules/admin/user/tickets/new.inc.php";
-					}
-				}
-				else{
-					require_once BASE_PATH . "/includes/modules/admin/user/tickets/tickets.inc.php";
-				}
+				require_once BASE_PATH . "/includes/modules/admin/user/message/send.inc.php";
 			break;
 			/*
 			 * Log Functions
 			 */
 			case "log":
-				if($subAction){
-					if($subAction == "clear"){
-						require_once BASE_PATH . "/includes/modules/admin/user/log/log.inc.php";
-					}
-				}
-				else{
+				if($subAction && $subAction == "clear"){
 					require_once BASE_PATH . "/includes/modules/admin/user/log/clear.inc.php";
 				}
+				else{
+					require_once BASE_PATH . "/includes/modules/admin/user/log/log.inc.php";
+				}
+			break;
+			case "log-detail":
+				require_once BASE_PATH . "/includes/modules/admin/user/log/log-detail.inc.php";
 			break;
 			default:
 				echo "Sigh.";
@@ -128,13 +113,15 @@ if(isset($_SESSION['vars'][0])){
 		 * Show menu of functions for user editing
 		 */
 		?>
-		<section>
-			<header>
-				<h2><?php echo $objUser->getFullName(); ?></h2>
-			</header>
-		</section>
 		<div class="container">
 			<div class="row">
+				<div class="12u">
+					<section>
+						<header>
+							<h2><?php echo $objUser->getFullName(); ?></h2>
+						</header>
+					</section>
+				</div>
 				<div class="4u">
 					<section>
 						<div class="sub-menu">
@@ -190,22 +177,11 @@ if(isset($_SESSION['vars'][0])){
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
 								<?php elseif($roles->verifyUserRole($userUUID) == "supervisor"): ?>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisors</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/trainingManager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
 								<?php else: ?>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisors</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/trainingManager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
 								<?php endif; ?>
-							</ul>
-						</div>
-						<div class="sub-menu">
-							<div class="menu-heading">
-								Support Tickets
-							</div>
-							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tickets"><i class="fa fa-life-saver fa-fw"></i>View Tickets</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tickets/new"><i class="fa fa-paper-plane fa-fw"></i>Open Ticket for User</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tickets/delete"><i class="fa fa-trash fa-fw"></i>Delete All Tickets</a></li>
 							</ul>
 						</div>
 						<div class="sub-menu">

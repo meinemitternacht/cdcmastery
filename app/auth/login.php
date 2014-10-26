@@ -19,25 +19,30 @@ if(!isset($_SESSION['auth'])):
 		}
 	}
 	?>
-	<div id="content" class="4u skel-cell-important">
-		<section>
-			<header>
-				<h3>Login</h3>
-			</header>
-			<form class="light-form" action="/auth/login" method="POST">
-			<div>
-				<label class="pretty bold" for="username">Username</label>
-				<input class="pretty" type="text" name="username" />
+	<div class="container">
+		<div class="row">
+			<div id="content" class="4u skel-cell-important">
+				<section>
+					<header>
+						<h3>Login</h3>
+					</header>
+					<form action="/auth/login" method="POST">
+					<div>
+						<label for="username">Username</label>
+						<br>
+						<input type="text" id="username" name="username" />
+					</div>
+					<div>
+						<label for="password">Password</label>
+						<br>
+						<input type="password" id="password" name="password" />
+					</div>
+					<br>
+						<input type="submit" value="Log In" />
+				</form>
+				</section>
 			</div>
-			<div>
-				<label class="pretty bold" for="password">Password</label>
-				<input class="pretty" type="password" name="password" />
-			</div>
-			<div class="submit">
-				<input style="margin: 0 auto;" class="center" type="submit" value="Log In" />
-			</div>
-		</form>
-		</section>
+		</div>
 	</div>
 <?php 
 else:

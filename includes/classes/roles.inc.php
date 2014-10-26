@@ -4,6 +4,7 @@ class roles extends CDCMastery
 {
 	protected $db;
 	protected $log;
+	protected $emailQueue;
 	
 	public $error;
 	
@@ -14,9 +15,10 @@ class roles extends CDCMastery
 	
 	public $permissionArray;
 	
-	public function __construct(mysqli $db, log $log){
+	public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
 		$this->db = $db;
 		$this->log = $log;
+		$this->emailQueue = $emailQueue;
 	}
 	
 	public function listRoles(){
@@ -114,7 +116,7 @@ class roles extends CDCMastery
 	}
 	
 	public function verifyUserRole($userUUID){
-		$_user = new user($this->db, $this->log);
+		$_user = new user($this->db, $this->log, $this->emailQueue);
 		
 		if(!$_user->loadUser($userUUID)){
 			$this->error = $_user->error;
@@ -186,7 +188,7 @@ class roles extends CDCMastery
 	
 	public function getRoleType($uuid = false){
 		if(!empty($uuid)){
-			$_roles = new roles($this->db, $this->log);
+			$_roles = new roles($this->db, $this->log, $this->emailQueue);
 			
 			if($_roles->loadRole($uuid)){
 				$tempRoleType = $_roles->getRoleType();
@@ -256,7 +258,7 @@ class roles extends CDCMastery
 	
 	public function getRoleName($uuid=false){
 		if(!empty($uuid)){
-			$_roles = new roles($this->db, $this->log);
+			$_roles = new roles($this->db, $this->log, $this->emailQueue);
 			
 			if(!$_roles->loadRole($uuid)){
 				$this->error = $_roles->error;

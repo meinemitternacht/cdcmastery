@@ -11,10 +11,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$messages[] = "There were errors while adding AFSC association(s) for this user.  Check the site log for details.";
+                $_SESSION['messages'][] = "There were errors while adding AFSC association(s) for this user.  Check the site log for details.";
 			}
 			else{
-				$messages[] = "AFSC association(s) added successfully.";
+                $_SESSION['messages'][] = "AFSC association(s) added successfully.";
 			}
 		break;
 		case "removeAssociation":
@@ -27,10 +27,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$messages[] = "There were errors while removing AFSC association(s) for this user.  Check the site log for details.";
+                $_SESSION['messages'][] = "There were errors while removing AFSC association(s) for this user.  Check the site log for details.";
 			}
 			else{
-				$messages[] = "AFSC association(s) removed successfully.";
+                $_SESSION['messages'][] = "AFSC association(s) removed successfully.";
 			}
 		break;
 		case "removePendingAssociation":
@@ -43,10 +43,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$messages[] = "There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.";
+                $_SESSION['messages'][] = "There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.";
 			}
 			else{
-				$messages[] = "Pending AFSC association(s) removed successfully.";
+				$_SESSION['messages'][] = "Pending AFSC association(s) removed successfully.";
 			}
 		break;
 	}
@@ -57,30 +57,21 @@ $userAFSCList = $userStatistics->getAFSCAssociations();
 $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 ?>
 <div class="container">
-	<?php if(isset($messages)): ?>
-	<div class="systemMessages">
-		<ul>
-		<?php foreach($messages as $message): ?>
-			<li><?php echo $message; ?></li>
-		<?php endforeach; ?>
-		</ul>
-	</div>
-	<?php endif; ?>
 	<div class="row">
 		<div class="4u">
 			<section>
 				<header>
 					<h2><em><?php echo $objUser->getFullName(); ?></em></h2>
 				</header>
-			</section>
-			<div class="sub-menu">
-				<div class="menu-heading">
-					AFSC Associations
+				<div class="sub-menu">
+					<div class="menu-heading">
+						AFSC Associations
+					</div>
+					<ul>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+					</ul>
 				</div>
-				<ul>
-					<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left"></i>Return to user manager</a></li>
-				</ul>
-			</div>
+			</section>
 		</div>
 		<div class="4u">
 			<section>

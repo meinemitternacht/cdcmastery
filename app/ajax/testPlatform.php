@@ -59,28 +59,14 @@ if(isset($testUUID)){
 			/*
 			 * Test completed, go to scoring page
 			 */
-			echo "Score me!";
+            $scoringMessage = 'You have completed the test.  To score your test, please click the ';
 		}
-		else{
-			/*
-			 * Show current question
-			 */
-			echo $testManager->outputQuestionData($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)]);
-		}
-		
-		/*
-		echo "<br><br>";
-		echo "<h2>Testing Debug Data</h2><br>";
-		echo "testUUID: ".$testManager->incompleteTestUUID."<br>";
-		echo "timeStarted: ".$testManager->incompleteTimeStarted."<br>";
-		echo "questionListCount: ".count($testManager->incompleteQuestionList)."<br>";
-		echo "currentQuestion: ".$testManager->incompleteCurrentQuestion."<br>";
-		echo "questionsAnswered: ".$testManager->incompleteQuestionsAnswered."<br>";
-		echo "totalQuestions: ".$testManager->incompleteTotalQuestions."<br>";
-		echo "afscListCount: ".count($testManager->incompleteAFSCList)."<br>";
-		echo "userUUID: ".$testManager->incompleteUserUUID."<br>";
-		echo "combinedTest: ".var_dump($testManager->incompleteCombinedTest)."<br>";
-		*/
+		else {
+            /*
+             * Show current question
+             */
+            echo $testManager->outputQuestionData($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)]);
+        }
 	}
 	else{
 		echo "That test does not exist.";

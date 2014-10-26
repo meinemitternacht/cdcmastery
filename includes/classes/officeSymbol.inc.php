@@ -15,6 +15,81 @@ class officeSymbol extends CDCMastery
 		$this->log = $log;
 	}
 	
+	public function addOfficeSymbol($officeSymbolName){
+		$this->setOfficeSymbol($officeSymbolName);
+		$this->setUUID(parent::genUUID());
+		
+		if($this->saveOfficeSymbol()){
+			$this->log->setAction("OFFICE_SYMBOL_ADD");
+			$this->log->setDetail("Office Symbol Name",$officeSymbolName);
+			$this->log->setDetail("UUID",$this->getUUID());
+			$this->log->saveEntry();
+			
+			return true;
+		}
+		else{
+			$this->log->setAction("ERROR_OFFICE_SYMBOL_ADD");
+			$this->log->setDetail("Office Symbol Name",$officeSymbolName);
+			$this->log->setDetail("UUID",$this->getUUID());
+			$this->log->saveEntry();
+			
+			return false;
+		}
+	}
+	
+	public function editOfficeSymbol($officeSymbolUUID, $officeSymbolName){
+		$this->loadOfficeSymbol($officeSymbolUUID);
+		$this->setOfficeSymbol($officeSymbolName);
+		
+		if($this->saveOfficeSymbol()){
+			$this->log->setAction("OFFICE_SYMBOL_EDIT");
+			$this->log->setDetail("Office Symbol Name",$officeSymbolName);
+			$this->log->setDetail("UUID",$officeSymbolUUID);
+			$this->log->saveEntry();
+			
+			return true;
+		}
+		else{
+			$this->log->setAction("ERROR_OFFICE_SYMBOL_EDIT");
+			$this->log->setDetail("Office Symbol Name",$officeSymbolName);
+			$this->log->setDetail("UUID",$officeSymbolUUID);
+			$this->log->saveEntry();
+			
+			return false;
+		}
+	}
+	
+	public function deleteOfficeSymbol($uuid){
+		if($this->getOfficeSymbol($uuid)){
+			$logOSName = $this->getOfficeSymbol($uuid);
+		
+			$stmt = $this->db->prepare("DELETE FROM officeSymbolList WHERE uuid = ?");
+			$stmt->bind_param("s",$uuid);
+			
+			if(!$stmt->execute()){
+				$this->log->setAction("ERROR_OFFICE_SYMBOL_DELETE");
+				$this->log->setDetail("MySQL Error", $stmt->error);
+				$this->log->setDetail("UUID",$uuid);
+				$this->log->setDetail("Office Symbol Name",$logOSName);
+				$this->log->saveEntry();
+				
+				return false;
+			}
+			else{
+				$this->log->setAction("OFFICE_SYMBOL_DELETE");
+				$this->log->setDetail("UUID",$uuid);
+				$this->log->setDetail("Office Symbol Name",$logOSName);
+				$this->log->saveEntry();
+				
+				return true;
+			}
+		}
+		else{
+			$_SESSION['messages'][] = "That Office Symbol does not exist.";
+			return false;
+		}
+	}
+	
 	public function listOfficeSymbols(){
 		$res = $this->db->query("SELECT uuid, officeSymbol FROM officeSymbolList ORDER BY officeSymbol ASC");
 		

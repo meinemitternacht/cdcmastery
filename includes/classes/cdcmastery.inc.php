@@ -3,6 +3,7 @@ class CDCMastery
 {
 	public $aesKey = "***REMOVED***";
 	public $maxQuestions = 100;
+	public $staticUserArray = Array('SYSTEM','ANONYMOUS');
 	
 	public function __construct(){
 		
@@ -64,6 +65,10 @@ class CDCMastery
 		return $this->maxQuestions;
 	}
 	
+	public function getStaticUserArray(){
+		return $this->staticUserArray;
+	}
+	
 	public function hashUserPassword( $userPassword ){
 		return hash('sha512',$userPassword);
 	}
@@ -79,6 +84,50 @@ class CDCMastery
 		else{
 			return false;
 		}
+	}
+	
+	public function listRanks(){
+		$return['Enlisted'][0]['AB'] 	= "Airman Basic";
+		$return['Enlisted'][1]['Amn'] 	= "Airman";
+		$return['Enlisted'][2]['A1C'] 	= "Airman First Class";
+		$return['Enlisted'][3]['SrA'] 	= "Senior Airman";
+		$return['Enlisted'][4]['SSgt'] 	= "Staff Sergeant";
+		$return['Enlisted'][5]['TSgt'] 	= "Technical Sergeant";
+		$return['Enlisted'][6]['MSgt'] 	= "Master Sergeant";
+		$return['Enlisted'][7]['SMSgt'] = "Senior Master Sergeant";
+		$return['Enlisted'][8]['CMSgt'] = "Chief Master Sergeant";
+	
+		$return['Officer'][0]['2LT']	= "Second Lieutenant";
+		$return['Officer'][1]['1LT']	= "First Lieutenant";
+		$return['Officer'][2]['Cpt']	= "Captain";
+		$return['Officer'][3]['Maj']	= "Major";
+		$return['Officer'][4]['Lt Col']	= "Lieutenant Colonel";
+		$return['Officer'][5]['Col']	= "Colonel";
+		$return['Officer'][6]['Brig Gen']	= "Brigadier General";
+		$return['Officer'][7]['Maj Gen']	= "Major General";
+		$return['Officer'][8]['Lt Gen']		= "Lieutenant General";
+		$return['Officer'][9]['Gen']		= "General";
+	
+		return $return;
+	}
+	
+	public function listTimeZones(){
+		static $regions = array(
+				'Africa' => DateTimeZone::AFRICA,
+				'America' => DateTimeZone::AMERICA,
+				'Antarctica' => DateTimeZone::ANTARCTICA,
+				'Asia' => DateTimeZone::ASIA,
+				'Atlantic' => DateTimeZone::ATLANTIC,
+				'Europe' => DateTimeZone::EUROPE,
+				'Indian' => DateTimeZone::INDIAN,
+				'Pacific' => DateTimeZone::PACIFIC
+		);
+	
+		foreach ($regions as $name => $mask) {
+			$tzlist[] = DateTimeZone::listIdentifiers($mask);
+		}
+	
+		return $tzlist;
 	}
 	
 	public function loggedIn(){

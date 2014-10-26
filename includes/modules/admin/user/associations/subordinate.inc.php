@@ -1,50 +1,64 @@
 <?php
+$userRole = $roles->verifyUserRole($userUUID);
+
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
-		case "addAssociation":
+		case "addSubordinate":
 			$error = false;
 			
-			foreach($_POST['afscUUID'] as $afscUUID){
-				if(!$assoc->addAFSCAssociation($userUUID, $afscUUID)){
-					$error = true;
-				}
-			}
+			foreach($_POST['userUUID'] as $subordinateUUID):
+				if($userRole == "trainingManager"):
+					if(!$assoc->addTrainingManagerAssociation($userUUID, $subordinateUUID)):
+						$error = true;
+					endif;
+				elseif($userRole == "supervisor"):
+					if(!$assoc->addSupervisorAssociation($userUUID, $subordinateUUID)):
+						$error = true;
+					endif;
+				endif;
+			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors while adding AFSC association(s) for this user.  Check the site log for details.";
+				$messages[] = "There were errors encountered while associating subordinates with this user. Check the site log for details.";
 			}
 			else{
-				$messages[] = "AFSC association(s) added successfully.";
+				$messages[] = "Subordinate(s) associated successfully.";
 			}
 		break;
-		case "removeAssociation":
+		case "removeSubordinate":
 			$error = false;
 			
-			foreach($_POST['afscUUID'] as $afscUUID){
-				if(!$assoc->deleteAFSCAssociation($userUUID, $afscUUID)){
-					$error = true;
-				}
-			}
+			foreach($_POST['userUUID'] as $subordinateUUID):
+				if($userRole == "trainingManager"):
+					if(!$assoc->deleteTrainingManagerAssociation($userUUID, $subordinateUUID)):
+						$error = true;
+					endif;
+				elseif($userRole == "supervisor"):
+					if(!$assoc->deleteSupervisorAssociation($userUUID, $subordinateUUID)):
+						$error = true;
+					endif;
+				endif;
+			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors while removing AFSC association(s) for this user.  Check the site log for details.";
+				$messages[] = "There were errors while removing subordinate association(s) for this user.  Check the site log for details.";
 			}
 			else{
-				$messages[] = "AFSC association(s) removed successfully.";
+				$messages[] = "Subordinate association(s) removed successfully.";
 			}
 		break;
 	}
 }
 
 $userStatistics->setUserUUID($userUUID);
-$userInfo = new user($db, $log);
+$userInfo = new user($db, $log, $emailQueue);
 $userList = $user->listUsers();
 
-if($roles->verifyUserRole($userUUID) == "trainingManager"):
-	$subordinateList = $userStatistics->getTrainingManagerAssociations();
+if($userRole == "trainingManager"):
+	$subordinateList = $user->sortUserList($userStatistics->getTrainingManagerAssociations(),"userLastName");
 	$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
-elseif($roles->verifyUserRole($userUUID) == "supervisor"):
-	$subordinateList = $userStatistics->getSupervisorAssociations();
+elseif($userRole == "supervisor"):
+	$subordinateList = $user->sortUserList($userStatistics->getSupervisorAssociations(),"userLastName");
 	$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
 else:
 	$cdcMastery->redirect("/admin/users/".$userUUID);
@@ -104,16 +118,12 @@ $(document).ready(function() {
 				<input type="hidden" name="formAction" value="removeSubordinate">
 				<ul>
 					<li><input type="checkbox" id="selectAll"> <em>Select All</em>
-					<?php foreach($subordinateList as $subordinate):
-							if(isset($userList[$subordinate])){
-								unset($userList[$subordinate]);
-							} ?>
-						<?php if($userInfo->loadUser($subordinate)): ?>
-							<li><input class="subordinateCheckbox" type="checkbox" name="userUUID[]" value="<?php echo $subordinate; ?>"> <?php echo $userInfo->getFullName(); ?></li>
-						<?php else: ?>
-							<li>Unknown</li>
-						<?php endif; ?>
+					<?php foreach($subordinateList as $subordinateKey => $subordinate):
+							if(isset($userList[$subordinateKey]))
+								unset($userList[$subordinateKey]); ?>
+							<li><input class="subordinateCheckbox" type="checkbox" name="userUUID[]" value="<?php echo $subordinateKey; ?>"> <?php echo $subordinate['fullName']; ?></li>
 					<?php endforeach; ?>
+					<li><input type="submit" value="Remove Subordinate(s)"></li>
 				</ul>
 			</form>
 			<?php else: ?>
@@ -128,8 +138,8 @@ $(document).ready(function() {
 			</section>
 			<form action="/admin/users/<?php echo $userUUID; ?>/associations/subordinate" method="POST">
 				<input type="hidden" name="formAction" value="addSubordinate">
-				Select user:<br>
-				<select name="userList[]" id="userList">
+				Select users<br>
+				<select name="userUUID[]" size="15" MULTIPLE>
 					<?php foreach($userList as $userListUUID => $userListData): ?>
 						<option value="<?php echo $userListUUID; ?>"><?php echo $userListData['userLastName']; ?>, <?php echo $userListData['userFirstName']; ?> <?php echo $userListData['userRank']; ?></option>
 					<?php endforeach; ?>

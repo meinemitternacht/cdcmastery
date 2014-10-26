@@ -4,204 +4,80 @@
     Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 */
 
-/*********************************************************************************/
-/* Basic                                                                         */
-/*********************************************************************************/
+/*
+ * Basic
+ */
 
-	body
-	{
-	}
+body{}
+body,input,textarea,select{font-size: 11pt;}
 
-	body,input,textarea,select
-	{
-		font-size: 11pt;
-	}
+/*
+ * Header
+ */
+#header{position: relative;padding: 0.25em 0em;text-align: center;}
+.homepage #header{padding: 1em 0em;}
+#header .container{}
 
-/*********************************************************************************/
-/* Header                                                                        */
-/*********************************************************************************/
+/*
+ * Logo
+ */
+#logo{padding-top: 0.9em;margin-bottom: 1em;float: left;}
+#logo h1{color: #FFF;}
+#logo h1 a{display: block;letter-spacing: 1px;text-decoration: none;text-transform: uppercase;font-size: 5em;font-weight: 900;color: #FFF;}
+#logo span{display: block;padding-top: 1em;letter-spacing: 1px;text-transform: uppercase;font-size: 1.2em;color: rgba(255,255,255,.5);}			
 
-	#header
-	{
-		position: relative;
-		padding: 0.25em 0em;
-		text-align: center;
-	}
-	
-		.homepage #header
-		{
-			padding: 1em 0em;
-		}
+/*
+ * Navigation
+ */
+#nav{padding-top: 0.9em;float: right;}
+#nav > ul > li{display: inline-block;}
+#nav > ul > li:last-child{padding-right: 0;}
+#nav > ul > li > a,
+#nav > ul > li > span{display: block;padding: 1em 1.5em;letter-spacing: 1px;text-decoration: none;text-transform: uppercase;font-weight: 200;font-size: 1em;outline: 0;color: #ddd;}
+#nav > ul > li > a:hover{color: #FFF;}
+#nav li.active a{background: none;border: 2px solid;border-color: #ddd;color: #FFF;}
+#nav > ul > li > ul{display: none;}
 
-		#header .container
-		{
-		}
+/*
+ * Main
+ */
+#main{padding: 2em 0em 4em 0em;}
+#content{}
+#content header{margin-bottom: 0.5em;}
+#content header h2{font-size: 2em;}
+#content header .byline{font-size: 1.40em;}
+#sidebar h2{display: block;padding-bottom: 2em;font-size: 1.4em;}
 
-/*********************************************************************************/
-/* Logo                                                                          */
-/*********************************************************************************/
+/*
+ * Featured
+ */
+#featured{padding: 6em 0em;}
 
-	#logo
-	{
-		padding-top: 0.9em;
-		margin-bottom: 1em;
-		float: left;
-	}
-	
-		#logo h1
-		{
-			color: #FFF;
-		}
-	
-		#logo h1 a
-		{
-			display: block;
-			letter-spacing: 1px;
-			text-decoration: none;
-			text-transform: uppercase;
-			font-size: 5em;
-			font-weight: 900;
-			color: #FFF;
-		}
+/*
+ * Footer
+ */
+#footer{position: relative;padding: 4em 0em;}
+#footer h2{padding-bottom: 2em;font-size: 1.4em;}
 
-		#logo span
-		{
-			display: block;
-			padding-top: 1em;
-			letter-spacing: 1px;
-			text-transform: uppercase;
-			font-size: 1.2em;
-			color: rgba(255,255,255,.5);
-		}			
-			
+/*
+ * Copyright
+ */
+#copyright{padding: 3em 0em;}
 
-/*********************************************************************************/
-/* Nav                                                                           */
-/*********************************************************************************/
+/*
+ * Registration
+ */
+.registrationForm {max-width: 60%;}
 
-	#nav{
-		padding-top: 0.9em;
-		float: right;
-	}
-
-		#nav > ul > li
-		{
-			display: inline-block;
-		}
-		
-			#nav > ul > li:last-child
-			{
-				padding-right: 0;
-			}
-
-			#nav > ul > li > a,
-			#nav > ul > li > span
-			{
-				display: block;
-				padding: 1em 1.5em;
-				letter-spacing: 1px;
-				text-decoration: none;
-				text-transform: uppercase;
-				font-weight: 200;
-				font-size: 1em;
-				outline: 0;
-				color: #ddd;
-			}
-
-
-			#nav > ul > li > a:hover
-			{
-				color: #FFF;
-			}
-
-			#nav li.active a
-			{
-				background: none;
-				/*border-radius: 40px;*/
-				border: 2px solid;
-				border-color: #ddd;
-				color: #FFF;
-			}
-
-			#nav > ul > li > ul
-			{
-				display: none;
-			}
-
-
-/*********************************************************************************/
-/* Main                                                                          */
-/*********************************************************************************/
-
-	#main
-	{
-		padding: 2em 0em 4em 0em;
-	}
-	
-	#content
-	{
-	}
-	
-	#content header
-	{
-		margin-bottom: 0.5em;
-	}
-	
-	#content header h2
-	{
-		font-size: 2em;
-	}
-	
-	#content header .byline
-	{
-		font-size: 1.40em;
-	}
-	
-	#sidebar h2
-	{
-		display: block;
-		padding-bottom: 2em;
-		font-size: 1.4em;
-	}
-
-/*********************************************************************************/
-/* Featured                                                                      */
-/*********************************************************************************/
-	
-	#featured
-	{
-		padding: 6em 0em;
-	}
-
-/*********************************************************************************/
-/* Footer                                                                        */
-/*********************************************************************************/
-	
-	#footer
-	{
-		position: relative;
-		padding: 4em 0em;
-	}
-	
-	#footer h2
-	{
-		padding-bottom: 2em;
-		font-size: 1.4em;
-	}
-	
-/*********************************************************************************/
-/* Copyright                                                                     */
-/*********************************************************************************/
-	
-	#copyright
-	{
-		padding: 3em 0em;
-	}		
-
-/* Testing Pages */
+/*
+ * Testing Pages
+ */
 .displayQuestion{width:50%;margin:0 auto;}
-
 .testProgress{width:50%;margin:0 auto;padding-top:10px;}
 .smallSectionTitle{width:50%;margin:0 auto;padding:0;}
-
 #list-answers ul {margin:0 auto;width:50%;}
+
+/*
+ * Tables
+ */
+th, td{padding:0.4em;}

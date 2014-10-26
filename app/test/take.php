@@ -188,7 +188,7 @@ else:
 			if($testManager->incompleteTotalQuestions > 1){
 				$testManager->saveIncompleteTest();
 				
-				$log->setAction("STARTED_TEST");
+				$log->setAction("TEST_START");
 				$log->setDetail("TEST UUID", $testManager->getIncompleteTestUUID());
 				$log->setDetail("AFSC ARRAY", serialize($testManager->getIncompleteAFSCList()));
 				$log->saveEntry();
@@ -210,26 +210,48 @@ else:
 	}
 	else{
 		?>
-		<div id="content" class="8u skel-cell-important">
-			<section>
-				<header>
-					<h3>Take a test</h3>
-				</header>
-				<form action="/test/take" method="POST">
-					<?php
-					$afscList = $userStatistics->getAFSCAssociations();
-					
-					$i=0;
-					foreach($afscList as $afscUUID): ?>
-						<input type="checkbox" name="userAFSCList[]" id="checkbox<?php echo $i; ?>" value="<?php echo $afscUUID; ?>"><label for="checkbox<?php echo $i; ?>"><?php echo $afsc->getAFSCName($afscUUID); ?></label><br>
-						<?php 
-						$i++;
-					endforeach; 
-					?>
-					<input type="submit" value="Start Test">
-				</form>
-			</section>
-		</div>
+        <script>
+            $(function() {
+                $( "#afscList" ).buttonset();
+
+                $("#startTest").click(function(){
+                    $("#afscListForm").submit();
+                });
+            });
+        </script>
+        <div class="container">
+            <div class="row">
+                <div class="4u">
+                    <section>
+                        <header>
+                            <h2>Take a test</h2>
+                        </header>
+                        <p>Tap or click the AFSC categories you wish to test on.</p>
+                        <form id="afscListForm" action="/test/take" method="POST">
+                            <div id="afscList">
+                            <?php
+                            $afscList = $userStatistics->getAFSCAssociations();
+
+                            $i=0;
+                            foreach($afscList as $afscUUID => $afscName): ?>
+                                <input type="checkbox" name="userAFSCList[]" id="checkbox<?php echo $i; ?>" value="<?php echo $afscUUID; ?>">
+                                <label for="checkbox<?php echo $i; ?>"><?php echo $afscName; ?></label>
+                                <br>
+                                <?php
+                                $i++;
+                            endforeach;
+                            ?>
+                            </div>
+                            <div class="sub-menu">
+                                <ul>
+                                    <li><a id="startTest"><i class="fa fa-caret-square-o-right fa-fw"></i>Start Test</a></li>
+                                </ul>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
 		<?php
 	}
 endif;

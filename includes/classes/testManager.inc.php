@@ -1,8 +1,4 @@
 <?php
-/*
- * This class provides an interface for taking tests and reviewing previous tests.
- * All other functions for changing previous test variables will be administrative functions.
- */
 
 class testManager extends CDCMastery
 {
@@ -47,6 +43,8 @@ class testManager extends CDCMastery
 	public $incompleteUserUUID;			//varchar 40
 	public $incompleteCombinedTest;		//bool
 	
+	public $incompletePercentComplete;
+	
 	public function __construct(mysqli $db, log $log, afsc $afsc){
 		$this->db = $db;
 		$this->log = $log;
@@ -58,7 +56,7 @@ class testManager extends CDCMastery
 	/*
 	 * testHistory Table Related Functions
 	 */
-	
+
 	public function listUserTests($userUUID,$limit=false){
 		if($limit && is_int($limit)){
 			$stmt = $this->db->prepare("SELECT 	uuid,
@@ -138,7 +136,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function listTests($userUUID=false){
+	public function listTests(){
 		$res = $this->db->query("SELECT uuid,
 										userUUID,
 										afscList,
@@ -313,17 +311,12 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function deleteTests($testUUIDArray){
-		if(is_array($testUUIDArray) && !empty($testUUIDArray)){
-			foreach($testUUIDArray as $testUUID){
-				$this->deleteTest($testUUID);
-			}
-			
-			return true;
-		}
-		else{
-			return false;
-		}
+	public function deleteTests(array $testUUIDArray){
+        foreach($testUUIDArray as $testUUID){
+            $this->deleteTest($testUUID);
+        }
+
+        return true;
 	}
 	
 	public function getUUID(){
@@ -346,6 +339,10 @@ class testManager extends CDCMastery
 		return $this->questionsMissed;
 	}
 	
+	public function getTestData(){
+		return $this->testData;
+	}
+	
 	public function getTestScore(){
 		return $this->testScore;
 	}
@@ -361,6 +358,43 @@ class testManager extends CDCMastery
 	public function getOldTestID(){
 		return $this->oldTestID;
 	}
+
+    public function getTestUUIDList($userUUID){
+        $stmt = $this->db->prepare("SELECT uuid
+                                    FROM testHistory
+                                    WHERE userUUID = ?");
+
+        $stmt->bind_param("s",$userUUID);
+
+        if($stmt->execute()) {
+            if ($stmt->num_rows > 0) {
+                $stmt->bind_result($testUUID);
+
+                while ($stmt->fetch()) {
+                    $testUUIDList[] = $testUUID;
+                }
+
+                if(!empty($testUUIDList)){
+                    return $testUUIDList;
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("Calling Function","testManager->getTestUUIDList()");
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->saveEntry();
+
+            return false;
+        }
+    }
 	
 	public function setUUID($uuid){
 		$this->uuid = $uuid;
@@ -441,7 +475,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function listIncompleteTests(){
+	public function listIncompleteTests($uuidOnly = false){
 		$res = $this->db->query("SELECT testUUID,
 										timeStarted,
 										questionList,
@@ -458,14 +492,19 @@ class testManager extends CDCMastery
 	
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
-				$testArray[$row['testUUID']]['timeStarted'] = $row['timeStarted'];
-				$testArray[$row['testUUID']]['questionList'] = $row['questionList'];
-				$testArray[$row['testUUID']]['currentQuestion'] = $row['currentQuestion'];
-				$testArray[$row['testUUID']]['questionsAnswered'] = $row['questionsAnswered'];
-				$testArray[$row['testUUID']]['totalQuestions'] = $row['totalQuestions'];
-				$testArray[$row['testUUID']]['afscList'] = $row['afscList'];
-				$testArray[$row['testUUID']]['userUUID'] = $row['userUUID'];
-				$testArray[$row['testUUID']]['combinedTest'] = $row['combinedTest'];
+				if($uuidOnly){
+					$testArray[] = $row['testUUID'];
+				}
+				else{
+					$testArray[$row['testUUID']]['timeStarted'] = $row['timeStarted'];
+					$testArray[$row['testUUID']]['questionList'] = $row['questionList'];
+					$testArray[$row['testUUID']]['currentQuestion'] = $row['currentQuestion'];
+					$testArray[$row['testUUID']]['questionsAnswered'] = $row['questionsAnswered'];
+					$testArray[$row['testUUID']]['totalQuestions'] = $row['totalQuestions'];
+					$testArray[$row['testUUID']]['afscList'] = $row['afscList'];
+					$testArray[$row['testUUID']]['userUUID'] = $row['userUUID'];
+					$testArray[$row['testUUID']]['combinedTest'] = $row['combinedTest'];
+				}
 			}
 				
 			$noResults = false;
@@ -580,15 +619,42 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	/*
-	 * @todo delete from testData table
-	 */
-	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false){
+	public function deleteTestData($testUUID){
+		$stmt = $this->db->prepare("DELETE FROM testData WHERE testUUID = ?");
+		$stmt->bind_param("s",$testUUID);
+		
+		if(!$stmt->execute()){
+			$this->log->setAction("ERROR_TEST_DATA_DELETE");
+			$this->log->setDetail("Test UUID",$testUUID);
+			$this->log->setDetail("Calling Function","testManager->deleteTestData()");
+			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->saveEntry();
+			
+			return false;
+		}
+		else{
+			$this->log->setAction("TEST_DATA_DELETE");
+			$this->log->setDetail("Test UUID",$testUUID);
+			$this->log->saveEntry();
+			
+			return true;
+		}
+	}
+	
+	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false,$userUUID=false){
+		$this->incompleteTestUUID = false;
+		
+		if(!$userUUID){
+			$userUUID = $this->incompleteUserUUID;
+		}
+		
 		if($allIncompleteTests){
+			$incompleteTestList = $this->listIncompleteTests(true);
+			
 			$error = false;
 			
 			$stmt = $this->db->prepare("DELETE FROM testManager WHERE userUUID = ?");
-			$stmt->bind_param("s",$this->incompleteUserUUID);
+			$stmt->bind_param("s",$userUUID);
 			
 			if(!$stmt->execute()){
 				$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
@@ -599,59 +665,54 @@ class testManager extends CDCMastery
 				$error = true;
 			}
 			else{
-				$this->error = "Your incomplete tests were deleted successfully.";
+				foreach($incompleteTestList as $incompleteTestUUID){
+					if(!$this->deleteTestData($incompleteTestUUID)){
+						$error = true;
+					}
+				}
 			}
 			
 			if($error){
-				$this->error = "A problem was encountered while deleting your incomplete tests from the database.  Please contact CDCMastery support for assistance.";
+				return false;
+			}
+			else{
+				return true;
 			}
 		}
 		else{
 			if($testUUID){
 				$stmt = $this->db->prepare("DELETE FROM testManager WHERE testUUID = ?");
 				$stmt->bind_param("s",$testUUID);
-					
+				
 				if(!$stmt->execute()){
 					$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
 					$this->log->setDetail("ERROR",$stmt->error);
 					$this->log->setDetail("CALLING FUNCTION","testManager->deleteIncompleteTest()");
 					$this->log->setDetail("allIncompleteTests","false");
-					$this->log->setDetail("testUUID",$testUUID);
+					$this->log->setDetail("Test UUID",$testUUID);
 					$this->log->saveEntry();
+					
+					$stmt->close();
 				
-					$this->error = "A problem was encountered while deleting your incomplete test from the database.  Please contact CDCMastery support for assistance.";
 					return false;
 				}
 				else{
-					$this->message[] = "Your incomplete test was deleted successfully.";
-					return true;
-				}
-			}
-			else{
-				if($this->incompleteTestUUID){
-					$stmt = $this->db->prepare("DELETE FROM testManager WHERE testUUID = ?");
-					$stmt->bind_param("s",$this->incompleteTestUUID);
-						
-					if(!$stmt->execute()){
-						$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
-						$this->log->setDetail("ERROR",$stmt->error);
-						$this->log->setDetail("CALLING FUNCTION","testManager->deleteIncompleteTest()");
-						$this->log->setDetail("allIncompleteTests","false");
-						$this->log->setDetail("testUUID",$this->incompleteTestUUID);
-						$this->log->saveEntry();
+					$this->log->setAction("INCOMPLETE_TEST_DELETE");
+					$this->log->setDetail("Test UUID", $testUUID);
+					$this->log->saveEntry();
 					
-						$this->error = "A problem was encountered while deleting your incomplete test from the database.  Please contact CDCMastery support for assistance.";
+					$stmt->close();
+					
+					if(!$this->deleteTestData($testUUID)){							
 						return false;
 					}
-					else{
-						$this->message[] = "Your incomplete test was deleted successfully.";
+					else{							
 						return true;
 					}
 				}
-				else{
-					$this->error = "You must specify a test to delete.";
-					return true;
-				}
+			}
+			else{
+				return false;
 			}
 		}
 	}
@@ -996,6 +1057,17 @@ class testManager extends CDCMastery
 	
 	public function getIncompleteCombinedTest(){
 		return $this->incompleteCombinedTest;
+	}
+	
+	public function getIncompletePercentComplete(){
+		if($this->incompleteTotalQuestions && $this->incompleteQuestionsAnswered){
+			$percentComplete = (($this->incompleteQuestionsAnswered / $this->incompleteTotalQuestions) * 100);
+			
+			return intval($percentComplete,2) . "%";
+		}
+		else{
+			return "0%";
+		}
 	}
 	
 	public function setIncompleteTestUUID($testUUID){

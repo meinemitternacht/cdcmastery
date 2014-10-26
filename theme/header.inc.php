@@ -12,14 +12,15 @@
 		<script src="/js/jquery-ui.min.js"></script>
 		<script src="/js/jquery-ui-timepicker.js"></script>
 		<script src="/js/jquery-mask.min.js"></script>
-		<script src="/js/tablecloth.js"></script>
 		<script src="/js/skel.min.js"></script>
 		<script src="/js/skel-panels.min.js"></script>
 		<script src="/js/init.js"></script>
+		<script src="/js/jquery.formalize.min.js"></script>
 		<link href="/includes/fontAwesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
+		<link href="/css/formalize.css" rel="stylesheet" type="text/css" />
 		<noscript>
 			<link rel="stylesheet" href="/css/skel-noscript.css" />
 			<link rel="stylesheet" href="/css/style.css" />
@@ -61,5 +62,29 @@
 		</div>
 		<!-- Main -->
 		<div id="main">
+			<?php if(isset($_SESSION['messages'])): ?>
 			<div class="container">
 				<div class="row">
+					<div class="12u">
+						<div class="systemMessages">
+							<?php
+							if(is_array($_SESSION['messages'])){
+								echo "<ul>";
+								foreach($_SESSION['messages'] as $message){
+									echo "<li><strong>".$message."</strong></li>\r\n";
+								}
+								echo "</ul>";
+							}
+							else{
+								echo "<ul><li><strong>";
+								echo $_SESSION['messages'];
+								echo "</strong></li></ul>";
+							}
+							
+							unset($_SESSION['messages']);
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>

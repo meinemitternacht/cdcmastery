@@ -6,7 +6,7 @@ This script provides a class interface for the site logging function.
 
 class log extends CDCMastery
 {
-	protected $logDB;				//holds database object
+	protected $db;				//holds database object
 
 	private $tempRow;			//holds rows temporarily
 	private $tempRes;			//holds result set temporarily
@@ -30,9 +30,10 @@ class log extends CDCMastery
 	public $detailCount;		//count of detail array
 
 	function __construct(mysqli $db) {
-		$this->logDB = $db;
+		$this->db = $db;
 		$this->uuid = parent::genUUID();
 		$this->timestamp = date("Y-m-d H:i:s",time());
+		
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
 			$this->setUserUUID($logUID);
@@ -58,8 +59,8 @@ class log extends CDCMastery
 		$this->detailCount		= NULL;
 
 		if(php_sapi_name() != 'cli'){
-			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
-			$this->setUserUUID($logUID);
+			$logUserUUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
+			$this->setUserUUID($logUserUUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
 		}
 		else{
@@ -70,41 +71,60 @@ class log extends CDCMastery
 		return true;
 	}
 
+    function clearLogEntries($userUUID){
+        $stmt = $this->db->prepare("DELETE FROM systemLog WHERE userUUID = ?");
+        $stmt->bind_param("s",$userUUID);
+
+        if(!$stmt->execute()){
+            $this->setAction("ERROR_USER_LOG_CLEAR");
+            $this->setDetail("MySQL Error",$stmt->error);
+            $this->setDetail("Calling Function","log->clearLogEntries()");
+            $this->setDetail("User UUID",$userUUID);
+            $this->saveEntry();
+
+            $stmt->close();
+
+            return false;
+        }
+        else{
+            $this->setAction("USER_LOG_CLEAR");
+            $this->setDetail("User UUID",$userUUID);
+            $this->setDetail("Affected Rows",$stmt->affected_rows);
+            $this->saveEntry();
+
+            $stmt->close();
+
+            return true;
+        }
+    }
+
 	function fetchDetails($uuid){
-		$this->stmt = $this->logDB->prepare('SELECT uuid, dataType, data FROM systemLogData WHERE logUUID = ? ORDER BY dataType ASC');
-		$this->stmt->bind_param("s",$uuid);
-		$this->stmt->execute();
+		$stmt = $this->db->prepare('SELECT uuid, dataType, data FROM systemLogData WHERE logUUID = ? ORDER BY dataType ASC');
+		$stmt->bind_param("s",$uuid);
+		$stmt->execute();
+		
+		$stmt->bind_result($detailUUID, $dataType, $data);
+		
+		$i = 0;
+		while ($stmt->fetch()) {
+			$this->detailArray[$i]['uuid'] = $detailUUID;
+			$this->detailArray[$i]['dataType'] = htmlspecialchars($dataType);
+			$this->detailArray[$i]['data'] = htmlspecialchars($data);
 
-		/* bind result variables */
-		$this->stmt->bind_result($logUUID, $dataType, $data);
-
-		/* fetch values */
-		$this->i = 0;
-		while ($this->stmt->fetch()) {
-			$this->detailArray[$this->i]['uuid'] = $logUUID;
-			$this->detailArray[$this->i]['dataType'] = htmlspecialchars($dataType);
-			$this->detailArray[$this->i]['data'] = htmlspecialchars($data);
-
-			$this->i++;
+			$i++;
 		}
 
 		return $this->detailArray;
 	}
-	
-	function listEntries(){
-		$this->stmt = $this->logDB->prepare("SELECT uuid, timestamp, action, userUUID, ip FROM systemLog ORDER BY timestamp DESC LIMIT ");
-	}
 
 	function loadEntry($uuid) {
-		$this->stmt = $this->logDB->prepare('SELECT uuid, timestamp, action, userUUID, ip FROM systemLog WHERE uuid = ?');
-		$this->stmt->bind_param("s",$uuid);
-		$this->stmt->execute();
+		$stmt = $this->db->prepare('SELECT uuid, timestamp, action, userUUID, ip FROM systemLog WHERE uuid = ?');
+		$stmt->bind_param("s",$uuid);
+		$stmt->execute();
 
-		/* bind result variables */
-		$this->stmt->bind_result($logUUID, $timestamp, $action, $userUUID, $ip);
+		$stmt->bind_result($logUUID, $timestamp, $action, $userUUID, $ip);
 
-		/* fetch values */
-		while ($this->stmt->fetch()) {
+		while($stmt->fetch()) {
 			$this->uuid = $logUUID;
 			$this->timestamp = $timestamp;
 			$this->action = $action;
@@ -143,26 +163,26 @@ class log extends CDCMastery
 	}
 
 	function saveEntry() {
-		$this->stmt = $this->logDB->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-		$this->stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
-		if(!$this->stmt->execute()) {
-			$this->error[] = $this->stmt->error;
+		$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+		$stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
+		if(!$stmt->execute()) {
+			$this->error[] = $stmt->error;
 			return false;
 		}
 
 		if(isset($this->detailArray) && !empty($this->detailArray)) {
-			$this->stmt = $this->logDB->prepare('INSERT INTO systemLogData (uuid, logUUID, dataType, data) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+			$stmt = $this->db->prepare('INSERT INTO systemLogData (uuid, logUUID, dataType, data) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
 			$this->detailCount = count($this->detailArray);
 
-			for($this->i=0;$this->i < $this->detailCount; $this->i++)
+			for($i=0;$i < $this->detailCount; $i++)
 			{
-				if(!$this->stmt->bind_param('ssss', $this->detailArray[$this->i]['uuid'], $this->uuid, $this->detailArray[$this->i]['type'], $this->detailArray[$this->i]['data'])) {
-					$this->error[] = $this->stmt->error;
+				if(!$stmt->bind_param('ssss', $this->detailArray[$i]['uuid'], $this->uuid, $this->detailArray[$i]['type'], $this->detailArray[$i]['data'])) {
+					$this->error[] = $stmt->error;
 					return false;
 				}
 
-				if(!$this->stmt->execute()) {
-					$this->error[] = $this->stmt->error;
+				if(!$stmt->execute()) {
+					$this->error[] = $stmt->error;
 					return false;
 				}
 			}
@@ -172,6 +192,25 @@ class log extends CDCMastery
 		$this->regenerateUUID();
 
 		return true;
+	}
+	
+	function verifyLogUUID($logUUID){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM systemLog WHERE uuid = ?");
+		$stmt->bind_param("s",$logUUID);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			
+			$stmt->close();
+			
+			if($count){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
 	}
 
 	function setIP($ip) {
@@ -202,6 +241,8 @@ class log extends CDCMastery
 										"type" => $this->typeDetail,
 										"data" => $this->dataDetail
 									);
+		
+		return true;
 	}
 
 	function setTimestamp($timestamp) {
@@ -222,53 +263,77 @@ class log extends CDCMastery
 		return $this->ip;
 	}
 
-	function getRowStyle( $action ){
+	function getRowStyle($actionName){
 		/*
 		Warnings (Administrative functions, errors)
-		Background: Pink
-		Foreground: Black
+		Class Name: text-warning
 		*/
 		$warningArray = Array(
 			'ACCESS_DENIED',
-			'LOGIN_FAIL_BAD_PASSWORD',
-			'LOGIN_FAIL_UNKNOWN_USER',
-			'LOGIN_RATE_LIMIT_REACHED',
+			'AFSC_DELETE',
+			'AFSC_EDIT',
+			'ERROR_EMAIL_QUEUE_PROCESS',
+			'ERROR_EMAIL_SEND',
+			'ERROR_LOGIN_INVALID_PASSWORD',
+			'LOGIN_ERROR_UNKNOWN_USER',
+			'LOGIN_RATE_RATE_LIMIT',
 			'MYSQL_ERROR',
-			'USER_ADD',
+			'QUESTION_DELETE',
+			'QUESTION_EDIT',
+			'TEST_DELETE',
+			'TEST_ERROR_UNAUTHORIZED',
 			'USER_DELETE',
-			'USER_EDIT');
-
-		/*
-		Normal entries (UTM's, Supervisors)
-		Background: Light Green
-		Foreground: Black
-		*/
-		$generalArray = Array(
-			'LOGIN_SUCCESS',
-			'LOGOUT_SUCCESS',
-			'USER_EDIT_PROFILE',
-			'USER_PASSWORD_RESET',
-			'USER_REGISTER'
-			);
-
-		$cautionArray = Array(
-			'ROUTE_ERROR'
+			'USER_EDIT',
+			'USER_EDIT_PROFILE'
 		);
 
-		if(in_array($action,$warningArray)) {
-			$style = "background-color:Pink;";
+		/*
+		 * Normal entries
+		 * .text-success
+		 */
+		$generalArray = Array(
+			'EMAIL_SEND',
+			'LOGIN_SUCCESS',
+			'LOGOUT_SUCCESS',
+			'MIGRATED_PASSWORD',
+			'TEST_COMPLETED',
+			'TEST_START',
+			'USER_PASSWORD_RESET',
+			'USER_REGISTER'
+		);
+		
+		/*
+		 * Informational entries
+		 * .text-caution
+		 */
+		$cautionArray = Array(
+			'ROUTING_ERROR',
+			'AFSC_ADD',
+			'QUESTION_ADD',
+			'USER_ADD',
+			'USER_ADD_AFSC_ASSOCIATION',
+			'USER_ADD_TRAINING_MANAGER_ASSOCIATION',
+			'USER_DELETE_AFSC_ASSOCIATION',
+			'USER_PASSWORD_RESET',
+			'USER_PASSWORD_RESET_COMPLETE',
+			'USER_REMOVE_SUPERVISOR_ASSOCIATION',
+			'USER_REMOVE_TRAINING_MANAGER_ASSOCIATION'
+		);
+
+		if(in_array($actionName,$warningArray)){
+			$class = "text-warning";
 		}
-		elseif(in_array($action,$generalArray)) {
-			$style = "background-color:LightGreen;";
+		elseif(in_array($actionName,$generalArray)){
+			$class = "text-success";
 		}
-		elseif(in_array($action,$cautionArray)) {
-			$style = "background-color:LightBlue;";
+		elseif(in_array($actionName,$cautionArray)){
+			$class = "text-caution";
 		}
-		else {
-			$style = "background-color:White";
+		else{
+			$class = "text-caution";
 		}
 
-		return $style;
+		return $class;
 	}
 
 	function getTimestamp() {

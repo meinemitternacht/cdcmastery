@@ -1,0 +1,936 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2dfee883-17f3-4717-9e95-8ea74f09e9b3" name="Default" comment="" />
+    <ignored path="dev.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="dev" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="testManager.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/classes/testManager.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.333333" vertical-offset="7074" max-vertical-offset="20718">
+              <caret line="407" column="8" selection-start-line="407" selection-start-column="8" selection-end-line="407" selection-end-column="8" />
+              <folding>
+                <marker date="1414278029800" expanded="true" signature="1509:1845" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1414278029800" expanded="true" signature="1941:2256" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1414278029800" expanded="true" signature="3595:3861" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1414278029800" expanded="true" signature="4744:5004" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1414278029800" expanded="true" signature="5990:6083" placeholder="SELECT quest..testData..." />
+                <marker date="1414278029800" expanded="true" signature="6785:6824" placeholder="DELETE FROM ..." />
+                <marker date="1414278029800" expanded="true" signature="7126:7168" placeholder="DELETE FROM ..." />
+                <marker date="1414278029800" expanded="true" signature="8592:8711" placeholder="SELECT uuid ..testHistory..." />
+                <marker date="1414278029800" expanded="true" signature="9858:10148" placeholder="SELECT testU..testManager..." />
+                <marker date="1414278029800" expanded="true" signature="10245:10514" placeholder="SELECT testU..testManager..." />
+                <marker date="1414278029800" expanded="true" signature="11796:12064" placeholder="SELECT testU..testManager..." />
+                <marker date="1414278029800" expanded="true" signature="13077:13349" placeholder="SELECT testU..testManager..." />
+                <marker date="1414278029800" expanded="true" signature="14694:15040" placeholder="INSERT INTO ..." />
+                <marker date="1414278029800" expanded="true" signature="14694:15499" placeholder="INSERT INTO ..." />
+                <marker date="1414278029800" expanded="true" signature="15041:15499" placeholder="UPDATE testU..." />
+                <marker date="1414278029800" expanded="true" signature="16369:16408" placeholder="DELETE FROM ..." />
+                <marker date="1414278029800" expanded="true" signature="17271:17313" placeholder="DELETE FROM ..." />
+                <marker date="1414278029800" expanded="true" signature="17980:18022" placeholder="DELETE FROM ..." />
+                <marker date="1414278029800" expanded="true" signature="19609:19737" placeholder="SELECT uuid ..questionData..." />
+                <marker date="1414278029800" expanded="true" signature="20400:20498" placeholder="SELECT uuid ..questionData..." />
+                <marker date="1414278029800" expanded="true" signature="21405:21552" placeholder="INSERT INTO ..." />
+                <marker date="1414278029800" expanded="true" signature="21405:21604" placeholder="INSERT INTO ..." />
+                <marker date="1414278029800" expanded="true" signature="21553:21604" placeholder="UPDATE answe..." />
+                <marker date="1414278029800" expanded="false" signature="23602:23613" placeholder="..." />
+                <marker date="1414278029800" expanded="true" signature="24522:24672" placeholder="..." />
+                <marker date="1414278029800" expanded="false" signature="24704:24715" placeholder="..." />
+                <marker date="1414278029800" expanded="true" signature="25020:25091" placeholder="SELECT answe..testData..." />
+                <marker date="1414278029800" expanded="true" signature="29125:29173" placeholder="SELECT uuid ..testHistory..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="testPlatform.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/ajax/testPlatform.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.5925927" vertical-offset="947" max-vertical-offset="1548">
+              <caret line="61" column="34" selection-start-line="61" selection-start-column="34" selection-end-line="61" selection-end-column="34" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="take.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/test/take.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.8202995" vertical-offset="3791" max-vertical-offset="4716">
+              <caret line="238" column="36" selection-start-line="238" selection-start-column="36" selection-end-line="238" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/style.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="8953" max-vertical-offset="12582">
+              <caret line="519" column="34" selection-start-line="519" selection-start-column="34" selection-end-line="519" selection-end-column="34" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="userStatistics.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/classes/userStatistics.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.4444447" vertical-offset="10995" max-vertical-offset="15246">
+              <caret line="622" column="66" selection-start-line="622" selection-start-column="66" selection-end-line="622" selection-end-column="66" />
+              <folding>
+                <marker date="1414290734347" expanded="true" signature="5987:6045" placeholder="SELECT COUNT..systemLog..." />
+                <marker date="1414290734347" expanded="true" signature="6620:6693" placeholder="SELECT AVG(t..testHistory..." />
+                <marker date="1414290734347" expanded="true" signature="7289:7349" placeholder="SELECT COUNT..testHistory..." />
+                <marker date="1414290734347" expanded="true" signature="7936:7996" placeholder="SELECT COUNT..testManager..." />
+                <marker date="1414290734347" expanded="true" signature="8587:8670" placeholder="SELECT SUM(t..testHistory..." />
+                <marker date="1414290734347" expanded="true" signature="9287:9369" placeholder="SELECT SUM(q..testHistory..." />
+                <marker date="1414290734347" expanded="true" signature="9982:10054" placeholder="SELECT userU..userSupervisorAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="10676:10758" placeholder="SELECT userU..userTrainingManagerAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="11378:11450" placeholder="SELECT super..userSupervisorAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="12061:12143" placeholder="SELECT train..userTrainingManagerAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="12770:13182" placeholder="SELECT afscU..userAFSCAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="13808:13891" placeholder="SELECT afscU..userAFSCAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="14503:14595" placeholder="SELECT COUNT..userAFSCAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="15206:15298" placeholder="SELECT COUNT..userAFSCAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="15922:16003" placeholder="SELECT COUNT..userSupervisorAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="16633:16724" placeholder="SELECT COUNT..userTrainingManagerAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="17353:17428" placeholder="SELECT COUNT..userSupervisorAssociations..." />
+                <marker date="1414290734347" expanded="true" signature="18036:18116" placeholder="SELECT COUNT..userTrainingManagerAssociations..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="true" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="changedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/includes/classes/log.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/log/clear.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/messaging/send.inc.php" />
+        <option value="$PROJECT_DIR$/app/admin/users.php" />
+        <option value="$PROJECT_DIR$/includes/classes/user/passwordReset.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/message/send.inc.php" />
+        <option value="$PROJECT_DIR$/includes/bootstrap.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/associations/afsc.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/tests/tests.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/tests/incomplete.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/tests/delete.inc.php" />
+        <option value="$PROJECT_DIR$/includes/classes/testManager.inc.php" />
+        <option value="$PROJECT_DIR$/app/ajax/testPlatform.php" />
+        <option value="$PROJECT_DIR$/app/index.php" />
+        <option value="$PROJECT_DIR$/css/jquery-ui.theme.min.css" />
+        <option value="$PROJECT_DIR$/includes/classes/userStatistics.inc.php" />
+        <option value="$PROJECT_DIR$/app/test/take.php" />
+        <option value="$PROJECT_DIR$/css/style.css" />
+      </list>
+    </option>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="65" />
+    <option name="y" value="24" />
+    <option name="width" value="1301" />
+    <option name="height" value="744" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="incomplete" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="message" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="log" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="associations" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="classes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ajax" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="options.lastSelected" value="preferences.externalTools" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="recentsLimit" value="5" />
+    <property name="dynamic.classpath" value="false" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpWebAppRunConfigurationType" factoryName="PHP Web Application">
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpHttpRequestRunConfigurationType" factoryName="PHP HTTP Request">
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="com.intellij.database.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
+      <option name="VM_PARAMETERS" value="" />
+      <option name="USER_CFG_CLASS" />
+      <option name="CONTEXT_PROVIDER" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
+      <BehatRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+    </configuration>
+    <list size="0" />
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2dfee883-17f3-4717-9e95-8ea74f09e9b3" name="Default" comment="" />
+      <created>1414186774428</created>
+      <option name="number" value="Default" />
+      <updated>1414186774428</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="65" y="24" width="1301" height="744" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19215988" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296355" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="3" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/includes/classes/log.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.2279534" vertical-offset="1793" max-vertical-offset="6444">
+          <caret line="94" column="27" selection-start-line="94" selection-start-column="27" selection-end-line="94" selection-end-column="27" />
+          <folding>
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..systemLogData..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="UPDATE uuid ..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="UPDATE uuid ..." />
+            <marker date="1414187576578" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/admin/users.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44925123" vertical-offset="1350" max-vertical-offset="3798">
+          <caret line="90" column="18" selection-start-line="90" selection-start-column="18" selection-end-line="90" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/log/clear.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.333334" vertical-offset="0" max-vertical-offset="972">
+          <caret line="29" column="18" selection-start-line="15" selection-start-column="12" selection-end-line="29" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/user/passwordReset.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6289517" vertical-offset="1620" max-vertical-offset="3078">
+          <caret line="111" column="44" selection-start-line="111" selection-start-column="44" selection-end-line="111" selection-end-column="44" />
+          <folding>
+            <marker date="1414209394011" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1414209394011" expanded="true" signature="-1:-1" placeholder="SELECT userU..userPasswordResets..." />
+            <marker date="1414209394011" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1414209394011" expanded="true" signature="-1:-1" placeholder="UPDATE uuid=..." />
+            <marker date="1414209394011" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/message/send.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44925123" vertical-offset="432" max-vertical-offset="1674">
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+          <folding>
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414210353411" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/bootstrap.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.7003257" vertical-offset="54" max-vertical-offset="1206">
+          <caret line="61" column="1" selection-start-line="61" selection-start-column="1" selection-end-line="61" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/associations/afsc.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.0" vertical-offset="792" max-vertical-offset="3816">
+          <caret line="59" column="4" selection-start-line="59" selection-start-column="4" selection-end-line="74" selection-end-column="14" />
+          <folding>
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1414211246887" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://db-console:/e083f015/af78ece1-2bff-456a-8671-72189da5bdb7/">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="641">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/tests/tests.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.6666665" vertical-offset="0" max-vertical-offset="2772">
+          <caret line="7" column="2" selection-start-line="7" selection-start-column="2" selection-end-line="7" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/tests/incomplete.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-14.259259" vertical-offset="2099" max-vertical-offset="2808">
+          <caret line="138" column="42" selection-start-line="138" selection-start-column="42" selection-end-line="138" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/tests/incomplete/delete.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.58069885" vertical-offset="389" max-vertical-offset="990">
+          <caret line="41" column="24" selection-start-line="0" selection-start-column="0" selection-end-line="49" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/tests/delete.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.0" vertical-offset="0" max-vertical-offset="1026">
+          <caret line="6" column="45" selection-start-line="6" selection-start-column="45" selection-end-line="6" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/ajax/testPlatform.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.5925927" vertical-offset="947" max-vertical-offset="1548">
+          <caret line="61" column="34" selection-start-line="61" selection-start-column="34" selection-end-line="61" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/style-mobile.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4626">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/jquery-ui.theme.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="628">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.61064893" vertical-offset="1865" max-vertical-offset="3636">
+          <caret line="124" column="116" selection-start-line="124" selection-start-column="68" selection-end-line="124" selection-end-column="116" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/testManager.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.333333" vertical-offset="7074" max-vertical-offset="20718">
+          <caret line="407" column="8" selection-start-line="407" selection-start-column="8" selection-end-line="407" selection-end-column="8" />
+          <folding>
+            <marker date="1414278029800" expanded="true" signature="1509:1845" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1414278029800" expanded="true" signature="1941:2256" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1414278029800" expanded="true" signature="3595:3861" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1414278029800" expanded="true" signature="4744:5004" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1414278029800" expanded="true" signature="5990:6083" placeholder="SELECT quest..testData..." />
+            <marker date="1414278029800" expanded="true" signature="6785:6824" placeholder="DELETE FROM ..." />
+            <marker date="1414278029800" expanded="true" signature="7126:7168" placeholder="DELETE FROM ..." />
+            <marker date="1414278029800" expanded="true" signature="8592:8711" placeholder="SELECT uuid ..testHistory..." />
+            <marker date="1414278029800" expanded="true" signature="9858:10148" placeholder="SELECT testU..testManager..." />
+            <marker date="1414278029800" expanded="true" signature="10245:10514" placeholder="SELECT testU..testManager..." />
+            <marker date="1414278029800" expanded="true" signature="11796:12064" placeholder="SELECT testU..testManager..." />
+            <marker date="1414278029800" expanded="true" signature="13077:13349" placeholder="SELECT testU..testManager..." />
+            <marker date="1414278029800" expanded="true" signature="14694:15040" placeholder="INSERT INTO ..." />
+            <marker date="1414278029800" expanded="true" signature="14694:15499" placeholder="INSERT INTO ..." />
+            <marker date="1414278029800" expanded="true" signature="15041:15499" placeholder="UPDATE testU..." />
+            <marker date="1414278029800" expanded="true" signature="16369:16408" placeholder="DELETE FROM ..." />
+            <marker date="1414278029800" expanded="true" signature="17271:17313" placeholder="DELETE FROM ..." />
+            <marker date="1414278029800" expanded="true" signature="17980:18022" placeholder="DELETE FROM ..." />
+            <marker date="1414278029800" expanded="true" signature="19609:19737" placeholder="SELECT uuid ..questionData..." />
+            <marker date="1414278029800" expanded="true" signature="20400:20498" placeholder="SELECT uuid ..questionData..." />
+            <marker date="1414278029800" expanded="true" signature="21405:21552" placeholder="INSERT INTO ..." />
+            <marker date="1414278029800" expanded="true" signature="21405:21604" placeholder="INSERT INTO ..." />
+            <marker date="1414278029800" expanded="true" signature="21553:21604" placeholder="UPDATE answe..." />
+            <marker date="1414278029800" expanded="false" signature="23602:23613" placeholder="..." />
+            <marker date="1414278029800" expanded="true" signature="24522:24672" placeholder="..." />
+            <marker date="1414278029800" expanded="false" signature="24704:24715" placeholder="..." />
+            <marker date="1414278029800" expanded="true" signature="25020:25091" placeholder="SELECT answe..testData..." />
+            <marker date="1414278029800" expanded="true" signature="29125:29173" placeholder="SELECT uuid ..testHistory..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/userStatistics.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.4444447" vertical-offset="10995" max-vertical-offset="15246">
+          <caret line="622" column="66" selection-start-line="622" selection-start-column="66" selection-end-line="622" selection-end-column="66" />
+          <folding>
+            <marker date="1414290734347" expanded="true" signature="5987:6045" placeholder="SELECT COUNT..systemLog..." />
+            <marker date="1414290734347" expanded="true" signature="6620:6693" placeholder="SELECT AVG(t..testHistory..." />
+            <marker date="1414290734347" expanded="true" signature="7289:7349" placeholder="SELECT COUNT..testHistory..." />
+            <marker date="1414290734347" expanded="true" signature="7936:7996" placeholder="SELECT COUNT..testManager..." />
+            <marker date="1414290734347" expanded="true" signature="8587:8670" placeholder="SELECT SUM(t..testHistory..." />
+            <marker date="1414290734347" expanded="true" signature="9287:9369" placeholder="SELECT SUM(q..testHistory..." />
+            <marker date="1414290734347" expanded="true" signature="9982:10054" placeholder="SELECT userU..userSupervisorAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="10676:10758" placeholder="SELECT userU..userTrainingManagerAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="11378:11450" placeholder="SELECT super..userSupervisorAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="12061:12143" placeholder="SELECT train..userTrainingManagerAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="12770:13182" placeholder="SELECT afscU..userAFSCAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="13808:13891" placeholder="SELECT afscU..userAFSCAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="14503:14595" placeholder="SELECT COUNT..userAFSCAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="15206:15298" placeholder="SELECT COUNT..userAFSCAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="15922:16003" placeholder="SELECT COUNT..userSupervisorAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="16633:16724" placeholder="SELECT COUNT..userTrainingManagerAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="17353:17428" placeholder="SELECT COUNT..userSupervisorAssociations..." />
+            <marker date="1414290734347" expanded="true" signature="18036:18116" placeholder="SELECT COUNT..userTrainingManagerAssociations..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8953" max-vertical-offset="12582">
+          <caret line="519" column="34" selection-start-line="519" selection-start-column="34" selection-end-line="519" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/test/take.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8202995" vertical-offset="3791" max-vertical-offset="4716">
+          <caret line="238" column="36" selection-start-line="238" selection-start-column="36" selection-end-line="238" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
+

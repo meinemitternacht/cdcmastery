@@ -82,7 +82,7 @@ class passwordReset extends user {
 			$stmt->bind_param("sss",$uuid,$userUUID,$timeExpires);
 				
 			if($stmt->execute()){
-				$emailSender = "<support@cdcmastery.com>";
+				$emailSender = "support@cdcmastery.com";
 				$emailRecipient = $this->getUserEmail();
 				$emailSubject = "CDCMastery.com Password Reset Request";
 	

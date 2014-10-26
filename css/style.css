@@ -8,382 +8,331 @@
 /* Basic                                                                         */
 /*********************************************************************************/
 
-	body
-	{
-		background: #141414;
-	}
+body {
+    background: #141414;
+}
 
-	body,input,textarea,select
-	{
-		font-family: 'Arimo', sans-serif;
-		font-size: 11pt;
-		line-height: 1.75em;
-		color: #4c4c4c;
-	}
+body, input, textarea, select {
+    font-family: 'Arimo', sans-serif;
+    font-size: 11pt;
+    line-height: 1.75em;
+    color: #4c4c4c;
+}
 
-	h1,h2,h3,h4,h5,h6
-	{
-		text-transform: uppercase;
-		font-weight: bold;
-	}
-	
-		h1 a, h2 a, h3 a, h4 a, h5 a, h6 a
-		{
-			color: inherit;
-			text-decoration: none;
-		}
-		
-	/* Change this to whatever font weight/color pairing is most suitable */
-	strong, b
-	{
-		font-weight: bold;
-		color: #000000;
-	}
-	
-	em, i
-	{
-		font-style: italic;
-	}
+h1, h2, h3, h4, h5, h6 {
+    text-transform: uppercase;
+    font-weight: bold;
+}
 
-	/* Don't forget to set this to something that matches the design */
-	a
-	{
-		text-decoration: underline;
-		color: #272727;
-	}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    color: inherit;
+    text-decoration: none;
+}
 
-	a:hover
-	{
-		text-decoration: none;
-	}
-	
-	sub
-	{
-		position: relative;
-		top: 0.5em;
-		font-size: 0.8em;
-	}
-	
-	sup
-	{
-		position: relative;
-		top: -0.5em;
-		font-size: 0.8em;
-	}
-	
-	hr
-	{
-		border: 0;
-		border-top: solid 1px #ddd;
-	}
-	
-	blockquote
-	{
-		border-left: solid 0.5em #ddd;
-		padding: 1em 0 1em 2em;
-		font-style: italic;
-	}
-	
-	p, ul, ol, dl, table
-	{
-		margin-bottom: 1em;
-	}
+/* Change this to whatever font weight/color pairing is most suitable */
+strong, b {
+    font-weight: bold;
+    color: #000000;
+}
 
-	header
-	{
-		margin-bottom: 0.5em;
-	}
-	
-		header h2
-		{
-			font-size: 1.3em;
-		}
-	
-		header .byline
-		{
-			display: block;
-			margin: 0.5em 0 0 0;
-			padding: 0 0 0.5em 0;
-		}
-		
-	footer
-	{
-		margin-top: 1em;
-	}
+em, i {
+    font-style: italic;
+}
 
-	br.clear
-	{
-		clear: both;
-	}
+/* Don't forget to set this to something that matches the design */
+a {
+    text-decoration: underline;
+    color: #272727;
+}
 
-	/* Sections/Articles */
-	
-		section,
-		article
-		{
-			margin-bottom: 1em;
-		}
-		
-		section > :last-child,
-		article > :last-child
-		{
-			margin-bottom: 0;
-		}
+a:hover {
+    text-decoration: none;
+}
 
-		section:last-child,
-		article:last-child
-		{
-			margin-bottom: 0;
-		}
+sub {
+    position: relative;
+    top: 0.5em;
+    font-size: 0.8em;
+}
 
-		.row > section,
-		.row > article
-		{
-			margin-bottom: 0;
-		}
+sup {
+    position: relative;
+    top: -0.5em;
+    font-size: 0.8em;
+}
 
-	/* Images */
+hr {
+    border: 0;
+    border-top: solid 1px #ddd;
+}
 
-		.image
-		{
-			display: inline-block;
-		}
-		
-			.image img
-			{
-				display: block;
-				width: 100%;
-			}
+blockquote {
+    border-left: solid 0.5em #ddd;
+    padding: 1em 0 1em 2em;
+    font-style: italic;
+}
 
-			.image.featured
-			{
-				display: block;
-				width: 100%;
-				margin: 0 0 2em 0;
-			}
-			
-			.image.full
-			{
-				display: block;
-				width: 100%;
-				margin: 0 0 2em 0;
-			}
-			
-			.image.left
-			{
-				float: left;
-				margin: 0 2em 2em 0;
-			}
-			
-			.image.centered
-			{
-				display: block;
-				margin: 0 0 2em 0;
-			}
+p, ul, ol, dl, table {
+    margin-bottom: 1em;
+}
 
-				.image.centered img
-				{
-					margin: 0 auto;
-					width: auto;
-				}
+header {
+    margin-bottom: 0.5em;
+}
 
-	/* Lists */
+header h2 {
+    font-size: 1.3em;
+}
 
-		ul.default
-		{
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
-		
-			ul.default li
-			{
-				padding: 0.60em 0em;
-				border-top: 1px solid;
-				border-color: rgba(255,255,255,.1);
-			}
-			
-			ul.default li:first-child
-			{
-				padding-top: 0;
-				border-top: none;
-			}
-			
-			ul.default a
-			{
-				text-decoration: none;
-				color: rgba(255,255,255,.5);
-			}
-			
-			ul.default a:hover
-			{
-				text-decoration: underline;
-			}
-			
-		ul.style {
-		}
-		
-		ul.style li {
-			margin: 0;
-			padding: 2em 0em 1.5em 0em;
-			border-top: 1px solid #ECECEC;
-		}
-		
-		ul.style li:first-child
-		{
-			padding-top: 0;
-			border-top: none;
-		}
-		
-		ul.style img {
-			float: left;
-			margin-right: 20px;
-		}
-		
-		ul.style p {
-		}
-		
-		ul.style .posted {
-			padding: 0em 0em 1em 0em;
-			letter-spacing: 1px;
-			text-transform: uppercase;
-			font-size: 8pt;
-			color: #A2A2A2;
-		}
-		
-		ul.style .first {
-			padding-top: 0px;
-			border-top: none;
-		}
-							
+header .byline {
+    display: block;
+    margin: 0.5em 0 0 0;
+    padding: 0 0 0.5em 0;
+}
 
-	/* Buttons */
-		
-		.button
-		{
-			position: relative;
-			display: inline-block;
-			margin-top: 0.5em;
-			padding: 0.40em 1.5em;
-			background: #e95d3c;
-			border-radius: 40px;
-			text-decoration: none;
-			text-transform: uppercase;
-			font-size: 1.1em;
-			color: #FFF;
-			-moz-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
-			-webkit-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
-			-o-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
-			-ms-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
-			transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
-			cursor: pointer;
-		}
+footer {
+    margin-top: 1em;
+}
 
-			.button:hover
-			{
-				background: #de3d27;
-				color: #FFF !important;
-			}
-			
+br.clear {
+    clear: both;
+}
+
+/* Sections/Articles */
+
+section,
+article {
+    margin-bottom: 1em;
+}
+
+section > :last-child,
+article > :last-child {
+    margin-bottom: 0;
+}
+
+section:last-child,
+article:last-child {
+    margin-bottom: 0;
+}
+
+.row > section,
+.row > article {
+    margin-bottom: 0;
+}
+
+/* Images */
+
+.image {
+    display: inline-block;
+}
+
+.image img {
+    display: block;
+    width: 100%;
+}
+
+.image.featured {
+    display: block;
+    width: 100%;
+    margin: 0 0 2em 0;
+}
+
+.image.full {
+    display: block;
+    width: 100%;
+    margin: 0 0 2em 0;
+}
+
+.image.left {
+    float: left;
+    margin: 0 2em 2em 0;
+}
+
+.image.centered {
+    display: block;
+    margin: 0 0 2em 0;
+}
+
+.image.centered img {
+    margin: 0 auto;
+    width: auto;
+}
+
+/* Lists */
+
+ul.default {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.default li {
+    padding: 0.60em 0em;
+    border-top: 1px solid;
+    border-color: rgba(255, 255, 255, .1);
+}
+
+ul.default li:first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+ul.default a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, .5);
+}
+
+ul.default a:hover {
+    text-decoration: underline;
+}
+
+ul.style {
+}
+
+ul.style li {
+    margin: 0;
+    padding: 2em 0em 1.5em 0em;
+    border-top: 1px solid #ECECEC;
+}
+
+ul.style li:first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+ul.style img {
+    float: left;
+    margin-right: 20px;
+}
+
+ul.style p {
+}
+
+ul.style .posted {
+    padding: 0em 0em 1em 0em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 8pt;
+    color: #A2A2A2;
+}
+
+ul.style .first {
+    padding-top: 0px;
+    border-top: none;
+}
+
+/* Buttons */
+
+.button {
+    position: relative;
+    display: inline-block;
+    margin-top: 0.5em;
+    padding: 0.40em 1.5em;
+    background: #e95d3c;
+    border-radius: 40px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 1.1em;
+    color: #FFF;
+    -moz-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
+    -webkit-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
+    -o-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
+    -ms-transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
+    transition: color 0.35s ease-in-out, background-color 0.35s ease-in-out;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #de3d27;
+    color: #FFF !important;
+}
+
 /*********************************************************************************/
 /* Header                                                                        */
 /*********************************************************************************/
 
-	#header
-	{
-		position: relative;
-		background: #2a2f27 no-repeat;
-	}
+#header {
+    position: relative;
+    background: #2a2f27 no-repeat;
+}
 
-	#logo
-	{
-	}
-	
-	#nav
-	{
-	}
+#logo {
+}
 
-		#nav ul
-		{
-			margin: 0;
-		}
-	
+#nav {
+}
+
+#nav ul {
+    margin: 0;
+}
+
 /*********************************************************************************/
 /* Banner                                                                        */
 /*********************************************************************************/
 
-	#banner
-	{
-		position: relative;
-		background: #333;
-		color: #fff;
-	}
+#banner {
+    position: relative;
+    background: #333;
+    color: #fff;
+}
 
 /*********************************************************************************/
 /* Main                                                                          */
 /*********************************************************************************/
 
-	#main
-	{
-		position: relative;
-		background: #fff;
-	}
+#main {
+    position: relative;
+    background: #fff;
+}
 
 /*********************************************************************************/
 /* Featured                                                                      */
 /*********************************************************************************/
-	
-	#featured
-	{
-		position: relative;
-		background: #f2f2f2;
-	}
-	
-	#featured h2
-	{
-		display: block;
-		margin-bottom: 2em;
-		font-size: 1.4em;
-	}
-	
+
+#featured {
+    position: relative;
+    background: #f2f2f2;
+}
+
+#featured h2 {
+    display: block;
+    margin-bottom: 2em;
+    font-size: 1.4em;
+}
+
 /*********************************************************************************/
 /* Footer                                                                        */
 /*********************************************************************************/
-	
-	#footer
-	{
-		position: relative;
-		background: #1d1d1d;
-	}
-	
-	#footer h2
-	{
-		display: block;
-		color: #FFF;
-	}
-	
+
+#footer {
+    position: relative;
+    background: #1d1d1d;
+}
+
+#footer h2 {
+    display: block;
+    color: #FFF;
+}
+
 /*********************************************************************************/
 /* Copyright                                                                     */
 /*********************************************************************************/
-	
-	#copyright
-	{
-		position: relative;
-		padding: 3em 0em;
-		letter-spacing: 1px;
-		text-align: center;
-		color: rgba(255,255,255,.2);
-	}
-	
-	#copyright .container
-	{
-	}
-	
-	#copyright a
-	{
-		text-decoration: none;
-		color: rgba(255,255,255,.3);
-	}
+
+#copyright {
+    position: relative;
+    padding: 3em 0em;
+    letter-spacing: 1px;
+    text-align: center;
+    color: rgba(255, 255, 255, .2);
+}
+
+#copyright .container {
+}
+
+#copyright a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, .3);
+}
 
 /*****************************/
 /* Custom Declarations		 */
@@ -392,264 +341,258 @@
  *  System Messages
  */
 .systemMessages {
-	background-color: pink;
-	border: 1px solid red;
-	padding-top: 1em;
-	padding-left: 1em;
-	padding-right: 1em;
-	padding-bottom: 0.3em;
-	margin-bottom: 1em;
+    background-color: pink;
+    border: 1px solid red;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 0.3em;
+    margin-bottom: 1em;
 }
-
 
 /*
  *  Page Title
  */
 #page-title {
-	width: 100%;
-	margin: 0;
-	padding-bottom: 0.3em;
-	padding-left: 0;
-	padding-right: 0.5em;
+    width: 100%;
+    margin: 0;
+    padding-bottom: 0.3em;
+    padding-left: 0;
+    padding-right: 0.5em;
 }
 
 #page-title h1 {
-	font-size: 1.6em;
-	font-weight: 900;
+    font-size: 1.6em;
+    font-weight: 900;
 }
 
 /*
  *  Form Styling
  */
 .form-object-full {
-	width: 100%;
+    width: 100%;
 }
-
 
 /*
  *  Panel styles
  */
 .panel-light-blue {
-	background-color: #66cccc;
+    background-color: #66cccc;
 }
-
 
 /*
  *	Sub Menus
  */
 .sub-menu .menu-heading {
-	width:100%;
-	float:left;
-	color: #fff;
-	font-weight: 900;
-	background-color: #333;
-	border-left: 5px solid #666;
-	border-top: 1px solid #aaa;
-	border-right: 1px solid #aaa;
-	border-bottom: 1px solid #aaa;
-	margin-bottom: 0.1em;
-	font-size: 1.1em;
-	padding: 0.5em;
+    width: 100%;
+    float: left;
+    color: #fff;
+    font-weight: 900;
+    background-color: #333;
+    border-left: 5px solid #666;
+    border-top: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    margin-bottom: 0.1em;
+    font-size: 1.1em;
+    padding: 0.5em;
 }
 
 .sub-menu ul {
-	list-style: none;
+    list-style: none;
 }
 
-.sub-menu ul li { 
-	float:left;
-	width:100%;
-	color: #222;
-	font-weight: 900;
-	background-color: #ddd;
-	border-left: 5px solid #666;
-	border-top: 1px solid #aaa;
-	border-right: 1px solid #aaa;
-	border-bottom: 1px solid #aaa;
-	margin-bottom: 0.1em;
+.sub-menu ul li {
+    float: left;
+    width: 100%;
+    color: #222;
+    font-weight: 900;
+    background-color: #ddd;
+    border-left: 5px solid #666;
+    border-top: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    margin-bottom: 0.1em;
 }
 
 .sub-menu ul li:last {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .sub-menu ul li i {
-	margin-left: 0.7em;
-	margin-right: 0.7em;
+    margin-left: 0.7em;
+    margin-right: 0.7em;
 }
 
 .sub-menu ul li:hover {
-	color: #fff;
-	background-color: #99ccff;
-	border-left: 5px solid #cc6666;
-	border-top: 1px solid #666;
-	border-right: 1px solid #666;
-	border-bottom: 1px solid #666;	
+    color: #fff;
+    background-color: #99ccff;
+    border-left: 5px solid #cc6666;
+    border-top: 1px solid #666;
+    border-right: 1px solid #666;
+    border-bottom: 1px solid #666;
+    cursor: pointer;
 }
 
 .sub-menu ul li a {
-	padding: 0.5em;
-	text-decoration: none;
-	display: block;
+    padding: 0.5em;
+    text-decoration: none;
+    display: block;
 }
 
 .sub-menu ul li.menu-item-warning {
-	background-color: #ff9999;
+    background-color: #ff9999;
 }
- 
+
 /*
  *	Button Tweaks
  */
-.button i {margin-right:10px;}
+.button i {
+    margin-right: 10px;
+}
 
 /*
  *	Text Alignment
  */
-.text-float-left { float:left; }
-.text-float-right { float:right; }
+.text-float-left {
+    float: left;
+}
 
-.text-right { text-align: right; }
-.text-center { text-align: center; }
-.text-left { text-align:left; }
-.text-justify { text-align:justify; }
+.text-float-right {
+    float: right;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-justify {
+    text-align: justify;
+}
 
 /*
  *	Text Coloring
  */
-.text-success, .text-success a { color: green !important; }
-.text-caution, .text-caution a { color: gold !important; }
-.text-warning, .text-warning a { color: crimson !important; }
-.text-white, .text-white a { color: white !important; }
+.text-success, .text-success a {
+    color: green !important;
+}
+
+.text-caution, .text-caution a {
+    color: gold !important;
+}
+
+.text-warning, .text-warning a {
+    color: crimson !important;
+}
+
+.text-white, .text-white a {
+    color: white !important;
+}
 
 /*
- *	Forms
+ *  Special Text Styling
  */
-.light-form h2 { /* The header tag. e.x. "Contact Me" */
-	color:#2F2F2F;
-	margin:0;
+.tableLinksDashed a {
+    text-decoration: none;
+    border-bottom: 1px dashed #ccc;
 }
 
-.light-form hr { /* The horizontal line between the title and the form. */
-	border:none;
-	border-bottom:1px dashed #356AA0;
+.tableLinksDashed a.active {
+    text-decoration: none;
+    border-bottom: 1px solid #ccc;
+}
+/*
+ *  AFSC List (/test/take)
+ */
+#afscList .ui-button {
+    width: 100%;
 }
 
-.light-form { /* The form itself. */
-	position:relative;
-	float:left;  /*float:left makes sure the forms width is optimal */
-	width: 95%;
+#afscList .ui-state-hover {
+    background-color: lightyellow;
 }
 
-.light-form label.bold {
-	font-weight: 900;
+#afscList .ui-state-active {
+    background-color: lightgreen;
 }
 
-.light-form label.pretty { /* Forms labels. */
-	float:left;
-	display:block;
-	width:100px; /* this width sets the distance between the label and the input fields */
-	font-size:13px;
-	font-weight:900;
-	color:black;
+/*
+ *  Registration
+ */
+.registrationForm {
+
 }
 
-.light-form input.radio {
-	padding:4px;
+.registrationForm input {
+    width: 100%;
 }
 
-.light-form input.pretty, .light-form textarea.pretty { /* The input fields. */
-	width:60%; /* You can change the field width */
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	border:none; /* This declaration makes sure no auto borders appear. */
-	font-size:14px;
-	padding:4px;
-	-moz-box-shadow: 0 0 3px #808080; /* This gives the effect of the glow around the input fields. */
-	box-shadow:0 0 3px #808080;
-	-webkit-box-shadow: 0 0 3px #808080;
-}
-
-.light-form input.pretty:hover, textarea.pretty:hover { /* Input fields hover */
-	-moz-box-shadow: 0 0 3px #333333; /* On hover glow */
-	box-shadow: 0 0 3px #333333;
-	-webkit-box-shadow: 0 0 3px #333333;
-}
-
-.light-form input.pretty:focus, textarea.pretty:focus {
-	-moz-box-shadow: 0 0 3px #4096EE; /* On focus glow */
-	box-shadow: 0 0 3px #4096EE;
-	-webkit-box-shadow:0 0 3px #4096EE;
-}
-
-.light-form div{ /* This is for the divs that contains the labels and inputs  */
-	padding-left:5px;
-	padding-top:6px;
-	padding-bottom: 6px;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	position:relative;
-	max-width: 700px;
-}
-
-.light-form div:hover { /* The divs on hover. */
-	background-color: #C3D9FF;
-	background-image:-moz-linear-gradient(#C3D9FF,#A7C7FF);
-	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#C3D9FF),to(#A7C7FF));
-}
-
-.light-form .submit input { /* Forms submit element */
-	display:inline-block;
-	color:#ffffff;
-	text-decoration:none;
-	line-height:1;
-	font-weight:bold;
-	-moz-box-shadow:0 1px 3px #999999;
-	-webkit-box-shadow:0 1px 3px #999999;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-	text-shadow:0 0 2px #222222;
-	cursor:pointer;
-	font-family:sans-serif;
-	padding:6px 16px 8px;
-	font-size:13px;
-	width:auto;
-	background-color: #4f8ace;
-	background-image:-moz-linear-gradient(#4f8ace,#2d629d);
-	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#4f8ace),to(#2d629d));
-  	border:#2d629d solid 1px;
-}
-
-.light-form .submit input:hover {  /* Forms submit button hover. */
-	background-color: #609bdf;
-	background-image:-moz-linear-gradient(#609bdf,#2d629d);
-	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#609bdf),to(#2d629d));
-}
-
-.light-form .submit input:active {  /* Forms submit button pressed. */
-	background-color: #2d629d;
-	background-image:-moz-linear-gradient(#2d629d,#4f8ace);
-	background-image: -webkit-gradient(linear,0% 0%,0% 100%,from(#2d629d),to(#4f8ace));
+.registrationForm select {
+    width: 100%;
 }
 
 /*
  *	Tables
  */
-.tablecloth table, .tablecloth td{
-	font:100% Arial, Helvetica, sans-serif; 
+.tableSmallText {
+    font-size: 0.8em;
 }
-.tablecloth table{width:100%;border-collapse:collapse;margin:1em 0;}
-.tablecloth th, .tablecloth td{text-align:left;padding:.5em;border:1px solid #fff;}
-.tablecloth th{background:#328aa4;color:#fff;}
-.tablecloth td{background:#e5f1f4;}
 
-.tablecloth tr.even td{background:#e5f1f4;}
-.tablecloth tr.odd td{background:#f8fbfc;}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font: 100% Arial, Helvetica, sans-serif;
+    margin-top: 0.6em;
+}
+
+th, td {
+    text-align: left;
+    border: 1px solid #fff;
+}
+
+th {
+    background: #222;
+    color: #fff;
+    font-weight: 900;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+th.th-child {
+    background: #bbb;
+    color: #000;
+}
+
+td {
+    background: #e5f1f4;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+tr:nth-child(even) td {
+    background-color: #e5f1f4;
+}
+
+tr:nth-child(odd) td {
+    background-color: #f8fbfc;
+}
 
 /*
  *	Miscellaneous
  */
 
-.associationList {max-height:200px !important; overflow:auto}
+.associationList {
+    max-height: 200px !important;
+    overflow: auto
+}
 
 /*
  *	Test Pages
@@ -664,21 +607,88 @@
     border-radius: 1em;
 }
 
-#questionAnswer{min-height:100px;}
+#questionAnswer {
+    min-height: 100px;
+}
 
-.testProgress{font-size:1em;text-align:center;}
-.smallSectionTitle{font-size:0.8em;text-align:left;}
+.testProgress {
+    font-size: 1em;
+    text-align: center;
+}
 
-.test-nav{margin:0 auto;text-align:center;}
-.test-nav .test-nav-button{background-color:#f2f2f2;border:1px solid #069;color:#069;cursor:pointer;font-weight:700;margin-left:3px;padding:2px 6px;width:50px;text-align:center;}
-.test-nav .test-nav-button:hover{background-color:#069;color:#fff;cursor:pointer}
-.clearfix:after {content: ".";display: block;clear: both;visibility: hidden;line-height: 0;height: 0;}
+.smallSectionTitle {
+    font-size: 0.8em;
+    text-align: left;
+}
 
-.displayQuestion{min-height:60px;padding:1%;color:#666;text-align:left;background-color:#ddd;border-bottom:2px solid #bbb;border-top:2px solid #bbb;}
+.test-nav {
+    margin: 0 auto;
+    text-align: center;
+}
 
-#list-answers{}
-#list-answers ul{list-style:none;padding:0}
-#list-answers ul li {margin-bottom:5px;padding:5px;border-top:1px solid #999}
-#list-answers ul li.list-answer-normal{background-color:#eee;color:#000}
-#list-answers ul li.list-answer-selected{background-color:#bbb;color:#000}
-#list-answers ul li:hover{background-color:#8C9FFF!important;color:#fff;cursor:pointer}
+.test-nav .test-nav-button {
+    background-color: #f2f2f2;
+    border: 1px solid #069;
+    color: #069;
+    cursor: pointer;
+    font-weight: 700;
+    margin-left: 3px;
+    padding: 2px 6px;
+    width: 50px;
+    text-align: center;
+}
+
+.test-nav .test-nav-button:hover {
+    background-color: #069;
+    color: #fff;
+    cursor: pointer
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+.displayQuestion {
+    min-height: 60px;
+    padding: 1%;
+    color: #666;
+    text-align: left;
+    background-color: #ddd;
+    border-bottom: 2px solid #bbb;
+    border-top: 2px solid #bbb;
+}
+
+#list-answers {
+}
+
+#list-answers ul {
+    list-style: none;
+    padding: 0
+}
+
+#list-answers ul li {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-top: 1px solid #999
+}
+
+#list-answers ul li.list-answer-normal {
+    background-color: #eee;
+    color: #000
+}
+
+#list-answers ul li.list-answer-selected {
+    background-color: #bbb;
+    color: #000
+}
+
+#list-answers ul li:hover {
+    background-color: #8C9FFF !important;
+    color: #fff;
+    cursor: pointer
+}

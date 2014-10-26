@@ -4,8 +4,7 @@
 This script provides a class interface for the site users
 */
 
-class user extends CDCMastery
-{
+class user extends CDCMastery {
 	protected $db;
 	protected $log;
 	protected $emailQueue;
@@ -386,9 +385,33 @@ class user extends CDCMastery
 			return true;
 		}
 	}
+	
+	public function getUserNameByUUID($userUUID){
+		if($userUUID == "ANONYMOUS"){
+			return "ANONYMOUS";
+		}
+		elseif($userUUID == "SYSTEM"){
+			return "SYSTEM";
+		}
+		else{
+			$_user = new user($this->db, $this->log, $this->emailQueue);
+			
+			if($_user->loadUser($userUUID)){
+				return $_user->getFullName();
+			}
+			else{
+				return false;
+			}
+		}
+	}
 
-	public function getFullName(){
-		$fullName = $this->getUserRank() . ' ' . $this->getUserFirstName() . ' ' . $this->getUserLastName();
+	public function getFullName($userRank="",$userFirstName="",$userLastName=""){
+		if(!empty($userRank) && !empty($userFirstName) && !empty($userLastName)){
+			$fullName = $userRank . ' ' . $userFirstName . ' ' . $userLastName;
+		}
+		else{
+			$fullName = $this->getUserRank() . ' ' . $this->getUserFirstName() . ' ' . $this->getUserLastName();
+		}
 
 		return $fullName;
 	}
@@ -430,7 +453,7 @@ class user extends CDCMastery
 	}
 
 	public function getUserByUUID($uuid){
-		$_user = new user($this->db, $this->log);
+		$_user = new user($this->db, $this->log, $this->emailQueue);
 		if(!$_user->loadUser($uuid)){
 			return false;
 		}
@@ -499,6 +522,66 @@ class user extends CDCMastery
 				natcasesort($resultArray);
 				return $resultArray;
 			}
+		}
+	}
+	
+	public function sortUserList($userArray, $sortColumn, $sortDirection="ASC"){
+		/*
+		 * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
+		 * a completely new array.  Makes life easier.
+		 */
+		
+		if(is_array($userArray) && !empty($userArray)){
+			foreach($userArray as $userUUID){
+				if($this->verifyUser($userUUID)){
+					$implodeArray[] = $userUUID;
+				}
+			}
+			
+			$userList = implode("','",$implodeArray);
+			
+			$res = $this->db->query("SELECT uuid,
+											userFirstName,
+											userLastName,
+											userHandle,
+											userEmail,
+											userRank,
+											userRole,
+											userOfficeSymbol,
+											userBase
+										FROM userData
+										WHERE uuid IN ('".$userList."')
+										ORDER BY ".$sortColumn." ".$sortDirection);
+			
+			if($res->num_rows > 0){
+				while($row = $res->fetch_assoc()){
+					$returnArray[$row['uuid']]['userFirstName'] = $row['userFirstName'];
+					$returnArray[$row['uuid']]['userLastName'] = $row['userLastName'];
+					$returnArray[$row['uuid']]['userHandle'] = $row['userHandle'];
+					$returnArray[$row['uuid']]['userEmail'] = $row['userEmail'];
+					$returnArray[$row['uuid']]['userRank'] = $row['userRank'];
+					$returnArray[$row['uuid']]['userRole'] = $row['userRole'];
+					$returnArray[$row['uuid']]['userOfficeSymbol'] = $row['userOfficeSymbol'];
+					$returnArray[$row['uuid']]['userBase'] = $row['userBase'];
+					$returnArray[$row['uuid']]['fullName'] = $this->getFullName($row['userRank'],$row['userFirstName'],$row['userLastName']);
+				}
+				
+				if(isset($returnArray) && !empty($returnArray)){
+					return $returnArray;
+				}
+				else{
+					$this->error = "returnArray was empty.";
+					return false;
+				}
+			}
+			else{
+				$this->error = $this->db->error;
+				return false;
+			}
+		}
+		else{
+			$this->error = "User list must be an array of values.";
+			return false;
 		}
 	}
 

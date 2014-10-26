@@ -23,7 +23,7 @@ class bases extends CDCMastery
 		
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
-				$roleArray[$row['uuid']]['baseName'] = $row['baseName'];
+				$baseArray[$row['uuid']] = $row['baseName'];
 			}
 			
 			$noResults = false;
@@ -38,7 +38,7 @@ class bases extends CDCMastery
 			return false;
 		}
 		else{
-			return $roleArray;
+			return $baseArray;
 		}
 	}
 	

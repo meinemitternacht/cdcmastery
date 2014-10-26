@@ -326,7 +326,7 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryUserSupervisors()){
+			if(!$this->queryCountUserSupervisors()){
 				return false;
 			}
 			else{
@@ -340,7 +340,7 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryUserTrainingManagers()){
+			if(!$this->queryCountUserTrainingManagers()){
 				return false;
 			}
 			else{
@@ -614,14 +614,20 @@ class userStatistics extends CDCMastery
 	}
 	
 	public function queryAFSCAssociations(){
-		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 1 AND userUUID = ?");
+		$stmt = $this->db->prepare("SELECT afscUUID, afscName
+                                    FROM userAFSCAssociations
+                                      LEFT JOIN afscList
+                                      ON afscList.uuid = userAFSCAssociations.afscUUID
+                                    WHERE userAuthorized = 1
+                                    AND userUUID = ?
+                                    ORDER BY afscList.afscName ASC");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
-			$stmt->bind_result($afscUUID);
+			$stmt->bind_result($afscUUID, $afscName);
 		
 			while($stmt->fetch()){
-				$this->afscAssociations[] = $afscUUID;
+				$this->afscAssociations[$afscUUID] = $afscName;
 			}
 				
 			$stmt->close();
