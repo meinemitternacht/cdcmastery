@@ -99,9 +99,19 @@ else{
 	</script>
 	<div class="container">
 		<div class="row">
-			<div class="6u">
+			<div class="12u">
 				<section>
-					<table>
+                    <header>
+                        <h2><?php echo $userProfile->getFullName(); ?></h2>
+                    </header>
+                    <a href="/user/edit" class="button">Edit Profile</a>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="6u">
+                <section>
+        			<table>
 						<tr>
 							<th colspan="2">Account Details</th>
 						</tr>

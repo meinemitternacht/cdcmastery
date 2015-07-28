@@ -115,14 +115,14 @@ and (max-device-width : 480px) {
 				</header>
 				<div class="sub-menu">
 					<ul>
-						<li><a href="/admin/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First"><i class="fa fa-angle-double-left fa-fw"></i>First</a></li>
+						<li><a href="/admin/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>First</a></li>
 						<?php if($pageNumber > 0): ?>
-						<li><a href="/admin/log/<?php echo ($pageNumber - 1); ?>" title="Previous"><i class="fa fa-angle-left fa-fw"></i>Previous</a></li>
+						<li><a href="/admin/log/<?php echo ($pageNumber - 1); ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>Previous</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber < $totalPages): ?>
-						<li><a href="/admin/log/<?php echo ($pageNumber + 1); ?>" title="Next"><i class="fa fa-angle-right fa-fw"></i>Next</a></li>
+						<li><a href="/admin/log/<?php echo ($pageNumber + 1); ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Next</a></li>
 						<?php endif; ?>
-						<li><a href="/admin/log/<?php echo $totalPages; ?>" title="Last"><i class="fa fa-angle-double-right fa-fw"></i>Last</a></li>
+						<li><a href="/admin/log/<?php echo $totalPages; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right"></i>Last</a></li>
 					</ul>
 				</div>
 			</section>
@@ -149,7 +149,7 @@ and (max-device-width : 480px) {
 							<?php else: ?>
 								<td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
 							<?php endif; ?>
-							<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/log"><i class="fa fa-arrow-circle-right fa-fw"></i>details</a></td>
+							<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/log"><i class="icon-inline icon-10 ic-log"></i>details</a></td>
 						</tr>
 						<?php endforeach; ?>
 					</table>
@@ -166,22 +166,22 @@ and (max-device-width : 480px) {
 						<span class="tableLinksDashed">
 							<a <?php if($sortBy == "timestamp") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc">Timestamp</a>:
 						</span>
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc"><i class="fa fa-sort-desc"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
 					</li>
 					<li>
 						<span class="tableLinksDashed">
 							<a <?php if($sortBy == "action") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc">Action</a>:
 						</span>
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc"><i class="fa fa-sort-desc"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
 					</li>
 					<li>		
 						<span class="tableLinksDashed">
 							<a <?php if($sortBy == "useruuid") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc">User</a>:
 						</span>
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/desc"><i class="fa fa-sort-desc"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+						<a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/desc"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
 					</li>
 				</ul>
 			</section>

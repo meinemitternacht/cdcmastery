@@ -1,10 +1,11 @@
 <?php
+echo "\n";
 define('BASE_PATH', realpath(__DIR__ . '/../'));
 define('APP_BASE', realpath(__DIR__ . '/../app'));
 
 include "../includes/bootstrap.inc.php";
 
-$res = $db->query("SELECT uuid, afscList FROM testHistoryTest ORDER BY testTimeStarted ASC");
+$res = $db->query("SELECT uuid, afscList FROM testHistory ORDER BY testTimeStarted ASC");
 $migrationArrayCount = $res->num_rows;
 $mappingArray = Array();
 
@@ -33,7 +34,7 @@ if($migrationArrayCount > 0){
 	
 	$res->close();
 	
-	$stmt = $db->prepare("UPDATE testHistoryTest SET afscList = ? WHERE uuid = ?");
+	$stmt = $db->prepare("UPDATE testHistory SET afscList = ? WHERE uuid = ?");
 	
 	echo "\nMigrating AFSC mappings...\n";
 	

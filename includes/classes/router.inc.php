@@ -10,6 +10,8 @@ class router extends CDCMastery
 	public $route;
 	public $showTheme;
 	public $siteSection;
+
+    public $publicRoutes = ['index','about','auth','register','contact','errors'];
 	
 	public function __construct(){
 		$this->showTheme = true;
@@ -32,6 +34,10 @@ class router extends CDCMastery
 			return false;
 		}
 	}
+
+	public function getRoute(){
+		return $this->route;
+	}
 	
 	public function getSiteSection(){
 		if(empty($this->route))
@@ -39,8 +45,13 @@ class router extends CDCMastery
 		
 		if(strpos($this->route,"/") !== false){
 			$routeArray = explode("/",$this->route);
-			
-			return $routeArray[0];
+
+            if($routeArray[1] == "register"){
+                return "register";
+            }
+            else{
+                return $routeArray[0];
+            }
 		}
 		else{
 			return $this->route;
@@ -50,6 +61,22 @@ class router extends CDCMastery
 	public function parseURI(){
 		if(isset($_SERVER['REQUEST_URI'])){
 			$this->request = $_SERVER['REQUEST_URI'];
+
+            if(strlen($this->request) > 1 && preg_match("/\/$/",$this->request)){
+                $this->request = substr($this->request, 0, -1);
+            }
+
+            if(strpos($this->request,"?") !== false){
+                $tmpRequest = explode("?",$this->request);
+                $this->request = $tmpRequest[0];
+
+                if(strpos($tmpRequest[1],"&") !== false){
+                    $_SESSION['vars']['get'] = explode("&",$tmpRequest[1]);
+                }
+                else {
+                    $_SESSION['vars']['get'] = $tmpRequest[1];
+                }
+            }
 			
 			if($this->request == "/" || $this->request == "/index.php"){
 				$this->route = "index";
@@ -118,6 +145,11 @@ class router extends CDCMastery
 				$this->errorNumber = 403;
 				return false;
 			}
+            elseif(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
+                $this->outputPage = APP_BASE . "/errors/403.php";
+                $this->errorNumber = 403;
+                return false;
+            }
 			elseif(strpos($this->filePath, "/export/") !== false){
 				$this->outputPage = $this->filePath;
 				$this->showTheme = false;

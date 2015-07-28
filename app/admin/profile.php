@@ -4,7 +4,7 @@ if(isset($_SESSION['vars'][0])):
 	$userProfile = new user($db, $log, $emailQueue);
 	$userProfileStatistics = new userStatistics($db, $log, $roles);
 	if(!$userProfile->loadUser($targetUUID)){
-		echo "That user does not exist.";
+		$sysMsg->addMessage("That user does not exist.");
 	}
 	else{
 		$userProfileStatistics->setUserUUID($targetUUID);
@@ -151,14 +151,14 @@ if(isset($_SESSION['vars'][0])):
 								<th class="th-child">Associated With</th>
 								<td>
 									<?php
-									$afscList = $userProfileStatistics->getAFSCAssociations();
+									$userAFSCList = $userProfileStatistics->getAFSCAssociations();
 									
-									if(!$afscList){
+									if(!$userAFSCList){
 										echo "No associations.";
 									}
 									else{
-										foreach($afscList as $userAFSC){
-											echo $afsc->getAFSCName($userAFSC)."<br />";
+										foreach($userAFSCList as $userAFSCuuid => $afscData){
+											echo $afsc->getAFSCName($userAFSCuuid)."<br>";
 										}
 									}
 									?>
@@ -361,7 +361,7 @@ if(isset($_SESSION['vars'][0])):
 									</tbody>
 								</table>
 								<div class="text-right text-warning">
-									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-tests"><i class="fa fa-trash fa-fw"></i>Delete All Tests</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-tests"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no tests to show.</p>
@@ -397,7 +397,7 @@ if(isset($_SESSION['vars'][0])):
 									</tbody>
 								</table>
 								<div class="text-right text-warning">
-									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-incomplete-tests"><i class="fa fa-trash fa-fw"></i>Delete All Incomplete Tests</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-incomplete-tests"><i class="icon-inline icon-20 ic-delete"></i>Delete All Incomplete Tests</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no incomplete tests to show.</p>
@@ -424,12 +424,12 @@ if(isset($_SESSION['vars'][0])):
 										<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
 										<td><?php echo $logData['action']; ?></td>
 										<td><?php echo $logData['ip']; ?></td>
-										<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/profile"><i class="fa fa-arrow-circle-right fa-fw"></i>details</a></td>
+										<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/profile"><i class="icon-inline icon-20 ic-arrow-right"></i>details</a></td>
 									</tr>
 									<?php endforeach; ?>
 								</table>
 								<div class="text-right text-warning">
-									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-log-entries"><i class="fa fa-trash fa-fw"></i>Delete All Log Entries</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-log-entries"><i class="icon-inline icon-20 ic-delete"></i>Delete All Log Entries</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no log entries in the system.</p>
@@ -444,7 +444,9 @@ if(isset($_SESSION['vars'][0])):
 	}
 else:
 	?>
-	<h1>User Profile List</h1>
+    <div class="container">
+	    <h1>User Profile List</h1>
+    </div>
 	<br />
 	<?php
 	$linkBaseURL = "admin/profile";

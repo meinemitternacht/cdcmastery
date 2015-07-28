@@ -106,8 +106,9 @@ else{
 								<br>
 								<form action="/test/delete/incomplete/<?php echo $target; ?>" method="POST">
 									<input type="hidden" name="confirmIncompleteTestDelete" value="1">
-									If you wish to delete the incomplete test started on <?php echo $cdcMastery->outputDateTime($testManager->getIncompleteTimeStarted(),$_SESSION['timeZone']); ?>
-									that is <?php echo $testManager->getIncompletePercentComplete(); ?> complete, please press continue.
+									If you wish to delete the incomplete test started on
+                                    <strong><?php echo $cdcMastery->outputDateTime($testManager->getIncompleteTimeStarted(),$_SESSION['timeZone']); ?></strong>
+									that is <strong><?php echo $testManager->getIncompletePercentComplete(); ?></strong> complete, please press continue.
 									Otherwise, <a href="/">return to the home page</a>.
 									<br>
 									<input type="submit" value="Continue">

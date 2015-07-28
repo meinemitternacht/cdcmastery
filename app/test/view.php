@@ -77,6 +77,10 @@ else{
 						<th>Score</th>
 						<td><?php echo $testManager->getTestScore(); ?>%</td>
 					</tr>
+                    <tr>
+                        <th># Missed</th>
+                        <td><?php echo $testManager->getQuestionsMissed(); ?></td>
+                    </tr>
 				</table>
 			</section>
 		</div>
@@ -90,25 +94,28 @@ else{
 				$testData = $testManager->getTestData();
 				
 				$i=1;
+                $c=0;
 				foreach($testData as $questionUUID => $answerUUID):
 					$questionManager->loadQuestion($questionUUID);
 					$answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
 					$answerManager->loadAnswer($answerUUID);
 					?>
-					<ul>
+					<ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c==0)?"#eee":"#ddd"; echo $color; ?>">
 						<li style="padding:0.3em;font-size:1.1em;">
 							<strong><?php echo $i; ?>. <?php echo $questionManager->getQuestionText(); ?></strong>
 						</li>
 						<li style="padding:0.3em">
 							<?php if($answerManager->getAnswerCorrect()): ?>
-							<i class="text-success fa fa-check-circle fa-lg fa-fw"></i>
+							<span class="text-success">
 							<?php else: ?>
-							<i class="text-warning fa fa-times-circle fa-lg fa-fw"></i>
+							<span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
 							<?php endif; ?>
-							<?php echo $answerManager->getAnswerText(); ?>
+							    <?php echo $answerManager->getAnswerText(); ?>
+                            </span>
 						</li>
 					</ul>
 					<?php $i++; ?>
+                    <?php $c=($c==0)?1:0; ?>
 				<?php endforeach; ?>
 			</section>
 		</div>

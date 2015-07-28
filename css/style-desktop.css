@@ -72,6 +72,7 @@ body,input,textarea,select{font-size: 11pt;}
 /*
  * Testing Pages
  */
+.testCompletedText{width:50%;margin:0 auto;}
 .displayQuestion{width:50%;margin:0 auto;}
 .testProgress{width:50%;margin:0 auto;padding-top:10px;}
 .smallSectionTitle{width:50%;margin:0 auto;padding:0;}

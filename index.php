@@ -3,6 +3,7 @@
  * CDCMastery.com
  */
 ob_start();
+
 $time_start = microtime(true);
 
 error_reporting(E_ALL);

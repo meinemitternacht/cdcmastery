@@ -182,9 +182,10 @@ input[type="week"] {
   margin: 0;
   padding: 2px 3px;
   text-align: left;
-  font-size: 13px;
+  font-size: 1.1em;
+  line-height: 1.1em;
   font-family: Arial, "Liberation Sans", FreeSans, sans-serif;
-  height: 1.8em;
+  height: 2.0em;
   vertical-align: top;
   *padding-top: 2px;
   *padding-bottom: 1px;
@@ -249,7 +250,7 @@ select[multiple] {
 
 select[size="0"],
 select[size="1"] {
-  height: 1.8em;
+  height: 2.0em;
   *height: auto;
 }
 

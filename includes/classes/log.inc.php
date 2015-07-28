@@ -22,7 +22,6 @@ class log extends CDCMastery
 	public $ip;					//ip of the user
 
 	public $uuidDetail;			//uuid of the log detail
-	public $timestampDetail;	//timestamp of the log detail
 	public $typeDetail;			//log detail data type
 	public $dataDetail;			//log detail data
 
@@ -32,7 +31,6 @@ class log extends CDCMastery
 	function __construct(mysqli $db) {
 		$this->db = $db;
 		$this->uuid = parent::genUUID();
-		$this->timestamp = date("Y-m-d H:i:s",time());
 		
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
@@ -52,7 +50,6 @@ class log extends CDCMastery
 		$this->userUUID			= NULL;
 		$this->ip				= NULL;
 		$this->uuidDetail		= NULL;
-		$this->timestampDetail	= NULL;
 		$this->typeDetail		= NULL;
 		$this->dataDetail		= NULL;
 		$this->detailArray		= NULL;
@@ -163,8 +160,8 @@ class log extends CDCMastery
 	}
 
 	function saveEntry() {
-		$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-		$stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
+		$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+		$stmt->bind_param('ssss', $this->uuid, $this->userUUID, $this->action, $this->ip);
 		if(!$stmt->execute()) {
 			$this->error[] = $stmt->error;
 			return false;
@@ -225,7 +222,6 @@ class log extends CDCMastery
 
 	function setDetail($type, $data) {
 		$this->uuidDetail = $this->genUUID();
-		$this->timestampDetail = date("Y-m-d H:i:s",time());
 		$this->typeDetail = htmlspecialchars_decode($type);
 
 		if(is_array($data)) {
@@ -237,7 +233,6 @@ class log extends CDCMastery
 		}
 
 		$this->detailArray[] = Array(	"uuid" => $this->uuidDetail,
-										"timestamp" => $this->timestampDetail,
 										"type" => $this->typeDetail,
 										"data" => $this->dataDetail
 									);

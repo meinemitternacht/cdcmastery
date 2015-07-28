@@ -146,6 +146,55 @@ class answerManager extends CDCMastery
 			return false;
 		}
 	}
+
+    public function deleteAnswer($answerUUID){
+        if(!$this->verifyAnswer($answerUUID)){
+            $this->error = "That answer does not exist.";
+            return false;
+        }
+
+        $stmt = $this->db->prepare("DELETE FROM answerData WHERE uuid = ?");
+        $stmt->bind_param("s",$answerUUID);
+
+        if($stmt->execute()){
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->log->setAction("ERROR_ANSWER_DELETE");
+            $this->log->setDetail("Answer UUID",$answerUUID);
+            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->saveEntry();
+
+            $this->error = $stmt->error;
+            $stmt->close();
+            return false;
+        }
+    }
+
+    public function verifyAnswer($answerUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS answerCount FROM answerData WHERE uuid = ?");
+        $stmt->bind_param("s",$answerUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($answerCount);
+            $stmt->fetch();
+
+            if($answerCount > 0){
+                $stmt->close();
+                return true;
+            }
+            else{
+                $stmt->close();
+                return false;
+            }
+        }
+        else{
+            $this->error = $stmt->error;
+            $stmt->close();
+            return false;
+        }
+    }
 	
 	public function getFOUO(){
 		return $this->fouo;

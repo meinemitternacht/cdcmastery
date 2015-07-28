@@ -13,11 +13,11 @@ if($logUUID):
 					<div class="sub-menu">
 						<ul>
 							<?php if($returnPath == "log"): ?>
-							<li><a href="/admin/log" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to Log</a></li>
+							<li><a href="/admin/log" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Log</a></li>
 							<?php elseif($returnPath == "user-log"): ?>
-							<li><a href="/admin/users/<?php echo $logData->getUserUUID(); ?>/log" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to User Manager</a></li>
+							<li><a href="/admin/users/<?php echo $logData->getUserUUID(); ?>/log" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to User Manager</a></li>
 							<?php elseif($returnPath == "profile"): ?>
-							<li><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to User Profile</a></li>
+							<li><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to User Profile</a></li>
 							<?php endif; ?>
 						</ul>
 					</div>

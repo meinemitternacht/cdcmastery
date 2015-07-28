@@ -6,7 +6,6 @@
 		<meta name="description" content="CDCMastery is a tool to help you succeed on the Air Force CDC EOC tests, Promotion Tests and other assessments of your career knowledge." />
 		<meta name="keywords" content="air force cdc, cdc pretest, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide" />
 		<meta name="revisit-after" content="30 days" />
-		<link href="http://fonts.googleapis.com/css?family=Arimo:400,700" rel="stylesheet" type="text/css">
 		<!--[if lte IE 8]><script src="/js/html5shiv.js"></script><![endif]-->
 		<script src="/js/jquery-1.11.1.min.js"></script>
 		<script src="/js/jquery-ui.min.js"></script>
@@ -16,11 +15,11 @@
 		<script src="/js/skel-panels.min.js"></script>
 		<script src="/js/init.js"></script>
 		<script src="/js/jquery.formalize.min.js"></script>
-		<link href="/includes/fontAwesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/formalize.css" rel="stylesheet" type="text/css" />
+        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
 		<noscript>
 			<link rel="stylesheet" href="/css/skel-noscript.css" />
 			<link rel="stylesheet" href="/css/style.css" />
@@ -42,11 +41,23 @@
 					<ul>
 						<li<?php if($router->getSiteSection() == "index"): ?> class="active"<?php endif; ?>><a href="/">Home</a></li>
 						<li<?php if($router->getSiteSection() == "about"): ?> class="active"<?php endif; ?>><a href="/about">About</a></li>
-						<li<?php if($router->getSiteSection() == "contact"): ?> class="active"<?php endif; ?>><a href="/contact">Contact</a></li>
+						<li><a href="http://helpdesk.cdcmastery.com" target="_blank">Support</a></li>
 						<?php if($cdcMastery->loggedIn()): ?>
-							<?php if($cdcMastery->verifyAdmin()): ?>
-								<li<?php if($router->getSiteSection() == "admin"): ?> class="active"<?php endif; ?>><a href="/admin">Admin Panel</a></li>
-							<?php elseif($cdcMastery->verifyTrainingManager()): ?>
+							<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
+								<li<?php if($router->getSiteSection() == "admin"): ?> class="active"<?php endif; ?>>
+                                    <a href="/admin">Admin Panel</a>
+                                    <ul>
+                                        <li><a href="/admin/afsc" title="AFSC Manager">AFSC Manager</a></li>
+                                        <li><a href="/admin/cdc-data" title="CDC Data">CDC Data</a></li>
+                                        <li><a href="/admin/tests" title="Test Manager">Test Manager</a></li>
+                                        <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
+                                        <li><a href="/admin/users" title="User Manager">User Manager</a></li>
+                                        <li><a href="/admin/profile" title="User Profiles">User Profiles</a></li>
+                                        <li><a href="/admin/log" title="Log">Log</a></li>
+                                        <li><a href="/admin/roles" title="Role Manager">Role Manager</a></li>
+                                        <li><a href="/admin/upload" title="Upload File">Upload File</a></li>
+                                    </ul>
+                                </li>
 								<li<?php if($router->getSiteSection() == "training"): ?> class="active"<?php endif; ?>><a href="/training/overview">Training Overview</a></li>
 							<?php elseif($cdcMastery->verifySupervisor()): ?>
 								<li<?php if($router->getSiteSection() == "supervisor"): ?> class="active"<?php endif; ?>><a href="/supervisor/overview">Supervisor Overview</a></li>
@@ -54,6 +65,7 @@
 							<li<?php if($router->getSiteSection() == "auth"): ?> class="active"<?php endif; ?>><a href="/auth/logout">Logout</a></li>
 						<?php else: ?>
 						<li<?php if($router->getSiteSection() == "auth"): ?> class="active"<?php endif; ?>><a href="/auth/login">Login</a></li>
+                        <li<?php if($router->getSiteSection() == "register"): ?> class="active"<?php endif; ?>><a href="/auth/register">Register</a></li>
 						<?php endif; ?>
 					</ul>
 				</nav>
@@ -62,29 +74,27 @@
 		</div>
 		<!-- Main -->
 		<div id="main">
-			<?php if(isset($_SESSION['messages'])): ?>
+			<?php if($router->getRoute() == "index"): ?>
 			<div class="container">
 				<div class="row">
 					<div class="12u">
-						<div class="systemMessages">
-							<?php
-							if(is_array($_SESSION['messages'])){
-								echo "<ul>";
-								foreach($_SESSION['messages'] as $message){
-									echo "<li><strong>".$message."</strong></li>\r\n";
-								}
-								echo "</ul>";
-							}
-							else{
-								echo "<ul><li><strong>";
-								echo $_SESSION['messages'];
-								echo "</strong></li></ul>";
-							}
-							
-							unset($_SESSION['messages']);
-							?>
+						<div class="informationMessages">
+							This site is in Alpha testing status.  There are many incomplete features, but core testing functionality and some administration functionality is working.  <strong>The main
+							goal of the redesign is to provide site usability to phone and tablet devices</strong>, and ensure speedy server response times.  Please take tests, and if you have the appropriate
+							permissions, utilize administration features as you deem fit.  Two explicitly disabled features are registration and e-mail functionality (to prevent confusing other members).
+							If you have any questions, or you encounter issues with the site, please <a href="http://helpdesk.cdcmastery.com">open a support ticket</a> under the category "Site Issues -
+							ALPHA SITE ONLY".
 						</div>
 					</div>
 				</div>
 			</div>
 			<?php endif; ?>
+			<div class="container" id="system-messages-container-block" style="display:none;">
+				<div class="row">
+					<div class="12u">
+						<div class="systemMessages" id="system-messages-block">
+							&nbsp;
+						</div>
+					</div>
+				</div>
+			</div>

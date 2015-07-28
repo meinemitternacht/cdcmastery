@@ -1,4 +1,5 @@
 <?php
+echo "\n";
 define('BASE_PATH', realpath(__DIR__ . '/../'));
 define('APP_BASE', realpath(__DIR__ . '/../app'));
 
@@ -11,7 +12,7 @@ if($oldDB->connect_errno){
 	exit();
 }
 
-$res = $oldDB->query("SELECT username, test_id, score, questions, missed, afsc, time_scored FROM testHistoryMigration LEFT JOIN users ON users.id=testHistoryMigration.user_id ORDER BY testHistoryMigration.test_id ASC");
+$res = $oldDB->query("SELECT username, test_id, score, questions, missed, afsc, time_scored FROM test_history LEFT JOIN users ON users.id=test_history.user_id ORDER BY test_history.test_id ASC");
 
 $testArray = Array();
 $arrayCount = $res->num_rows;
@@ -27,8 +28,7 @@ if($res->num_rows > 0){
 		if($userUUID){
 			$uuid = $cdcMastery->genUUID();
 			$testArray[$uuid]['userUUID'] = $userUUID;
-			$testArray[$uuid]['afscList'] = serialize($row['afsc']);			
-			$testArray[$uuid]['questionList'] = NULL;
+			$testArray[$uuid]['afscList'] = serialize($row['afsc']);
 			$testArray[$uuid]['totalQuestions'] = $row['questions'];
 			$testArray[$uuid]['questionsMissed'] = $row['missed'];
 			$testArray[$uuid]['testScore'] = $row['score'];
@@ -41,19 +41,17 @@ if($res->num_rows > 0){
 				$stmt = $db->prepare("INSERT INTO testHistory (	uuid,
 													userUUID,
 													afscList,
-													questionList,
 													totalQuestions,
 													questionsMissed,
 													testScore,
 													testTimeStarted,
 													testTimeCompleted,
 													oldTestID)
-										VALUES (?,?,?,?,?,?,?,?,?,?)
+										VALUES (?,?,?,?,?,?,?,?,?)
 										ON DUPLICATE KEY UPDATE
 													uuid=VALUES(uuid),
 													userUUID=VALUES(userUUID),
 													afscList=VALUES(afscList),
-													questionList=VALUES(questionList),
 													totalQuestions=VALUES(totalQuestions),
 													questionsMissed=VALUES(questionsMissed),
 													testScore=VALUES(testScore),
@@ -65,12 +63,12 @@ if($res->num_rows > 0){
 				$total=1;
 				
 				foreach($testArray as $key => $test){
-					$stmt->bind_param("ssssiiisss", $key, $test['userUUID'], $test['afscList'], $test['questionList'], $test['totalQuestions'], $test['questionsMissed'], $test['testScore'], $test['testTimeStarted'], $test['testTimeCompleted'], $test['oldTestID']);
+					$stmt->bind_param("sssiiisss", $key, $test['userUUID'], $test['afscList'], $test['totalQuestions'], $test['questionsMissed'], $test['testScore'], $test['testTimeStarted'], $test['testTimeCompleted'], $test['oldTestID']);
 				
 					if(!$stmt->execute()){
 						echo "Error inserting test: ".$key." (taken on ".$test['testTimeStarted']." by user ".$user->getFullName()."). MySQL error: ".$stmt->error.".\n\nMigration aborted.";
 						$error = true;
-						$qstmt->close();
+						$stmt->close();
 						$res->close();
 						exit(1);
 					}
@@ -94,9 +92,10 @@ if($res->num_rows > 0){
 	}
 }
 
-$qstmt->close();
 $res->close();
-$stmt->close();
+
+if($stmt)
+    $stmt->close();
 
 if($error){
 	echo "Errors were encountered while migrating tests. " . $total . "/" . $arrayCount . " tests were processed.";

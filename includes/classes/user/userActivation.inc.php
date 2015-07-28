@@ -18,6 +18,7 @@ class userActivation extends user {
 	
 	public function queueActivation($userUUID){
 		if($this->verifyUser($userUUID)){
+            $this->loadUser($userUUID);
 			$activationCode = parent::genUUID();
 			
 			$dtObj = new DateTime();
@@ -25,13 +26,17 @@ class userActivation extends user {
 			
 			$timeExpires = $dtObj->format("Y-m-d H:i:s");
 			
-			$stmt = $this->db->prepare("INSERT INTO queueUnactivatedUsers (activationCode, userUUID, timeExpires) VALUES (?,?,?)
-											ON DUPLICATE KEY UPDATE activationCode=VALUES(activationCode),userUUID=VALUES(userUUID),timeExpires=VALUES(timeExpires)");
+			$stmt = $this->db->prepare("INSERT INTO queueUnactivatedUsers
+                                            (activationCode, userUUID, timeExpires)
+                                            VALUES (?,?,?)
+											ON DUPLICATE KEY UPDATE activationCode=VALUES(activationCode),
+											                        userUUID=VALUES(userUUID),
+											                        timeExpires=VALUES(timeExpires)");
 			
 			$stmt->bind_param("sss",$activationCode,$userUUID,$timeExpires);
 			
 			if($stmt->execute()){
-				$emailSender = "<support@cdcmastery.com>";
+				$emailSender = "support@cdcmastery.com";
 				$emailRecipient = $this->getUserEmail();
 				$emailSubject = "CDCMastery.com Account Activation";
 				
@@ -41,7 +46,7 @@ class userActivation extends user {
 				$emailBodyHTML .= "Thank you for registering an account at CDCMastery!  ";
 				$emailBodyHTML .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyHTML .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
-				$emailBodyHTML .= "This link will be valid for 4 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "<a href=\"http://dev.cdcmastery.com/auth/activate/".$activationCode."\">Click Here to Activate Your Account</a>";
 				$emailBodyHTML .= "</body></html>";
@@ -51,7 +56,7 @@ class userActivation extends user {
 				$emailBodyText .= "Thank you for registering an account at CDCMastery!  ";
 				$emailBodyText .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyText .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
-				$emailBodyText .= "This link will be valid for 4 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyText .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "http://dev.cdcmastery.com/auth/activate/".$activationCode;
 				
@@ -63,11 +68,12 @@ class userActivation extends user {
 					return true;
 				}
 				else{
-					$this->error = "Unable to send activation e-mail.";
+					$this->error = "Unable to queue activation e-mail.";
 					$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-					$this->log->setDetail("Calling Function","user\userActivation->queueActivation()");
+					$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
 					$this->log->setDetail("System Error",$this->error);
 					$this->log->setDetail("User UUID",$userUUID);
+                    $this->log->setDetail("Email Queue Error",$this->emailQueue->error);
 					$this->log->saveEntry();
 					$stmt->close();
 					return false;
@@ -76,7 +82,7 @@ class userActivation extends user {
 			else{
 				$this->error = $stmt->error;
 				$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-				$this->log->setDetail("Calling Function","user\userActivation->queueActivation()");
+				$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
 				$this->log->setDetail("MySQL Error",$stmt->error);
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->saveEntry();
@@ -87,7 +93,7 @@ class userActivation extends user {
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-			$this->log->setDetail("Calling Function","user\userActivation->queueActivation()");
+			$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->saveEntry();

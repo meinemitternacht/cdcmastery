@@ -68,6 +68,39 @@ class user extends CDCMastery {
 		}
 	}
 
+    public function listUsersByRole($roleUUID){
+        $stmt = $this->db->prepare("SELECT  uuid,
+                                            userHandle,
+                                            userFirstName,
+                                            userLastName,
+                                            userRank
+                                    FROM userData
+                                    WHERE userRole = ?
+                                    ORDER BY userLastName ASC");
+        $stmt->bind_param("s",$roleUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($uuid,$userHandle,$userFirstName,$userLastName,$userRank);
+
+            while($stmt->fetch()){
+                $userArray[$uuid]['userHandle'] = $userHandle;
+                $userArray[$uuid]['userFirstName'] = $userFirstName;
+                $userArray[$uuid]['userLastName'] = $userLastName;
+                $userArray[$uuid]['userRank'] = $userRank;
+            }
+        }
+        else{
+            return false;
+        }
+
+        if(isset($userArray) && !empty($userArray)){
+            return $userArray;
+        }
+        else{
+            return false;
+        }
+    }
+
 	public function loadUser($uuid){
 		$stmt = $this->db->prepare("SELECT  uuid,
 											userFirstName,
@@ -123,18 +156,16 @@ class user extends CDCMastery {
 			$this->userBase = $userBase;
 			$this->userSupervisor = $userSupervisor;
 			$this->userDisabled = $userDisabled;
-
-			$ret = true;
 		}
 
 		$stmt->close();
 
-		if(empty($this->uuid)){
+		if(empty($this->userHandle)){
 			$this->error = "That user does not exist";
-			$ret = false;
+			return false;
 		}
 		
-		return $ret;
+		return true;
 	}
 
 	public function saveUser(){
@@ -195,7 +226,7 @@ class user extends CDCMastery {
 			$stmt->close();
 			
 			$this->log->setAction("ERROR_USER_SAVE");
-			$this->log->setDetail("CALLING FUNCTION", "auth->saveUser()");
+			$this->log->setDetail("CALLING FUNCTION", "user->saveUser()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
 
@@ -206,6 +237,42 @@ class user extends CDCMastery {
 			return true;
 		}
 	}
+
+    public function deleteUser($userUUID){
+        if(!$this->verifyUser($userUUID)){
+            $this->error[] = "That user does not exist.";
+            return false;
+        }
+
+        $_user = new user($this->db,$this->log,$this->emailQueue);
+        $_user->loadUser($userUUID);
+        $userFullName = $_user->getFullName();
+
+        unset($_user);
+
+        $stmt = $this->db->prepare("DELETE FROM userData WHERE uuid = ?");
+        $stmt->bind_param("s",$userUUID);
+
+        if($stmt->execute()){
+            $this->log->setAction("USER_DELETE");
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->setDetail("User Name",$userFullName);
+            $this->log->saveEntry();
+
+            return true;
+        }
+        else{
+            $this->log->setAction("ERROR_USER_DELETE");
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->setDetail("User Name",$userFullName);
+            $this->log->setDetail("Error",$stmt->error);
+            $this->log->saveEntry();
+
+            $this->error = $stmt->error;
+
+            return false;
+        }
+    }
 
 	/***********/
 	/* Getters */
@@ -385,6 +452,18 @@ class user extends CDCMastery {
 			return true;
 		}
 	}
+
+    public function getUserRoleByUUID($userUUID){
+        if($this->verifyUser($userUUID)) {
+            $_user = new user($this->db, $this->log, $this->emailQueue);
+
+            if ($_user->loadUser($userUUID)) {
+                return $_user->getUserRole();
+            } else {
+                return false;
+            }
+        }
+    }
 	
 	public function getUserNameByUUID($userUUID){
 		if($userUUID == "ANONYMOUS"){
@@ -453,6 +532,13 @@ class user extends CDCMastery {
 	}
 
 	public function getUserByUUID($uuid){
+        if($uuid == "ANONYMOUS"){
+            return "ANONYMOUS";
+        }
+        elseif($uuid == "SYSTEM"){
+            return "SYSTEM";
+        }
+
 		$_user = new user($this->db, $this->log, $this->emailQueue);
 		if(!$_user->loadUser($uuid)){
 			return false;
@@ -528,7 +614,7 @@ class user extends CDCMastery {
 	public function sortUserList($userArray, $sortColumn, $sortDirection="ASC"){
 		/*
 		 * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
-		 * a completely new array.  Makes life easier.
+		 * a completely new array.  Makes life easier, and let's the database do the work!
 		 */
 		
 		if(is_array($userArray) && !empty($userArray)){
@@ -584,6 +670,50 @@ class user extends CDCMastery {
 			return false;
 		}
 	}
+
+    public function sortUserUUIDList($userArray, $sortColumn, $sortDirection="ASC"){
+        /*
+         * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
+         * a completely new array.  Makes life easier, and let's the database do the work!
+         */
+
+        if(is_array($userArray) && !empty($userArray)){
+            foreach($userArray as $userUUID){
+                if($this->verifyUser($userUUID)){
+                    $implodeArray[] = $userUUID;
+                }
+            }
+
+            $userList = implode("','",$implodeArray);
+
+            $res = $this->db->query("SELECT uuid
+										FROM userData
+										WHERE uuid IN ('".$userList."')
+										ORDER BY ".$sortColumn." ".$sortDirection);
+
+            if($res->num_rows > 0){
+                while($row = $res->fetch_assoc()){
+                    $returnArray[] = $row['uuid'];
+                }
+
+                if(isset($returnArray) && !empty($returnArray)){
+                    return $returnArray;
+                }
+                else{
+                    $this->error = "returnArray was empty.";
+                    return false;
+                }
+            }
+            else{
+                $this->error = $this->db->error;
+                return false;
+            }
+        }
+        else{
+            $this->error = "User list must be an array of values.";
+            return false;
+        }
+    }
 
 	public function verifyUser($userUUID){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE uuid = ?");

@@ -4,7 +4,7 @@ if(isset($_SESSION['vars'][0])){
 	$objUser = new user($db, $log, $emailQueue);
 	
 	if(!$objUser->loadUser($userUUID)){
-		$_SESSION['error'][] = "That user does not exist.";
+		$sysMsg->addMessage("That user does not exist.");
 		$cdcMastery->redirect("/errors/404");
 	}
 	
@@ -17,15 +17,12 @@ if(isset($_SESSION['vars'][0])){
 			/*
 			 * Basic Functions
 			 */
-			case "archive":
-				require_once BASE_PATH . "/includes/modules/admin/user/archive.inc.php";
-			break;
 			case "ban":
 				require_once BASE_PATH . "/includes/modules/admin/user/ban.inc.php";
 			break;
-			case "consolidate":
-				require_once BASE_PATH . "/includes/modules/admin/user/consolidate.inc.php";
-			break;
+            case "unban":
+                require_once BASE_PATH . "/includes/modules/admin/user/unban.inc.php";
+            break;
 			case "delete":
 				require_once BASE_PATH . "/includes/modules/admin/user/delete.inc.php";
 			break;
@@ -43,18 +40,13 @@ if(isset($_SESSION['vars'][0])){
 			 */
 			case "tests":
 				if($subAction){
-					if($subAction == "archive"){
-						require_once BASE_PATH . "/includes/modules/admin/user/tests/archive.inc.php";
-					}
-					elseif($subAction == "delete"){
+                    if($subAction == "delete"){
 						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete.inc.php";
 					}
 					elseif($subAction == "incomplete"){
-						if($finalAction){
-							if($finalAction == "delete"){
-								require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete/delete.inc.php";
-							}
-						}
+                        if($finalAction == "delete"){
+                            require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete/delete.inc.php";
+                        }
 						else{
 							require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete.inc.php";
 						}
@@ -129,14 +121,16 @@ if(isset($_SESSION['vars'][0])){
 								Basic
 							</div>
 							<ul>
-								<li><a href="/admin/profile/<?php echo $userUUID; ?>"><i class="fa fa-user fa-fw"></i>View Profile</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/edit"><i class="fa fa-pencil fa-fw"></i>Edit User</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/delete"><i class="fa fa-trash fa-fw"></i>Delete User</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/archive"><i class="fa fa-folder fa-fw"></i>Archive User</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/ban"><i class="fa fa-ban fa-fw"></i>Ban User</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/resend-activation"><i class="fa fa-retweet fa-fw"></i>Resend Activation Code</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/reset-password"><i class="fa fa-refresh fa-fw"></i>Reset Password</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/consolidate"><i class="fa fa-magic fa-fw"></i>Consolidate User</a></li>
+								<li><a href="/admin/profile/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-user-single"></i>View Profile</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/edit"><i class="icon-inline icon-20 ic-pencil"></i>Edit User</a></li>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete User</a></li>
+                                <?php if(!$objUser->getUserDisabled()): ?>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/ban"><i class="icon-inline icon-20 ic-hammer"></i>Ban User</a></li>
+                                <?php else: ?>
+                                <li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/unban"><i class="icon-inline icon-20 ic-hammer"></i>Unban User</a></li>
+                                <?php endif; ?>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/resend-activation"><i class="icon-inline icon-20 ic-resend"></i>Resend Activation Code</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/reset-password"><i class="icon-inline icon-20 ic-safe"></i>Reset Password</a></li>
 							</ul>
 						</div>
 					</section>
@@ -148,11 +142,10 @@ if(isset($_SESSION['vars'][0])){
 								Testing
 							</div>
 							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests"><i class="fa fa-archive fa-fw"></i>View Tests</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete"><i class="fa fa-tasks fa-fw"></i>View Incomplete Tests</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="fa fa-trash fa-fw"></i>Delete All Tests</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete"><i class="fa fa-trash fa-fw"></i>Delete All Incomplete Tests</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/archive"><i class="fa fa-folder fa-fw"></i>Archive Tests</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests"><i class="icon-inline icon-20 ic-folder"></i>View Tests</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete"><i class="icon-inline icon-20 ic-folder"></i>View Incomplete Tests</a></li>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete All Incomplete Tests</a></li>
 							</ul>
 						</div>
 						<div class="sub-menu">
@@ -160,7 +153,7 @@ if(isset($_SESSION['vars'][0])){
 								Messaging
 							</div>
 							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/message"><i class="fa fa-envelope fa-fw"></i>Send Message</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/message"><i class="icon-inline icon-20 ic-email"></i>Send Message</a></li>
 							</ul>
 						</div>
 					</section>
@@ -172,15 +165,17 @@ if(isset($_SESSION['vars'][0])){
 								Associations
 							</div>
 							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/afsc"><i class="fa fa-puzzle-piece fa-fw"></i>AFSCs</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/afsc"><i class="icon-inline icon-20 ic-puzzle"></i>AFSCs</a></li>
 								<?php if($roles->verifyUserRole($userUUID) == "trainingManager"): ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="icon-inline icon-20 ic-relationship"></i>Subordinates</a></li>
+                                <li><a href="/training/overview/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-clipboard"></i>Training Manager Overview</a></li>
 								<?php elseif($roles->verifyUserRole($userUUID) == "supervisor"): ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="fa fa-sitemap fa-fw"></i>Subordinates</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="icon-inline icon-20 ic-relationship"></i>Subordinates</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="icon-inline icon-20 ic-relationship"></i>Training Managers</a></li>
+                                <li><a href="/supervisor/overview/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-clipboard"></i>Supervisor Overview</a></li>
 								<?php else: ?>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="fa fa-sitemap fa-fw"></i>Supervisors</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="fa fa-sitemap fa-fw"></i>Training Managers</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/supervisor"><i class="icon-inline icon-20 ic-relationship"></i>Supervisors</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="icon-inline icon-20 ic-relationship"></i>Training Managers</a></li>
 								<?php endif; ?>
 							</ul>
 						</div>
@@ -189,8 +184,8 @@ if(isset($_SESSION['vars'][0])){
 								Log Entries
 							</div>
 							<ul>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/log"><i class="fa fa-bars fa-fw"></i>View Log Entries</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/log/clear"><i class="fa fa-trash fa-fw"></i>Clear Log Entries</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/log"><i class="icon-inline icon-20 ic-log"></i>View Log Entries</a></li>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/log/clear"><i class="icon-inline icon-20 ic-delete"></i>Clear Log Entries</a></li>
 							</ul>
 						</div>
 					</section>

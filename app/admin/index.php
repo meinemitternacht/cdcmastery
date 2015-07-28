@@ -10,9 +10,8 @@
 				</header>
 				<div class="sub-menu">
 					<ul>
-						<li><a href="/admin/afsc" title="AFSC Manager"><i class="fa fa-puzzle-piece fa-fw"></i>AFSC Manager</a></li>
-						<li><a href="/admin/cdc-data" title="CDC Data"><i class="fa fa-book fa-fw"></i>CDC Data</a></li>
-						<li><a href="/admin/tests" title="Test Manager"><i class="fa fa-check-square-o fa-fw"></i>Test Manager</a></li>
+						<li><a href="/admin/afsc" title="AFSC Manager"><i class="icon-inline icon-20 ic-puzzle"></i>AFSC Manager</a></li>
+						<li><a href="/admin/cdc-data" title="CDC Data"><i class="icon-inline icon-20 ic-book"></i>CDC Data</a></li>
 					</ul>
 				</div>
 			</section>
@@ -24,9 +23,9 @@
 				</header>
 				<div class="sub-menu">
 					<ul>
-						<li><a href="/admin/office-symbols" title="Office Symbols"><i class="fa fa-inbox fa-fw"></i>Office Symbols</a></li>
-						<li><a href="/admin/users" title="User Manager"><i class="fa fa-users fa-fw"></i>User Manager</a></li>
-						<li><a href="/admin/profile" title="User Profiles"><i class="fa fa-user fa-fw"></i>User Profiles</a></li>
+						<li><a href="/admin/office-symbols" title="Office Symbols"><i class="icon-inline icon-20 ic-office"></i>Office Symbols</a></li>
+						<li><a href="/admin/users" title="User Manager"><i class="icon-inline icon-20 ic-user-multiple"></i>User Manager</a></li>
+						<li><a href="/admin/profile" title="User Profiles"><i class="icon-inline icon-20 ic-user-single"></i>User Profiles</a></li>
 					</ul>
 				</div>
 			</section>
@@ -38,9 +37,9 @@
 				</header>
 				<div class="sub-menu">
 					<ul>
-						<li><a href="/admin/log" title="Log"><i class="fa fa-bars fa-fw"></i>Log</a></li>
-						<li><a href="/admin/roles" title="Role Manager"><i class="fa fa-group fa-fw"></i>Role Manager</a></li>
-						<li><a href="/admin/upload" title="Upload File"><i class="fa fa-upload fa-fw"></i>Upload File</a></li>
+						<li><a href="/admin/log" title="Log"><i class="icon-inline icon-20 ic-log"></i>Log</a></li>
+						<li><a href="/admin/roles" title="Role Manager"><i class="icon-inline icon-20 ic-user-multiple"></i>Role Manager</a></li>
+						<li><a href="/admin/upload" title="Upload File"><i class="icon-inline icon-20 ic-upload"></i>Upload File</a></li>
 					</ul>
 				</div>
 			</section> 

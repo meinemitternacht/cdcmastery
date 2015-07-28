@@ -2,21 +2,23 @@
 class emailQueue extends CDCMastery {
 	protected $db;
 	protected $log;
+
+    public $error;
 	
 	private $smtpHost;
 	private $smtpPort;
 	private $smtpUsername;
 	private $smtpPassword;
 
-	private $uuid;
-	private $queueTime;
-	private $emailSender;
-	private $emailRecipient;
-	private $emailSubject;
-	private $emailBody;
-	private $emailBodyHTML;
-	private $emailBodyText;
-	private $queueUser;
+	public $uuid;
+    public $queueTime;
+    public $emailSender;
+    public $emailRecipient;
+    public $emailSubject;
+    public $emailBody;
+    public $emailBodyHTML;
+    public $emailBodyText;
+    public $queueUser;
 
 	public function __construct(mysqli $db, log $log, $smtpHost, $smtpPort, $smtpUsername, $smtpPassword){
 		$this->db = $db;
@@ -103,6 +105,7 @@ class emailQueue extends CDCMastery {
 		$stmt->bind_param("sssssss",$this->uuid, $this->emailSender, $this->emailRecipient, $this->emailSubject, $this->emailBodyHTML, $this->emailBodyText, $this->queueUser);
 
 		if(!$stmt->execute()){
+            $this->error = $stmt->error;
 			$this->log->setAction("ERROR_EMAIL_QUEUE_ADD");
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->setDetail("UUID",$this->uuid);
@@ -117,6 +120,9 @@ class emailQueue extends CDCMastery {
 			return false;
 		}
 		else{
+            $this->log->setAction("EMAIL_QUEUE_ADD");
+            $this->log->setDetail("UUID",$this->uuid);
+            $this->log->saveEntry();
 			return true;
 		}
 	}

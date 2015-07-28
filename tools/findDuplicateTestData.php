@@ -13,7 +13,7 @@ while($row = $res->fetch_assoc()){
 
 $res->close();
 
-$stmt = $db->prepare("SELECT uuid, questionUUID FROM testData WHERE testUUID = ?");
+$stmt = $db->prepare("SELECT questionUUID FROM testData WHERE testUUID = ?");
 
 echo "Scanning testData table for duplicate questions...\n";
 
@@ -24,16 +24,16 @@ $testCount = 0;
 
 foreach($testArray as $test){
 	$stmt->bind_param("s",$test);
-	$stmt->bind_result($uuid, $questionUUID);
+	$stmt->bind_result($questionUUID);
 	
 	$questionList = Array();
 	
 	if($stmt->execute()){
 		while($stmt->fetch()){
 			if(in_array($questionUUID,$questionList)){
-				$outputArray[] = "Found duplicate question in test ".$test.": ".$questionUUID." (testData row ".$uuid.")";
+				$outputArray[] = "Found duplicate question in test ".$test.": ".$questionUUID." (testData key ".$test . $questionUUID.")";
 				$testIDArray[] = $test;
-				$testDataUUIDArray[] = $uuid;
+                $deleteRowArray[] = "DELETE FROM testData WHERE testUUID = '".$test."' AND questionUUID = '".$questionUUID."' LIMIT 1";
 			}
 			else{
 				$questionList[] = $questionUUID;
@@ -58,7 +58,10 @@ if(!empty($outputArray)){
 	}
 	
 	echo "\nEZ MySQL query to find the tests! : SELECT * FROM testHistory WHERE uuid IN ('".implode("','",$testIDArray)."') ORDER BY testTimeStarted ASC\n";
-	echo "\nEZ MySQL query to delete the culprits! : DELETE FROM testData WHERE uuid IN ('".implode("','",$testDataUUIDArray)."')\n";
+	echo "\nEZ MySQL query to delete the culprits! : ";
+    foreach($deleteRowArray as $deleteRow){
+        echo $deleteRow . "\n";
+    }
 }
 else{
 	echo "No duplicate questions found.";

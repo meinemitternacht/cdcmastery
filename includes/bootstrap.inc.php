@@ -23,6 +23,11 @@ require BASE_PATH . '/includes/classes/testManager.inc.php';
 require BASE_PATH . '/includes/classes/userStatistics.inc.php';
 require BASE_PATH . '/includes/classes/user/passwordReset.inc.php';
 require BASE_PATH . '/includes/classes/user/userActivation.inc.php';
+require BASE_PATH . '/includes/classes/user/userAuthorizationQueue.inc.php';
+
+require BASE_PATH . '/includes/classes/systemMessages.inc.php';
+require BASE_PATH . '/includes/classes/overviews/trainingManagerOverview.inc.php';
+require BASE_PATH . '/includes/classes/overviews/supervisorOverview.inc.php';
 
 require 'Mail.php';
 require 'Mail/mime.php';
@@ -41,6 +46,7 @@ if($db->connect_errno){
 
 $cdcMastery = new CDCMastery();
 $session = new dbSession($db);
+$sysMsg = new systemMessages();
 $log = new log($db);
 
 $emailQueue = new emailQueue($db, $log, $cfg['smtp']['host'],

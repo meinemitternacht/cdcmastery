@@ -2,7 +2,7 @@
 
 class testManager extends CDCMastery
 {
-	protected $db;
+	public $db;
 	protected $log;
 	protected $afsc;
 	protected $answer;
@@ -231,6 +231,62 @@ class testManager extends CDCMastery
 			return false;
 		}
 	}
+
+    public function saveTest(){
+        $serializedAFSCList = serialize($this->afscList);
+
+        $stmt = $this->db->prepare("INSERT INTO testHistory ( uuid,
+                                                              userUUID,
+                                                              afscList,
+                                                              totalQuestions,
+                                                              questionsMissed,
+                                                              testScore,
+                                                              testTimeStarted,
+                                                              testTimeCompleted)
+                                    VALUES (?,?,?,?,?,?,?,?)
+                                    ON DUPLICATE KEY UPDATE uuid=VALUES(uuid),
+                                                            userUUID=VALUES(userUUID),
+                                                            afscList=VALUES(afscList),
+                                                            totalQuestions=VALUES(totalQuestions),
+                                                            questionsMissed=VALUES(questionsMissed),
+                                                            testScore=VALUES(testScore),
+                                                            testTimeStarted=VALUES(testTimeStarted),
+                                                            testTimeCompleted=VALUES(testTimeCompleted)");
+
+        $stmt->bind_param("sssiiiss",   $this->uuid,
+                                        $this->userUUID,
+                                        $serializedAFSCList,
+                                        $this->totalQuestions,
+                                        $this->questionsMissed,
+                                        $this->testScore,
+                                        $this->testTimeStarted,
+                                        $this->testTimeCompleted);
+
+        if($stmt->execute()){
+            $this->log->setAction("SAVE_TEST");
+            $this->log->setDetail("Test UUID",$this->uuid);
+            $this->log->setDetail("User UUID",$this->userUUID);
+            $this->log->saveEntry();
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->log->setAction("ERROR_SAVE_TEST");
+            $this->log->setDetail("Test UUID",$this->uuid);
+            $this->log->setDetail("User UUID",$this->userUUID);
+            $this->log->setDetail("AFSC List",$serializedAFSCList);
+            $this->log->setDetail("Total Questions",$this->totalQuestions);
+            $this->log->setDetail("Questions Missed",$this->questionsMissed);
+            $this->log->setDetail("Test Score",$this->testScore);
+            $this->log->setDetail("Test Time Started",$this->testTimeStarted);
+            $this->log->setDetail("Test Time Completed",$this->testTimeCompleted);
+            $this->log->saveEntry();
+
+            $stmt->close();
+            return false;
+        }
+    }
 	
 	public function loadTestData($testUUID){
 		$this->testData = Array();
@@ -285,7 +341,7 @@ class testManager extends CDCMastery
 			
 			$stmt->close();
 			
-			$stmt = $this->db->prepare("DELETE FROM testHistory WHERE testUUID = ?");
+			$stmt = $this->db->prepare("DELETE FROM testHistory WHERE uuid = ?");
 			$stmt->bind_param("s",$testUUID);
 			
 			if(!$stmt->execute()){
@@ -299,7 +355,7 @@ class testManager extends CDCMastery
 			$stmt->close();
 			
 			if($error){
-				$this->log->setAction("DELETE_TEST_ERROR");
+				$this->log->setAction("ERROR_DELETE_TEST");
 				$this->log->saveEntry();
 				return false;
 			}
@@ -340,7 +396,27 @@ class testManager extends CDCMastery
 	}
 	
 	public function getTestData(){
-		return $this->testData;
+        if(empty($this->testData)){
+            if($this->incompleteTestUUID){
+                if($this->loadTestData($this->incompleteTestUUID)){
+                    return $this->testData;
+                }
+                else{
+                    return false;
+                }
+            }
+            elseif($this->uuid){
+                if($this->loadTestData($this->uuid)){
+                    return $this->testData;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+        else{
+            return $this->testData;
+        }
 	}
 	
 	public function getTestScore(){
@@ -367,7 +443,6 @@ class testManager extends CDCMastery
         $stmt->bind_param("s",$userUUID);
 
         if($stmt->execute()) {
-            if ($stmt->num_rows > 0) {
                 $stmt->bind_result($testUUID);
 
                 while ($stmt->fetch()) {
@@ -380,10 +455,6 @@ class testManager extends CDCMastery
                 else{
                     return false;
                 }
-            }
-            else{
-                return false;
-            }
         }
         else{
             $this->log->setAction("MYSQL_ERROR");
@@ -400,6 +471,41 @@ class testManager extends CDCMastery
 		$this->uuid = $uuid;
 		return true;
 	}
+
+    public function setUserUUID($userUUID){
+        $this->userUUID = $userUUID;
+        return true;
+    }
+
+    public function setAFSCList(array $afscList){
+        $this->afscList = $afscList;
+        return true;
+    }
+
+    public function setTotalQuestions($totalQuestions){
+        $this->totalQuestions = $totalQuestions;
+        return true;
+    }
+
+    public function setQuestionsMissed($questionsMissed){
+        $this->questionsMissed = $questionsMissed;
+        return true;
+    }
+
+    public function setTestScore($testScore){
+        $this->testScore = $testScore;
+        return true;
+    }
+
+    public function setTestTimeStarted($testTimeStarted){
+        $this->testTimeStarted = $testTimeStarted;
+        return true;
+    }
+
+    public function setTestTimeCompleted($testTimeCompleted){
+        $this->testTimeCompleted = $testTimeCompleted;
+        return true;
+    }
 	
 	/*
 	 * testManager Table Related Functions
@@ -641,7 +747,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false,$userUUID=false){
+	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false,$userUUID=false,$deleteData=true){
 		$this->incompleteTestUUID = false;
 		
 		if(!$userUUID){
@@ -702,13 +808,17 @@ class testManager extends CDCMastery
 					$this->log->saveEntry();
 					
 					$stmt->close();
-					
-					if(!$this->deleteTestData($testUUID)){							
-						return false;
-					}
-					else{							
-						return true;
-					}
+
+                    if($deleteData) {
+                        if (!$this->deleteTestData($testUUID)) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                    else{
+                        return true;
+                    }
 				}
 			}
 			else{
@@ -767,7 +877,7 @@ class testManager extends CDCMastery
 					$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
 					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
 					$this->log->setDetail("COMBINED TEST", "TRUE");
-					$this->log->setDetail("ERROR",$db->error);
+					$this->log->setDetail("ERROR",$this->db->error);
 					$this->log->saveEntry();
 					
 					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
@@ -880,12 +990,19 @@ class testManager extends CDCMastery
 			return false;
 		}
 	}
-	
-	public function outputQuestionData($questionUUID){
+
+    public function outputQuestionData($questionUUID,$testCompleted = false){
 		$questionFOUO = $this->question->queryQuestionFOUO($questionUUID);
-		
+
 		if($this->question->loadQuestion($questionUUID)){
-			$output = "<div class=\"smallSectionTitle\">question</div>";
+            $output = "";
+
+            if($testCompleted){
+                $output .= "<div class=\"testCompletedText systemMessages\">You have completed this test.
+                            <a href=\"/test/score/".$this->incompleteTestUUID."\">Click Here</a> to score your test.</div>";
+            }
+
+			$output .= "<div class=\"smallSectionTitle\">question</div>";
 			$output .= "<div class=\"displayQuestion\">";
 			$output .= $this->question->getQuestionText();
 			$output .= "</div><br style=\"clear:both;\">";

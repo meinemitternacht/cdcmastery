@@ -1,0 +1,75 @@
+Return-Path: <postmaster@mail.bingnetwork.io>
+Received: from localhost (localhost [127.0.0.1])
+	by mail.bingnetwork.io (Postfix) with ESMTP id D749136C0B76
+	for <postmaster@basil.atl.ga.us.bingnetwork.io>; Tue,  5 May 2015 14:25:35 -0400 (EDT)
+Content-Type: multipart/mixed; boundary="----------=_1430850335-28163-0"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+From: "Content-filter at mail.bingnetwork.io" <postmaster@mail.bingnetwork.io>
+Date: Tue,  5 May 2015 14:25:35 -0400 (EDT)
+Subject: BANNED contents (.exe,cancelation_invoice_form.exe) in mail FROM
+ <Einmoeller@Goldmilch.de>
+To: <postmaster@basil.atl.ga.us.bingnetwork.io>
+Message-ID: <VAlojaX5v8EMSJ@mail.bingnetwork.io>
+
+This is a multi-part message in MIME format...
+
+------------=_1430850335-28163-0
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+
+No viruses were found.
+
+Banned name: .exe,cancelation_invoice_form.exe
+Content type: Banned
+Internal reference code for the message is 28163-08/lojaX5v8EMSJ
+
+According to a 'Received:' trace, the message apparently originated at:
+  [147.192.199.155], [143.132.183.127] ca2qcT1 [147.192.199.155]
+
+Return-Path: <Einmoeller@Goldmilch.de>
+From: Einmoeller <Einmoeller@Goldmilch.de>
+Message-ID: <519688559.20150505616204@Goldmilch.de>
+Subject: Unaccepted invoice report
+The message has been quarantined as: l/banned-lojaX5v8EMSJ
+
+The message WAS NOT relayed to:
+<cw@wfto.cc>:
+   554 5.7.0 Bounce, id=28163-08 - BANNED: .exe,cancelation_invoice_form.exe
+
+
+------------=_1430850335-28163-0
+Content-Type: text/rfc822-headers; name="header"
+Content-Disposition: inline; filename="header"
+Content-Transfer-Encoding: 7bit
+Content-Description: Message header section
+
+Return-Path: <Einmoeller@Goldmilch.de>
+Received: by mail.bingnetwork.io (Postfix, from userid 5001)
+	id 915F636C0B77; Tue,  5 May 2015 14:25:35 -0400 (EDT)
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on
+	basil.atl.ga.us.bingnetwork.io
+X-Spam-Level: ***
+X-Spam-Status: No, score=3.2 required=5.5 tests=BAYES_00,RCVD_IN_BRBL_LASTEXT,
+	RCVD_IN_PSBL,XPRIO autolearn=no version=3.3.2
+Received-SPF: None (no SPF record) identity=mailfrom; client-ip=188.10.73.247; helo=goldmilch.de; envelope-from=einmoeller@goldmilch.de; receiver=cw@wfto.cc 
+Received: from Goldmilch.de (host247-73-static.10-188-b.business.telecomitalia.it [188.10.73.247])
+	by mail.bingnetwork.io (Postfix) with ESMTP id 33A1536C0B76
+	for <cw@wfto.cc>; Tue,  5 May 2015 14:25:31 -0400 (EDT)
+Received: by czl9ASSL (Postfix, from userid 5001)
+	id ma7Hd3BXCUceR; Tue, 05 May 2015 20:25:42 +0100
+Received: from [143.132.183.127] (ca2qcT1 [147.192.199.155])
+	by czl9ASSL (Postfix) with ESMTPA id XidFAmiaFkAEj
+	for <cw@wfto.cc>; Tue, 05 May 2015 20:25:42 +0100
+Date: Tue, 05 May 2015 20:25:42 +0100
+From: Einmoeller <Einmoeller@Goldmilch.de>
+X-Priority: 3 (Normal)
+Message-ID: <519688559.20150505616204@Goldmilch.de>
+To: cw@wfto.cc
+Subject: Unaccepted invoice report 
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="----------EJxSEGFMPoQIfOu0f"
+
+------------=_1430850335-28163-0--

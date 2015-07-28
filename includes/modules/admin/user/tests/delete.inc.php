@@ -1,8 +1,10 @@
 <?php
 $testManager = new testManager($db, $log, $afsc);
 
-if(isset($_POST['confirmIncompleteTestDeleteAll'])){
+if(isset($_POST['confirmTestDeleteAll'])){
     $testList = $testManager->getTestUUIDList($userUUID);
+
+    var_dump($testList);
 
     if($testManager->deleteTests($testList)){
         $_SESSION['messages'][] = "Completed tests deleted successfully.";

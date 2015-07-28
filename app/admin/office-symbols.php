@@ -1,5 +1,4 @@
 <?php
-
 $action = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $officeSymbolUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
@@ -7,11 +6,11 @@ if($action){
 	if($action == "add"): 
 		if(isset($_POST['officeSymbolName'])):
 			if($officeSymbol->addOfficeSymbol($_POST['officeSymbolName'])){
-				$_SESSION['messages'][] = "Office Symbol added successfully.";
+				$sysMsg->addMessage("Office Symbol added successfully.");
 				$cdcMastery->redirect("/admin/office-symbols");
 			}
 			else{
-				$_SESSION['messages'][] = "There was a problem adding the Office Symbol.";
+				$sysMsg->addMessage("There was a problem adding the Office Symbol.");
 				$cdcMastery->redirect("/admin/office-symbols/add");
 			}
 		else: ?>
@@ -37,11 +36,11 @@ if($action){
 	elseif($action == "edit"):
 		if(isset($_POST['officeSymbolName'])):
 			if($officeSymbol->editOfficeSymbol($officeSymbolUUID,$_POST['officeSymbolName'])){
-				$_SESSION['messages'][] = "Office Symbol edited successfully.";
+				$sysMsg->addMessage("Office Symbol edited successfully.");
 				$cdcMastery->redirect("/admin/office-symbols");
 			}
 			else{
-				$_SESSION['messages'][] = "There was a problem editing the Office Symbol.";
+				$sysMsg->addMessage("There was a problem editing the Office Symbol.");
 				$cdcMastery->redirect("/admin/office-symbols/edit/" . $officeSymbolUUID);
 			}
 		else: 
@@ -65,18 +64,18 @@ if($action){
 				</div>
 			<?php
 			else:
-				$_SESSION['messages'][] = "That Office Symbol does not exist.";
+				$sysMsg->addMessage("That Office Symbol does not exist.");
 				$cdcMastery->redirect("/admin/office-symbols");
 			endif;
 		endif; ?>
 	<?php
 	elseif($action == "delete"):
 		if($officeSymbol->deleteOfficeSymbol($officeSymbolUUID)){
-			$_SESSION['messages'][] = "Office Symbol deleted successfully.";
+			$sysMsg->addMessage("Office Symbol deleted successfully.");
 			$cdcMastery->redirect("/admin/office-symbols");
 		}
 		else{
-			$_SESSION['messages'][] = "There was a problem deleting that Office Symbol.";
+			$sysMsg->addMessage("There was a problem deleting that Office Symbol.");
 			$cdcMastery->redirect("/admin/office-symbols");
 		}
 	endif;
@@ -93,8 +92,8 @@ else{
 				<section>
 					<div class="sub-menu">
 						<ul>
-							<li><a href="/admin"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to Admin Panel</a></li>
-							<li><a href="/admin/office-symbols/add"><i class="fa fa-plus fa-fw"></i>Add Office Symbol</a>
+							<li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
+							<li><a href="/admin/office-symbols/add"><i class="icon-inline icon-20 ic-plus"></i>Add Office Symbol</a>
 						</ul>
 					</div>
 				</section>
@@ -118,8 +117,8 @@ else{
 						<tr>
 							<td><?php echo $officeSymbolText; ?></td>
 							<td>
-								<a href="/admin/office-symbols/edit/<?php echo $osUUID; ?>" title="Edit"><i class="fa fa-pencil fa-fw"></i></a>
-								<a href="/admin/office-symbols/delete/<?php echo $osUUID; ?>" title="Delete"><i class="fa fa-trash fa-fw"></i></a>
+								<a href="/admin/office-symbols/edit/<?php echo $osUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>
+								<a href="/admin/office-symbols/delete/<?php echo $osUUID; ?>" title="Delete"><i class="icon-inline icon-20 ic-delete"></i></a>
 							</td>
 						</tr>
 						<?php endforeach; ?>

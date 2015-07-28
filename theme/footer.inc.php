@@ -17,25 +17,31 @@
 				<div class="row">
 					<div class="4u">
 						<section>
-							<h2>Latest Posts</h2>
+							<h2>Quick Links</h2>
 							<ul class="default">
-								<li><a href="#">Pellentesque lectus gravida blandit</a></li>
-								<li><a href="#">Lorem ipsum consectetuer adipiscing</a></li>
-								<li><a href="#">Phasellus nibh pellentesque congue</a></li>
-								<li><a href="#">Cras vitae metus aliquam pharetra</a></li>
-								<li><a href="#">Maecenas vitae orci feugiat eleifend</a></li>
+								<?php if($cdcMastery->loggedIn()): ?>
+									<li><a href="/test/take">New Test</a></li>
+									<li><a href="/user/history">Test History</a></li>
+									<li><a href="/user/profile">Your Profile</a></li>
+									<li><a href="/about">Site Information</a></li>
+									<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
+									<li><a href="/admin">Administration Panel</a></li>
+									<?php endif; ?>
+								<?php else: ?>
+									<li><a href="/about">Site Information</a></li>
+								<?php endif; ?>
 							</ul>
 						</section>
 					</div>
 					<div class="4u">
 						<section>
-							<h2>Ultrices fringilla</h2>
+							<h2>Latest Changes</h2>
 							<ul class="default">
-								<li><a href="#">Pellentesque lectus gravida blandit</a></li>
-								<li><a href="#">Lorem ipsum consectetuer adipiscing</a></li>
-								<li><a href="#">Phasellus nibh pellentesque congue</a></li>
-								<li><a href="#">Cras vitae metus aliquam pharetra</a></li>
-								<li><a href="#">Maecenas vitae orci feugiat eleifend</a></li>
+								<li>Added a Pending AFSC Queue for users</li>
+								<li>Added ability to reset a user's password from the admin interface</li>
+								<li>Improved supervisor and training manager associations interface</li>
+								<li>Updated the role manager interface</li>
+								<li>Completely rebuilt the site</li>
 							</ul>
 						</section>
 					</div>
@@ -78,6 +84,19 @@
 				&copy;<?php echo date("Y",time()); ?> CDCMastery.com
 			</div>
 		</div>
-		
+		<?php
+		if($sysMsg->getMessageCount() > 0):
+			$systemMessageHTML = "<ul>";
+			foreach($sysMsg->retrieveMessages() as $systemMessage){
+				$systemMessageHTML .= "<li><strong>".$systemMessage."</strong></li>";
+			}
+			$systemMessageHTML .= "</ul>";
+			?>
+		<script type="text/javascript">
+			var sysMsgHTML = "<?php echo $systemMessageHTML; ?>";
+			$('#system-messages-block').html(sysMsgHTML);
+			$('#system-messages-container-block').show();
+		</script>
+		<?php endif; ?>
 	</body>
 </html>

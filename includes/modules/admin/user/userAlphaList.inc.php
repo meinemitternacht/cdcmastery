@@ -27,15 +27,23 @@ $alpha = Array(
 		25 => "Y",
 		26 => "Z");
 
+if(isset($_SESSION['vars'][2])){
+    $userList = $user->listUsersByRole();
+}
 $userList = $user->listUsers();
 $userCount = count($userList) + 1;
 
 if($userList): ?>
-	<h2><?php echo $userCount; ?> Total Users</h2>
 	<div class="container">
 		<div class="row">
 			<div class="8u">
 				<section>
+                    <header>
+                        <h2><?php echo $userCount; ?> Total Users</h2>
+                    </header>
+                    <p>
+                        <a href="/admin/list/users/group">Filter by group</a>
+                    </p>
 					<p>
 					<?php
 					foreach($alpha as $val){
@@ -46,46 +54,41 @@ if($userList): ?>
 				</section>
 			</div>
 		</div>
-	</div>
-	<div class="container">
 		<div class="row">
 			<div class="4u">
 				<section>
-				<br />
 				<?php
 				$curLetter = "";
-				
+
 				$firstColComplete = false;
 				$secondColComplete = false;
-				
+
 				foreach($userList as $uuid => $userRow){
 					$letter = substr($userRow['userLastName'],0,1);
-					
+
 					if($letter == "H" && $firstColComplete == false){ ?>
 						</section>
 						</div>
 						<div class="4u">
 						<section>
-						<br />
 						<?php
 						$firstColComplete = true;
 					}
-					
+
 					if($letter == "Q" && $secondColComplete == false){ ?>
 						</section>
 						</div>
 						<div class="4u">
 						<section>
-						<br />
 						<?php
 						$secondColComplete = true;
 					}
-					
+
 					if($letter != $curLetter){
 						echo '<h2><a id="'.ucfirst($letter).'">'.$letter.'</a></h2>';
 						$curLetter = $letter;
 					}
-					
+
 					echo '<a href="/'.$linkBaseURL.'/'.$uuid.'">'.$userRow['userLastName'].', '.$userRow['userFirstName'].' '.$userRow['userRank'].'</a><br />';
 				}
 				?>

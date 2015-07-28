@@ -151,7 +151,7 @@ and (max-device-width : 480px) {
 						<tr>
 							<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
 							<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
-							<td><?php echo $testData['testScore']; ?></td>
+							<td><?php echo $testData['testScore']; ?>%</td>
 							<td>
 								<a href="/test/view/<?php echo $testUUID; ?>">View</a>
 							</td>

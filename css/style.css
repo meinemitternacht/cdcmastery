@@ -84,6 +84,10 @@ header h2 {
     font-size: 1.3em;
 }
 
+header h3 {
+    font-size: 1.1em;
+}
+
 header .byline {
     display: block;
     margin: 0.5em 0 0 0;
@@ -338,15 +342,36 @@ ul.style .first {
 /* Custom Declarations		 */
 /*****************************/
 /*
+ *  User Edit Form
+ */
+ul.userEditForm li {
+   margin-bottom: 0.6em;
+}
+
+/*
+ *  Form Labels
+ */
+label {
+    font-weight: 900;
+    font-size: 1em;
+}
+
+/*
  *  System Messages
  */
 .systemMessages {
     background-color: pink;
     border: 1px solid red;
+    padding-left: 1.3em;
     padding-top: 1em;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-bottom: 0.3em;
+    margin-bottom: 1em;
+}
+
+.informationMessages {
+    background-color: lightyellow;
+    border: 1px solid gold;
+    padding-left: 1.3em;
+    padding-top: 1em;
     margin-bottom: 1em;
 }
 
@@ -364,13 +389,6 @@ ul.style .first {
 #page-title h1 {
     font-size: 1.6em;
     font-weight: 900;
-}
-
-/*
- *  Form Styling
- */
-.form-object-full {
-    width: 100%;
 }
 
 /*
@@ -401,6 +419,7 @@ ul.style .first {
 .sub-menu ul {
     list-style: none;
 }
+
 
 .sub-menu ul li {
     float: left;
@@ -485,12 +504,22 @@ ul.style .first {
     color: green !important;
 }
 
+.text-success-bold, .text-success-bold a {
+    color: green !important;
+    font-weight: 900;
+}
+
 .text-caution, .text-caution a {
     color: gold !important;
 }
 
 .text-warning, .text-warning a {
     color: crimson !important;
+}
+
+.text-warning-bold, .text-warning-bold a {
+    color: crimson !important;
+    font-weight: 900;
 }
 
 .text-white, .text-white a {
@@ -509,6 +538,7 @@ ul.style .first {
     text-decoration: none;
     border-bottom: 1px solid #ccc;
 }
+
 /*
  *  AFSC List (/test/take)
  */
@@ -525,18 +555,48 @@ ul.style .first {
 }
 
 /*
+ *  Form Errors
+ */
+.form-error {
+    display: block;
+    padding: 0.3em;
+    background-color: pink;
+    color: darkred;
+    font-weight: 900;
+    font-size: 1em;
+    width: 100%;
+}
+
+/*
  *  Registration
  */
-.registrationForm {
-
+#registrationForm input,
+#registrationForm select {
+    margin-bottom: 0.8em;
 }
 
-.registrationForm input {
-    width: 100%;
+.registration-panel-1,
+.registration-panel-2,
+.registration-panel-3,
+.registration-panel-4 {
+    border: 1px solid #003366;
+    padding: 0.5em;
 }
 
-.registrationForm select {
-    width: 100%;
+.registration-panel-1 {
+    background-color: #bddff2;
+}
+
+.registration-panel-2 {
+    background-color: #bddff2;
+}
+
+.registration-panel-3 {
+    background-color: #bddff2;
+}
+
+.registration-panel-4 {
+    background-color: #fffbc4;
 }
 
 /*
@@ -664,6 +724,7 @@ tr:nth-child(odd) td {
 }
 
 #list-answers {
+
 }
 
 #list-answers ul {
@@ -691,4 +752,61 @@ tr:nth-child(odd) td {
     background-color: #8C9FFF !important;
     color: #fff;
     cursor: pointer
+}
+
+/*
+ *  CDC Data Tree View
+ */
+
+.tree,
+.tree ul {
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+.tree ul {
+    margin-left:1em; /* indentation */
+    position:relative;
+}
+
+.tree ul ul {margin-left:.5em} /* (indentation/2) */
+
+.tree ul:before {
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    border-left:1px solid;
+}
+
+.tree li {
+    margin:0;
+    padding:0 1.5em; /* indentation + .5em */
+    line-height:2em; /* default list item's `line-height` */
+    color:#369;
+    font-weight:bold;
+    position:relative;
+}
+
+.tree ul li:before {
+    content:"";
+    display:block;
+    width:10px; /* same with indentation */
+    height:0;
+    border-top:1px solid;
+    margin-top:-1px; /* border top width */
+    position:absolute;
+    top:1em; /* (line-height/2) */
+    left:0;
+}
+
+.tree ul li:last-child:before {
+    background:white; /* same with body background */
+    height:auto;
+    top:1em; /* (line-height/2) */
+    bottom:0;
 }

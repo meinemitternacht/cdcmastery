@@ -24,6 +24,7 @@ class userStatistics extends CDCMastery
 	public $totalTests;
 	public $questionsAnswered;
 	public $questionsMissed;
+    public $latestTestScore;
 	
 	/*
 	 * Subordinate Users
@@ -118,6 +119,21 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
+
+    public function getLatestTestScore(){
+        $this->latestTestScore = 0;
+        if(!$this->userUUID){
+            return false;
+        }
+        else{
+            if(!$this->queryLatestTestScore()){
+                return false;
+            }
+            else{
+                return $this->latestTestScore;
+            }
+        }
+    }
 	
 	public function getTotalTests(){
 		if(!$this->userUUID){
@@ -456,6 +472,32 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 	}
+
+    public function queryLatestTestScore(){
+        $stmt = $this->db->prepare("SELECT testScore FROM `testHistory` WHERE userUUID = ? ORDER BY testTimeCompleted DESC LIMIT 1");
+		$stmt->bind_param("s",$this->userUUID);
+
+		if($stmt->execute()){
+            $stmt->bind_result($testScore);
+
+            while($stmt->fetch()){
+                $this->latestTestScore = $testScore;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","userStatistics->queryLatestTestScore()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
 	
 	public function queryQuestionsAnswered(){
 		$stmt = $this->db->prepare("SELECT SUM(totalQuestions) AS questionsAnswered FROM testHistory WHERE userUUID = ?");

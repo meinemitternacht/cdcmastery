@@ -59,8 +59,9 @@ if(isset($testUUID)){
 			/*
 			 * Test completed, go to scoring page
 			 */
-            $scoringMessage = 'You have completed the test.  To score your test, please click the ';
-		}
+
+            echo $testManager->outputQuestionData($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)],true);
+        }
 		else {
             /*
              * Show current question
@@ -76,6 +77,7 @@ else{
 	$log->setAction("AJAX_DIRECT_ACCESS");
 	$log->setDetail("CALLING SCRIPT","/ajax/testPlatform");
 	$log->saveEntry();
-	
-	echo "Direct access not authorized.";
+
+	$sysMsg->addMessage("Direct access to that script is not authorized.");
+	$cdcMastery->redirect("/errors/403");
 }

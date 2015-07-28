@@ -1,19 +1,39 @@
 <?php
 
+/**
+ * Class auth
+ */
 class auth extends user
 {
-	protected $roles;
+    /**
+     * @var roles
+     */
+    protected $roles;
 
-	public $activationStatus;
+    /**
+     * @var
+     */
+    public $activationStatus;
 
-	function __construct($uuid, log $log, mysqli $db, roles $roles, emailQueue $emailQueue){
+    /**
+     * @param bool $uuid
+     * @param log $log
+     * @param mysqli $db
+     * @param roles $roles
+     * @param emailQueue $emailQueue
+     */
+    function __construct($uuid, log $log, mysqli $db, roles $roles, emailQueue $emailQueue){
 		parent::__construct($db,$log,$emailQueue);
 		parent::loadUser($uuid);
 		
 		$this->roles = $roles;
 	}
 
-	function comparePassword($password){
+    /**
+     * @param $password
+     * @return bool
+     */
+    function comparePassword($password){
 		$userHash = $this->getHash($password);
 
 		if(empty($this->userPassword)){
@@ -40,7 +60,10 @@ class auth extends user
 		}
 	}
 
-	function getActivationStatus(){
+    /**
+     * @return bool
+     */
+    function getActivationStatus(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM queueUnactivatedUsers WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->uuid);
 		$stmt->execute();
@@ -60,15 +83,27 @@ class auth extends user
 		return $this->activationStatus;
 	}
 
-	function getError(){
+    /**
+     * @return mixed
+     */
+    function getError(){
 		return $this->error;
 	}
 
-	function getHash($userPassword){
+    /**
+     * @param $userPassword
+     * @return string
+     */
+    function getHash($userPassword){
 		return $this->hashUserPassword($userPassword);
 	}
 
-	function limitLogins($increment = false, $reset = false){
+    /**
+     * @param bool $increment
+     * @param bool $reset
+     * @return bool
+     */
+    function limitLogins($increment = false, $reset = false){
 		if(!isset($_SESSION['limitStartTime'])){
 			$_SESSION['limitStartTime'] = time();
 		}
@@ -105,7 +140,11 @@ class auth extends user
 		}
 	}
 
-	function login($password){
+    /**
+     * @param $password
+     * @return bool
+     */
+    function login($password){
 		if(empty($password)){
 			$this->error = "You must provide a password.";
 			$this->log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
@@ -140,6 +179,13 @@ class auth extends user
 
 			return false;
 		}
+        elseif($this->getUserDisabled()){
+            $this->error = "Your account has been disabled.  If you feel this is in error, <a href=\"http://helpdesk.cdcmastery.com/\">Open a Support Ticket</a>.";
+            $this->log->setAction("ERROR_LOGIN_USER_DISABLED");
+            $this->log->saveEntry();
+
+            return false;
+        }
 		else{ //authorization successful
 			$this->limitLogins(false,true); //reset rate limiter
 			
@@ -172,7 +218,10 @@ class auth extends user
 		}
 	}
 
-	function __destruct(){
+    /**
+     *
+     */
+    function __destruct(){
 		parent::__destruct();
 	}
 }

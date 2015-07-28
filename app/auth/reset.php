@@ -8,7 +8,7 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 	$userPasswordConfirm = $_POST['confirmNewPassword'];
 	
 	if($userPassword != $userPasswordConfirm){
-		$messages[] = "Your passwords do not match.";
+		$sysMsg->addMessage("Your passwords do not match.");
 	}
 	else{
 		if($pwReset->verifyPasswordResetToken($passwordToken)){
@@ -23,15 +23,15 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 					$cdcMastery->redirect("/auth/login");
 				}
 				else{
-					$messages[] = "We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.";
+					$sysMsg->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
 				}
 			}
 			else{
-				$messages[] = "That user does not exist.";
+				$sysMsg->addMessage("That user does not exist.");
 			}
 		}
 		else{
-			$messages[] = "That password reset token is invalid.";
+			$sysMsg->addMessage("That password reset token is invalid.");
 		}
 	}
 }
@@ -43,27 +43,18 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 	
 	if($userUUID){
 		if($pwReset->sendPasswordReset($userUUID)){
-			$messages[] = "A password reset link has been sent to the e-mail address provided.";
+			$sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.");
 		}
 		else{
-			$messages[] = "Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.";
+			$sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
 		}
 	}
 	else{
-		$messages[] = "Sorry, we could not find your account.  Re-check your typed e-mail address and try again.";
+		$sysMsg->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.");
 	}
 }
 ?>
 <div class="container">
-	<?php if(isset($messages)): ?>
-	<div class="systemMessages">
-		<ul>
-		<?php foreach($messages as $message): ?>
-			<li><?php echo $message; ?></li>
-		<?php endforeach; ?>
-		</ul>
-	</div>
-	<?php endif; ?>
 	<div class="row">
 		<div class="12u">
 			<section>

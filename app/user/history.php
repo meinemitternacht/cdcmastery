@@ -129,6 +129,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-	$_SESSION['messages'][] = "You have not completed any tests.";
+	$sysMsg->addMessage("You have not completed any tests.");
 	$cdcMastery->redirect("/errors/404");
 endif;

@@ -1,0 +1,61 @@
+.icon-10 {
+    height: 10px;
+    width: 10px;
+    background-size: 10px 10px;
+    background-repeat: no-repeat;
+}
+
+.icon-20 {
+    height: 20px;
+    width: 20px;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+}
+
+.icon-32 {
+    height: 32px;
+    width: 32px;
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
+}
+
+.icon-inline {
+    display: inline-block;
+    margin-bottom: -3px;
+    margin-right: 3px;
+}
+
+.ic-archive { background-image: url("/images/icons/page_zip_32.png"); }
+.ic-arrow-down { background-image: url("/images/icons/arrow_down_blue_32.png"); }
+.ic-arrow-up { background-image: url("/images/icons/arrow_up_blue_32.png"); }
+.ic-arrow-left { background-image: url("/images/icons/arrow_left_blue_32.png"); }
+.ic-arrow-right { background-image: url("/images/icons/arrow_right_blue_32.png"); }
+.ic-arrow-down-silver { background-image: url("/images/icons/arrow_down_silver_32.png"); }
+.ic-arrow-up-silver { background-image: url("/images/icons/arrow_up_silver_32.png"); }
+.ic-arrow-left-silver { background-image: url("/images/icons/arrow_left_silver_32.png"); }
+.ic-arrow-right-silver { background-image: url("/images/icons/arrow_right_silver_32.png"); }
+.ic-book { background-image: url("/images/icons/book_open_32.png"); }
+.ic-card-clear { background-image: url("/images/icons/id_card_clear_32.png"); }
+.ic-calendar { background-image: url("/images/icons/calendar_blue_32.png"); }
+.ic-chart { background-image: url("/images/icons/chart_alt_32.png"); }
+.ic-clipboard { background-image: url("/images/icons/clipboard_list_32.png"); }
+.ic-delete { background-image: url("/images/icons/cross_red_32.png"); }
+.ic-email { background-image: url("/images/icons/email_32.png"); }
+.ic-folder { background-image: url("/images/icons/folder_pages_32.png"); }
+.ic-hammer { background-image: url("/images/icons/tool_hammer_32.png"); }
+.ic-home { background-image: url("/images/icons/home_32.png"); }
+.ic-lightbulb { background-image: url("/images/icons/lightbulb_on_32.png"); }
+.ic-lock { background-image: url("/images/icons/lock_32.png"); }
+.ic-log { background-image: url("/images/icons/info_32.png"); }
+.ic-office { background-image: url("/images/icons/store_blue_32.png"); }
+.ic-pencil { background-image: url("/images/icons/pencil_yellow_eraser_32.png"); }
+.ic-plus { background-image: url("/images/icons/plus_32.png"); }
+.ic-puzzle { background-image: url("/images/icons/puzzle_blue_32.png"); }
+.ic-relationship { background-image: url("/images/icons/people_structure_32.png"); }
+.ic-resend { background-image: url("/images/icons/social_retweet_32.png"); }
+.ic-safe { background-image: url("/images/icons/safe_32.png"); }
+.ic-settings { background-image: url("/images/icons/settings_32.png"); }
+.ic-upload { background-image: url("/images/icons/upload_32.png"); }
+.ic-user-single { background-image: url("/images/icons/user_blue_32.png"); }
+.ic-user-multiple { background-image: url("/images/icons/users_32.png"); }
+.ic-warning { background-image: url("/images/icons/warning_32.png"); }

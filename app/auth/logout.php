@@ -6,5 +6,5 @@ if(!empty($_SESSION['userUUID'])) {
 }
 
 session_destroy();
-header('Location: /');
+$cdcMastery->redirect("/");
 ?>

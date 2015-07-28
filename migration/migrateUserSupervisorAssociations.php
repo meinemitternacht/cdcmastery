@@ -1,4 +1,5 @@
 <?php
+echo "\n";
 define('BASE_PATH', realpath(__DIR__ . '/../'));
 define('APP_BASE', realpath(__DIR__ . '/../app'));
 

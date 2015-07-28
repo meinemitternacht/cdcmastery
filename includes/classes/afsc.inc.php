@@ -19,6 +19,17 @@ class afsc extends CDCMastery
 		$this->db = $db;
 		$this->log = $log;
 	}
+
+    public function newAFSC(){
+        $this->uuid = parent::genUUID();
+        $this->afscName = null;
+        $this->afscVersion = null;
+        $this->afscFOUO = null;
+        $this->afscDescription = null;
+        $this->afscHidden = false;
+
+        return true;
+    }
 	
 	public function verifyAFSC($afscUUID){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM afscList WHERE uuid = ?");
@@ -60,6 +71,7 @@ class afsc extends CDCMastery
 				$afscArray[$row['uuid']]['afscFOUO'] = $row['afscFOUO'];
 				$afscArray[$row['uuid']]['afscHidden'] = $row['afscHidden'];
 				$afscArray[$row['uuid']]['oldID'] = $row['oldID'];
+				$afscArray[$row['uuid']]['totalQuestions'] = $this->getTotalQuestions($row['uuid']);
 			}
 			
 			$noResults = false;
@@ -186,6 +198,36 @@ class afsc extends CDCMastery
 				
 			if(!empty($retUUID)){
 				return $retUUID;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getTotalQuestions($uuid = false){
+		if($uuid) {
+			$tempAFSC = new afsc($this->db, $this->log);
+			if(!$tempAFSC->loadAFSC($uuid)){
+				return false;
+			}
+			else{
+				return $tempAFSC->getTotalQuestions();
+			}
+		}
+
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM questionData WHERE afscUUID = ?");
+		$stmt->bind_param("s",$this->uuid);
+
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+
+			if(!empty($count)){
+				return $count;
 			}
 			else{
 				return false;

@@ -12,41 +12,32 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 		if($userActivate->verifyUser($userUUID)){
 			if($action == "resend"){
 				if($userActivate->queueActivation($userUUID)){
-					$messages[] = "An activation link was sent to your e-mail address.";
+					$sysMsg->addMessage("An activation link was sent to your e-mail address.");
 				}
 				else{
-					$messages[] = "We were unable to send an activation link to your e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.";
+					$sysMsg->addMessage("We were unable to send an activation link to your e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
 				}
 			}
 		}
 		else{
-			$messages[] = "That user does not exist.";
+			$sysMsg->addMessage("That user does not exist.");
 		}
 	}
 	else{
-		$messages[] = "Sorry, we could not find your e-mail in the database.  Make sure it is typed correctly and try again.";
+		$sysMsg->addMessage("Sorry, we could not find your e-mail in the database.  Make sure it is typed correctly and try again.");
 	}
 }
 
 if(isset($activationToken)):
 	if($userActivate->verifyActivationToken($activationToken)):
 		if($userActivate->activateUser($activationToken)):
-			$_SESSION['messages'][] = "Thank you for activating your account.  Please login using the form below.";
+			$sysMsg->addMessage("Thank you for activating your account.  Please login using the form below.");
 			$cdcMastery->redirect("/auth/login");
 		else:
-			$messages[] = "Sorry, we could not process the activation for your account.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.";
+			$sysMsg->addMessage("Sorry, we could not process the activation for your account.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
 		endif;
 	else: ?>
 	<div class="container">
-		<?php if(isset($messages)): ?>
-		<div class="systemMessages">
-			<ul>
-			<?php foreach($messages as $message): ?>
-				<li><?php echo $message; ?></li>
-			<?php endforeach; ?>
-			</ul>
-		</div>
-		<?php endif; ?>
 		<div class="row">
 			<div class="12u">
 				<section>
@@ -68,15 +59,6 @@ if(isset($activationToken)):
 	<?php endif;
 else: ?>
 	<div class="container">
-		<?php if(isset($messages)): ?>
-		<div class="systemMessages">
-			<ul>
-			<?php foreach($messages as $message): ?>
-				<li><?php echo $message; ?></li>
-			<?php endforeach; ?>
-			</ul>
-		</div>
-		<?php endif; ?>
 		<div class="row">
 			<div class="12u">
 				<section>

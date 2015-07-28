@@ -146,6 +146,6 @@ if(!empty($testList)): ?>
     </div>
 <?php
 else:
-    $_SESSION['messages'][] = "This user has no incomplete tests.";
-    $cdcMastery->redirect("/errors/404");
+    $sysMsg->addMessage("This user has no incomplete tests.");
+    $cdcMastery->redirect("/admin/users/" . $userUUID);
 endif;

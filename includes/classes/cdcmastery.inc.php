@@ -3,11 +3,69 @@ class CDCMastery
 {
 	public $aesKey = "***REMOVED***";
 	public $maxQuestions = 100;
+    public $passingScore = 80;
 	public $staticUserArray = Array('SYSTEM','ANONYMOUS');
 	
 	public function __construct(){
 		
 	}
+
+    public function checkEmailAddress($emailAddress){
+        if(strpos($emailAddress,"@") !== false) {
+            $emailArray = explode("@", $emailAddress);
+
+            if (!preg_match("/^([^0-9\r\n\.]+\.{1}[^0-9\r\n\.]+\b)$|^([^0-9\r\n\.]+\.{1}[^0-9\r\n\.]+\.{1}[^a-zA-Z\r\n\.\D]{1,5})$/", $emailArray[0]) ||
+                !preg_match("/^\b[^0-9\r\n]+\.mil$/", $emailArray[1])
+            ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public function checkPasswordComplexity($passwordString,$userHandleString,$userEmailString){
+        $errors = Array();
+        $noLetters = false;
+
+        if (strlen($passwordString) < 8) {
+            $errors[] = "Password must be at least eight characters.";
+        }
+
+        if (!preg_match("#[0-9]+#", $passwordString)) {
+            $errors[] = "Password must include at least one number.";
+        }
+
+        if (!preg_match("#[a-zA-Z]+#", $passwordString)) {
+            $errors[] = "Password must include at least one letter.";
+            $noLetters = true;
+        }
+
+        if (!preg_match("#[A-Z]+#", $passwordString) && !$noLetters) {
+            $errors[] = "Password must include at least one uppercase letter.";
+        }
+
+        if (!preg_match("#[a-z]+#", $passwordString) && !$noLetters) {
+            $errors[] = "Password must include at least one lowercase letter.";
+        }
+
+        if (strtolower($passwordString) == strtolower($userHandleString)){
+            $errors[] = "Password cannot match username.";
+        }
+
+        if (strtolower($passwordString) == strtolower($userEmailString)){
+            $errors[] = "Password cannot match e-mail address.";
+        }
+
+        if(empty($errors)){
+            return true;
+        }
+        else{
+            return $errors;
+        }
+    }
 	
 	public function formatOutputString($outputString, $trimLength=false, $ucFirst = false){
 		if(empty($outputString)){
@@ -64,6 +122,10 @@ class CDCMastery
 	public function getMaxQuestions(){
 		return $this->maxQuestions;
 	}
+
+    public function getPassingScore(){
+        return $this->passingScore;
+    }
 	
 	public function getStaticUserArray(){
 		return $this->staticUserArray;
@@ -154,6 +216,18 @@ class CDCMastery
 			return $input;
 		}
 	}
+
+    public function scoreColor($score){
+        if(empty($score)){
+            return false;
+        }
+        elseif($score >= 80){
+            return "text-success-bold";
+        }
+        elseif($score < 80){
+            return "text-warning-bold";
+        }
+    }
 	
 	public function trimString($string,$length){
 		if(strlen($string) > $length){
