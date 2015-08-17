@@ -9,7 +9,7 @@
 					<span class="byline">Helping you get on the right track for your career.</span>
 				</header>
 				<a href="#" class="image full"><img src="images/tracks.png" alt="Get on the right track for your career!" /></a>
-				<p>CDCMastery is a study tool developed to help you succeed on assessments of your career knowledge. It's free to use, and we're always here when you need us. <a href="/about/afsc">Click here</a> to see if your AFSC is in our database. If it's not, contact us about adding your Career Development Course information.</p>
+				<p>CDCMastery is a study tool developed to help you succeed on assessments of your career knowledge. It's free to use, and we're always here when you need us. <a href="/about">Click here</a> to see if your AFSC is in our database. If it's not, contact us about adding your Career Development Course information.</p>
 			</section>
 		</div>
 		<div id="sidebar" class="4u">
