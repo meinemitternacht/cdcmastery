@@ -19,7 +19,7 @@ if(!empty($_POST)){
         }
         else{
             $sysMsg->addMessage("There was a problem adding the set.  The error has been logged.");
-            $cdcMastery->redirect("/admin/cdc-data" . $workingAFSC . "/add-set");
+            $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-set");
         }
     }
 }

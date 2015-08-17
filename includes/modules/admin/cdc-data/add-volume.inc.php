@@ -29,7 +29,7 @@ if(!empty($_POST)){
         }
         else{
             $sysMsg->addMessage("There was a problem adding the volume.  The error has been logged.");
-            $cdcMastery->redirect("/admin/cdc-data" . $workingAFSC . "/add-volume/" . $workingChild);
+            $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-volume/" . $workingChild);
         }
     }
 }
