@@ -36,7 +36,7 @@ if(!empty($_POST)){
                 with them.
             </p>
             <label for="setName">Set Name</label>
-            <input type="text" class="input_full" name="setName" maxlength="255">
+            <input type="text" class="input_full" name="setName" id="setName" maxlength="255">
             <br>
             <br>
             <input type="submit" value="Add Set">

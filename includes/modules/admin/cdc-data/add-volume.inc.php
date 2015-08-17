@@ -8,6 +8,8 @@
 
 if(!empty($_POST)){
     if(isset($_POST['confirmVolumeAdd']) && $_POST['confirmVolumeAdd'] == true){
+        $volumeName = "";
+
         if(!isset($_POST['volumeName']) || empty($_POST['volumeName'])){
             $sysMsg->addMessage("Volume Name cannot be empty.");
             $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-volume/" . $workingChild);
@@ -45,13 +47,13 @@ if(!empty($_POST)){
                 Enter the name and version of the volume below and click Add Volume to continue.
             </p>
             <label for="volumeName">Volume Name (required)</label>
-            <input type="text" class="input_full" name="volumeName" maxlength="255">
+            <input type="text" class="input_full" id="volumeName" name="volumeName" maxlength="255">
             <br>
             <br>
             <label for="volumeVersion">Volume Version</label>
             <br>
             <em>Example: 2W151B 01 0905, Edit Code 04.  The "01" after "2W151B" is the volume number.</em>
-            <input type="text" class="input_full" name="volumeVersion" maxlength="255">
+            <input type="text" class="input_full" id="volumeVersion" name="volumeVersion" maxlength="255">
             <br>
             <br>
             <input type="submit" value="Add Volume">
