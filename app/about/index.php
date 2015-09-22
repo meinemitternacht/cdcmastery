@@ -92,12 +92,14 @@ $afscList = $afsc->listAFSC();
                         <th>FOUO</th>
                     </tr>
                     <?php foreach($afscList as $dataRow): ?>
-                    <tr>
-                        <td><?php echo $dataRow['afscName']; ?></td>
-                        <td><?php echo $cdcMastery->formatOutputString($dataRow['afscVersion']); ?></td>
-                        <td><?php echo $cdcMastery->formatOutputString($dataRow['totalQuestions']); ?></td>
-                        <td><?php echo $dataRow['afscFOUO'] ? "Yes" : "No"; ?></td>
-                    </tr>
+                        <?php if($dataRow['totalQuestions'] > 0): ?>
+                        <tr>
+                            <td><?php echo $dataRow['afscName']; ?></td>
+                            <td><?php echo $cdcMastery->formatOutputString($dataRow['afscVersion']); ?></td>
+                            <td><?php echo $cdcMastery->formatOutputString($dataRow['totalQuestions']); ?></td>
+                            <td><?php echo $dataRow['afscFOUO'] ? "<strong>Yes</strong>" : "No"; ?></td>
+                        </tr>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </table>
             </section>
