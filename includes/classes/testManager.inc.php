@@ -920,33 +920,42 @@ class testManager extends CDCMastery
 	}
 	
 	public function answerQuestion($questionUUID, $answerUUID){
-		$previouslyAnsweredUUID = $this->queryQuestionPreviousAnswer($questionUUID);
-		$stmt = $this->db->prepare("INSERT INTO testData (	testUUID,
+		/*
+		 * Fix for issue where double-clicking answers will enter false data into testing data table.  Ensure answer provided matches current question.
+		 */
+		$this->answer->loadAnswer($answerUUID);
+		if($this->answer->getQuestionUUID() == $questionUUID) {
+
+			$previouslyAnsweredUUID = $this->queryQuestionPreviousAnswer($questionUUID);
+			$stmt = $this->db->prepare("INSERT INTO testData (	testUUID,
 															questionUUID,
 															answerUUID )
 													VALUES (?,?,?)
 													ON DUPLICATE KEY UPDATE
 															answerUUID=VALUES(answerUUID)");
-		$stmt->bind_param("sss",$this->incompleteTestUUID,$questionUUID,$answerUUID);
-		
-		if(!$stmt->execute()){
-			$this->log->setAction("ERROR_TEST_STORE_ANSWER");
-			$this->log->setDetail("CALLING FUNCTION","testManager->answerQuestion()");
-			$this->log->setDetail("ERROR",$stmt->error);
-			$this->log->setDetail("QUESTION UUID",$questionUUID);
-			$this->log->setDetail("ANSWER UUID",$answerUUID);
-			$this->log->saveEntry();
-			
-			$this->error = "A problem occurred saving your test data to the database. Please contact CDCMastery support for assistance.";
-			
-			return false;
+			$stmt->bind_param("sss", $this->incompleteTestUUID, $questionUUID, $answerUUID);
+
+			if (!$stmt->execute()) {
+				$this->log->setAction("ERROR_TEST_STORE_ANSWER");
+				$this->log->setDetail("CALLING FUNCTION", "testManager->answerQuestion()");
+				$this->log->setDetail("ERROR", $stmt->error);
+				$this->log->setDetail("QUESTION UUID", $questionUUID);
+				$this->log->setDetail("ANSWER UUID", $answerUUID);
+				$this->log->saveEntry();
+
+				$this->error = "A problem occurred saving your test data to the database. Please contact CDCMastery support for assistance.";
+
+				return false;
+			} else {
+				if (!$previouslyAnsweredUUID) {
+					$this->incompleteQuestionsAnswered++;
+				}
+
+				return true;
+			}
 		}
 		else{
-			if(!$previouslyAnsweredUUID){
-				$this->incompleteQuestionsAnswered++;
-			}
-			
-			return true;
+			return false;
 		}
 	}
 	

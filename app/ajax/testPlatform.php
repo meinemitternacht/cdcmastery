@@ -23,8 +23,9 @@ if(isset($testUUID)){
 			switch($userAction){
 				case "answerQuestion":
 					if(isset($actionData)){
-						$testManager->answerQuestion($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)],$actionData);
-						$testManager->navigateNextQuestion();
+						if($testManager->answerQuestion($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)],$actionData)) {
+							$testManager->navigateNextQuestion();
+						}
 					}
 				break;
 				case "firstQuestion":
