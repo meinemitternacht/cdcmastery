@@ -25,22 +25,22 @@ $answerArray = $answerManager->listAnswersByQuestion();
         <br>
         <strong>Answers</strong>
         <br>
+        <ul style="list-style:square;">
         <?php
         if($answerArray) {
             foreach ($answerArray as $answerUUID => $answerData) {
                 if ($answerData['answerCorrect'] == true) {
-                    echo "<strong><span style=\"color:green;\">" . $answerData['answerText'] . "</span></strong>";
+                    echo "<li style=\"border-bottom: 1px solid #555555; padding-bottom: 0.2em; \"><strong><span style=\"color:green;\">" . $answerData['answerText'] . "</span></strong></li>";
                 } else {
-                    echo $answerData['answerText'];
+                    echo "<li style=\"border-bottom: 1px solid #555555; padding-bottom: 0.2em; \">".$answerData['answerText']."</li>";
                 }
-
-                echo "<br>";
             }
         }
         else{
             echo "There are no answers for this question in the database.";
         }
         ?>
+        </ul>
     </section>
 </div>
 <div class="3u">
