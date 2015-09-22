@@ -194,7 +194,7 @@ else {
                 $cdcMastery->redirect("/test/take/" . $testManager->getIncompleteTestUUID());
             } else {
                 /*
-                 * No questions in the database for this test.  Make it pretty!
+                 * @todo No questions in the database for this test.  Make it pretty!
                  */
                 echo $testManager->error;
                 echo "<br>";
@@ -255,7 +255,7 @@ else {
                                 <div class="sub-menu">
                                     <ul>
                                         <li>
-                                            <a id="startTest"><i class="fa fa-caret-square-o-right fa-fw"></i>Start Test</a>
+                                            <a id="startTest"><i class="icon-inline icon-20 ic-arrow-right"></i>Start Test</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -280,7 +280,7 @@ else {
                                         <li>
                                             <a href="/test/resume/<?php echo $testUUID; ?>">
                                                 <?php if (count($testData['afscList']) > 1) {
-                                                    echo "Multiple";
+                                                    echo "Multiple AFSC's";
                                                 } else {
                                                     echo $afsc->getAFSCName($testData['afscList'][0]);
                                                 } ?>
@@ -298,7 +298,7 @@ else {
                             <br>
 
                             <div class="text-right text-warning">
-                                <a href="/test/delete/incomplete/all"><i class="fa fa-trash fa-fw"></i>Delete Incomplete Tests</a></div>
+                                <a href="/test/delete/incomplete/all"><i class="icon-inline icon-20 ic-delete"></i>Delete Incomplete Tests</a></div>
                         </section>
                     </div>
                 <?php endif; ?>
