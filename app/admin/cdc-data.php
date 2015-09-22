@@ -42,7 +42,7 @@ if($workingAFSC):
                         <li><strong>FOUO:</strong> <?php echo $afsc->getAFSCFOUO() ? "Yes" : "No"; ?></li>
                         <li><strong>Hidden:</strong> <?php echo $afsc->getAFSCHidden() ? "Yes" : "No"; ?></li>
                         <li><strong>Description:</strong> <?php echo $cdcMastery->formatOutputString($afsc->getAFSCDescription()); ?></li>
-                        <li><strong>Questions:</strong> <?php echo $afsc->getTotalQuestions(); ?></li>
+                        <li><strong>Questions:</strong> <?php if($afsc->getTotalQuestions()) { echo $afsc->getTotalQuestions(); } else { echo "0"; } ?></li>
                     </ul>
                 </section>
             </div>
@@ -54,13 +54,14 @@ if($workingAFSC):
                     </header>
                     <div class="sub-menu">
                         <ul>
-                            <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/list-questions"><i class="icon-inline icon-20 ic-arrow-right"></i>Show Questions</a></li>
+                            <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/list-questions"><i class="icon-inline icon-20 ic-arrow-right"></i>List Questions</a></li>
                             <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/add-questions"><i class="icon-inline icon-20 ic-plus"></i>Add Questions</a></li>
                             <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/delete-questions"><i class="icon-inline icon-20 ic-delete"></i>Delete Questions</a></li>
                         </ul>
                     </div>
                 </section>
             </div>
+            <?php /* ?>
             <div class="5u">
                 <section>
                     <header>
@@ -107,11 +108,15 @@ if($workingAFSC):
                     </li>
                 </ul>
             </div>
+            <?php */ ?>
             <?php
             else:
                 switch($subsection){
                     case "list-questions":
                         require_once BASE_PATH . "/includes/modules/admin/cdc-data/list-questions.inc.php";
+                        break;
+                    case "add-questions":
+                        require_once BASE_PATH . "/includes/modules/admin/cdc-data/question/add.inc.php";
                         break;
                     case "add-set":
                         require_once BASE_PATH . "/includes/modules/admin/cdc-data/add-set.inc.php";
@@ -127,8 +132,8 @@ if($workingAFSC):
                             case "edit":
                                 require_once BASE_PATH . "/includes/modules/admin/cdc-data/question/edit.inc.php";
                                 break;
-                            case "archive":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/question/archive.inc.php";
+                            case "delete":
+                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/question/delete.inc.php";
                                 break;
                         }
                         break;

@@ -113,6 +113,7 @@ else{
 <!--<![endif]-->
 <div class="9u">
     <section>
+        <?php if(!empty($questionList)): ?>
         <table id="questionListTable">
             <tr>
                 <th>Question Text (Truncated)</th>
@@ -123,7 +124,7 @@ else{
             <?php foreach($questionList as $uuid): ?>
                 <?php $questionManager->loadQuestion($uuid); ?>
                 <tr>
-                    <td><?php echo $cdcMastery->formatOutputString($questionManager->getQuestionText(),100); ?></td>
+                    <td><a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $uuid; ?>/view"><?php echo $cdcMastery->formatOutputString($questionManager->getQuestionText(),100);  ?></a></td>
                     <?php if($showForm): ?>
                     <td>
                         <select name="selectVolume[<?php echo $uuid; ?>]" size="1" disabled="disabled">
@@ -134,5 +135,8 @@ else{
                 </tr>
             <?php endforeach; ?>
         </table>
+        <?php else: ?>
+        There are no questions for this AFSC.
+        <?php endif; ?>
     </section>
 </div>

@@ -13,8 +13,19 @@ class answerManager extends CDCMastery
 	public $questionUUID;
 	
 	public function __construct(mysqli $db, log $log){
+		$this->uuid = parent::genUUID();
 		$this->db = $db;
 		$this->log = $log;
+	}
+
+	public function newAnswer(){
+		$this->uuid = $this->genUUID();
+		$this->error = false;
+		$this->fouo = false;
+		$this->answerText = false;
+		$this->answerCorrect = false;
+		$this->questionUUID = false;
+		return true;
 	}
 	
 	public function listAnswers(){
@@ -56,7 +67,13 @@ class answerManager extends CDCMastery
 				}
 
 				$stmt->close();
-				return $answerArray;
+
+				if(empty($answerArray)){
+					return false;
+				}
+				else {
+					return $answerArray;
+				}
 			}
 			else{
 				$this->log->setAction("ERROR_ANSWERS_LIST");
