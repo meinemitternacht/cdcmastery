@@ -12,7 +12,7 @@ if(isset($_SESSION['vars'][0])){
 	$subAction = isset($_SESSION['vars'][2]) ? strtolower($_SESSION['vars'][2]) : false;
 	$finalAction = isset($_SESSION['vars'][3]) ? strtolower($_SESSION['vars'][3]) : false;
 	
-	if($action){		
+	if($action){
 		switch($action){
 			/*
 			 * Basic Functions
