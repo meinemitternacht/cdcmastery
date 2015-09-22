@@ -41,6 +41,9 @@ if(!isset($_SESSION['auth'])):
                         <div>
                             <br>
                             <input type="submit" value="Log in">
+                            <br>
+                            <br>
+                            <a href="/auth/reset">Forgot Password</a>
                         </div>
                     </form>
                 </section>
