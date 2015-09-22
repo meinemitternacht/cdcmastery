@@ -331,6 +331,7 @@ if(isset($_SESSION['vars'][0])):
 								<li><a href="#history-tabs-1">Last Ten Tests</a></li>
 								<li><a href="#history-tabs-2">Last Ten Incomplete Tests</a></li>
 								<li><a href="#history-tabs-3">Last Ten Log Entries</a></li>
+                                <li><a href="#history-tabs-4">IP Addresses</a></li>
 							</ul>
 							<div id="history-tabs-1">
 							<?php 
@@ -434,6 +435,30 @@ if(isset($_SESSION['vars'][0])):
 							<?php else: ?>
 								<p>This user has no log entries in the system.</p>
 							<?php endif; ?>
+							</div>
+							<div id="history-tabs-4">
+                                <?php $ipAddressList = $userProfileStatistics->getIPAddresses(); ?>
+								<?php if(is_array($ipAddressList) && count($ipAddressList) > 0): ?>
+                                    <a href="/admin/profile/<?php echo $targetUUID; ?>?resolve">Resolve IP Addresses</a> (This will take a long time to load)
+									<table>
+										<tr>
+											<th>IP Address</th>
+                                            <?php if(isset($_GET['resolve'])): ?>
+                                            <th>Reverse DNS</th>
+                                            <?php endif; ?>
+										</tr>
+                                        <?php foreach($ipAddressList as $ipAddress): ?>
+                                        <tr>
+                                            <td><?php echo $ipAddress; ?></td>
+                                            <?php if(isset($_GET['resolve'])): ?>
+                                            <td><?php if(!empty($ipAddress)) echo gethostbyaddr($ipAddress); ?></td>
+                                            <?php endif; ?>
+                                        </tr>
+                                        <?php endforeach; ?>
+									</table>
+								<?php else: ?>
+									<p>This user has no IP addresses logged in the system.</p>
+								<?php endif; ?>
 							</div>
 						</div>
 					</section>
