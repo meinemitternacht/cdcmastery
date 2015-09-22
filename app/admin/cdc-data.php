@@ -12,6 +12,10 @@ $subsection = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 $workingChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
 $action = isset($_SESSION['vars'][3]) ? $_SESSION['vars'][3] : false;
 
+if(isset($_SESSION['deleteUUIDList']) && $subsection != "delete-questions"){
+    unset($_SESSION['deleteUUIDList']);
+}
+
 if($workingAFSC):
     if(!$afsc->loadAFSC($workingAFSC)){
         $sysMsg->addMessage("That AFSC does not exist.");
@@ -117,6 +121,9 @@ if($workingAFSC):
                         break;
                     case "add-questions":
                         require_once BASE_PATH . "/includes/modules/admin/cdc-data/question/add.inc.php";
+                        break;
+                    case "delete-questions":
+                        require_once BASE_PATH . "/includes/modules/admin/cdc-data/delete-questions.inc.php";
                         break;
                     case "add-set":
                         require_once BASE_PATH . "/includes/modules/admin/cdc-data/add-set.inc.php";
