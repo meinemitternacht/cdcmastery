@@ -2,8 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2dfee883-17f3-4717-9e95-8ea74f09e9b3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-set.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-set.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-volume.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-volume.inc.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/dev/testquestion.php" />
+      <change type="DELETED" beforePath="C:\Users\tehbi\Documents\GitHub\cdcmastery-dev\.idea\dataSources.ids" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/answerManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/answerManager.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/bootstrap.inc.php" afterPath="$PROJECT_DIR$/includes/bootstrap.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/admin/cdc-data.php" afterPath="$PROJECT_DIR$/app/admin/cdc-data.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/config.inc.php" afterPath="$PROJECT_DIR$/includes/config.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dev.iml" afterPath="$PROJECT_DIR$/.idea/dev.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/theme/header.inc.php" afterPath="$PROJECT_DIR$/theme/header.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/questionManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/questionManager.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/roles.inc.php" afterPath="$PROJECT_DIR$/includes/classes/roles.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/testManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/testManager.inc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="dev.iws" />
@@ -20,38 +36,78 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
+  <component name="DatabaseView">
+    <option name="FLATTEN" value="false" />
+    <option name="GROUP_BY_TYPE" value="true" />
+    <option name="SORT_CHILDREN" value="false" />
+    <option name="SHOW_TABLE_CONSTRAINTS" value="true" />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="dev" />
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/index.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-24.3125">
-              <caret line="191" column="14" selection-start-line="191" selection-start-column="14" selection-end-line="191" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="cdc-data.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/admin/cdc-data.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.625">
-              <caret line="120" column="30" selection-start-line="120" selection-start-column="30" selection-end-line="120" selection-end-column="30" />
+            <state vertical-scroll-proportion="-18.961538">
+              <caret line="136" column="38" selection-start-line="136" selection-start-column="38" selection-end-line="136" selection-end-column="38" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="add-set.inc.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/add-set.inc.php">
+      <file leaf-file-name="list-questions.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7584869">
-              <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+            <state vertical-scroll-proportion="-21.26923">
+              <caret line="126" column="209" selection-start-line="126" selection-start-column="209" selection-end-line="126" selection-end-column="209" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="view.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.5384617">
+              <caret line="10" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="13" selection-end-column="55" />
+              <folding>
+                <marker date="1442911148392" expanded="true" signature="999:1011" placeholder="..." />
+                <marker date="1442911148392" expanded="true" signature="1046:1062" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="delete.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.461538">
+              <caret line="16" column="84" selection-start-line="16" selection-start-column="84" selection-end-line="16" selection-end-column="84" />
+              <folding>
+                <element signature="e#6#88#0#PHP" expanded="true" />
+                <marker date="1442912054412" expanded="true" signature="1750:1762" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="answerManager.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/classes/answerManager.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.641509">
+              <caret line="75" column="17" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+              <folding>
+                <marker date="1442910991024" expanded="true" signature="614:682" placeholder="SELECT uuid,..answerData..." />
+                <marker date="1442910991024" expanded="true" signature="1439:1516" placeholder="SELECT uuid,..answerData..." />
+                <marker date="1442910991024" expanded="true" signature="2662:2745" placeholder="SELECT uuid,..answerData..." />
+                <marker date="1442910991024" expanded="true" signature="3562:3946" placeholder="INSERT INTO ..." />
+                <marker date="1442910991024" expanded="true" signature="3993:4287" placeholder="INSERT INTO ..." />
+                <marker date="1442910991024" expanded="true" signature="5049:5086" placeholder="DELETE FROM ..." />
+                <marker date="1442910991024" expanded="true" signature="5658:5719" placeholder="SELECT COUNT..answerData..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -59,9 +115,98 @@
       <file leaf-file-name="add.inc.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="-19.615385">
+              <caret line="101" column="38" selection-start-line="101" selection-start-column="38" selection-end-line="101" selection-end-column="38" />
+              <folding>
+                <element signature="e#6#88#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="testPlatform.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/ajax/testPlatform.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.230769">
+              <caret line="8" column="24" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="testManager.inc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/includes/classes/testManager.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-23.576923">
+              <caret line="1027" column="21" selection-start-line="1027" selection-start-column="21" selection-end-line="1027" selection-end-column="21" />
+              <folding>
+                <marker date="1442910795740" expanded="true" signature="1506:1842" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1442910795740" expanded="true" signature="1938:2253" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1442910795740" expanded="true" signature="3592:3858" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1442910795740" expanded="true" signature="4741:5001" placeholder="SELECT uuid,..testHistory..." />
+                <marker date="1442910795740" expanded="true" signature="6009:7382" placeholder="INSERT INTO ..." />
+                <marker date="1442910795740" expanded="true" signature="9034:9127" placeholder="SELECT quest..testData..." />
+                <marker date="1442910795740" expanded="true" signature="9829:9868" placeholder="DELETE FROM ..." />
+                <marker date="1442910795740" expanded="true" signature="10170:10208" placeholder="DELETE FROM ..." />
+                <marker date="1442910795740" expanded="true" signature="12210:12329" placeholder="SELECT uuid ..testHistory..." />
+                <marker date="1442910795740" expanded="true" signature="14250:14540" placeholder="SELECT testU..testManager..." />
+                <marker date="1442910795740" expanded="true" signature="14637:14906" placeholder="SELECT testU..testManager..." />
+                <marker date="1442910795740" expanded="true" signature="16188:16456" placeholder="SELECT testU..testManager..." />
+                <marker date="1442910795740" expanded="true" signature="17469:17741" placeholder="SELECT testU..testManager..." />
+                <marker date="1442910795740" expanded="true" signature="19086:19891" placeholder="INSERT INTO ..." />
+                <marker date="1442910795740" expanded="true" signature="20761:20800" placeholder="DELETE FROM ..." />
+                <marker date="1442910795740" expanded="true" signature="21680:21722" placeholder="DELETE FROM ..." />
+                <marker date="1442910795740" expanded="true" signature="22389:22431" placeholder="DELETE FROM ..." />
+                <marker date="1442910795740" expanded="true" signature="24243:24371" placeholder="SELECT uuid ..questionData..." />
+                <marker date="1442910795740" expanded="true" signature="25040:25138" placeholder="SELECT uuid ..questionData..." />
+                <marker date="1442910795740" expanded="true" signature="26045:26244" placeholder="INSERT INTO ..." />
+                <marker date="1442910795740" expanded="true" signature="28203:28355" placeholder="..." />
+                <marker date="1442910795740" expanded="true" signature="28571:28582" placeholder="..." />
+                <marker date="1442910795740" expanded="true" signature="29516:29666" placeholder="..." />
+                <marker date="1442910795740" expanded="true" signature="29698:29709" placeholder="..." />
+                <marker date="1442910795740" expanded="true" signature="30014:30085" placeholder="SELECT answe..testData..." />
+                <marker date="1442910795740" expanded="true" signature="34119:34167" placeholder="SELECT uuid ..testHistory..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="questionManager.inc.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/includes/classes/questionManager.inc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.40384614">
+              <caret line="183" column="68" selection-start-line="183" selection-start-column="68" selection-end-line="183" selection-end-column="68" />
+              <folding>
+                <marker date="1442909494482" expanded="true" signature="535:609" placeholder="SELECT uuid,..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="1396:1444" placeholder="SELECT uuid ..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="2641:2730" placeholder="SELECT uuid,..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="3540:3964" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="4011:4345" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="5217:5553" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="6269:6786" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="9093:9132" placeholder="DELETE FROM ..." />
+                <marker date="1442909494482" expanded="true" signature="11829:11892" placeholder="SELECT COUNT..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="12829:12979" placeholder="SELECT `afsc..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="13935:14293" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="15630:15807" placeholder="UPDATE setLi..." />
+                <marker date="1442909494482" expanded="true" signature="17259:17316" placeholder="SELECT uuid,..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="18773:18815" placeholder="DELETE FROM ..." />
+                <marker date="1442909494482" expanded="true" signature="19994:20028" placeholder="DELETE FROM ..." />
+                <marker date="1442909494482" expanded="true" signature="21221:21273" placeholder="SELECT COUNT..setList..." />
+                <marker date="1442909494482" expanded="true" signature="21737:21779" placeholder="SELECT setNa..setList..." />
+                <marker date="1442909494482" expanded="true" signature="22255:22304" placeholder="SELECT paren..setList..." />
+                <marker date="1442909494482" expanded="true" signature="23204:23740" placeholder="INSERT INTO ..." />
+                <marker date="1442909494482" expanded="true" signature="25766:26061" placeholder="UPDATE volum..." />
+                <marker date="1442909494482" expanded="true" signature="28057:28117" placeholder="SELECT uuid,..questionData..." />
+                <marker date="1442909494482" expanded="true" signature="29583:29628" placeholder="DELETE FROM ..." />
+                <marker date="1442909494482" expanded="true" signature="30130:30167" placeholder="DELETE FROM ..." />
+                <marker date="1442909494482" expanded="true" signature="31216:31271" placeholder="SELECT COUNT..volumeList..." />
+                <marker date="1442909494482" expanded="true" signature="31744:31792" placeholder="SELECT volum..volumeList..." />
+                <marker date="1442909494482" expanded="true" signature="32286:32332" placeholder="SELECT afscU..volumeList..." />
+                <marker date="1442909494482" expanded="true" signature="32818:32888" placeholder="SELECT uuid ..setList..." />
+                <marker date="1442909494482" expanded="true" signature="33458:33533" placeholder="SELECT uuid ..volumeList..." />
+                <marker date="1442909494482" expanded="true" signature="34107:34157" placeholder="SELECT uuid ..questionData..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -79,11 +224,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/admin/roles.php" />
-        <option value="$PROJECT_DIR$/css/icons.css" />
-        <option value="$PROJECT_DIR$/includes/classes/user/userActivation.inc.php" />
-        <option value="$PROJECT_DIR$/app/test/view.php" />
-        <option value="$PROJECT_DIR$/includes/classes/router.inc.php" />
         <option value="$PROJECT_DIR$/includes/classes/auth.inc.php" />
         <option value="$PROJECT_DIR$/app/auth/login.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/user/unban.inc.php" />
@@ -102,34 +242,39 @@
         <option value="$PROJECT_DIR$/migration/migrate.sh" />
         <option value="$PROJECT_DIR$/includes/classes/cdcmastery.inc.php" />
         <option value="$PROJECT_DIR$/includes/classes/userStatistics.inc.php" />
-        <option value="$PROJECT_DIR$/theme/header.inc.php" />
         <option value="$PROJECT_DIR$/app/admin/list.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/user/userAlphaList.inc.php" />
         <option value="$PROJECT_DIR$/includes/classes/user.inc.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/user/userGroupList.inc.php" />
         <option value="$PROJECT_DIR$/includes/classes/overviews/trainingManagerOverview.inc.php" />
         <option value="$PROJECT_DIR$/app/admin/users.php" />
-        <option value="$PROJECT_DIR$/includes/bootstrap.inc.php" />
         <option value="$PROJECT_DIR$/includes/classes/overviews/supervisorOverview.inc.php" />
         <option value="$PROJECT_DIR$/app/supervisor/overview.php" />
         <option value="$PROJECT_DIR$/app/training/overview.php" />
         <option value="$PROJECT_DIR$/app/admin/index.php" />
-        <option value="$PROJECT_DIR$/includes/classes/testManager.inc.php" />
         <option value="$PROJECT_DIR$/css/style.css" />
         <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/questions/view.inc.php" />
-        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php" />
-        <option value="$PROJECT_DIR$/includes/classes/answerManager.inc.php" />
-        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/list.inc.php" />
-        <option value="$PROJECT_DIR$/includes/classes/questionManager.inc.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question-list.inc.php" />
-        <option value="$PROJECT_DIR$/app/admin/cdc-data.php" />
-        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" />
         <option value="$PROJECT_DIR$/app/user/profile.php" />
         <option value="$PROJECT_DIR$/app/dev/cryptCost.php" />
         <option value="$PROJECT_DIR$/app/index.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-volume.inc.php" />
         <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/add-set.inc.php" />
+        <option value="$PROJECT_DIR$/includes/classes/roles.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/user/associations/training-manager.inc.php" />
+        <option value="$PROJECT_DIR$/includes/bootstrap.inc.php" />
+        <option value="$PROJECT_DIR$/includes/config.inc.php" />
+        <option value="$PROJECT_DIR$/theme/header.inc.php" />
+        <option value="$PROJECT_DIR$/app/dev/testquestion.php" />
+        <option value="$PROJECT_DIR$/includes/classes/questionManager.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php" />
+        <option value="$PROJECT_DIR$/includes/classes/testManager.inc.php" />
+        <option value="$PROJECT_DIR$/includes/classes/answerManager.inc.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" />
+        <option value="$PROJECT_DIR$/app/admin/cdc-data.php" />
+        <option value="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php" />
       </list>
     </option>
   </component>
@@ -151,10 +296,9 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-11" />
-    <option name="y" value="-11" />
-    <option name="width" value="1942" />
-    <option name="height" value="1242" />
+    <option name="x" value="-7" />
+    <option name="width" value="1932" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -198,6 +342,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -286,6 +432,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="php-benchmark" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cdcmastery-dev" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="includes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -309,10 +473,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="admin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="user" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -491,38 +651,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="overviews" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dev" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cdcmastery-dev" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dev" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cdcmastery-dev" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="images" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -744,8 +872,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -761,6 +887,11 @@
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/GitHub/PortableGit_c2ba306e536fdf878271f7fe636a147ff37326ad/bin/git.exe" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -822,29 +953,30 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-11" y="-11" width="1942" height="1242" extended-state="6" />
+    <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20104167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296355" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32942432" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24963397" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985386" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2019833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985386" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24963397" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -870,76 +1002,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/css/style-1000px.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/style-desktop.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.23355263">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/dev/testPasswordComplexity.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.30150753">
-          <caret line="12" column="27" selection-start-line="12" selection-start-column="27" selection-end-line="12" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/delete.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.79452056">
-          <caret line="139" column="10" selection-start-line="99" selection-start-column="4" selection-end-line="139" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/edit.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.0">
-          <caret line="84" column="47" selection-start-line="84" selection-start-column="47" selection-end-line="84" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/afsc.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="7.60274">
-          <caret line="296" column="26" selection-start-line="296" selection-start-column="26" selection-end-line="296" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/user/edit.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6934931">
-          <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/migration/buildTestHistoryQuestionArrays.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/admin/upload.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4723618">
-          <caret line="56" column="48" selection-start-line="56" selection-start-column="48" selection-end-line="56" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/emailQueue.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/includes/classes/user/passwordReset.inc.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -996,13 +1058,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/roles.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="35.625">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/userAlphaList.inc.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-18.75">
@@ -1045,38 +1100,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/theme/header.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6558219">
-          <caret line="59" column="37" selection-start-line="59" selection-start-column="37" selection-end-line="59" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/user.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="195.75">
-          <caret line="99" column="25" selection-start-line="99" selection-start-column="25" selection-end-line="99" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/testManager.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="8.79397">
-          <caret line="1019" column="32" selection-start-line="1019" selection-start-column="32" selection-end-line="1019" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/admin/index.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.40924656">
           <caret line="30" column="22" selection-start-line="30" selection-start-column="22" selection-end-line="30" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/answerManager.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="15.666667">
-          <caret line="134" column="27" selection-start-line="134" selection-start-column="27" selection-end-line="134" selection-end-column="27" />
         </state>
       </provider>
     </entry>
@@ -1091,20 +1118,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/edit.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1126,13 +1139,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6482412">
-          <caret line="129" column="54" selection-start-line="129" selection-start-column="54" selection-end-line="129" selection-end-column="54" />
         </state>
       </provider>
     </entry>
@@ -1171,36 +1177,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/log.inc.php">
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/add-volume.inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.6164383">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.2900097">
+          <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/bootstrap.inc.php">
+    <entry file="file://$PROJECT_DIR$/includes/classes/user.inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.10552764">
-          <caret line="29" column="77" selection-start-line="29" selection-start-column="77" selection-end-line="29" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/includes/classes/questionManager.inc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8458904">
-          <caret line="937" column="111" selection-start-line="937" selection-start-column="111" selection-end-line="937" selection-end-column="111" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-24.3125">
-          <caret line="191" column="14" selection-start-line="191" selection-start-column="14" selection-end-line="191" selection-end-column="14" />
+        <state vertical-scroll-proportion="-27.807692">
+          <caret line="99" column="25" selection-start-line="99" selection-start-column="25" selection-end-line="99" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php">
+    <entry file="file://$PROJECT_DIR$/includes/classes/roles.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.307693">
+          <caret line="393" column="20" selection-start-line="393" selection-start-column="20" selection-end-line="393" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/user/associations/training-manager.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.615385">
+          <caret line="112" column="49" selection-start-line="112" selection-start-column="49" selection-end-line="112" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/ie/PIE.htc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.15096481">
+          <caret line="10" column="68" selection-start-line="10" selection-start-column="68" selection-end-line="10" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/php-benchmark/php-benchmark">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/config.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.153846">
+          <caret line="14" column="63" selection-start-line="14" selection-start-column="63" selection-end-line="14" selection-end-column="63" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/edit.inc.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1208,27 +1244,236 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/add-volume.inc.php">
+    <entry file="file://$PROJECT_DIR$/includes/classes/afsc.inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2900097">
-          <caret line="18" column="9" selection-start-line="18" selection-start-column="9" selection-end-line="18" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.7307692">
+          <caret line="38" column="39" selection-start-line="38" selection-start-column="39" selection-end-line="38" selection-end-column="39" />
+          <folding>
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..afscList..." />
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..afscList..." />
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..afscList..." />
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="SELECT uuid ..afscList..." />
+            <marker date="1441858700976" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..questionData..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/bootstrap.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.692308">
+          <caret line="44" column="0" selection-start-line="44" selection-start-column="0" selection-end-line="44" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/admin/cdc-data.php">
+    <entry file="file://$PROJECT_DIR$/includes/classes/log.inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.625">
-          <caret line="120" column="30" selection-start-line="120" selection-start-column="30" selection-end-line="120" selection-end-column="30" />
-          <folding />
+        <state vertical-scroll-proportion="156.26923">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="DELETE FROM ..." />
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..systemLogData..." />
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="SELECT uuid,..systemLog..." />
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="INSERT INTO ..." />
+            <marker date="1441858701038" expanded="true" signature="-1:-1" placeholder="SELECT COUNT..systemLog..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/add-set.inc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7584869">
-          <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+        <state vertical-scroll-proportion="-13.730769">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="44" selection-end-column="6" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7986425">
+          <caret line="190" column="14" selection-start-line="190" selection-start-column="14" selection-end-line="190" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/theme/header.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.076923">
+          <caret line="80" column="55" selection-start-line="80" selection-start-column="36" selection-end-line="80" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/dev/testquestion.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-24.192308">
+          <caret line="43" column="65" selection-start-line="23" selection-start-column="4" selection-end-line="43" selection-end-column="65" />
+          <folding>
+            <element signature="e#6#88#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/auth/login.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-21.26923">
+          <caret line="126" column="209" selection-start-line="126" selection-start-column="209" selection-end-line="126" selection-end-column="209" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/test/take.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.9615384">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/ajax/testPlatform.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.230769">
+          <caret line="8" column="24" selection-start-line="8" selection-start-column="24" selection-end-line="8" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/answerManager.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.641509">
+          <caret line="75" column="17" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
+          <folding>
+            <marker date="1442910991024" expanded="true" signature="614:682" placeholder="SELECT uuid,..answerData..." />
+            <marker date="1442910991024" expanded="true" signature="1439:1516" placeholder="SELECT uuid,..answerData..." />
+            <marker date="1442910991024" expanded="true" signature="2662:2745" placeholder="SELECT uuid,..answerData..." />
+            <marker date="1442910991024" expanded="true" signature="3562:3946" placeholder="INSERT INTO ..." />
+            <marker date="1442910991024" expanded="true" signature="3993:4287" placeholder="INSERT INTO ..." />
+            <marker date="1442910991024" expanded="true" signature="5049:5086" placeholder="DELETE FROM ..." />
+            <marker date="1442910991024" expanded="true" signature="5658:5719" placeholder="SELECT COUNT..answerData..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/testManager.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.576923">
+          <caret line="1027" column="21" selection-start-line="1027" selection-start-column="21" selection-end-line="1027" selection-end-column="21" />
+          <folding>
+            <marker date="1442910795740" expanded="true" signature="1506:1842" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1442910795740" expanded="true" signature="1938:2253" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1442910795740" expanded="true" signature="3592:3858" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1442910795740" expanded="true" signature="4741:5001" placeholder="SELECT uuid,..testHistory..." />
+            <marker date="1442910795740" expanded="true" signature="6009:7382" placeholder="INSERT INTO ..." />
+            <marker date="1442910795740" expanded="true" signature="9034:9127" placeholder="SELECT quest..testData..." />
+            <marker date="1442910795740" expanded="true" signature="9829:9868" placeholder="DELETE FROM ..." />
+            <marker date="1442910795740" expanded="true" signature="10170:10208" placeholder="DELETE FROM ..." />
+            <marker date="1442910795740" expanded="true" signature="12210:12329" placeholder="SELECT uuid ..testHistory..." />
+            <marker date="1442910795740" expanded="true" signature="14250:14540" placeholder="SELECT testU..testManager..." />
+            <marker date="1442910795740" expanded="true" signature="14637:14906" placeholder="SELECT testU..testManager..." />
+            <marker date="1442910795740" expanded="true" signature="16188:16456" placeholder="SELECT testU..testManager..." />
+            <marker date="1442910795740" expanded="true" signature="17469:17741" placeholder="SELECT testU..testManager..." />
+            <marker date="1442910795740" expanded="true" signature="19086:19891" placeholder="INSERT INTO ..." />
+            <marker date="1442910795740" expanded="true" signature="20761:20800" placeholder="DELETE FROM ..." />
+            <marker date="1442910795740" expanded="true" signature="21680:21722" placeholder="DELETE FROM ..." />
+            <marker date="1442910795740" expanded="true" signature="22389:22431" placeholder="DELETE FROM ..." />
+            <marker date="1442910795740" expanded="true" signature="24243:24371" placeholder="SELECT uuid ..questionData..." />
+            <marker date="1442910795740" expanded="true" signature="25040:25138" placeholder="SELECT uuid ..questionData..." />
+            <marker date="1442910795740" expanded="true" signature="26045:26244" placeholder="INSERT INTO ..." />
+            <marker date="1442910795740" expanded="true" signature="28203:28355" placeholder="..." />
+            <marker date="1442910795740" expanded="true" signature="28571:28582" placeholder="..." />
+            <marker date="1442910795740" expanded="true" signature="29516:29666" placeholder="..." />
+            <marker date="1442910795740" expanded="true" signature="29698:29709" placeholder="..." />
+            <marker date="1442910795740" expanded="true" signature="30014:30085" placeholder="SELECT answe..testData..." />
+            <marker date="1442910795740" expanded="true" signature="34119:34167" placeholder="SELECT uuid ..testHistory..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.615385">
+          <caret line="101" column="38" selection-start-line="101" selection-start-column="38" selection-end-line="101" selection-end-column="38" />
+          <folding>
+            <element signature="e#6#88#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.5384617">
+          <caret line="10" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="13" selection-end-column="55" />
+          <folding>
+            <marker date="1442911148392" expanded="true" signature="999:1011" placeholder="..." />
+            <marker date="1442911148392" expanded="true" signature="1046:1062" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/admin/cdc-data.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.961538">
+          <caret line="136" column="38" selection-start-line="136" selection-start-column="38" selection-end-line="136" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.461538">
+          <caret line="16" column="84" selection-start-line="16" selection-start-column="84" selection-end-line="16" selection-end-column="84" />
+          <folding>
+            <element signature="e#6#88#0#PHP" expanded="true" />
+            <marker date="1442912054412" expanded="true" signature="1750:1762" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/includes/classes/questionManager.inc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.40384614">
+          <caret line="183" column="68" selection-start-line="183" selection-start-column="68" selection-end-line="183" selection-end-column="68" />
+          <folding>
+            <marker date="1442909494482" expanded="true" signature="535:609" placeholder="SELECT uuid,..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="1396:1444" placeholder="SELECT uuid ..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="2641:2730" placeholder="SELECT uuid,..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="3540:3964" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="4011:4345" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="5217:5553" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="6269:6786" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="9093:9132" placeholder="DELETE FROM ..." />
+            <marker date="1442909494482" expanded="true" signature="11829:11892" placeholder="SELECT COUNT..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="12829:12979" placeholder="SELECT `afsc..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="13935:14293" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="15630:15807" placeholder="UPDATE setLi..." />
+            <marker date="1442909494482" expanded="true" signature="17259:17316" placeholder="SELECT uuid,..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="18773:18815" placeholder="DELETE FROM ..." />
+            <marker date="1442909494482" expanded="true" signature="19994:20028" placeholder="DELETE FROM ..." />
+            <marker date="1442909494482" expanded="true" signature="21221:21273" placeholder="SELECT COUNT..setList..." />
+            <marker date="1442909494482" expanded="true" signature="21737:21779" placeholder="SELECT setNa..setList..." />
+            <marker date="1442909494482" expanded="true" signature="22255:22304" placeholder="SELECT paren..setList..." />
+            <marker date="1442909494482" expanded="true" signature="23204:23740" placeholder="INSERT INTO ..." />
+            <marker date="1442909494482" expanded="true" signature="25766:26061" placeholder="UPDATE volum..." />
+            <marker date="1442909494482" expanded="true" signature="28057:28117" placeholder="SELECT uuid,..questionData..." />
+            <marker date="1442909494482" expanded="true" signature="29583:29628" placeholder="DELETE FROM ..." />
+            <marker date="1442909494482" expanded="true" signature="30130:30167" placeholder="DELETE FROM ..." />
+            <marker date="1442909494482" expanded="true" signature="31216:31271" placeholder="SELECT COUNT..volumeList..." />
+            <marker date="1442909494482" expanded="true" signature="31744:31792" placeholder="SELECT volum..volumeList..." />
+            <marker date="1442909494482" expanded="true" signature="32286:32332" placeholder="SELECT afscU..volumeList..." />
+            <marker date="1442909494482" expanded="true" signature="32818:32888" placeholder="SELECT uuid ..setList..." />
+            <marker date="1442909494482" expanded="true" signature="33458:33533" placeholder="SELECT uuid ..volumeList..." />
+            <marker date="1442909494482" expanded="true" signature="34107:34157" placeholder="SELECT uuid ..questionData..." />
+          </folding>
         </state>
       </provider>
     </entry>
