@@ -247,11 +247,11 @@ class roles extends CDCMastery
 
 		if($stmt->execute()){
 			$stmt->bind_result($userUUID);
-				
+
 			while($stmt->fetch()){
 				$userArray[] = $userUUID;
 			}
-				
+
 			if(isset($userArray)){
 				return $userArray;
 			}
