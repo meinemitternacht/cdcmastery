@@ -42,7 +42,7 @@ if($res->num_rows > 0){
             }
 
             if (count($dataArray) >= 500) {
-                $qry = "INSERT INTO cdcmastery_dev.testData (testUUID, questionUUID, answerUUID) VALUES";
+                $qry = "INSERT INTO testData (testUUID, questionUUID, answerUUID) VALUES";
 
                 $first = true;
                 foreach ($dataArray as $key => $data) {
@@ -55,21 +55,19 @@ if($res->num_rows > 0){
                 }
 
                 if (!$db->query($qry)) {
+                    /*echo " ***** QUERY ***** \n\n" . $qry . "\n\n ***** QUERY *****\n\n";*/
                     echo "There was a problem inserting the data. " . $db->error . "\n\n";
-                    echo " ***** QUERY ***** \n\n" . $qry . "\n\n ***** QUERY *****\n\n";
-                    echo " ***** VAR_DUMP ***** \n\n" . var_dump($dataArray) . "\n\n ***** VAR_DUMP *****";
-                    $continue = false;
-                } else {
-                    $dataArray = Array();
-                    $i=0;
-                    echo "..." . $rowCount;
                 }
+
+                $dataArray = Array();
+                $i=0;
+                echo "..." . $rowCount;
             }
         }
 	}
 	
 	if(!empty($dataArray)){
-		$qry = "INSERT INTO cdcmastery_dev.testData (testUUID, questionUUID, answerUUID) VALUES";
+		$qry = "INSERT INTO testData (testUUID, questionUUID, answerUUID) VALUES";
 			
 		$first = true;
 		foreach($dataArray as $key => $data){
