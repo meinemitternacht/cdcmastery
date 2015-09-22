@@ -52,7 +52,12 @@ class questionManager extends CDCMastery
 
     public function listQuestionsForAFSC(){
         if(!$this->afscUUID){
-            return false;
+            if($this->afsc->getUUID()){
+                $this->afscUUID = $this->afsc->getUUID();
+            }
+            else {
+                return false;
+            }
         }
 
         $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ?");
@@ -179,11 +184,6 @@ class questionManager extends CDCMastery
         $stmt->bind_param("sss",$this->getUUID(),$this->getAFSCUUID(),$this->questionText);
 
         if($stmt->execute()){
-            $this->log->setAction("QUESTION_ARCHIVE");
-            $this->log->setDetail("Question UUID",$this->getUUID());
-            $this->log->setDetail("AFSC UUID",$this->getAFSCUUID());
-            $this->log->saveEntry();
-
             $stmt->close();
             unset($stmt);
 
@@ -288,7 +288,6 @@ class questionManager extends CDCMastery
             }
         }
         else{
-
             $this->log->setAction("ERROR_QUESTION_ARCHIVE");
             $this->log->setDetail("MySQL Error",$stmt->error);
             $this->log->setDetail("Question UUID",$this->getUUID());
