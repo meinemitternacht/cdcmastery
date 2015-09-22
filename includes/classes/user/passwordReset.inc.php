@@ -145,7 +145,10 @@ class passwordReset extends user {
 	}
 	
 	public function verifyPasswordResetToken($passwordToken){
-		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userPasswordResets WHERE uuid = ? AND timeExpires > CURRENT_TIMESTAMP");
+		$dtObj = new DateTime();
+		$timeExpires = $dtObj->format("Y-m-d H:i:s");
+
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userPasswordResets WHERE uuid = ? AND timeExpires > $timeExpires");
 		$stmt->bind_param("s",$passwordToken);
 	
 		if($stmt->execute()){
