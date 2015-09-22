@@ -1,7 +1,3 @@
 images/icons/Thumbs.db
 *.db
-.idea/workspace.xml
-.idea/workspace.xml
-.idea/deployment.xml
-.idea/inspectionProfiles/Project_Default.xml
-.idea/inspectionProfiles/profiles_settings.xml
+.idea/
