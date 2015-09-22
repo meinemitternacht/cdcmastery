@@ -36,8 +36,7 @@ $db = new mysqli(   $cfg['db']['host'],
                     $cfg['db']['user'],
                     $cfg['db']['pass'],
                     $cfg['db']['name'],
-                    $cfg['db']['port'],
-                    $cfg['db']['socket']);
+                    $cfg['db']['port']);
 
 if($db->connect_errno){
 	include APP_BASE . '/errors/dbError.php';
