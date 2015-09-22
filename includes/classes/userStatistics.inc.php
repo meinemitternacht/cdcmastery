@@ -14,6 +14,7 @@ class userStatistics extends CDCMastery
 	 * System Statistics
 	 */
 	public $logEntries;
+    public $ipAddressList;
 	
 	/*
 	 * Testing Statistics
@@ -119,6 +120,20 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
+
+    public function getIPAddresses(){
+        if(!$this->userUUID){
+            return false;
+        }
+        else{
+            if(!$this->queryIPAddresses()){
+                return false;
+            }
+            else{
+                return $this->ipAddressList;
+            }
+        }
+    }
 
     public function getLatestTestScore(){
         $this->latestTestScore = 0;
@@ -368,6 +383,32 @@ class userStatistics extends CDCMastery
 	/*
 	 * Queries
 	 */
+
+	public function queryIPAddresses(){
+        $stmt = $this->db->prepare("SELECT DISTINCT(ip) FROM systemLog WHERE userUUID = ?");
+        $stmt->bind_param("s",$this->userUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($ipAddress);
+
+            while($stmt->fetch()){
+                $this->ipAddressList[] = $ipAddress;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","userStatistics->queryIPAddresses()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
 	
 	public function queryLogEntries(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM systemLog WHERE userUUID = ?");
