@@ -1027,7 +1027,7 @@ class testManager extends CDCMastery
 						$answerClass = "list-answer-normal";
 					}
 					
-					$output .= '<li p="'.$answerUUID.'" id="answer'.$i.'" class="'.$answerClass.'">'.$answerData['answerText'].'</li>';
+					$output .= '<li p="'.$answerUUID.'" id="answer'.$i.'" class="'.$answerClass.'" style="cursor: pointer;">'.$answerData['answerText'].'</li>';
 					$i++;
 				}
 				$output .= "</ul>";
