@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2dfee883-17f3-4717-9e95-8ea74f09e9b3" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/delete.inc.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/dev/testquestion.php" />
-      <change type="DELETED" beforePath="C:\Users\tehbi\Documents\GitHub\cdcmastery-dev\.idea\dataSources.ids" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/add.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/answerManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/answerManager.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/bootstrap.inc.php" afterPath="$PROJECT_DIR$/includes/bootstrap.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/admin/cdc-data.php" afterPath="$PROJECT_DIR$/app/admin/cdc-data.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/config.inc.php" afterPath="$PROJECT_DIR$/includes/config.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dev.iml" afterPath="$PROJECT_DIR$/.idea/dev.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/theme/header.inc.php" afterPath="$PROJECT_DIR$/theme/header.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/list-questions.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/questionManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/questionManager.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/roles.inc.php" afterPath="$PROJECT_DIR$/includes/classes/roles.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/classes/testManager.inc.php" afterPath="$PROJECT_DIR$/includes/classes/testManager.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" afterPath="$PROJECT_DIR$/includes/modules/admin/cdc-data/question/view.inc.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="2dfee883-17f3-4717-9e95-8ea74f09e9b3" name="Default" comment="" />
     <ignored path="dev.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -954,7 +934,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1932" height="1047" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296355" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -964,7 +944,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985386" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2019833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2019833" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32985386" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24963397" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -1303,16 +1283,6 @@
         <state vertical-scroll-proportion="-19.076923">
           <caret line="80" column="55" selection-start-line="80" selection-start-column="36" selection-end-line="80" selection-end-column="55" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/dev/testquestion.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-24.192308">
-          <caret line="43" column="65" selection-start-line="23" selection-start-column="4" selection-end-line="43" selection-end-column="65" />
-          <folding>
-            <element signature="e#6#88#0#PHP" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
