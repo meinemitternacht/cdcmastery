@@ -53,7 +53,7 @@ if(isset($_POST['messageBody'])){
                         Send Message
                     </div>
                     <ul>
-                        <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+                        <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
                     </ul>
                 </div>
                 <div class="clearfix"><br></div>
@@ -74,7 +74,7 @@ if(isset($_POST['messageBody'])){
                         <li>
                             <label for="messageBody">Body</label>
                             <br>
-                            <textarea id="messageBody" name="messageBody"></textarea>
+                            <textarea id="messageBody" name="messageBody" style="height:6em;"></textarea>
                         </li>
                         <li>
                             <br>
