@@ -44,7 +44,7 @@ class questionManager extends CDCMastery
             }
 		}
 		else{
-			$this->error[] = "There are no questions in the database.";
+			$this->error = "There are no questions in the database.";
 			$res->close();
 			return false;
 		}
@@ -82,7 +82,7 @@ class questionManager extends CDCMastery
             $this->log->setDetail("ERROR",$stmt->error);
             $this->log->saveEntry();
 
-            $this->error[] = "Sorry, we could not retrieve the question list from the database.";
+            $this->error = "Sorry, we could not retrieve the question list from the database.";
             $stmt->close();
             return false;
         }
@@ -117,7 +117,7 @@ class questionManager extends CDCMastery
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
 		
-			$this->error[] = "Sorry, we could not retrieve the question from the database.";
+			$this->error = "Sorry, we could not retrieve the question from the database.";
 			$stmt->close();
 			return false;
 		}
@@ -157,7 +157,7 @@ class questionManager extends CDCMastery
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
 		
-			$this->error[] = "Sorry, we could not save the question data to the database.";
+			$this->error = "Sorry, we could not save the question data to the database.";
 			$stmt->close();
 			return false;
 		}
