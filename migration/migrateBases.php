@@ -30,7 +30,7 @@ $res->close();
 $stmt = $db->prepare("INSERT INTO baseList (uuid, baseName, oldID) VALUES (?,?,?) ON DUPLICATE KEY UPDATE uuid=VALUES(uuid),baseName=VALUES(baseName),oldID=VALUES(oldID)");
 
 $error = false;
-$total=1;
+$total=0;
 
 foreach($baseArray as $key => $base){
 	$stmt->bind_param("ssi", $key, $base['baseName'], $base['oldID']);
