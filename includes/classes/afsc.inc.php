@@ -1,26 +1,66 @@
 <?php
 
+/**
+ * Class afsc
+ */
 class afsc extends CDCMastery
 {
+	/**
+	 * @var mysqli
+     */
 	protected $db;
+	/**
+	 * @var log
+     */
 	protected $log;
-	
+
+	/**
+	 * @var
+     */
 	public $error;
-	
+
+	/**
+	 * @var
+     */
 	public $uuid;
+	/**
+	 * @var
+     */
 	public $afscName;
+	/**
+	 * @var
+     */
 	public $afscDescription;
+	/**
+	 * @var
+     */
 	public $afscVersion;
+	/**
+	 * @var
+     */
 	public $afscFOUO;
+	/**
+	 * @var
+     */
 	public $afscHidden;
+	/**
+	 * @var
+     */
 	public $oldID;
-	
+
+	/**
+	 * @param mysqli $db
+	 * @param log $log
+     */
 	public function __construct(mysqli $db, log $log){
 		$this->db = $db;
 		$this->log = $log;
 	}
 
-    public function newAFSC(){
+	/**
+	 * @return bool
+     */
+	public function newAFSC(){
         $this->uuid = parent::genUUID();
         $this->afscName = null;
         $this->afscVersion = null;
@@ -30,7 +70,11 @@ class afsc extends CDCMastery
 
         return true;
     }
-	
+
+	/**
+	 * @param $afscUUID
+	 * @return bool
+     */
 	public function verifyAFSC($afscUUID){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM afscList WHERE uuid = ?");
 		$stmt->bind_param("s",$afscUUID);
@@ -57,7 +101,10 @@ class afsc extends CDCMastery
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+     */
 	public function listAFSC(){
 		$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
 		
@@ -89,7 +136,11 @@ class afsc extends CDCMastery
 			return $afscArray;
 		}
 	}
-	
+
+	/**
+	 * @param $uuid
+	 * @return bool
+     */
 	public function loadAFSC($uuid){
 		$stmt = $this->db->prepare("SELECT	uuid,
 											afscName,
@@ -145,7 +196,10 @@ class afsc extends CDCMastery
 		
 		return $ret;
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function saveAFSC(){
 		$stmt = $this->db->prepare("INSERT INTO afscList (  uuid,
 															afscName,
@@ -184,7 +238,11 @@ class afsc extends CDCMastery
 			return true;
 		}
 	}
-	
+
+	/**
+	 * @param $oldID
+	 * @return bool
+     */
 	public function getMigratedAFSCUUID($oldID){
 		$stmt = $this->db->prepare("SELECT uuid FROM afscList WHERE oldID = ?");
 		$stmt->bind_param("s",$oldID);
@@ -208,6 +266,10 @@ class afsc extends CDCMastery
 		}
 	}
 
+	/**
+	 * @param bool|false $uuid
+	 * @return bool
+     */
 	public function getTotalQuestions($uuid = false){
 		if($uuid) {
 			$tempAFSC = new afsc($this->db, $this->log);
@@ -237,11 +299,18 @@ class afsc extends CDCMastery
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return mixed
+     */
 	public function getUUID(){
 		return $this->uuid;
 	}
-	
+
+	/**
+	 * @param bool|false $uuid
+	 * @return bool|string
+     */
 	public function getAFSCName($uuid=false){
 		if(!empty($uuid)){
 			$_afsc = new afsc($this->db, $this->log);
@@ -258,57 +327,99 @@ class afsc extends CDCMastery
 			return htmlspecialchars($this->afscName);
 		}
 	}
-	
+
+	/**
+	 * @return string
+     */
 	public function getAFSCDescription(){
 		return htmlspecialchars($this->afscDescription);
 	}
-	
+
+	/**
+	 * @return string
+     */
 	public function getAFSCVersion(){
 		return htmlspecialchars($this->afscVersion);
 	}
-	
+
+	/**
+	 * @return mixed
+     */
 	public function getAFSCFOUO(){
 		return $this->afscFOUO;
 	}
-	
+
+	/**
+	 * @return mixed
+     */
 	public function getAFSCHidden(){
 		return $this->afscHidden;
 	}
-	
+
+	/**
+	 * @return mixed
+     */
 	public function getOldID(){
 		return $this->oldID;
 	}
-	
+
+	/**
+	 * @param $uuid
+	 * @return bool
+     */
 	public function setUUID($uuid){
 		$this->uuid = $uuid;
 		return true;
 	}
-	
+
+	/**
+	 * @param $afscName
+	 * @return bool
+     */
 	public function setAFSCName($afscName){
 		$this->afscName = htmlspecialchars_decode($afscName);
 		return true;
 	}
-	
+
+	/**
+	 * @param $afscDescription
+	 * @return bool
+     */
 	public function setAFSCDescription($afscDescription){
 		$this->afscDescription = htmlspecialchars_decode($afscDescription);
 		return true;
 	}
-	
+
+	/**
+	 * @param $afscVersion
+	 * @return bool
+     */
 	public function setAFSCVersion($afscVersion){
 		$this->afscVersion = htmlspecialchars_decode($afscVersion);
 		return true;
 	}
-	
+
+	/**
+	 * @param $afscFOUO
+	 * @return bool
+     */
 	public function setAFSCFOUO($afscFOUO){
 		$this->afscFOUO = $afscFOUO;
 		return true;
 	}
-	
+
+	/**
+	 * @param $afscHidden
+	 * @return bool
+     */
 	public function setAFSCHidden($afscHidden){
 		$this->afscHidden = $afscHidden;
 		return true;
 	}
-	
+
+	/**
+	 *
+     */
 	public function __destruct(){
 		parent::__destruct();
 	}
