@@ -151,14 +151,14 @@ else{
 							<th class="th-child">Associated With</th>
 							<td>
 								<?php
-								$afscList = $userProfileStatistics->getAFSCAssociations();
-								
-								if(!$afscList){
+								$userAFSCList = $userProfileStatistics->getAFSCAssociations();
+
+								if(!$userAFSCList){
 									echo "No associations.";
 								}
 								else{
-									foreach($afscList as $userAFSC){
-										echo $afsc->getAFSCName($userAFSC)."<br />";
+									foreach($userAFSCList as $userAFSC){
+                                        echo $userAFSC . "<br>";
 									}
 								}
 								?>
@@ -168,13 +168,13 @@ else{
 							<th class="th-child">Pending Associations</th>
 							<td>
 								<?php
-								$afscList = $userProfileStatistics->getPendingAFSCAssociations();
+								$userPendingAFSCList = $userProfileStatistics->getPendingAFSCAssociations();
 								
-								if(!$afscList){
+								if(!$userPendingAFSCList){
 									echo "No pending associations.";
 								}
 								else{
-									foreach($afscList as $userAFSC){
+									foreach($userPendingAFSCList as $userAFSC){
 										echo $afsc->getAFSCName($userAFSC)."<br />";
 									}
 								}
@@ -321,7 +321,8 @@ else{
 					</table>
 				</section>
 			</div>
-			<div class="clearfix"><br></div>
+		</div>
+		<div class="row">
 			<div class="12u">
 				<section>
 					<header>
@@ -330,7 +331,7 @@ else{
 					<div id="history-tabs">
 						<ul>
 							<li><a href="#history-tabs-1">Last Ten Tests</a></li>
-							<li><a href="#history-tabs-2">Last Ten Incomplete Tests</a></li>
+							<li><a href="#history-tabs-2">Last Five Incomplete Tests</a></li>
 							<li><a href="#history-tabs-3">Last Ten Log Entries</a></li>
 						</ul>
 						<div id="history-tabs-1">
@@ -367,7 +368,7 @@ else{
 	  					</div>
 						<div id="history-tabs-2">
 						<?php
-						$userIncompleteTestArray = $testManager->listUserIncompleteTests($targetUUID,10);
+						$userIncompleteTestArray = $testManager->listUserIncompleteTests($targetUUID,5);
 						
 						if($userIncompleteTestArray): ?>
 							<table class="tableSmallText" id="profile-table-2">
