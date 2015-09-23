@@ -11,10 +11,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-                $_SESSION['messages'][] = "There were errors while adding AFSC association(s) for this user.  Check the site log for details.";
+                $sysMsg->addMessage("There were errors while adding AFSC association(s) for this user.  Check the site log for details.");
 			}
 			else{
-                $_SESSION['messages'][] = "AFSC association(s) added successfully.";
+				$sysMsg->addMessage("AFSC association(s) added successfully.");
 			}
 		break;
 		case "removeAssociation":
@@ -27,10 +27,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-                $_SESSION['messages'][] = "There were errors while removing AFSC association(s) for this user.  Check the site log for details.";
+				$sysMsg->addMessage("There were errors while removing AFSC association(s) for this user.  Check the site log for details.");
 			}
 			else{
-                $_SESSION['messages'][] = "AFSC association(s) removed successfully.";
+				$sysMsg->addMessage("AFSC association(s) removed successfully.");
 			}
 		break;
 		case "removePendingAssociation":
@@ -43,10 +43,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-                $_SESSION['messages'][] = "There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.";
+				$sysMsg->addMessage("There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.");
 			}
 			else{
-				$_SESSION['messages'][] = "Pending AFSC association(s) removed successfully.";
+				$sysMsg->addMessage("Pending AFSC association(s) removed successfully.");
 			}
 		break;
 	}
