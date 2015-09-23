@@ -166,7 +166,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
         /*
          * Test does not exist.
          */
-        $_SESSION['error'][] = "Sorry, that test does not exist.";
+        $sysMsg->addMessage("Sorry, that test does not exist.");
         $cdcMastery->redirect("/errors/404");
     }
 }
