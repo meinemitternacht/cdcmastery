@@ -19,8 +19,6 @@ class bases extends CDCMastery
 	public function listBases(){
 		$res = $this->db->query("SELECT uuid, baseName FROM baseList ORDER BY baseName ASC");
 		
-		$roleArray = Array();
-		
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
 				$baseArray[$row['uuid']] = $row['baseName'];
