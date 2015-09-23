@@ -134,16 +134,16 @@ and (max-device-width : 480px) {
 				<div class="sub-menu">
 					<ul>
 						<?php if($pageNumber > 0): ?>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First"><i class="fa fa-angle-double-left fa-fw"></i>First</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First">First Page</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber > 0): ?>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo ($pageNumber - 1); ?>" title="Previous"><i class="fa fa-angle-left fa-fw"></i>Previous</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo ($pageNumber - 1); ?>" title="Previous">Previous Page</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber < $totalPages): ?>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo ($pageNumber + 1); ?>" title="Next"><i class="fa fa-angle-right fa-fw"></i>Next</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo ($pageNumber + 1); ?>" title="Next">Next Page</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber < $totalPages): ?>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $totalPages; ?>" title="Last"><i class="fa fa-angle-double-right fa-fw"></i>Last</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $totalPages; ?>" title="Last">Last Page</a></li>
 						<?php endif; ?>
 					</ul>
 				</div>
@@ -160,22 +160,15 @@ and (max-device-width : 480px) {
 						<span class="tableLinksDashed">
 							<a <?php if($sortBy == "timestamp") echo "class=\"active\""?> href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc">Timestamp</a>:
 						</span>
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc"><i class="fa fa-sort-desc"></i></a>
+						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc"><i class="icon-inline icon-20 ic-arrow-up-silver"></i></a>
+						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc"><i class="icon-inline icon-20 ic-arrow-down-silver"></i></a>
 					</li>
 					<li>
 						<span class="tableLinksDashed">
 							<a <?php if($sortBy == "action") echo "class=\"active\""?> href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc">Action</a>:
 						</span>
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc"><i class="fa fa-sort-desc"></i></a>
-					</li>
-					<li>		
-						<span class="tableLinksDashed">
-							<a <?php if($sortBy == "useruuid") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc">User</a>:
-						</span>
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc"><i class="fa fa-sort-asc"></i></a>&nbsp;&nbsp;
-						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/desc"><i class="fa fa-sort-desc"></i></a>
+						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc"><i class="icon-inline icon-20 ic-arrow-up-silver"></i></a>
+						<a href="/admin/users/<?php echo $userUUID; ?>/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc"><i class="icon-inline icon-20 ic-arrow-down-silver"></i></a>
 					</li>
 				</ul>
 			</section>
@@ -202,7 +195,7 @@ and (max-device-width : 480px) {
 							<?php else: ?>
 								<td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
 							<?php endif; ?>
-							<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/user-log"><i class="fa fa-arrow-circle-right fa-fw"></i>details</a></td>
+							<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/user-log"><i class="icon-inline icon-20 icon-arrow-right"></i>details</a></td>
 						</tr>
 						<?php endforeach; ?>
 					</table>
