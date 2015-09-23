@@ -122,12 +122,36 @@ and (max-device-width : 480px) {
                 </header>
                 <div class="sub-menu">
                     <ul>
-                        <li><a href="/test/take" title="Start Test"><i class="fa fa-caret-square-o-right fa-fw"></i>Start Test</a></li>
-                        <li><a href="/user/history" title="My History"><i class="fa fa-archive fa-fw"></i>My History</a></li>
-                        <li><a href="/user/profile" title="My Profile"><i class="fa fa-user fa-fw"></i>My Profile</a></li>
+                        <li><a href="/test/take" title="Start Test"><i class="icon-inline icon-20 ic-arrow-right"></i>Start Test</a></li>
+                        <li><a href="/user/history" title="My History"><i class="icon-inline icon-20 ic-clipboard"></i>My History</a></li>
+                        <li><a href="/user/profile" title="My Profile"><i class="icon-inline icon-20 ic-user-single"></i>My Profile</a></li>
                     </ul>
                 </div>
             </section>
+            <div class="clearfix">&nbsp;</div>
+			<section>
+				<header>
+                    <h2>Statistics</h2>
+                </header>
+                <table>
+                    <tr>
+                        <td style="width: 50%"><strong>Completed Tests</strong></td>
+                        <td><?php echo $userStatistics->getCompletedTests(); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incomplete Tests</strong></td>
+                        <td><?php echo $userStatistics->getIncompleteTests(); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Questions Answered</strong></td>
+                        <td><?php echo $userStatistics->getQuestionsAnswered(); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Log Entries</strong></td>
+                        <td><?php echo $userStatistics->getLogEntries(); ?></td>
+                    </tr>
+                </table>
+			</section>
         </div>
 		<div class="8u">
 			<section>
@@ -178,13 +202,13 @@ and (max-device-width : 480px) {
 							<td><?php echo round((($testData['questionsAnswered']/$testData['totalQuestions']) * 100),2); ?> %</td>
 							<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
 							<td>
-								<a href="/test/delete/incomplete/<?php echo $testUUID; ?>" title="Delete Test"><i class="fa fa-trash fa-fw"></i></a>
-								<a href="/test/resume/<?php echo $testUUID; ?>" title="Resume Test"><i class="fa fa-external-link-square fa-fw"></i></a>
+								<a href="/test/delete/incomplete/<?php echo $testUUID; ?>" title="Delete Test"><i class="icon-inline icon-20 ic-delete"></i></a>
+								<a href="/test/resume/<?php echo $testUUID; ?>" title="Resume Test"><i class="icon-inline icon-20 ic-arrow-right"></i></a>
 							</td>
 						</tr>
 						<?php endforeach; ?>
 					</table>
-					<div class="text-right text-warning"><a href="/test/delete/incomplete/all"><i class="fa fa-trash fa-fw"></i>Delete Incomplete Tests</a></div>
+					<div class="text-right text-warning"><a href="/test/delete/incomplete/all">Delete Incomplete Tests</a></div>
 				<?php else: ?>
 					<p>You do not have any incomplete tests.</p>
 				<?php endif; ?>
