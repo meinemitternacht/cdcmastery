@@ -126,6 +126,36 @@ class answerManager extends CDCMastery
 			return false;
 		}
 	}
+
+	public function loadArchivedAnswer($answerUUID){
+		$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect, questionUUID FROM answerDataArchived WHERE uuid = ?");
+
+		$stmt->bind_param("s",$answerUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($uuid, $answerText, $answerCorrect, $questionUUID);
+			$stmt->fetch();
+
+            $this->uuid = $uuid;
+            $this->answerText = $answerText;
+            $this->answerCorrect = $answerCorrect;
+            $this->questionUUID = $questionUUID;
+
+			$stmt->close();
+			return true;
+		}
+		else{
+			$this->log->setAction("ERROR_ANSWERS_LOAD");
+			$this->log->setDetail("CALLING FUNCTION","answer->loadArchivedAnswer()");
+			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("UUID",$answerUUID);
+			$this->log->saveEntry();
+
+			$this->error[] = "Sorry, we could not retrieve the answer from the database.";
+			$stmt->close();
+			return false;
+		}
+	}
 	
 	public function saveAnswer(){
 		if($this->fouo){
