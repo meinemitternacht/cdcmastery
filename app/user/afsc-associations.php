@@ -127,7 +127,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			<form action="/user/afsc-associations" method="POST">
 				<input type="hidden" name="formAction" value="addAssociation">
 				<?php
-				$afscList = $afsc->listAFSC();
+				$afscList = $afsc->listAFSC(false);
 				if(!empty($userAFSCList)) {
                     foreach ($userAFSCList as $userAFSC) {
                         if (isset($afscList[$userAFSC])) {
