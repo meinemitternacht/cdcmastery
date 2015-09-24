@@ -25,8 +25,7 @@ $afscList = $afsc->listAFSC();
                 <p>
                     We have the following AFSC's loaded in our database for testing purposes.  Please note that For Official Use Only (FOUO) CDC material
                     requires authorization to view. Contact your Training Manager or <a href="http://helpdesk.cdcmastery.com/">open a ticket</a> for
-                    assistance. If you are interested in adding questions from your career field, contact us at
-                    <a href="mailto:info@cdcmastery.com">info@cdcmastery.com</a>.
+                    assistance. If you are interested in adding questions from your career field, please open a <a href="http://helpdesk.cdcmastery.com/">support ticket</a>.
                 </p>
                 <!--[if !IE]><!-->
                 <style type="text/css">
