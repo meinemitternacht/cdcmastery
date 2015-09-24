@@ -17,6 +17,9 @@ class userAuthorizationQueue extends user
      */
     protected $log;
 
+    public $uuid;
+    public $dateRequested;
+
     /**
      * @param mysqli $db
      * @param log $log
@@ -24,6 +27,7 @@ class userAuthorizationQueue extends user
      */
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue)
     {
+        $this->uuid = parent::genUUID();
         $this->db = $db;
         $this->log = $log;
 
@@ -47,16 +51,17 @@ class userAuthorizationQueue extends user
     {
 
         $stmt = $this->db->prepare("INSERT INTO queueRoleAuthorization
-                                      (userUUID,roleUUID)
-                                      VALUES (?,?)
+                                      (uuid,userUUID,roleUUID,dateRequested)
+                                      VALUES (?,?,?,UTC_TIMESTAMP)
                                         ON DUPLICATE KEY UPDATE
                                           userUUID=values(userUUID),
                                           roleUUID=values(roleUUID)");
 
-        $stmt->bind_param("ss", $userUUID, $roleUUID);
+        $stmt->bind_param("sss", $this->uuid, $userUUID, $roleUUID);
 
         if ($stmt->execute()) {
             $this->log->setAction("QUEUE_ROLE_AUTHORIZATION");
+            $this->log->setDetail("UUID", $this->uuid);
             $this->log->setDetail("User UUID", $userUUID);
             $this->log->setDetail("Role UUID", $roleUUID);
             $this->log->saveEntry();
@@ -65,11 +70,47 @@ class userAuthorizationQueue extends user
             return true;
         } else {
             $this->log->setAction("ERROR_QUEUE_ROLE_AUTHORIZATION");
+            $this->log->setDetail("UUID", $this->uuid);
             $this->log->setDetail("User UUID", $userUUID);
             $this->log->setDetail("Role UUID", $roleUUID);
             $this->log->saveEntry();
 
             $stmt->close();
+            return false;
+        }
+    }
+
+    public function listUserAuthorizeQueue(){
+        $stmt = $this->db->prepare("SELECT uuid, userUUID, roleUUID, dateRequested
+                                    FROM queueRoleAuthorization
+                                    ORDER BY dateRequested DESC");
+
+        if($stmt->execute()){
+            $stmt->bind_result($uuid,$userUUID,$roleUUID,$dateRequested);
+
+            while($stmt->fetch()){
+                $roleAuthorizationArray[$uuid]['userUUID'] = $userUUID;
+                $roleAuthorizationArray[$uuid]['roleUUID'] = $roleUUID;
+                $roleAuthorizationArray[$uuid]['dateRequested'] = $dateRequested;
+            }
+
+            $stmt->close();
+
+            if(isset($roleAuthorizationArray) && !empty($roleAuthorizationArray)){
+                return $roleAuthorizationArray;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","userAuthorizationQueue->listUserAuthorizeQueue()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
             return false;
         }
     }
