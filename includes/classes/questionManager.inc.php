@@ -60,7 +60,7 @@ class questionManager extends CDCMastery
             }
         }
 
-        $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ?");
+        $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ? ORDER BY questionText ASC");
         $stmt->bind_param("s",$this->afscUUID);
 
         if($stmt->execute()){
