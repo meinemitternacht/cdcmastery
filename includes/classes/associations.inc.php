@@ -37,6 +37,44 @@ class associations extends CDCMastery
 		$this->user = $user;
 		$this->afsc = $afsc;
 	}
+
+    public function listPendingAFSCAssociations(){
+        $stmt = $this->db->prepare("SELECT `userAFSCAssociations`.`uuid`, userUUID, afscUUID, afscName
+                                    FROM userAFSCAssociations
+                                      LEFT JOIN afscList
+                                      ON afscList.uuid = userAFSCAssociations.afscUUID
+                                    WHERE userAuthorized = 0
+                                    ORDER BY afscList.afscName ASC");
+
+        if($stmt->execute()){
+            $stmt->bind_result($assocUUID, $userUUID, $afscUUID,$afscName);
+
+            while($stmt->fetch()){
+                $pendingArray[$assocUUID]['userUUID'] = $userUUID;
+                $pendingArray[$assocUUID]['afscUUID'] = $afscUUID;
+                $pendingArray[$assocUUID]['afscName'] = $afscName;
+            }
+
+            $stmt->close();
+
+            if(isset($pendingArray) && !empty($pendingArray)){
+                return $pendingArray;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","userStatistics->listPendingAFSCAssociations()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
 	
 	public function addAFSCAssociation($userUUID, $afscUUID, $userAuthorized=true){
 		if(!$this->user->verifyUser($userUUID)){
@@ -60,7 +98,12 @@ class associations extends CDCMastery
 		$stmt->bind_param("sssi",$rowUUID,$userUUID,$afscUUID,$userAuthorized);
 		
 		if($stmt->execute()){
-			$this->log->setAction("USER_ADD_AFSC_ASSOCIATION");
+			if($userAuthorized) {
+				$this->log->setAction("USER_ADD_AFSC_ASSOCIATION");
+			}
+			else{
+				$this->log->setAction("USER_ADD_PENDING_AFSC_ASSOCIATION");
+			}
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->saveEntry();
