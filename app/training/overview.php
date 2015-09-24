@@ -43,7 +43,7 @@ endif;
                 <header>
                     <h2>Training Manager Overview</h2>
                 </header>
-            </section
+            </section>
         </div>
     </div>
 </div>
