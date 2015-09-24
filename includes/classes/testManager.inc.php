@@ -1044,6 +1044,8 @@ class testManager extends CDCMastery
 				$output .= "<div class=\"testProgress\">
 								Question <strong>".$this->incompleteCurrentQuestion."</strong> of 
 								<strong>".$this->incompleteTotalQuestions."</strong>
+								<br>
+								AFSC: <strong>".$this->afsc->getAFSCName($this->question->getAFSCUUID())."</strong>
 							</div>";
 				$output .= "<br style=\"clear:both;\">";
 			}
