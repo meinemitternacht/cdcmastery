@@ -119,7 +119,7 @@ $afscList = $afsc->listAFSC();
                         <li>Ability to take FOUO tests controlled by Unit Training Managers</li>
                     </ul>
                     <br>
-                    If you have any questions concerning the implementation of FOUO testing material, please contact the site administrator: <a href="mailto:info@cdcmastery.com">info@cdcmastery.com</a>.
+                    If you have any questions concerning the implementation of FOUO testing material, please <a href="http://helpdesk.cdcmastery.com/">open a support ticket</a>.
                 </p>
             </section>
         </div>
