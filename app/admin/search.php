@@ -63,16 +63,30 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
 
         $cdcMastery->redirect("/admin/search");
     }
+    else{
+        $numSearchResults = count($searchResults);
+    }
 }
 ?>
 <div class="container">
 <?php if($subPage == "results"): ?>
     <div class="row">
-        <div class="12u">
+        <div class="4u">
             <section>
                 <header>
-                    <h2>Search Results</h2>
+                    <h2><?php echo $numSearchResults; ?> Search Result<?php echo ($numSearchResults > 1) ? "s" : ""; ?> Found</h2>
                 </header>
+                <div class="sub-menu">
+                    <ul>
+                        <li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="12u">
+            <section>
                 <a href="/admin/search">&laquo; New Search</a>
                 <?php if($searchType == "user"): ?>
                     <table>
@@ -132,6 +146,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                 <?php elseif($searchType == "testHistory"): ?>
                     <table>
                         <tr>
+                            <th>Date</th>
                             <th>User</th>
                             <th>Score</th>
                             <th>Questions</th>
@@ -144,6 +159,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                             $testManager->loadTest($result);
                             ?>
                             <tr>
+                                <td><?php echo $cdcMastery->formatDateTime($testManager->getTestTimeCompleted(),"j M Y H:i"); ?></td>
                                 <td><a href="/admin/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
                                 <td><?php echo $testManager->getTestScore(); ?></td>
                                 <td><?php echo $testManager->getTotalQuestions(); ?></td>
@@ -158,7 +174,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                                     }
                                     ?>
                                 </td>
-                                <td><a href="/test/view/<?php echo $result; ?>">View Profile</a></td>
+                                <td><a href="/test/view/<?php echo $result; ?>">View Test</a></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
@@ -168,11 +184,16 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
     </div>
 <?php else: ?>
     <div class="row">
-        <div class="12u">
+        <div class="3u">
             <section>
                 <header>
                     <h2>Search</h2>
                 </header>
+                <div class="sub-menu">
+                    <ul>
+                        <li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
+                    </ul>
+                </div>
             </section>
         </div>
     </div>
