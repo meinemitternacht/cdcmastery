@@ -159,7 +159,7 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
                     }
                     ?>
                     <tr>
-                        <td><input type="checkbox" class="deleteQuestionCheckbox" name="questionUUIDList[]" value="<?php echo $questionUUID; ?>"</td>
+                        <td><input type="checkbox" class="deleteQuestionCheckbox" name="questionUUIDList[]" value="<?php echo $questionUUID; ?>"></td>
                         <td><?php echo $cdcMastery->formatOutputString($questionManager->getQuestionText(),100); ?></td>
                     </tr>
                 <?php endforeach; ?>
