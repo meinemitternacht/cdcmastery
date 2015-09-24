@@ -34,8 +34,6 @@ class auth extends user
      * @return bool
      */
     function comparePassword($password){
-		$userHash = $this->getHash($password);
-
 		if(empty($this->userPassword)){
 			if($this->hashUserLegacyPassword($password) == $this->userLegacyPassword){
 				$this->setUserPassword($password);
@@ -52,7 +50,7 @@ class auth extends user
 				return false;
 			}
 		}
-		elseif($userHash === $this->userPassword){
+		elseif(password_verify($password,$this->userPassword)){
 			return true;
 		}
 		else{
