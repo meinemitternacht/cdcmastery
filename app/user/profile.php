@@ -238,7 +238,12 @@ else{
 									$supervisorAssociations = $userProfile->resolveUserNames($supervisorAssociations);
 									
 									foreach($supervisorAssociations as $key => $subordinate){
-										echo '<a href="/admin/profile/'.$key.'">'.$subordinate.'</a>';
+										if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager() || $cdcMastery->verifySupervisor()) {
+											echo '<a href="/admin/profile/' . $key . '">' . $subordinate . '</a>';
+										}
+										else{
+											echo $subordinate;
+										}
 										echo "<br />\n";
 									}
 								}
@@ -261,7 +266,12 @@ else{
 									$trainingManagerAssociations = $userProfile->resolveUserNames($trainingManagerAssociations);
 									
 									foreach($trainingManagerAssociations as $key => $subordinate){
-										echo '<a href="/admin/profile/'.$key.'">'.$subordinate.'</a>';
+										if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
+											echo '<a href="/admin/profile/' . $key . '">' . $subordinate . '</a>';
+										}
+										else{
+											echo $subordinate;
+										}
 										echo "<br />\n";
 									}
 								}
@@ -284,7 +294,12 @@ else{
 									$userSupervisors = $userProfile->resolveUserNames($userSupervisors);
 									
 									foreach($userSupervisors as $key => $supervisor){
-										echo '<a href="/admin/profile/'.$key.'">'.$supervisor.'</a>';
+										if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
+											echo '<a href="/admin/profile/' . $key . '">' . $supervisor . '</a>';
+										}
+										else{
+											echo $supervisor;
+										}
 										echo "<br />\n";
 									}
 								}
@@ -306,7 +321,12 @@ else{
 									$userTrainingManagers = $userProfile->resolveUserNames($userTrainingManagers);
 									
 									foreach($userTrainingManagers as $key => $trainingManager){
-										echo '<a href="/admin/profile/'.$key.'">'.$trainingManager.'</a>';
+										if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
+											echo '<a href="/admin/profile/' . $key . '">' . $trainingManager . '</a>';
+										}
+										else{
+											echo $trainingManager;
+										}
 										echo "<br />\n";
 									}
 								}
