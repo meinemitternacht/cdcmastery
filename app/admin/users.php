@@ -123,7 +123,9 @@ if(isset($_SESSION['vars'][0])){
 							<ul>
 								<li><a href="/admin/profile/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-user-single"></i>View Profile</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/edit"><i class="icon-inline icon-20 ic-pencil"></i>Edit User</a></li>
+								<?php if($cdcMastery->verifyAdmin()): ?>
 								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete User</a></li>
+								<?php endif; ?>
                                 <?php if(!$objUser->getUserDisabled()): ?>
 								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/ban"><i class="icon-inline icon-20 ic-hammer"></i>Ban User</a></li>
                                 <?php else: ?>
