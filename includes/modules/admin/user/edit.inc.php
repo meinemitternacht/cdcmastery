@@ -17,6 +17,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty."); $error = true; }
     if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If base is not listed, choose \"Other\"."); $error = true; }
     if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty."); $error = true; }
+    if(empty($_POST['userRole'])){ $sysMsg->addMessage("User role cannot be empty."); $error = true; }
 
     if($error){
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
@@ -70,6 +71,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserLastName($_POST['userLastName']);
     $objUser->setUserRank($_POST['userRank']);
     $objUser->setUserTimeZone($_POST['timeZone']);
+    $objUser->setUserRole($_POST['userRole']);
 
     if($objUser->saveUser()){
         $log->setAction("USER_EDIT");
@@ -128,7 +130,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     size="1"
                                     class="input_full"
                                     data-validation="required"
-                                    data-validation-error-msg="You must select your rank">
+                                    data-validation-error-msg="You must select the user's rank">
                                 <option value="">Select rank...</option>
                                 <?php
                                 $rankList = $cdcMastery->listRanks();
@@ -157,7 +159,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    class="input_full"
                                    value="<?php echo $objUser->getUserFirstName(); ?>"
                                    data-validation="required"
-                                   data-validation-error-msg="You must provide your first name">
+                                   data-validation-error-msg="You must provide a first name">
                         </li>
                         <li>
                             <label for="userLastName">Last Name</label>
@@ -168,7 +170,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    class="input_full"
                                    value="<?php echo $objUser->getUserLastName(); ?>"
                                    data-validation="required"
-                                   data-validation-error-msg="You must provide your last name">
+                                   data-validation-error-msg="You must provide a last name">
                         </li>
                         <li>
                             <label for="userEmail">E-mail</label>
@@ -188,7 +190,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     size="1"
                                     class="input_full"
                                     data-validation="required"
-                                    data-validation-error-msg="You must provide your base">
+                                    data-validation-error-msg="You must provide the user's base">
                                 <option value="">Select base...</option>
                                 <?php
                                 $baseList = $bases->listBases();
@@ -232,7 +234,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    value="<?php echo $objUser->getUserHandle(); ?>"
                                    data-validation="length"
                                    data-validation-length="3-32"
-                                   data-validation-error-msg="Your username must be between 3 and 32 characters">
+                                   data-validation-error-msg="The username must be between 3 and 32 characters">
                         </li>
                         <li>
                             <label for="userPassword_confirmation">Password</label>
@@ -262,6 +264,26 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="userRole">Permission Role</label>
+                            <br>
+                            <select id="userRole"
+                                    name="userRole"
+                                    size="1"
+                                    class="input_full"
+                                    data-validation="required"
+                                    data-validation-error-msg="You must provide the User Role">
+                                <?php
+                                $roleList = $roles->listRoles();
+                                foreach($roleList as $roleUUID => $roleDetails): ?>
+                                    <?php if($objUser->getUserRole() == $roleUUID): ?>
+                                        <option value="<?php echo $roleUUID; ?>" SELECTED><?php echo $roleDetails['roleName']; ?></option>
+                                    <?php else: ?>
+                                        <option value="<?php echo $roleUUID; ?>"><?php echo $roleDetails['roleName']; ?></option>
+                                    <?php endif;
+                                endforeach; ?>
                             </select>
                         </li>
                     </ul>
