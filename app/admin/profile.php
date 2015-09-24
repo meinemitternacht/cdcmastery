@@ -174,8 +174,8 @@ if(isset($_SESSION['vars'][0])):
 										echo "No pending associations.";
 									}
 									else{
-										foreach($afscList as $userAFSC){
-											echo $afsc->getAFSCName($userAFSC)."<br />";
+										foreach($afscList as $userAFSCuuid => $afscData){
+											echo $afsc->getAFSCName($userAFSCuuid)."<br />";
 										}
 									}
 									?>
