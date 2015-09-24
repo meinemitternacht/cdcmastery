@@ -113,9 +113,58 @@ and (max-device-width : 480px) {
 
 </style>
 <!--<![endif]-->
+<?php
+if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
+	$pendingAssociations = $assoc->listPendingAFSCAssociations();
+	if (is_array($pendingAssociations)) {
+		$pendingAssociationsCount = count($pendingAssociations);
+	} else {
+		$pendingAssociationsCount = 0;
+	}
+
+	$userActivation = new userActivation($db, $log, $emailQueue);
+	$unactivatedUsers = $userActivation->listUnactivatedUsers();
+	if (is_array($unactivatedUsers)) {
+		$unactivatedUsersCount = count($unactivatedUsers);
+	} else {
+		$unactivatedUsersCount = 0;
+	}
+
+	$userAuthorization = new userAuthorizationQueue($db, $log, $emailQueue);
+	$authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
+	if (is_array($authorizationQueue)) {
+		$authorizationQueueCount = count($authorizationQueue);
+	} else {
+		$authorizationQueueCount = 0;
+	}
+}
+?>
 <div class="container">
 	<div class="row">
         <div class="4u">
+			<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
+				<?php if(!empty($pendingAssociationsCount) || !empty($unactivatedUsersCount) || !empty($authorizationQueueCount)): ?>
+				<section>
+					<header>
+						<h2>Administrative Tasks</h2>
+					</header>
+					<div class="informationMessages">
+						<ul>
+						<?php if(!empty($pendingAssociationsCount)): ?>
+							<li><a href="/admin/afsc-pending">There are <?php echo $pendingAssociationsCount; ?> FOUO AFSC associations pending.</a></li>
+						<?php endif; ?>
+						<?php if(!empty($unactivatedUsersCount)): ?>
+							<li><a href="/admin/activate-users">There are <?php echo $unactivatedUsersCount; ?> user activations pending.</a></li>
+						<?php endif; ?>
+						<?php if(!empty($authorizationQueueCount)): ?>
+							<li><a href="/admin/authorize-users">There are <?php echo $authorizationQueueCount; ?> user role authorizations pending.</a></li>
+						<?php endif; ?>
+						</ul>
+					</div>
+				</section>
+				<div class="clearfix">&nbsp;</div>
+				<?php endif; ?>
+			<?php endif; ?>
             <section>
                 <header>
                     <h2>Tasks</h2>
