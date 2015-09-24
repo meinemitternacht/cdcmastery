@@ -105,6 +105,7 @@ else{
                         <h2><?php echo $userProfile->getFullName(); ?></h2>
                     </header>
                     <a href="/user/edit" class="button">Edit Profile</a>
+					<a href="/user/afsc-associations" class="button">Manage AFSC's</a>
                 </section>
             </div>
         </div>
@@ -154,7 +155,7 @@ else{
 								$userAFSCList = $userProfileStatistics->getAFSCAssociations();
 
 								if(!$userAFSCList){
-									echo "No associations.";
+									echo "No associations.<br>";
 								}
 								else{
 									foreach($userAFSCList as $userAFSC){
@@ -162,6 +163,7 @@ else{
 									}
 								}
 								?>
+                                <a href="/user/afsc-associations">Manage AFSC's</a>
 							</td>
 						</tr>
 						<tr>
@@ -169,16 +171,17 @@ else{
 							<td>
 								<?php
 								$userPendingAFSCList = $userProfileStatistics->getPendingAFSCAssociations();
-								
-								if(!$userPendingAFSCList){
-									echo "No pending associations.";
-								}
-								else{
-									foreach($userPendingAFSCList as $userAFSC){
-										echo $afsc->getAFSCName($userAFSC)."<br />";
-									}
-								}
+
+                                if(!$userPendingAFSCList){
+                                    echo "No pending associations.";
+                                }
+                                else{
+                                    foreach($userPendingAFSCList as $userAFSCuuid => $afscData){
+                                        echo $afsc->getAFSCName($userAFSCuuid)."<br />";
+                                    }
+                                }
 								?>
+                                <a href="/user/afsc-associations">Manage AFSC's</a>
 							</td>
 						</tr>
 					</table>

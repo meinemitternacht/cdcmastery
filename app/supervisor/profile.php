@@ -179,13 +179,13 @@ if(isset($_SESSION['vars'][0])):
 								<td>
 									<?php
 									$afscList = $userProfileStatistics->getPendingAFSCAssociations();
-									
+
 									if(!$afscList){
 										echo "No pending associations.";
 									}
 									else{
-										foreach($afscList as $userAFSC){
-											echo $afsc->getAFSCName($userAFSC)."<br />";
+										foreach($afscList as $userAFSCuuid => $afscData){
+											echo $afsc->getAFSCName($userAFSCuuid)."<br />";
 										}
 									}
 									?>
