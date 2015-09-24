@@ -94,7 +94,7 @@ else{
 					</tr>
 					<tr>
 						<th>AFSC</th>
-						<td><?php echo $testAFSCList; ?></td>
+						<td><?php echo str_replace(",","<br>",$testAFSCList); ?></td>
 					</tr>
 					<tr>
 						<th>Questions</th>
