@@ -123,26 +123,51 @@ else{
 				$i=1;
                 $c=0;
 				foreach($testData as $questionUUID => $answerUUID):
-					$questionManager->loadQuestion($questionUUID);
-					$answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
-					$answerManager->loadAnswer($answerUUID);
-					?>
-					<ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c==0)?"#eee":"#ddd"; echo $color; ?>">
-						<li style="padding:0.3em;font-size:1.1em;">
-							<strong><?php echo $i; ?>. <?php echo $questionManager->getQuestionText(); ?></strong>
-						</li>
-						<li style="padding:0.3em">
-							<?php if($answerManager->getAnswerCorrect()): ?>
-							<span class="text-success">
+					if($questionManager->loadQuestion($questionUUID)) {
+						$answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
+						$answerManager->loadAnswer($answerUUID);
+						?>
+						<ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
+						echo $color; ?>">
+							<li style="padding:0.3em;font-size:1.1em;">
+								<strong><?php echo $i; ?>. <?php echo $questionManager->getQuestionText(); ?></strong>
+							</li>
+							<li style="padding:0.3em">
+								<?php if ($answerManager->getAnswerCorrect()): ?>
+								<span class="text-success">
 							<?php else: ?>
-							<span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
-							<?php endif; ?>
-							    <?php echo $answerManager->getAnswerText(); ?>
+									<span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
+										<?php endif; ?>
+										<?php echo $answerManager->getAnswerText(); ?>
                             </span>
-						</li>
-					</ul>
-					<?php $i++; ?>
-                    <?php $c=($c==0)?1:0; ?>
+							</li>
+						</ul>
+                        <?php
+					}
+                    else{
+                        $archivedText = $questionManager->getArchivedQuestionText($questionUUID);
+                        if($archivedText):
+                            $answerManager->loadArchivedAnswer($answerUUID); ?>
+                            <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
+                            echo $color; ?>">
+                                <li style="padding:0.3em;font-size:1.1em;">
+                                    <strong><?php echo $i; ?>. <?php echo $archivedText ?></strong>
+                                </li>
+                                <li style="padding:0.3em">
+                                    <?php if ($answerManager->getAnswerCorrect()): ?>
+                                    <span class="text-success">
+							<?php else: ?>
+                                        <span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
+                                            <?php endif; ?>
+                                            <?php echo $answerManager->getAnswerText(); ?>
+                            </span>
+                                </li>
+                            </ul>
+                        <?php
+                        endif;
+                    }?>
+                    <?php $i++; ?>
+                    <?php $c = ($c == 0) ? 1 : 0; ?>
 				<?php endforeach; ?>
 			</section>
 		</div>
