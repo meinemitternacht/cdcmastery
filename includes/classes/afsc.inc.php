@@ -105,9 +105,14 @@ class afsc extends CDCMastery
 	/**
 	 * @return array|bool
      */
-	public function listAFSC(){
-		$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
-		
+	public function listAFSC($showHidden=true){
+		if(!$showHidden) {
+			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList WHERE afscHidden = 0 ORDER BY afscName ASC");
+		}
+		else{
+			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
+		}
+
 		$afscArray = Array();
 		
 		if($res->num_rows > 0){

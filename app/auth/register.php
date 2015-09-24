@@ -241,7 +241,7 @@ if(isset($accountType)):
                                     size="10"
                                     class="input_full"
                                     MULTIPLE>
-                                <?php foreach($afsc->listAFSC() as $afscUUID => $afscDetails): ?>
+                                <?php foreach($afsc->listAFSC(false) as $afscUUID => $afscDetails): ?>
                                     <option value="<?php echo $afscUUID; ?>">
                                         <?php
                                             echo $afscDetails['afscName'];
