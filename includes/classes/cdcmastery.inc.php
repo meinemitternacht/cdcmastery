@@ -131,11 +131,11 @@ class CDCMastery
 		return $this->staticUserArray;
 	}
 	
-	public function hashUserPassword( $userPassword ){
-		return hash('sha512',$userPassword);
+	public function hashUserPassword($userPassword){
+		return password_hash($userPassword,PASSWORD_BCRYPT,["cost" => 13]);
 	}
 	
-	public function hashUserLegacyPassword( $userLegacyPassword ){
+	public function hashUserLegacyPassword($userLegacyPassword){
 		return hash('sha1',$userLegacyPassword);
 	}
 	
