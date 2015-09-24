@@ -32,8 +32,8 @@ $subordinateUsers = $user->sortUserUUIDList($tmOverview->getSubordinateUserList(
 $subordinateSupervisors = $user->sortUserUUIDList($tmOverview->getSubordinateSupervisorList(),"userLastName");
 
 if(empty($subordinateSupervisors) && empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.");
-    $cdcMastery->redirect("/admin/users");
+    $sysMsg->addMessage("You do not have any subordinate users with test histories.");
+    $cdcMastery->redirect("/admin/users/".$_SESSION['userUUID']."/associations/subordinate");
 endif;
 ?>
 <div class="container">
@@ -81,6 +81,15 @@ endif;
         </div>
         <?php endif; ?>
         <div class="3u">
+            <section>
+                <h2>Actions</h2>
+                <div class="sub-menu">
+                    <ul>
+                        <li><a href="/admin/users/<?php echo $_SESSION['userUUID']; ?>/associations/subordinate" title="Modify Subordinates">Modify Subordinates</a></li>
+                    </ul>
+                </div>
+            </section>
+            <div class="clearfix">&nbsp;</div>
             <section>
                 <h2>Statistics</h2>
                 <table>
