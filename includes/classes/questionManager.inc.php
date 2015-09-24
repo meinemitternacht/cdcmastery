@@ -114,7 +114,13 @@ class questionManager extends CDCMastery
 			}
 			
 			$stmt->close();
-			return true;
+
+            if(empty($this->questionText) || empty($this->uuid)){
+                return false;
+            }
+            else{
+                return true;
+            }
 		}
 		else{
 			$this->log->setAction("ERROR_QUESTION_LOAD");
@@ -127,6 +133,27 @@ class questionManager extends CDCMastery
 			return false;
 		}
 	}
+
+    public function getArchivedQuestionText($uuid){
+        $stmt = $this->db->prepare("SELECT questionText FROM questionDataArchived WHERE uuid = ?");
+        $stmt->bind_param("s",$uuid);
+
+        if($stmt->execute()){
+            $stmt->bind_result($questionText);
+            $stmt->fetch();
+            $stmt->close();
+
+            if(!empty($questionText)){
+                return $questionText;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
 	
 	public function saveQuestion(){
 		if($this->fouo){
@@ -998,7 +1025,7 @@ class questionManager extends CDCMastery
 	}
 	
 	public function getQuestionText(){
-		return htmlspecialchars(mb_convert_encoding($this->questionText,"ASCII"));
+		return $this->questionText;
 	}
 	
 	public function getVolumeUUID(){
@@ -1025,7 +1052,7 @@ class questionManager extends CDCMastery
 	}
 	
 	public function setQuestionText($questionText){
-		$this->questionText = htmlspecialchars_decode($questionText);
+		$this->questionText = $questionText;
 		return true;
 	}
 	
