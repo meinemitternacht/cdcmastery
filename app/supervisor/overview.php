@@ -14,7 +14,7 @@ else{
 }
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Supervisor Overview.");
+    $sysMsg->addMessage("You are not authorized to use the Supervisor Overview.");
     $cdcMastery->redirect("/errors/403");
 }
 
@@ -32,7 +32,7 @@ $subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList
 
 if(empty($subordinateUsers)):
     $sysMsg->addMessage("You do not have any subordinate users.");
-    $cdcMastery->redirect("/admin/users");
+    $cdcMastery->redirect("/supervisor/subordinates");
 endif;
 ?>
 <div class="container">
@@ -42,7 +42,7 @@ endif;
                 <header>
                     <h2>Supervisor Overview</h2>
                 </header>
-            </section
+            </section>
         </div>
     </div>
 </div>
@@ -68,8 +68,8 @@ endif;
                             $userLatestScore = $userStatistics->getLatestTestScore();
                             ?>
                             <tr>
-                                <td><a href="/admin/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
-                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $supUser->getUUID(); ?>/tests">view</a></span></td>
+                                <td><a href="/supervisor/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
+                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/supervisor/history/<?php echo $supUser->getUUID(); ?>">view</a></span></td>
                                 <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                                 <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
                                 <td><?php echo $supUser->getUserLastLogin(); ?></td>
@@ -80,6 +80,15 @@ endif;
             </div>
         <?php endif; ?>
         <div class="3u">
+            <section>
+                <h2>Actions</h2>
+                <div class="sub-menu">
+                    <ul>
+                        <li><a href="/supervisor/subordinates" title="Modify Subordinates">Modify Subordinates</a></li>
+                    </ul>
+                </div>
+            </section>
+            <div class="clearfix">&nbsp;</div>
             <section>
                 <h2>Statistics</h2>
                 <table>
