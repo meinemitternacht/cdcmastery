@@ -1,5 +1,5 @@
 <?php
-$logUUID = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
+$logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if($logUUID):
 	if($log->verifyLogUUID($logUUID)): 
@@ -11,7 +11,7 @@ if($logUUID):
 				<div class="4u">
 					<div class="sub-menu">
 						<ul>
-							<li><a href="/admin/users/<?php echo $userUUID; ?>/log" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to Log</a></li>
+							<li><a href="/user/log" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to Log</a></li>
 						</ul>
 					</div>
 				</div>
@@ -26,7 +26,7 @@ if($logUUID):
 						<table>
 							<tr>
 								<th>UUID</th>
-								<td><?php echo $logUUID; ?>
+								<td><?php echo $logUUID; ?></td>
 							</tr>
 							<tr>
 								<th>User</th>
@@ -42,7 +42,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>Timestamp</th>
-								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?>
+								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?></td>
 							</tr>
 						</table>
 					</section>
@@ -76,7 +76,7 @@ if($logUUID):
 								<td><?php echo $detailData['dataType']; ?></td>
 								<?php if(isset($userName) && !empty($userName)): ?>
 									<td>
-										<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
+										<?php echo $userName; ?>
 									</td>
 								<?php else: ?>
 									<td><?php echo $detailData['data']; ?></td>
@@ -91,8 +91,8 @@ if($logUUID):
 		</div>
 	<?php
 	else:
-		$cdcMastery->redirect("/admin/log");
+		$cdcMastery->redirect("/user/log");
 	endif;
 else:
-	$cdcMastery->redirect("/admin/log");
+	$cdcMastery->redirect("/user/log");
 endif;
