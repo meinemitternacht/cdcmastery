@@ -39,7 +39,10 @@
 					<ul>
 						<li><a href="/admin/log" title="Log"><i class="icon-inline icon-20 ic-log"></i>Log</a></li>
 						<li><a href="/admin/search" title="Search"><i class="icon-inline icon-20 ic-hammer"></i>Search</a></li>
+						<li><a href="/admin/statistics" title="Statistics"><i class="icon-inline icon-20 ic-clipboard"></i>Statistics</a></li>
+						<?php if($cdcMastery->verifyAdmin()): ?>
 						<li><a href="/admin/roles" title="Role Manager"><i class="icon-inline icon-20 ic-user-multiple"></i>Role Manager</a></li>
+						<?php endif; ?>
 						<li><a href="/admin/upload" title="Upload File"><i class="icon-inline icon-20 ic-upload"></i>Upload File</a></li>
 					</ul>
 				</div>
