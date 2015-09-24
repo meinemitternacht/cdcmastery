@@ -151,7 +151,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
                             <button class="test-nav-button" id="goNext">&gt;</button>
                             <button class="test-nav-button" id="goLast">&gt;&gt;</button>
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix">&nbsp;</div>
                     </section>
                 </div>
             </div>
@@ -193,12 +193,8 @@ else {
 
                 $cdcMastery->redirect("/test/take/" . $testManager->getIncompleteTestUUID());
             } else {
-                /*
-                 * @todo No questions in the database for this test.  Make it pretty!
-                 */
-                echo $testManager->error;
-                echo "<br>";
-                echo "This test does not have any questions.";
+                $sysMsg->addMessage("That AFSC does not have any questions.  If you would like to add them, please <a href=\"http://helpdesk.cdcmastery.com/\"contact the helpdesk</a>.");
+                $cdcMastery->redirect("/test/take");
             }
         } else {
             echo $testManager->error;
