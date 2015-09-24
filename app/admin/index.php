@@ -1,3 +1,30 @@
+<?php
+$pendingAssociations = $assoc->listPendingAFSCAssociations();
+if(is_array($pendingAssociations)){
+    $pendingAssociationsCount = count($pendingAssociations);
+}
+else{
+    $pendingAssociationsCount = 0;
+}
+
+$userActivation = new userActivation($db,$log,$emailQueue);
+$unactivatedUsers = $userActivation->listUnactivatedUsers();
+if(is_array($unactivatedUsers)){
+    $unactivatedUsersCount = count($unactivatedUsers);
+}
+else{
+    $unactivatedUsersCount = 0;
+}
+
+$userAuthorization = new userAuthorizationQueue($db,$log,$emailQueue);
+$authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
+if(is_array($authorizationQueue)){
+    $authorizationQueueCount = count($authorizationQueue);
+}
+else{
+    $authorizationQueueCount = 0;
+}
+?>
 <div class="container">
 	<header>
 		<h2>Administration Panel</h2>
@@ -12,6 +39,7 @@
 					<ul>
 						<li><a href="/admin/afsc" title="AFSC Manager"><i class="icon-inline icon-20 ic-puzzle"></i>AFSC Manager</a></li>
 						<li><a href="/admin/cdc-data" title="CDC Data"><i class="icon-inline icon-20 ic-book"></i>CDC Data</a></li>
+						<li><a href="/admin/afsc-pending" title="Approve Pending AFSC Associations"><i class="icon-inline icon-20 ic-relationship"></i>Pending AFSC Associations (<?php echo ($pendingAssociationsCount > 0) ? '<span style="color:red;">'.$pendingAssociationsCount.'</span>' : $pendingAssociationsCount ; ?>)</a></li>
 					</ul>
 				</div>
 			</section>
@@ -26,6 +54,8 @@
 						<li><a href="/admin/office-symbols" title="Office Symbols"><i class="icon-inline icon-20 ic-office"></i>Office Symbols</a></li>
 						<li><a href="/admin/users" title="User Manager"><i class="icon-inline icon-20 ic-user-multiple"></i>User Manager</a></li>
 						<li><a href="/admin/profile" title="User Profiles"><i class="icon-inline icon-20 ic-user-single"></i>User Profiles</a></li>
+                        <li><a href="/admin/activate-users" title="Activate Users"><i class="icon-inline icon-20 ic-relationship"></i>Unactivated Users (<?php echo ($unactivatedUsersCount > 0) ? '<span style="color:red;">'.$unactivatedUsersCount.'</span>' : $unactivatedUsersCount ; ?>)</a></li>
+                        <li><a href="/admin/authorize-users" title="Authorize Group for Users"><i class="icon-inline icon-20 ic-relationship"></i>Users Pending Authorization (<?php echo ($authorizationQueueCount > 0) ? '<span style="color:red;">'.$authorizationQueueCount.'</span>' : $authorizationQueueCount ; ?>)</a></li>
 					</ul>
 				</div>
 			</section>
