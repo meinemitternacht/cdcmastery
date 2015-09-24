@@ -58,8 +58,9 @@
                                         <li><a href="/admin/upload" title="Upload File">Upload File</a></li>
                                     </ul>
                                 </li>
-							<?php elseif($cdcMastery->verifyTrainingManager()): ?>
-								<li<?php if($router->getSiteSection() == "training"): ?> class="active"<?php endif; ?>><a href="/training/overview">Training Overview</a></li>
+								<?php if($cdcMastery->verifyTrainingManager()): ?>
+									<li<?php if($router->getSiteSection() == "training"): ?> class="active"<?php endif; ?>><a href="/training/overview">Training Overview</a></li>
+								<?php endif; ?>
 							<?php elseif($cdcMastery->verifySupervisor()): ?>
 								<li<?php if($router->getSiteSection() == "supervisor"): ?> class="active"<?php endif; ?>><a href="/supervisor/overview">Supervisor Overview</a></li>
 							<?php endif; ?>
