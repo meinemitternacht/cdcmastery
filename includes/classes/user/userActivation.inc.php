@@ -15,6 +15,40 @@ class userActivation extends user {
 	public function __destruct(){
 		parent::__destruct();
 	}
+
+	public function listUnactivatedUsers(){
+		$stmt = $this->db->prepare("SELECT activationCode, userUUID, timeExpires
+                                    FROM queueUnactivatedUsers
+                                    ORDER BY timeExpires DESC");
+
+		if($stmt->execute()){
+			$stmt->bind_result($activationCode,$userUUID,$timeExpires);
+
+			while($stmt->fetch()){
+				$unactivatedUserArray[$activationCode]['userUUID'] = $userUUID;
+				$unactivatedUserArray[$activationCode]['timeExpires'] = $timeExpires;
+			}
+
+			$stmt->close();
+
+			if(isset($unactivatedUserArray) && !empty($unactivatedUserArray)){
+				return $unactivatedUserArray;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userActivation->listUnactivatedUsers()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+
+			return false;
+		}
+	}
 	
 	public function queueActivation($userUUID){
 		if($this->verifyUser($userUUID)){
@@ -48,7 +82,7 @@ class userActivation extends user {
 				$emailBodyHTML .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
 				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyHTML .= "<br /><br />";
-				$emailBodyHTML .= "<a href=\"http://dev.cdcmastery.com/auth/activate/".$activationCode."\">Click Here to Activate Your Account</a>";
+				$emailBodyHTML .= "<a href=\"http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode."\">Click Here to Activate Your Account</a>";
 				$emailBodyHTML .= "</body></html>";
 				
 				$emailBodyText = $this->getFullName().",";
@@ -58,7 +92,7 @@ class userActivation extends user {
 				$emailBodyText .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
 				$emailBodyText .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyText .= "\r\n\r\n";
-				$emailBodyText .= "http://dev.cdcmastery.com/auth/activate/".$activationCode;
+				$emailBodyText .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				
 				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, "SYSTEM")){
 					$this->log->setAction("USER_QUEUE_ACTIVATION");
