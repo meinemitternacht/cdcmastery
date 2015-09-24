@@ -101,6 +101,39 @@ class user extends CDCMastery {
         }
     }
 
+	public function listUsersByBase($baseUUID){
+		$stmt = $this->db->prepare("SELECT  uuid,
+											userHandle,
+											userFirstName,
+											userLastName,
+											userRank
+                                    FROM userData
+                                    WHERE userBase = ?
+                                    ORDER BY userLastName ASC");
+		$stmt->bind_param("s",$baseUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($uuid,$userHandle,$userFirstName,$userLastName,$userRank);
+
+			while($stmt->fetch()){
+				$userArray[$uuid]['userHandle'] = $userHandle;
+				$userArray[$uuid]['userFirstName'] = $userFirstName;
+				$userArray[$uuid]['userLastName'] = $userLastName;
+				$userArray[$uuid]['userRank'] = $userRank;
+			}
+		}
+		else{
+			return false;
+		}
+
+		if(isset($userArray) && !empty($userArray)){
+			return $userArray;
+		}
+		else{
+			return false;
+		}
+	}
+
 	public function loadUser($uuid){
 		$stmt = $this->db->prepare("SELECT  uuid,
 											userFirstName,
