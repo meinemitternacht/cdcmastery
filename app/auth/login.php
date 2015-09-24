@@ -5,6 +5,9 @@ if(!isset($_SESSION['auth'])):
 		
 		if(!$userUUID){
             $sysMsg->addMessage($user->error);
+            $log->setACtion("ERROR_LOGIN_UNKNOWN_USER");
+            $log->setDetail("Provided Username",$_POST['username']);
+            $log->saveEntry();
 		}
 		else{
 			$a = new auth($userUUID,$log,$db,$roles,$emailQueue);

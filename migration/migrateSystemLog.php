@@ -68,11 +68,11 @@ if($migrationArrayCount > 0){
 				$workingLog->setDetail("AFSC Name",$row['data']);
 			break;
 			case "AUTH_ERROR":
-				$workingLog->setAction("LOGIN_ERROR_BAD_PASSWORD");
+				$workingLog->setAction("ERROR_LOGIN_BAD_PASSWORD");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "AUTH_ERROR_UNKNOWN":
-				$workingLog->setAction("LOGIN_ERROR_UNKNOWN_USER");
+				$workingLog->setAction("ERROR_LOGIN_UNKNOWN_USER");
 				$workingLog->setUserUUID("ANONYMOUS");
 				$workingLog->setDetail("Provided User Handle",$row['data']);
 			break;
@@ -122,7 +122,7 @@ if($migrationArrayCount > 0){
 				$workingLog->setDetail("Query String",$row['data2']);
 			break;
 			case "FOUO_NOT_AUTH":
-				$workingLog->setAction("TEST_ERROR_UNAUTHORIZED");
+				$workingLog->setAction("ERROR_TEST_UNAUTHORIZED");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "LOGGED_IN":
@@ -134,13 +134,13 @@ if($migrationArrayCount > 0){
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "LOGIN_RATE_LIMIT_REACHED":
-				$workingLog->setAction("LOGIN_ERROR_RATE_LIMIT");
+				$workingLog->setAction("ERROR_LOGIN_RATE_LIMIT_REACHED");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "MYSQL_ERROR":
-				$workingLog->setAction("DATABASE_ERROR");
+				$workingLog->setAction("MYSQL_ERROR");
 				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
-				$workingLog->setDetail("MySQL Provided Error",$row['data']);
+				$workingLog->setDetail("MYSQL ERROR",$row['data']);
 			break;
 			case "PASSWORD_CHANGE":
 				$workingLog->setAction("USER_EDIT_PROFILE");
