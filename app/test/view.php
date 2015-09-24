@@ -30,6 +30,29 @@ if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserU
 	$cdcMastery->redirect("/errors/403");
 }
 
+/*
+ * If user is a supervisor, check that this test is owned by a subordinate
+ */
+
+if($cdcMastery->verifySupervisor()){
+	$supUser = new user($db,$log,$emailQueue);
+	$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+
+	$supOverview->loadSupervisor($_SESSION['userUUID']);
+
+	$subordinateUsers = $supOverview->getSubordinateUserList();
+
+	if(empty($subordinateUsers)):
+		$sysMsg->addMessage("You do not have any subordinate users.");
+		$cdcMastery->redirect("/supervisor/associate");
+	endif;
+
+	if(!in_array($testManager->getUserUUID(),$subordinateUsers)){
+		$sysMsg->addMessage("That user is not associated with your account.");
+		$cdcMastery->redirect("/supervisor/overview");
+	}
+}
+
 $rawAFSCList = $testManager->getAFSCList();
 
 foreach($rawAFSCList as $key => $val){
@@ -54,7 +77,11 @@ else{
 					<?php if($testManager->getUserUUID() != $_SESSION['userUUID']): ?>
 					<tr>
 						<th>Test Owner</th>
-						<td><a href="/admin/users/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+						<?php if($cdcMastery->verifySupervisor()): ?>
+							<td><a href="/supervisor/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+						<?php else: ?>
+							<td><a href="/admin/users/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+						<?php endif; ?>
 					</tr>
 					<?php endif; ?>
 					<tr>
