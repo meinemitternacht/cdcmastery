@@ -140,7 +140,7 @@ class router extends CDCMastery
 	
 	public function verifyFilePath(){
 		if(isset($this->filePath)) {
-			if(strpos($this->filePath, "/admin/") !== false && !$this->verifyAdmin()){
+			if(strpos($this->filePath, "/admin/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
 				$this->outputPage = APP_BASE . "/errors/403.php";
 				$this->errorNumber = 403;
 				return false;
