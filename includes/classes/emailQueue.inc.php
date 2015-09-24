@@ -116,7 +116,6 @@ class emailQueue extends CDCMastery {
 			$this->log->setDetail("Body (Text)",$this->emailBodyText);
 			$this->log->setDetail("Queued By",$this->queueUser);
 			$this->log->saveEntry();
-
 			return false;
 		}
 		else{
