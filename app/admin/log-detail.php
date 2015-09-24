@@ -33,7 +33,7 @@ if($logUUID):
 						<table>
 							<tr>
 								<th>UUID</th>
-								<td><?php echo $logUUID; ?>
+								<td><?php echo $logUUID; ?></td>
 							</tr>
 							<tr>
 								<th>User</th>
@@ -49,7 +49,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>Timestamp</th>
-								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?>
+								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?></td>
 							</tr>
 						</table>
 					</section>
