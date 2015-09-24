@@ -160,8 +160,15 @@ class log extends CDCMastery
 	}
 
 	function saveEntry() {
-		$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-		$stmt->bind_param('ssss', $this->uuid, $this->userUUID, $this->action, $this->ip);
+		if(!empty($this->timestamp)) {
+			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+			$stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
+		}
+		else{
+			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+			$stmt->bind_param('ssss', $this->uuid, $this->userUUID, $this->action, $this->ip);
+		}
+
 		if(!$stmt->execute()) {
 			$this->error[] = $stmt->error;
 			return false;
