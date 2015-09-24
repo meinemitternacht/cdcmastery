@@ -998,7 +998,7 @@ class questionManager extends CDCMastery
 	}
 	
 	public function getQuestionText(){
-		return htmlspecialchars($this->questionText);
+		return htmlspecialchars(mb_convert_encoding($this->questionText,"ASCII"));
 	}
 	
 	public function getVolumeUUID(){
