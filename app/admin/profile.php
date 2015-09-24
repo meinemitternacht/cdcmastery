@@ -439,7 +439,7 @@ if(isset($_SESSION['vars'][0])):
 							<div id="history-tabs-4">
                                 <?php $ipAddressList = $userProfileStatistics->getIPAddresses(); ?>
 								<?php if(is_array($ipAddressList) && count($ipAddressList) > 0): ?>
-                                    <a href="/admin/profile/<?php echo $targetUUID; ?>?resolve">Resolve IP Addresses</a> (This will take a long time to load)
+                                    <a href="/admin/profile/<?php echo $targetUUID; ?>?resolve">Resolve IP Addresses</a> (This may take a long time to load)
 									<table>
 										<tr>
 											<th>IP Address</th>
