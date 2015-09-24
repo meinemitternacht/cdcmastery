@@ -69,7 +69,7 @@ else{
             border: none;
             border-bottom: 1px solid #eee;
             position: relative;
-            padding-left: 25%;
+            padding-left: 3%;
         }
 
         td:before {
@@ -86,7 +86,6 @@ else{
         /*
         Label the data
         */
-        table#questionListTable td:nth-of-type(1):before { content: "Question Text"; }
         <?php if($showForm): ?>
         table#questionListTable td:nth-of-type(2):before { content: "Volume"; }
         <?php endif; ?>
