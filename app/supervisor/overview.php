@@ -31,7 +31,7 @@ $supOverview->loadSupervisor($supervisorUUID);
 $subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
 
 if(empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.");
+    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.");
     $cdcMastery->redirect("/supervisor/subordinates");
 endif;
 ?>
