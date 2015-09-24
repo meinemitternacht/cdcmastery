@@ -729,14 +729,20 @@ class userStatistics extends CDCMastery
 	}
 	
 	public function queryPendingAFSCAssociations(){
-		$stmt = $this->db->prepare("SELECT afscUUID FROM userAFSCAssociations WHERE userAuthorized = 0 AND userUUID = ?");
+		$stmt = $this->db->prepare("SELECT afscUUID, afscName
+                                    FROM userAFSCAssociations
+                                      LEFT JOIN afscList
+                                      ON afscList.uuid = userAFSCAssociations.afscUUID
+                                    WHERE userAuthorized = 0
+                                    AND userUUID = ?
+                                    ORDER BY afscList.afscName ASC");
 		$stmt->bind_param("s",$this->userUUID);
 	
 		if($stmt->execute()){
-			$stmt->bind_result($afscUUID);
+			$stmt->bind_result($afscUUID,$afscName);
 	
 			while($stmt->fetch()){
-				$this->pendingAFSCAssociations[] = $afscUUID;
+				$this->pendingAFSCAssociations[$afscUUID] = $afscName;
 			}
 	
 			$stmt->close();
