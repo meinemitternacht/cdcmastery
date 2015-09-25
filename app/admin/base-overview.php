@@ -26,6 +26,7 @@ if(isset($_POST['baseUUID']) && !empty($_POST['baseUUID'])){
 
 $statistics = new statistics($db,$log,$emailQueue);
 $baseUserObj = new user($db,$log,$emailQueue);
+$userStatisticsObj = new userStatistics($db,$log,$roles);
 $baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
 $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
 ?>
@@ -43,30 +44,39 @@ $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
 <div class="container">
     <div class="row">
         <?php if(!empty($baseUsers)): ?>
+        <style type="text/css">
+            table.overview-table tr td {
+                display:table-cell;
+                vertical-align:middle;
+                height: 2.3em;
+            }
+        </style>
         <div class="9u">
             <section>
                 <h2>Testing Data</h2>
-                <table>
+                <table class="overview-table">
                     <tr>
                         <th>User Name</th>
                         <th>Total Tests</th>
                         <th>Average Score</th>
-                        <th>Latest Score</th>
+                        <th>Last Score</th>
                         <th>Last Login</th>
                     </tr>
                     <?php
                     foreach($baseUsers as $baseUser):
                         $baseUserObj->loadUser($baseUser);
-                        $userStatistics->setUserUUID($baseUser);
-                        $userAverage = round($userStatistics->getAverageScore(),2);
-                        $userLatestScore = $userStatistics->getLatestTestScore();
+                        $userStatisticsObj->setUserUUID($baseUser);
+                        $userAverage = round($userStatisticsObj->getAverageScore(),2);
+                        $userLatestScore = $userStatisticsObj->getLatestTestScore();
                         ?>
                         <tr>
                             <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getFullName(); ?></a></td>
-                            <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
+                            <td><?php echo $userStatisticsObj->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
                             <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                             <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                            <td><?php echo $baseUserObj->getUserLastLogin(); ?></td>
+                            <td title="<?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"r");  ?>">
+                                <?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A"); ?>
+                            </td>
                         </tr>
                     <?php endforeach;?>
                 </table>

@@ -49,10 +49,17 @@ endif;
 <div class="container">
     <div class="row">
         <?php if(!empty($subordinateUsers)): ?>
+            <style type="text/css">
+                table.overview-table tr td {
+                    display:table-cell;
+                    vertical-align:middle;
+                    height: 2.3em;
+                }
+            </style>
             <div class="9u">
                 <section>
                     <h2>User Data</h2>
-                    <table>
+                    <table class="overview-table">
                         <tr>
                             <th>User Name</th>
                             <th>Total Tests</th>
@@ -69,10 +76,12 @@ endif;
                             ?>
                             <tr>
                                 <td><a href="/supervisor/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
-                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/supervisor/history/<?php echo $supUser->getUUID(); ?>">view</a></span></td>
+                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/supervisor/history/<?php echo $supUser->getUUID(); ?>">[view]</a></span></td>
                                 <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                                 <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                                <td><?php echo $supUser->getUserLastLogin(); ?></td>
+                                <td title="<?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"r");  ?>">
+                                    <?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A"); ?>
+                                </td>
                             </tr>
                         <?php endforeach;?>
                     </table>

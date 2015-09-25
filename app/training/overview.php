@@ -50,10 +50,17 @@ endif;
 <div class="container">
     <div class="row">
         <?php if(!empty($subordinateUsers)): ?>
+        <style type="text/css">
+            table.overview-table tr td {
+                display:table-cell;
+                vertical-align:middle;
+                height: 2.3em;
+            }
+        </style>
         <div class="9u">
             <section>
                 <h2>User Data</h2>
-                <table>
+                <table class="overview-table">
                     <tr>
                         <th>User Name</th>
                         <th>Total Tests</th>
@@ -73,7 +80,9 @@ endif;
                             <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
                             <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                             <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                            <td><?php echo $tmUser->getUserLastLogin(); ?></td>
+                            <td title="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"r");  ?>">
+                                <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A"); ?>
+                            </td>
                         </tr>
                     <?php endforeach;?>
                 </table>
