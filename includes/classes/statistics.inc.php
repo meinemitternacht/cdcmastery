@@ -14,6 +14,9 @@ class statistics extends CDCMastery {
 
     public $error;
 
+    public $totalTestsByBase;
+    public $averageScoreByBase;
+
     public $totalTests;
     public $totalCompletedTests;
     public $totalIncompleteTests;
@@ -48,6 +51,82 @@ class statistics extends CDCMastery {
         $this->db = $db;
         $this->log = $log;
         $this->emailQueue = $emailQueue;
+    }
+
+    public function getTotalTestsByBase($baseUUID){
+        if(!$this->queryTotalTestsByBase($baseUUID)){
+            return false;
+        }
+        else{
+            return $this->totalTestsByBase;
+        }
+    }
+
+    public function queryTotalTestsByBase($baseUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory`
+                                        LEFT JOIN `userData` ON `userData`.`uuid` = `testHistory`.`userUUID`
+                                        WHERE `userData`.`userBase` = ?");
+
+        $stmt->bind_param("s",$baseUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->totalTestsByBase = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalTestsByBase()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getAverageScoreByBase($baseUUID){
+        if(!$this->queryAverageScoreByBase($baseUUID)){
+            return false;
+        }
+        else{
+            return round($this->averageScoreByBase,2);
+        }
+    }
+
+    public function queryAverageScoreByBase($baseUUID){
+        $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory`
+                                        LEFT JOIN `userData` ON `userData`.`uuid` = `testHistory`.`userUUID`
+                                        WHERE `userData`.`userBase` = ?");
+
+        $stmt->bind_param("s",$baseUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($averageScore);
+
+            while($stmt->fetch()){
+                $this->averageScoreByBase = $averageScore;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryAverageScoreByBase()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
     }
 
     public function getTotalTests(){
