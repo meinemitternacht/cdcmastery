@@ -41,6 +41,7 @@ $db = new mysqli(   $cfg['db']['host'],
                     $cfg['db']['port']);
 
 if($db->connect_errno){
+    http_response_code(500);
 	include APP_BASE . '/errors/dbError.php';
 	exit();
 }
