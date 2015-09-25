@@ -185,19 +185,19 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <table>
                     <tr>
                         <td style="width: 50%"><strong>Completed Tests</strong></td>
-                        <td><?php echo $userStatistics->getCompletedTests(); ?></td>
+                        <td><?php echo !empty($userStatistics->getCompletedTests()) ? $userStatistics->getCompletedTests() : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Incomplete Tests</strong></td>
-                        <td><?php echo $userStatistics->getIncompleteTests(); ?></td>
+                        <td><?php echo !empty($userStatistics->getIncompleteTests()) ? $userStatistics->getIncompleteTests() : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Questions Answered</strong></td>
-                        <td><?php echo $userStatistics->getQuestionsAnswered(); ?></td>
+                        <td><?php echo !empty($userStatistics->getQuestionsAnswered()) ? $userStatistics->getQuestionsAnswered() : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Log Entries</strong></td>
-                        <td><?php echo $userStatistics->getLogEntries(); ?></td>
+                        <td><?php echo !empty($userStatistics->getLogEntries()) ? $userStatistics->getLogEntries() : "None"; ?></td>
                     </tr>
                 </table>
 			</section>
