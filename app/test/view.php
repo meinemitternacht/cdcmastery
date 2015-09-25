@@ -148,7 +148,7 @@ else{
 
                                 if(($questionOccurrences > 0) && ($answerOccurrences > 0)){
                                     $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
-                                    $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " times and the question has been seen " . $questionOccurrences . " times";
+                                    $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
                                 }
                                 else{
                                     $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
@@ -201,7 +201,7 @@ else{
                                             }
                                             elseif(($questionOccurrences > 0) && ($answerOccurrences > 0)){
                                                 $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
-                                                $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " times and the question has been seen " . $questionOccurrences . " times";
+                                                $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
                                             }
                                             else{
                                                 $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
