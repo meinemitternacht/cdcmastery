@@ -28,6 +28,19 @@ if($router->parseURI()){
 		$log->setDetail("ROUTE", $router->route);
 		$log->saveEntry();
 	}
+
+	if($router->route == "errors/403"){
+        http_response_code(403);
+    }
+    elseif($router->route == "errors/404"){
+        http_response_code(404);
+    }
+    elseif($router->route == "errors/500"){
+        http_response_code(500);
+    }
+    elseif($router->route == "errors/dbError"){
+        http_response_code(500);
+    }
 	
 	if($router->showTheme)
 		include BASE_PATH . '/theme/header.inc.php';
