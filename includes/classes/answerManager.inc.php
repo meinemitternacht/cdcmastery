@@ -1,4 +1,5 @@
 <?php
+
 class answerManager extends CDCMastery
 {
 	protected $db;
@@ -92,7 +93,7 @@ class answerManager extends CDCMastery
 		}
 	}
 	
-	public function loadAnswer($uuid){
+	public function loadAnswer($answerUUID){
 		if($this->fouo){
 			$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, questionUUID FROM answerData WHERE uuid = ?");
 		}
@@ -100,8 +101,8 @@ class answerManager extends CDCMastery
 			$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect, questionUUID FROM answerData WHERE uuid = ?");
 		}
 		
-		$stmt->bind_param("s",$uuid);
-			
+		$stmt->bind_param("s",$answerUUID);
+
 		if($stmt->execute()){
 			$stmt->bind_result($uuid, $answerText, $answerCorrect, $questionUUID);
 			while($stmt->fetch()){
@@ -118,7 +119,7 @@ class answerManager extends CDCMastery
 			$this->log->setAction("ERROR_ANSWERS_LOAD");
 			$this->log->setDetail("CALLING FUNCTION","answer->loadAnswer()");
 			$this->log->setDetail("ERROR",$stmt->error);
-			$this->log->setDetail("UUID",$uuid);
+			$this->log->setDetail("UUID",$answerUUID);
 			$this->log->saveEntry();
 		
 			$this->error[] = "Sorry, we could not retrieve the answer from the database.";
@@ -242,6 +243,29 @@ class answerManager extends CDCMastery
             return false;
         }
     }
+
+	public function getCorrectAnswer($questionUUID){
+		$stmt = $this->db->prepare("SELECT uuid FROM answerData WHERE answerCorrect = 1 AND questionUUID = ?");
+		$stmt->bind_param("s",$questionUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($answerUUID);
+			$stmt->fetch();
+			$stmt->close();
+
+			if(!empty($answerUUID)){
+				return $answerUUID;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+			return false;
+		}
+	}
 	
 	public function getFOUO(){
 		return $this->fouo;
