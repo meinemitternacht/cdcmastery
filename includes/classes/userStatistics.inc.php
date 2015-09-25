@@ -151,27 +151,7 @@ class userStatistics extends CDCMastery
     }
 	
 	public function getTotalTests(){
-		if(!$this->userUUID){
-			return false;
-		}
-		else{
-			if(!$this->completedTests || !$this->incompleteTests){
-				if(!$this->queryCompletedTests()){
-					return false;
-				}
-				
-				if(!$this->queryIncompleteTests()){
-					return false;
-				}
-				
-				$this->totalTests = $this->completedTests + $this->incompleteTests;
-				return $this->totalTests;
-			}
-			else{
-				$this->totalTests = $this->completedTests + $this->incompleteTests;
-				return $this->totalTests;
-			}
-		}
+		return ($this->getCompletedTests() + $this->getIncompleteTests());
 	}
 	
 	public function getQuestionsAnswered(){
