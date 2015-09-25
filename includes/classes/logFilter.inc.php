@@ -77,8 +77,6 @@ class logFilter extends log {
 		$validDirections = Array(	0 => 'ASC',
 				1 => 'DESC');
 	
-		$query = "SELECT uuid, timestamp, action, userUUID, ip FROM systemLog ";
-	
 		/*
 		 * Sanitize sort by variable
 		 */
@@ -128,15 +126,20 @@ class logFilter extends log {
 			if(isset($whereQuery))
 				$query .= $whereQuery;
 			
-			$query .= " ORDER BY userData.userLastName " . $sortDirection . ", userData.userFirstName " . $sortDirection . ", userData.userRank " . $sortDirection . ", timestamp DESC  LIMIT ?, ?";
+			$query .= " ORDER BY userData.userLastName " . $sortDirection . ", userData.userFirstName " . $sortDirection . ", userData.userRank " . $sortDirection . ", timestamp, microtime DESC  LIMIT ?, ?";
 		}
 		else{
 			$query = "SELECT uuid, timestamp, action, userUUID, ip FROM systemLog ";
 			
 			if(isset($whereQuery))
 				$query .= $whereQuery;
-			
-			$query .= " ORDER BY " .$sortBy . " " . $sortDirection . " LIMIT ?, ?";
+
+			if($sortBy == "timestamp"){
+				$query .= " ORDER BY " .$sortBy . " " . $sortDirection . ", microtime DESC LIMIT ?, ?";
+			}
+			else{
+				$query .= " ORDER BY " .$sortBy . " " . $sortDirection . " LIMIT ?, ?";
+			}
 		}
 	
 		$stmt = $this->db->prepare($query);

@@ -7,16 +7,12 @@ This script provides a class interface for the site logging function.
 class log extends CDCMastery
 {
 	protected $db;				//holds database object
-
-	private $tempRow;			//holds rows temporarily
-	private $tempRes;			//holds result set temporarily
-	private $stmt;				//holds statements
-	private $i;					//increment value
 	
 	public $error;				//error messages (array)
 
 	public $uuid;				//uuid of the log entry
 	public $timestamp;			//timestamp of the log entry
+	public $microtime;			//microtime double value
 	public $action;				//log entry action
 	public $userUUID;			//uuid of the user
 	public $ip;					//ip of the user
@@ -31,6 +27,8 @@ class log extends CDCMastery
 	function __construct(mysqli $db) {
 		$this->db = $db;
 		$this->uuid = parent::genUUID();
+
+		$this->microtime = microtime(true);
 		
 		if(php_sapi_name() != 'cli'){
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
@@ -46,6 +44,7 @@ class log extends CDCMastery
 	function cleanEntry(){
 		$this->uuid				= NULL;
 		$this->timestamp		= NULL;
+		$this->microtime		= microtime(true);
 		$this->action			= NULL;
 		$this->userUUID			= NULL;
 		$this->ip				= NULL;
@@ -115,15 +114,16 @@ class log extends CDCMastery
 	}
 
 	function loadEntry($uuid) {
-		$stmt = $this->db->prepare('SELECT uuid, timestamp, action, userUUID, ip FROM systemLog WHERE uuid = ?');
+		$stmt = $this->db->prepare('SELECT uuid, timestamp, microtime, action, userUUID, ip FROM systemLog WHERE uuid = ?');
 		$stmt->bind_param("s",$uuid);
 		$stmt->execute();
 
-		$stmt->bind_result($logUUID, $timestamp, $action, $userUUID, $ip);
+		$stmt->bind_result($logUUID, $timestamp, $microtime, $action, $userUUID, $ip);
 
 		while($stmt->fetch()) {
 			$this->uuid = $logUUID;
 			$this->timestamp = $timestamp;
+			$this->microtime = $microtime;
 			$this->action = $action;
 			$this->userUUID = $userUUID;
 			$this->ip = $ip;
@@ -138,7 +138,7 @@ class log extends CDCMastery
 	}
 
 	function printEntry() {
-		$string = "UUID: " . $this->uuid . " Timestamp: " . $this->timestamp . " Action: " . $this->action . " User ID: " . $this->userUUID . " IP: " . $this->ip;
+		$string = "UUID: " . $this->uuid . " Timestamp: " . $this->timestamp . " Microtime: " . $this->microtime . " Action: " . $this->action . " User ID: " . $this->userUUID . " IP: " . $this->ip;
 
 		if(isset($this->detailArray) && !empty($this->detailArray))
 		{
@@ -161,12 +161,12 @@ class log extends CDCMastery
 
 	function saveEntry() {
 		if(!empty($this->timestamp)) {
-			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-			$stmt->bind_param('sssss', $this->uuid, $this->timestamp, $this->userUUID, $this->action, $this->ip);
+			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, microtime, userUUID, action, ip) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+			$stmt->bind_param('ssdsss', $this->uuid, $this->timestamp, $this->microtime, $this->userUUID, $this->action, $this->ip);
 		}
 		else{
-			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-			$stmt->bind_param('ssss', $this->uuid, $this->userUUID, $this->action, $this->ip);
+			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, microtime, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
+			$stmt->bind_param('sdsss', $this->uuid, $this->microtime, $this->userUUID, $this->action, $this->ip);
 		}
 
 		if(!$stmt->execute()) {
