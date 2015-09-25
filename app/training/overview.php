@@ -80,8 +80,10 @@ endif;
                             <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
                             <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                             <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                            <td title="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"r");  ?>">
-                                <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A"); ?>
+                            <td>
+                                <abbr class="timeago" title="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
+                                    <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
+                                </abbr>
                             </td>
                         </tr>
                     <?php endforeach;?>

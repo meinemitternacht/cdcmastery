@@ -15,6 +15,7 @@
 		<script src="/js/skel-panels.min.js"></script>
 		<script src="/js/init.js"></script>
 		<script src="/js/jquery.formalize.min.js"></script>
+		<script src="/js/jquery.timeago.js"></script>
 		<link href="/css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
 		<link href="/css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
@@ -32,6 +33,7 @@
 		<script>
 			$(function() {
 				$( document ).tooltip();
+				$('abbr.timeago').timeago();
 			});
 		</script>
 		<!-- Header -->
