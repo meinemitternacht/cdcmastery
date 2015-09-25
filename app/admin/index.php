@@ -39,6 +39,7 @@ else{
 					<ul>
 						<li><a href="/admin/afsc" title="AFSC Manager"><i class="icon-inline icon-20 ic-puzzle"></i>AFSC Manager</a></li>
 						<li><a href="/admin/cdc-data" title="CDC Data"><i class="icon-inline icon-20 ic-book"></i>CDC Data</a></li>
+						<li><a href="/admin/base-overview" title="Base Overview"><i class="icon-inline icon-20 ic-clipboard"></i>Base Overview</a></li>
 						<li><a href="/admin/afsc-pending" title="Approve Pending AFSC Associations"><i class="icon-inline icon-20 ic-relationship"></i>Pending AFSC Associations (<?php echo ($pendingAssociationsCount > 0) ? '<span style="color:red;">'.$pendingAssociationsCount.'</span>' : $pendingAssociationsCount ; ?>)</a></li>
 					</ul>
 				</div>
