@@ -142,7 +142,7 @@
 
 	#header
 	{
-		padding: 3em 0em 1em 0em;
+		padding: 1em 0em 0em 0em;
 		text-align: center;
 	}
 
@@ -152,7 +152,7 @@
 
 	#logo
 	{
-		margin-bottom: 3em;
+		margin-bottom: 1em;
 	}
 	
 		#logo h1
@@ -192,7 +192,7 @@
 
 	#main
 	{
-		padding: 4em 0em 1em 0em;
+		padding: 1em 0em 1em 0em;
 	}
 
 	#content
