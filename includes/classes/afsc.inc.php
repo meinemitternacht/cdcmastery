@@ -334,6 +334,16 @@ class afsc extends CDCMastery
 	}
 
 	/**
+	 * @param string $uuid
+	 * @return bool|string
+	 */
+	public function getAFSCNameCallback(&$item){
+		$afscName = $this->getAFSCName($item);
+		$item = $afscName;
+		return true;
+	}
+
+	/**
 	 * @return string
      */
 	public function getAFSCDescription(){

@@ -362,7 +362,7 @@ if(isset($_SESSION['vars'][0])):
 									<?php foreach($userTestArray as $testUUID => $testData): ?>
 										<tr>
 											<td><?php echo $testData['testTimeCompleted']; ?></td>
-											<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php echo $testData['testScore']; ?></td>
 											<td>
 												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -385,9 +385,9 @@ if(isset($_SESSION['vars'][0])):
 										<tr>
 											<th>Time Started</th>
 											<th>Questions Answered</th>
+											<th>Total Questions</th>
 											<th>AFSC</th>
 											<th>Combined</th>
-											<th>&nbsp;</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -395,11 +395,9 @@ if(isset($_SESSION['vars'][0])):
 										<tr>
 											<td><?php echo $testData['timeStarted']; ?></td>
 											<td><?php echo $testData['questionsAnswered']; ?></td>
-											<td><?php if(count($testData['afscList']) > 1){ echo "Multiple"; }else{ echo $afsc->getAFSCName($testData['afscList'][0]); } ?></td>
+											<td><?php echo $testData['totalQuestions']; ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
-											<td>
-												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
-											</td>
 										</tr>
 									<?php endforeach; ?>
 									</tbody>
