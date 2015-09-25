@@ -74,7 +74,7 @@ else{
 						<?php if($cdcMastery->verifyAdmin()): ?>
 						<li><a href="/admin/roles" title="Role Manager"><i class="icon-inline icon-20 ic-user-multiple"></i>Role Manager</a></li>
 						<?php endif; ?>
-						<li><a href="/admin/upload" title="Upload File"><i class="icon-inline icon-20 ic-upload"></i>Upload File</a></li>
+						<li><a href="/admin/upload" title="Upload Files"><i class="icon-inline icon-20 ic-upload"></i>Upload Files</a></li>
 					</ul>
 				</div>
 			</section> 

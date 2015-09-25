@@ -56,13 +56,15 @@
                                     <ul>
                                         <li><a href="/admin/afsc" title="AFSC Manager">AFSC Manager</a></li>
                                         <li><a href="/admin/cdc-data" title="CDC Data">CDC Data</a></li>
-                                        <li><a href="/admin/tests" title="Test Manager">Test Manager</a></li>
+										<li><a href="/admin/base-overview" title="Base Overview">Base Overview</a></li>
                                         <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
                                         <li><a href="/admin/users" title="User Manager">User Manager</a></li>
                                         <li><a href="/admin/profile" title="User Profiles">User Profiles</a></li>
                                         <li><a href="/admin/log" title="Log">Log</a></li>
+										<li><a href="/admin/search" title="Search">Search</a></li>
+										<li><a href="/admin/statistics" title="Statistics">Statistics</a></li>
                                         <li><a href="/admin/roles" title="Role Manager">Role Manager</a></li>
-                                        <li><a href="/admin/upload" title="Upload File">Upload File</a></li>
+                                        <li><a href="/admin/upload" title="Upload Files">Upload Files</a></li>
                                     </ul>
                                 </li>
 								<?php if($cdcMastery->verifyTrainingManager()): ?>

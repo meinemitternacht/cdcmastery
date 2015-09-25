@@ -41,7 +41,7 @@ if(!empty($_POST)){
         <div class="12u">
             <section>
                 <header>
-                    <h2>Upload File</h2>
+                    <h2>Upload Files</h2>
                 </header>
                 <p>
                     Use this form to upload large files to CDCMastery and notify the administrator of their upload.  Common
