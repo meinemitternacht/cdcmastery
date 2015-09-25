@@ -6,6 +6,11 @@
  * Time: 4:29 PM
  */
 
+if(!$cdcMastery->verifyAdmin()){
+    $sysMsg->addMessage("You are not authorized to access that page.");
+    $cdcMastery->redirect("/errors/403");
+}
+
 $pageAction = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $roleUUID   = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 $formAction = isset($_POST['formAction']) ? $_POST['formAction'] : false;
