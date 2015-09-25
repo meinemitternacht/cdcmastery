@@ -384,6 +384,40 @@ class userStatistics extends CDCMastery
 	 * Queries
 	 */
 
+	public function queryQuestionOccurrences($userUUID,$questionUUID){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND questionUUID = ?");
+
+		$stmt->bind_param("ss",$userUUID, $questionUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
+
+			return $count;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function queryAnswerOccurrences($userUUID,$answerUUID){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND answerUUID = ?");
+
+		$stmt->bind_param("ss",$userUUID, $answerUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
+
+			return $count;
+		}
+		else{
+			return false;
+		}
+	}
+
 	public function queryIPAddresses(){
         $stmt = $this->db->prepare("SELECT DISTINCT(ip) FROM systemLog WHERE userUUID = ?");
         $stmt->bind_param("s",$this->userUUID);
