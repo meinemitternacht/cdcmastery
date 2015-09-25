@@ -29,6 +29,11 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="/css/ie/v9.css" /><![endif]-->
 	</head>
 	<body>
+		<script>
+			$(function() {
+				$( document ).tooltip();
+			});
+		</script>
 		<!-- Header -->
 		<div id="header">
 			<div class="container">
