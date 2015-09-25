@@ -134,6 +134,31 @@ class user extends CDCMastery {
 		}
 	}
 
+	public function listUserUUIDByBase($baseUUID){
+		$stmt = $this->db->prepare("SELECT  uuid
+                                    FROM userData
+                                    WHERE userBase = ?");
+		$stmt->bind_param("s",$baseUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($uuid);
+
+			while($stmt->fetch()){
+				$userArray[] = $uuid;
+			}
+		}
+		else{
+			return false;
+		}
+
+		if(isset($userArray) && !empty($userArray)){
+			return $userArray;
+		}
+		else{
+			return false;
+		}
+	}
+
 	public function loadUser($uuid){
 		$stmt = $this->db->prepare("SELECT  uuid,
 											userFirstName,
@@ -348,7 +373,12 @@ class user extends CDCMastery {
 	}
 
 	public function getUserLastLogin(){
-		return $this->userLastLogin;
+		if($this->isTimeEmpty($this->userLastLogin)){
+			return "Never";
+		}
+		else{
+			return $this->userLastLogin;
+		}
 	}
 	
 	public function getUserTimeZone(){
