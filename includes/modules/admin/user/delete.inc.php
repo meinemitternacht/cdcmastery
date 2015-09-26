@@ -62,7 +62,7 @@ if(isset($_POST['confirmUserDelete'])){
                     $sysMsg->addMessage($delUserObj->getFullName() . " has been deleted.");
                     $cdcMastery->redirect("/admin/users");
                 } else {
-                    $log->setAction("ERROR_USER_DELETE_PROCESS_COMPLETE");
+                    $log->setAction("ERROR_USER_DELETE_PROCESS");
                     $log->setDetail("User UUID", $userUUID);
                     $log->setDetail("User Name", $userFullName);
                     if (!empty($_POST['deleteReason'])) {

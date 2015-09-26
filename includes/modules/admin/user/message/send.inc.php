@@ -25,7 +25,7 @@ if(isset($_POST['messageBody'])){
     $emailBodyText .= $user->getUserNameByUUID($_SESSION['userUUID']);
 
     if(!$emailQueue->queueEmail($messageSender,$messageRecipient,$messageSubject,$emailBodyHTML,$emailBodyText,$messageQueueUser)){
-        $log->setAction("ERROR_EMAIL_QUEUE");
+        $log->setAction("ERROR_EMAIL_QUEUE_ADD");
         $log->setDetail("Calling Script","user/<user uuid>/message/send");
         $log->setDetail("Message Sender",$messageSender);
         $log->setDetail("Message Recipient",$messageRecipient);
