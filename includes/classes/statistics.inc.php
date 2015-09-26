@@ -45,6 +45,8 @@ class statistics extends CDCMastery {
     public $totalLogDetails;
     public $totalLoginErrors;
 
+    public $logActionCount;
+
     public $totalOfficeSymbols;
 
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
@@ -878,6 +880,41 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryLoginErrors()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getLogCountByAction($logAction){
+        if(!$this->queryLogCountByAction($logAction)){
+            return false;
+        }
+        else{
+            return $this->logActionCount[$logAction];
+        }
+    }
+
+    public function queryLogCountByAction($logAction){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM systemLog WHERE action LIKE ?");
+        $stmt->bind_param("s",$logAction);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->logActionCount[$logAction] = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryLogCountByAction()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();

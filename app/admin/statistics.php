@@ -45,6 +45,14 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Total Questions Answered</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered()); ?></td>
                     </tr>
+                    <tr>
+                        <td><strong>Tests Started</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_START")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tests Deleted</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_DELETE") + $statisticsObj->getLogCountByAction("INCOMPLETE_TEST_DELETE")); ?></td>
+                    </tr>
                 </table>
             </section>
             <div class="clearfix">&nbsp;</div>
@@ -126,6 +134,10 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Total Office Symbols</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
                     </tr>
+                    <tr>
+                        <td><strong>Users Deleted</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_DELETE")); ?></td>
+                    </tr>
                 </table>
             </section>
         </div>
@@ -146,6 +158,26 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     <tr>
                         <td><strong>Login Errors</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalLoginErrors()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Login Rate Limit Reached</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_LOGIN_RATE_LIMIT_REACHED")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Route Errors</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("ROUTING_ERROR")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>AJAX Direct Access</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("AJAX_DIRECT_ACCESS")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Errors</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("%ERROR%")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Migrated Passwords</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("MIGRATED_PASSWORD")); ?></td>
                     </tr>
                 </table>
             </section>
