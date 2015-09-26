@@ -3,11 +3,11 @@ $testManager = new testManager($db, $log, $afsc);
 
 if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 	if($testManager->deleteIncompleteTest(true,false,$userUUID)){
-		$_SESSION['messages'][] = "Incomplete tests deleted successfully.";
+        $sysMsg->addMessage("Incomplete tests deleted successfully.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 	else{
-		$_SESSION['messages'][] = "We could not delete the incomplete tests taken by this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.";
+        $sysMsg->addMessage("We could not delete the incomplete tests taken by this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }
@@ -24,7 +24,7 @@ else{ ?>
 						Delete All Incomplete Tests
 					</div>
 					<ul>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
 					</ul>
 				</div>
 			</section>

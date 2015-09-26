@@ -36,8 +36,7 @@ if(isset($_POST['messageBody'])){
         $log->saveEntry();
     }
     else{
-        $_SESSION['messages'][] = "Message queued for delivery.";
-
+        $sysMsg->addMessage("Message queued for delivery.");
     }
 }
 ?>

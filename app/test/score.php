@@ -52,13 +52,13 @@ if($testUUID){
                     $log->saveEntry();
 
                     if($testScore >= $cdcMastery->getPassingScore()){
-                        $_SESSION['messages'][] = "Congratulations!  You passed the test.";
-                        $cdcMastery->redirect("/test/view/".$testUUID);
+                        $sysMsg->addMessage("Congratulations!  You passed the test.");
                     }
                     else{
-                        $_SESSION['messages'][] = "Sorry, you didn't pass the test.  Keep studying!";
-                        $cdcMastery->redirect("/test/view/".$testUUID);
+                        $sysMsg->addMessage("Sorry, you didn't pass the test.  Keep studying!");
                     }
+
+                    $cdcMastery->redirect("/test/view/".$testUUID);
                 }
                 else{
                     $log->setAction("ERROR_SCORE_TEST");
@@ -83,21 +83,21 @@ if($testUUID){
             }
         }
         else{
-            $_SESSION['messages'][] = "There is no test data for that test UUID.";
+            $sysMsg->addMessage("There is no test data for that test UUID.");
             $cdcMastery->redirect("/errors/500");
         }
 
 
         /*
-         * Place a message in the session to let the user know if they passed or failed the test.vcfcv
+         * Place a message in the session to let the user know if they passed or failed the test.
          */
     }
     else{
-        $_SESSION['messages'][]  = "That test does not exist.";
+        $sysMsg->addMessage("That test does not exist.");
         $cdcMastery->redirect("/errors/404");
     }
 }
 else{
-    $_SESSION['messages'][] = "You must provide a test UUID.";
+    $sysMsg->addMessage("You must provide a test UUID.");
     $cdcMastery->redirect("/errors/500");
 }

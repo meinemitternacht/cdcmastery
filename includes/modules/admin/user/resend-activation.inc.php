@@ -4,16 +4,16 @@ if(isset($_POST['confirmActivationResend'])){
 		$userActivate = new userActivation($db, $log, $emailQueue);
 		
 		if($userActivate->queueActivation($userUUID)){
-			$_SESSION['messages'][] = "Activation code sent to " . $objUser->getFullName();
+			$sysMsg->addMessage("Activation code sent to " . $objUser->getFullName());
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 		else{
-			$_SESSION['messages'][] = "Sorry, we could not send an activation code to " . $objUser->getFullName();
+            $sysMsg->addMessage("Sorry, we could not send an activation code to " . $objUser->getFullName());
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 	}
 	else{
-		$_SESSION['messages'][] = "No User UUID was provided.";
+        $sysMsg->addMessage("No User UUID was provided.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }
@@ -31,7 +31,7 @@ else{ ?>
 					Resend Activation
 				</div>
 				<ul>
-					<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+					<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
 				</ul>
 			</div>
 		</div>

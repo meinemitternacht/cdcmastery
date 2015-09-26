@@ -88,7 +88,7 @@ and (max-device-width : 480px) {
                         Test History
                     </div>
                     <ul>
-                        <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+                        <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
                     </ul>
                 </div>
             </section>
@@ -144,6 +144,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-	$_SESSION['messages'][] = "This user has not completed any tests.";
+    $sysMsg->addMessage("This user has not completed any tests.");
 	$cdcMastery->redirect("/errors/404");
 endif;

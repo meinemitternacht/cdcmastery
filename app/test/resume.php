@@ -17,8 +17,8 @@ if(isset($_SESSION['vars'][0])){
 			$log->setDetail("TEST UUID",$testUUID);
 			$log->setDetail("Error Detail","User attempted to resume a test that was not theirs.");
 			$log->saveEntry();
-			
-			$_SESSION['error'][] = "Sorry, you cannot resume another user's test.";
+
+            $sysMsg->addMessage("Sorry, you cannot resume another user's test.");
 			$cdcMastery->redirect("/errors/403");
 		}
 		else{

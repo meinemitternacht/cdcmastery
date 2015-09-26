@@ -19,11 +19,11 @@ if($formAction){
             $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscName'] : false;
 
             if(!$afscData['afscName']) {
-                $_SESSION['messages'][] = "AFSC Name cannot be blank.";
+                $sysMsg->addMessage("AFSC Name cannot be blank.");
                 $cdcMastery->redirect("/admin/afsc");
             }
             elseif(!$afscData['afscFOUO']) {
-                $_SESSION['messages'][] = "FOUO status must be provided.";
+                $sysMsg->addMessage("FOUO status must be provided.");
                 $cdcMastery->redirect("/admin/afsc");
             }
             else{
@@ -39,7 +39,7 @@ if($formAction){
                     $log->setDetail("AFSC Version",$afscData['afscVersion']);
                     $log->saveEntry();
 
-                    $_SESSION['messages'][] = "AFSC added successfully.";
+                    $sysMsg->addMessage("AFSC added successfully.");
                 }
                 else{
                     $log->setAction("ERROR_AFSC_ADD");
@@ -49,7 +49,7 @@ if($formAction){
                     $log->setDetail("AFSC Description",$afscData['afscDescription']);
                     $log->saveEntry();
 
-                    $_SESSION['messages'][] = "There was a problem adding that AFSC.";
+                    $sysMsg->addMessage("There was a problem adding that AFSC.");
                 }
 
                 $cdcMastery->redirect("/admin/afsc");
@@ -124,7 +124,7 @@ if(!$subAction):
                         </ul>
                     </div>
                 </section>
-                <div class="clearfix"></div>
+                <div class="clearfix">&nbsp;</div>
                 <br>
                 <section>
                     <header>
@@ -274,7 +274,7 @@ if(!$subAction):
                         </ul>
                     </div>
                 </section>
-                <div class="clearfix"></div>
+                <div class="clearfix">&nbsp;</div>
                 <br>
                 <section>
                     <header>

@@ -8,11 +8,11 @@ $target	  = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : fal
 $testManager = new testManager($db, $log, $afsc);
 
 if(!$testType){
-	$_SESSION['error'][] = "You must specify a type of test to delete.";
+    $sysMsg->addMessage("You must specify a type of test to delete.");
 	$cdcMastery->redirect("/errors/500");
 }
 elseif(!$target){
-	$_SESSION['error'][] = "You must either specify a test to delete or delete all tests.";
+    $sysMsg->addMessage("You must either specify a test to delete or delete all tests.");
 	$cdcMastery->redirect("/errors/500");
 }
 else{
@@ -20,11 +20,11 @@ else{
 		if($target == "all"){
 			if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 				if($testManager->deleteIncompleteTest(true,false,$_SESSION['userUUID'])){
-					$_SESSION['messages'][] = "Incomplete tests deleted successfully.";
+                    $sysMsg->addMessage("Incomplete tests deleted successfully.");
 					$cdcMastery->redirect("/");
 				}
 				else{
-					$_SESSION['error'][] = "We could not delete your incomplete tests, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.";
+					$sysMsg->addMessage("We could not delete your incomplete tests, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
 					$cdcMastery->redirect("/errors/500");
 				}
 			}
@@ -35,7 +35,7 @@ else{
 						<section>
 							<div class="sub-menu">
 								<ul>
-									<li><a href="/"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to Home Page</a></li>
+									<li><a href="/"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Home Page</a></li>
 								</ul>
 							</div>
 						</section>
@@ -52,7 +52,7 @@ else{
 								<input type="hidden" name="confirmIncompleteTestDeleteAll" value="1">
 								If you wish to delete all incomplete tests you have started, please press continue.
 								Otherwise, <a href="/">return to the home page</a>.
-								<br>
+								<div class="clearfix">&nbsp;</div>
 								<input type="submit" value="Continue">
 							</form>
 						</section>
@@ -70,17 +70,17 @@ else{
 				$log->setDetail("Test User UUID",$testManager->getIncompleteUserUUID());
 				$log->saveEntry();
 				
-				$_SESSION['error'][] = "You cannot delete a test taken by another user.";
+				$sysMsg->addMessage("You cannot delete a test taken by another user.");
 				$cdcMastery->redirect("/errors/403");
 			}
 			else{
 				if(isset($_POST['confirmIncompleteTestDelete'])){
 					if($testManager->deleteIncompleteTest(false,$target)){
-						$_SESSION['messages'][] = "Test deleted successfully.";
+                        $sysMsg->addMessage("Test deleted successfully.");
 						$cdcMastery->redirect("/");
 					}
 					else{
-						$_SESSION['error'][] = "We could not delete that test, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.";
+                        $sysMsg->addMessage("We could not delete that test, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
 						$cdcMastery->redirect("/errors/500");
 					}
 				}
@@ -91,7 +91,7 @@ else{
 							<section>
 								<div class="sub-menu">
 									<ul>
-										<li><a href="/"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to Home Page</a></li>
+										<li><a href="/"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Home Page</a></li>
 									</ul>
 								</div>
 							</section>
@@ -110,7 +110,7 @@ else{
                                     <strong><?php echo $cdcMastery->outputDateTime($testManager->getIncompleteTimeStarted(),$_SESSION['timeZone']); ?></strong>
 									that is <strong><?php echo $testManager->getIncompletePercentComplete(); ?></strong> complete, please press continue.
 									Otherwise, <a href="/">return to the home page</a>.
-									<br>
+									<div class="clearfix">&nbsp;</div>
 									<input type="submit" value="Continue">
 								</form>
 							</section>
@@ -122,12 +122,12 @@ else{
 			}
 		}
 		else{
-			$_SESSION['error'][] = "The specified test does not exist.";
+            $sysMsg->addMessage("The specified test does not exist.");
 			$cdcMastery->redirect("/errors/500");
 		}
 	}
 	else{
-		$_SESSION['error'][] = "You specified an invalid test type.";
+        $sysMsg->addMessage("You specified an invalid test type.");
 		$cdcMastery->redirect("/errors/500");
 	}
 }

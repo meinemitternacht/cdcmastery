@@ -7,11 +7,11 @@ if(isset($_POST['confirmTestDeleteAll'])){
     var_dump($testList);
 
     if($testManager->deleteTests($testList)){
-        $_SESSION['messages'][] = "Completed tests deleted successfully.";
+        $sysMsg->addMessage("Completed tests deleted successfully.");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $_SESSION['messages'][] = "We could not delete the completed tests taken by this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.";
+        $sysMsg->addMessage("We could not delete the completed tests taken by this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }
@@ -28,7 +28,7 @@ else{ ?>
                             Delete All Completed Tests
                         </div>
                         <ul>
-                            <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+                            <li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
                         </ul>
                     </div>
                 </section>
