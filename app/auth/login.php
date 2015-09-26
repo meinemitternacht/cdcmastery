@@ -1,11 +1,29 @@
 <?php
 if(!isset($_SESSION['auth'])):
 	if(!empty($_POST)){
+        if(!isset($_POST['username']) || empty($_POST['username'])){
+            $log->setAction("ERROR_LOGIN_EMPTY_USER");
+            $log->setDetail("Provided Username",$_POST['username']);
+            $log->saveEntry();
+
+            $sysMsg->addMessage("Your username cannot be blank.");
+            $cdcMastery->redirect("/auth/login");
+        }
+
+        if(!isset($_POST['password']) || empty($_POST['password'])){
+            $log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
+            $log->setDetail("Provided Username",$_POST['username']);
+            $log->saveEntry();
+
+            $sysMsg->addMessage("Your password cannot be blank.");
+            $cdcMastery->redirect("/auth/login");
+        }
+
 		$userUUID = $user->userLoginName($_POST['username']);
 		
 		if(!$userUUID){
             $sysMsg->addMessage($user->error);
-            $log->setACtion("ERROR_LOGIN_UNKNOWN_USER");
+            $log->setAction("ERROR_LOGIN_UNKNOWN_USER");
             $log->setDetail("Provided Username",$_POST['username']);
             $log->saveEntry();
 		}
