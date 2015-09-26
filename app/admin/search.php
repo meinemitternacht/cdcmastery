@@ -232,6 +232,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                             <select id="userRank"
                                     name="userRank"
                                     class="input_full"
+                                    style="height:8em;"
                                     MULTIPLE>
                                 <?php
                                 $rankList = $cdcMastery->listRanks();
@@ -253,6 +254,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                             <select id="userRole"
                                     name="userRole"
                                     class="input_full"
+                                    style="height:8em;"
                                     MULTIPLE>
                                 <?php
                                 $roleList = $roles->listRoles();
@@ -268,6 +270,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                             <select id="userBase"
                                     name="userBase"
                                     class="input_full"
+                                    style="height:8em;"
                                     MULTIPLE>
                                 <?php
                                 $baseList = $bases->listBases();
