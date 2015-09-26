@@ -1,6 +1,8 @@
 <?php
 class logFilter extends log {
 	protected $user;
+
+	public $query;
 	
 	public $rowOffset;
 	public $pageRows;
@@ -141,6 +143,8 @@ class logFilter extends log {
 				$query .= " ORDER BY " .$sortBy . " " . $sortDirection . " LIMIT ?, ?";
 			}
 		}
+
+		$this->query = $query;
 	
 		$stmt = $this->db->prepare($query);
 		$stmt->bind_param("ii",$this->rowOffset,$this->pageRows);
