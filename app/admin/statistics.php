@@ -9,7 +9,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
 ?>
 <div class="container">
     <div class="row">
-        <div class="3u">
+        <div class="4u">
             <section>
                 <header>
                     <h2>Statistics</h2>
