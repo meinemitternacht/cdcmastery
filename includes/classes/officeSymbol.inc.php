@@ -179,7 +179,7 @@ class officeSymbol extends CDCMastery
                 return true;
             }
         } else {
-            $_SESSION['messages'][] = "That Office Symbol does not exist.";
+            $this->error = "That Office Symbol does not exist.";
             return false;
         }
     }
