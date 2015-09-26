@@ -145,17 +145,17 @@ class router extends CDCMastery
 				$this->errorNumber = 403;
 				return false;
 			}
+            elseif(strpos($this->filePath, "/ajax/") !== false){
+                $this->outputPage = $this->filePath;
+                $this->showTheme = false;
+                return true;
+            }
             elseif(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
                 $this->outputPage = APP_BASE . "/errors/403.php";
                 $this->errorNumber = 403;
                 return false;
             }
 			elseif(strpos($this->filePath, "/export/") !== false){
-				$this->outputPage = $this->filePath;
-				$this->showTheme = false;
-				return true;
-			}
-			elseif(strpos($this->filePath, "/ajax/") !== false){
 				$this->outputPage = $this->filePath;
 				$this->showTheme = false;
 				return true;
