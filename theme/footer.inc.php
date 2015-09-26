@@ -18,6 +18,9 @@
 								<?php else: ?>
 									<li><a href="/about">Site Information</a></li>
 								<?php endif; ?>
+                                <li><a href="/about/privacy">Privacy Policy</a></li>
+                                <li><a href="/about/terms">Terms of Use</a></li>
+                                <li><a href="/about/disclaimer">Disclaimer</a></li>
 							</ul>
 						</section>
 					</div>
