@@ -11,7 +11,7 @@ $user->loadUser($_SESSION['userUUID']);
  * Check if test UUID is empty
  */
 if(!$testUUID){
-	$_SESSION['errors'][] = "You must provide a test to view.";
+    $sysMsg->addMessage("You must provide a test to view.");
 	$cdcMastery->redirect("/errors/404");
 }
 
@@ -19,7 +19,7 @@ if(!$testUUID){
  * Check test validity
  */
 if(!$testManager->loadTest($testUUID)){
-	$_SESSION['errors'][] = "That test does not exist.";
+    $sysMsg->addMessage("That test does not exist.");
 	$cdcMastery->redirect("/errors/404");
 }
 
@@ -27,7 +27,7 @@ if(!$testManager->loadTest($testUUID)){
  * Check test ownership, if role is user.  Deny access to tests that are not their own.
  */
 if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserUUID() != $_SESSION['userUUID']){
-	$_SESSION['errors'][] = "You are not authorized to view that test.";
+	$sysMsg->addMessage("You are not authorized to view that test.");
 	$cdcMastery->redirect("/errors/403");
 }
 
@@ -126,135 +126,139 @@ else{
 				<?php 
 				$testManager->loadTestData($testUUID);
 				$testData = $testManager->getTestData();
-				
-				$i=1;
-                $c=0;
-				foreach($testData as $questionUUID => $answerUUID):
-					if($questionManager->loadQuestion($questionUUID)) {
-						$answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
 
-                        if(!$showAnswers) {
-                            $answerManager->loadAnswer($answerUUID);
-                            ?>
-                            <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
-                            echo $color; ?>">
-                                <li style="padding:0.3em;font-size:1.1em;">
-                                    <strong><?php echo $i; ?>
-                                        . <?php echo $questionManager->getQuestionText(); ?></strong>
-                                </li>
-                                <?php
-                                $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID);
-                                $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$answerUUID);
+                if($testData):
+                    $i=1;
+                    $c=0;
+                    foreach($testData as $questionUUID => $answerUUID):
+                        if($questionManager->loadQuestion($questionUUID)) {
+                            $answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
 
-                                if(($questionOccurrences > 0) && ($answerOccurrences > 0)){
-                                    $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
-                                    $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
-                                }
-                                else{
-                                    $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
-                                }
+                            if(!$showAnswers) {
+                                $answerManager->loadAnswer($answerUUID);
                                 ?>
-                                <li style="padding:0.3em; cursor: pointer;" title="<?php echo $pickPercentString; ?>">
-                                    <?php if ($answerManager->getAnswerCorrect()): ?>
-                                    <span class="text-success">
-								<?php else: ?>
-                                        <span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
+                                <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
+                                echo $color; ?>">
+                                    <li style="padding:0.3em;font-size:1.1em;">
+                                        <strong><?php echo $i; ?>
+                                            . <?php echo $questionManager->getQuestionText(); ?></strong>
+                                    </li>
+                                    <?php
+                                    $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID);
+                                    $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$answerUUID);
+
+                                    if(($questionOccurrences > 0) && ($answerOccurrences > 0)){
+                                        $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
+                                        $pickPercentString = "You picked this answer " . round($pickPercent,2) . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
+                                    }
+                                    else{
+                                        $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
+                                    }
+                                    ?>
+                                    <li style="padding:0.3em; cursor: pointer;" title="<?php echo $pickPercentString; ?>">
+                                        <?php if ($answerManager->getAnswerCorrect()): ?>
+                                        <span class="text-success">
+                                    <?php else: ?>
+                                            <span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
+                                                <?php endif; ?>
+                                                <?php echo $answerManager->getAnswerText(); ?>
+                                        </span>
+                                            <?php if (!$answerManager->getAnswerCorrect()): ?>
+                                                <?php if ($answerManager->loadAnswer($answerManager->getCorrectAnswer($questionUUID))): ?>
+                                                    <br>
+                                                    <strong>Correct Answer</strong>:<span
+                                                        style="padding-left: 1em;"><em><?php echo $answerManager->getAnswerText(); ?></em></span>
+                                                <?php endif; ?>
                                             <?php endif; ?>
-                                            <?php echo $answerManager->getAnswerText(); ?>
-                            		</span>
-                                        <?php if (!$answerManager->getAnswerCorrect()): ?>
-                                            <?php if ($answerManager->loadAnswer($answerManager->getCorrectAnswer($questionUUID))): ?>
-                                                <br>
-                                                <strong>Correct Answer</strong>:<span
-                                                    style="padding-left: 1em;"><em><?php echo $answerManager->getAnswerText(); ?></em></span>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                </li>
-                            </ul>
-                            <?php
+                                    </li>
+                                </ul>
+                                <?php
+                            }
+                            else{
+                                /*
+                                 * Show all answers for each question, along with how many times that answer has been used.
+                                 */
+                                $answerManager->setQuestionUUID($questionUUID);
+                                $answerUUIDList = $answerManager->listAnswersByQuestion();
+                                ?>
+                                <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
+                                echo $color; ?>">
+                                    <li style="padding:0.3em;font-size:1.1em;">
+                                        <strong><?php echo $i; ?>
+                                            . <?php echo $questionManager->getQuestionText(); ?></strong>
+                                    </li>
+                                    <li style="padding:0.3em">
+                                        <ul>
+                                            <?php $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID); ?>
+                                            <?php foreach($answerUUIDList as $allAnswersUUID => $allAnswersData): ?>
+                                                <?php
+                                                $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$allAnswersUUID);
+
+                                                if(!$questionOccurrences){
+                                                    $pickPercentString = "This question has not been answered by you yet.";
+                                                }
+                                                elseif(!$answerOccurrences){
+                                                    $pickPercentString = "You have never selected this answer.";
+                                                }
+                                                elseif(($questionOccurrences > 0) && ($answerOccurrences > 0)){
+                                                    $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
+                                                    $pickPercentString = "You picked this answer " . round($pickPercent,2) . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
+                                                }
+                                                else{
+                                                    $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
+                                                }
+                                                ?>
+                                                <li style="cursor: pointer;" title="<?php echo $pickPercentString; ?>">
+                                                <?php $answerManager->loadAnswer($allAnswersUUID); ?>
+                                                <?php if($allAnswersUUID == $answerUUID): ?>
+                                                    <?php if($answerManager->getAnswerCorrect()): ?>
+                                                    <span class="text-success"><?php echo $answerManager->getAnswerText(); ?></span> &laquo; <strong>Your Answer</strong>
+                                                    <?php else: ?>
+                                                    <span class="text-warning"><?php echo $answerManager->getAnswerText(); ?></span> &laquo; <strong>Your Answer</strong>
+                                                    <?php endif; ?>
+                                                <?php else: ?>
+                                                    <?php if($answerManager->getAnswerCorrect()): ?>
+                                                        <span class="text-success"><?php echo $answerManager->getAnswerText(); ?></span>
+                                                    <?php else: ?>
+                                                        <span class="text-warning"><?php echo $answerManager->getAnswerText(); ?></span>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <?php
+                            }
                         }
                         else{
-                            /*
-                             * Show all answers for each question, along with how many times that answer has been used.
-                             */
-                            $answerManager->setQuestionUUID($questionUUID);
-                            $answerUUIDList = $answerManager->listAnswersByQuestion();
-                            ?>
-                            <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
-                            echo $color; ?>">
-                                <li style="padding:0.3em;font-size:1.1em;">
-                                    <strong><?php echo $i; ?>
-                                        . <?php echo $questionManager->getQuestionText(); ?></strong>
-                                </li>
-                                <li style="padding:0.3em">
-                                    <ul>
-                                        <?php $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID); ?>
-                                        <?php foreach($answerUUIDList as $allAnswersUUID => $allAnswersData): ?>
-                                            <?php
-                                            $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$allAnswersUUID);
-
-                                            if(!$questionOccurrences){
-                                                $pickPercentString = "This question has not been answered by you yet.";
-                                            }
-                                            elseif(!$answerOccurrences){
-                                                $pickPercentString = "You have never selected this answer.";
-                                            }
-                                            elseif(($questionOccurrences > 0) && ($answerOccurrences > 0)){
-                                                $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
-                                                $pickPercentString = "You picked this answer " . $pickPercent . "% of the time. The answer was picked " . $answerOccurrences . " " . (($answerOccurrences == 1) ? "time" : "times") . " and the question has been seen " . $questionOccurrences . " " . (($questionOccurrences == 1) ? "time." : "times.");
-                                            }
-                                            else{
-                                                $pickPercentString = "There is no data to get usage statistics for this question/answer combination.";
-                                            }
-                                            ?>
-                                            <li style="cursor: pointer;" title="<?php echo $pickPercentString; ?>">
-                                            <?php $answerManager->loadAnswer($allAnswersUUID); ?>
-                                            <?php if($allAnswersUUID == $answerUUID): ?>
-                                                <?php if($answerManager->getAnswerCorrect()): ?>
-                                                <span class="text-success"><?php echo $answerManager->getAnswerText(); ?></span> &laquo; <strong>Your Answer</strong>
-                                                <?php else: ?>
-                                                <span class="text-warning"><?php echo $answerManager->getAnswerText(); ?></span> &laquo; <strong>Your Answer</strong>
+                            $archivedText = $questionManager->getArchivedQuestionText($questionUUID);
+                            if($archivedText):
+                                $answerManager->loadArchivedAnswer($answerUUID); ?>
+                                <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
+                                echo $color; ?>">
+                                    <li style="padding:0.3em;font-size:1.1em;">
+                                        <strong><?php echo $i; ?>. <?php echo $archivedText ?></strong>
+                                    </li>
+                                    <li style="padding:0.3em">
+                                        <?php if ($answerManager->getAnswerCorrect()): ?>
+                                        <span class="text-success">
+                                <?php else: ?>
+                                            <span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
                                                 <?php endif; ?>
-                                            <?php else: ?>
-                                                <?php if($answerManager->getAnswerCorrect()): ?>
-                                                    <span class="text-success"><?php echo $answerManager->getAnswerText(); ?></span>
-                                                <?php else: ?>
-                                                    <span class="text-warning"><?php echo $answerManager->getAnswerText(); ?></span>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </li>
-                            </ul>
+                                                <?php echo $answerManager->getAnswerText(); ?>
+                                </span>
+                                    </li>
+                                </ul>
                             <?php
-                        }
-					}
-                    else{
-                        $archivedText = $questionManager->getArchivedQuestionText($questionUUID);
-                        if($archivedText):
-                            $answerManager->loadArchivedAnswer($answerUUID); ?>
-                            <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
-                            echo $color; ?>">
-                                <li style="padding:0.3em;font-size:1.1em;">
-                                    <strong><?php echo $i; ?>. <?php echo $archivedText ?></strong>
-                                </li>
-                                <li style="padding:0.3em">
-                                    <?php if ($answerManager->getAnswerCorrect()): ?>
-                                    <span class="text-success">
-							<?php else: ?>
-                                        <span class="text-warning"><i class="icon-inline icon-20 ic-delete"></i>
-                                            <?php endif; ?>
-                                            <?php echo $answerManager->getAnswerText(); ?>
-                            </span>
-                                </li>
-                            </ul>
-                        <?php
-                        endif;
-                    }?>
-                    <?php $i++; ?>
-                    <?php $c = ($c == 0) ? 1 : 0; ?>
-				<?php endforeach; ?>
+                            endif;
+                        }?>
+                        <?php $i++; ?>
+                        <?php $c = ($c == 0) ? 1 : 0; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                This test was taken before the system kept records of question and answer data.
+                <?php endif; ?>
 			</section>
 		</div>
 	</div>
