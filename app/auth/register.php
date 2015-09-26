@@ -348,6 +348,57 @@ if(isset($accountType)):
             </div>
         <?php endif; ?>
     <?php else: ?>
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                $('#userHandle').change(function () {
+                    var userHandle = $('#userHandle').val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/ajax/registration/checkHandle",
+                        data: {'userHandle': userHandle },
+                        success: function (response) {
+                            if(response > 0) {
+                                finishAjax('system-messages-block', '<ul><li><strong>That username is already in use.</strong></li></ul>');
+                            }
+                            else{
+                                $('#system-messages-container-block').hide();
+                            }
+                        }
+                    });
+
+                    return false;
+
+                });
+
+                $('#userEmail').change(function () {
+                    var userEmail = $('#userEmail').val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/ajax/registration/checkEmail",
+                        data: {'userEmail': userEmail },
+                        success: function (response) {
+                            if(response != 0) {
+                                finishAjax('system-messages-block', '<ul><li><strong>' + escape(response) + '</strong></li></ul>');
+                            }
+                            else{
+                                $('#system-messages-container-block').hide();
+                            }
+                        }
+                    });
+
+                    return false;
+
+                });
+
+            });
+
+            function finishAjax(id, response) {
+                $('#' + id).html(unescape(response));
+                $('#system-messages-container-block').show();
+            }
+
+        </script>
         <form id="registrationForm" action="/auth/register/<?php echo $accountType; ?>" method="POST">
         <input type="hidden" name="registrationFormStep" value="1">
         <div class="container">
@@ -556,7 +607,7 @@ if(isset($accountType)):
                         </ul>
                     </section>
                 </div>
-                <div class="3u">
+                <div class="4u">
                     <section class="registration-panel-4">
                         <header>
                             <h3>Continue</h3>
