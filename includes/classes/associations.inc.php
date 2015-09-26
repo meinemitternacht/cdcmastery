@@ -240,7 +240,7 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("ERROR_ASSOCIATIONS_AFSC_APPROVE_PENDING");
+			$this->log->setAction("ERROR_USER_APPROVE_PENDING_AFSC_ASSOCIATION");
 			$this->log->setDetail("Calling Function","associations->approvePendingAFSCAssociation()");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
@@ -283,7 +283,7 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("ERROR_ASSOCIATIONS_SUPERVISOR_ADD");
+			$this->log->setAction("ERROR_USER_ADD_SUPERVISOR_ASSOCIATION");
 			$this->log->setDetail("Calling Function","associations->addSupervisorAssociation()");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
@@ -321,7 +321,7 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("ERROR_ASSOCIATIONS_SUPERVISOR_DELETE");
+			$this->log->setAction("ERROR_USER_REMOVE_SUPERVISOR_ASSOCIATION");
 			$this->log->setDetail("Calling Function","associations->deleteSupervisorAssociation()");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
@@ -395,7 +395,7 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("ERROR_ASSOCIATIONS_TRAINING_MANAGER_ADD");
+			$this->log->setAction("ERROR_USER_ADD_TRAINING_MANAGER_ASSOCIATION");
 			$this->log->setDetail("Calling Function","associations->addTrainingManagerAssociation()");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
@@ -433,7 +433,7 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
-			$this->log->setAction("ERROR_ASSOCIATIONS_TRAINING_MANAGER_DELETE");
+			$this->log->setAction("ERROR_USER_REMOVE_TRAINING_MANAGER_ASSOCIATION");
 			$this->log->setDetail("Calling Function","associations->deleteTrainingManagerAssociation()");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
