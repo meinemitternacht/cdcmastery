@@ -60,6 +60,7 @@ class emailQueue extends CDCMastery {
 						$this->log->setDetail("UUID", $this->uuid);
 						$this->log->setDetail("MySQL Error",$this->db->error);
 						$this->log->saveEntry();
+
 						$error = true;
 					}
 				}
