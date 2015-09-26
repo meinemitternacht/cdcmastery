@@ -51,6 +51,10 @@ if($logUUID):
 								<th>Timestamp</th>
 								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?></td>
 							</tr>
+							<tr>
+								<th>Microtime</th>
+								<td><?php echo $logData->getMicrotime(); ?></td>
+							</tr>
 						</table>
 					</section>
 				</div>
