@@ -65,6 +65,45 @@ class bases extends CDCMastery
 		}
 	}
 
+    public function deleteBase($baseUUID){
+        if($this->loadBase($baseUUID)){
+            $stmt = $this->db->prepare("DELETE FROM baseList WHERE uuid = ?");
+            $stmt->bind_param("s",$baseUUID);
+
+            if($stmt->execute()){
+                $this->log->setAction("BASE_DELETE");
+                $this->log->setDetail("Base UUID", $this->uuid);
+                $this->log->setDetail("Base Name", $this->baseName);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return true;
+            }
+            else{
+                $this->log->setAction("ERROR_BASE_DELETE");
+                $this->log->setDetail("CALLING FUNCTION", "bases->deleteBase()");
+                $this->log->setDetail("Base UUID", $this->uuid);
+                $this->log->setDetail("Base Name", $this->baseName);
+                $this->log->setDetail("MYSQL_ERROR", $stmt->error);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return false;
+            }
+        }
+        else{
+            $this->error = "That base does not exist.";
+            $this->log->setAction("ERROR_BASE_DELETE");
+            $this->log->setDetail("CALLING FUNCTION", "bases->deleteBase()");
+            $this->log->setDetail("Base UUID", $this->uuid);
+            $this->log->setDetail("Base Name", $this->baseName);
+            $this->log->setDetail("ERROR", $this->error);
+            $this->log->saveEntry();
+
+            return false;
+        }
+    }
+
 	public function listBases(){
 		$res = $this->db->query("SELECT uuid, baseName FROM baseList ORDER BY baseName ASC");
 		
