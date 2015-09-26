@@ -510,7 +510,7 @@ label {
 }
 
 .text-caution, .text-caution a {
-    color: gold !important;
+    color: #FF9933 !important;
 }
 
 .text-warning, .text-warning a {
