@@ -144,7 +144,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 				</select>
 				<div class="clearfix">&nbsp;</div>
 				<input type="submit" value="Add">
-				<p><em>An asterisk (*) denotes a FOUO AFSC</em></p>
+				<p><em>An asterisk (*) denotes a FOUO AFSC.  If you add one of these, you will be placed into a queue for approval by an administrator or training manager.</em></p>
 				<?php else: ?>
 				<em>There are no AFSCs in the database.</em>
 				<?php endif; ?>
