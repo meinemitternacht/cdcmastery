@@ -355,12 +355,12 @@ class testManager extends CDCMastery
 			$stmt->close();
 			
 			if($error){
-				$this->log->setAction("ERROR_DELETE_TEST");
+				$this->log->setAction("ERROR_TEST_DELETE");
 				$this->log->saveEntry();
 				return false;
 			}
 			else{
-				$this->log->setAction("DELETE_TEST");
+				$this->log->setAction("TEST_DELETE");
 				$this->log->saveEntry();
 				return true;
 			}
@@ -1256,7 +1256,7 @@ class testManager extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("DATABASE_ERROR");
+			$this->log->setAction("MYSQL_ERROR");
 			$this->log->setDetail("MySQL Provided Error",$stmt->error);
 			$this->log->setDetail("Calling Function","testManager->getMigratedTestUUID()");
 			$this->log->setDetail("oldTestID",$oldTestID);
