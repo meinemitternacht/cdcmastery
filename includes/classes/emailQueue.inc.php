@@ -122,6 +122,12 @@ class emailQueue extends CDCMastery {
 		else{
             $this->log->setAction("EMAIL_QUEUE_ADD");
             $this->log->setDetail("UUID",$this->uuid);
+            $this->log->setDetail("Sender",$this->emailSender);
+            $this->log->setDetail("Recipient",$this->emailRecipient);
+            $this->log->setDetail("Subject",$this->emailSubject);
+            $this->log->setDetail("Body (HTML)",$this->emailBodyHTML);
+            $this->log->setDetail("Body (Text)",$this->emailBodyText);
+            $this->log->setDetail("Queued By",$this->queueUser);
             $this->log->saveEntry();
 			return true;
 		}
