@@ -262,5 +262,12 @@ and (max-device-width : 480px) {
 	</div>
 </div>
 <?php else: ?>
-There are no log entries in the database.  That's unusual...
+	<?php
+	if($logFiltered) {
+		$sysMsg->addMessage("There were no results using that log filter.");
+		$cdcMastery->redirect("/admin/log");
+	} else { ?>
+		There are no log entries in the database.  That's unusual...
+	<?php
+	} ?>
 <?php endif; ?>
