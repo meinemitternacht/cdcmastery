@@ -38,7 +38,7 @@ if(!empty($_POST)){
 ?>
 <div class="container">
     <div class="row">
-        <div class="12u">
+        <div class="6u">
             <section>
                 <header>
                     <h2>Upload Files</h2>
@@ -48,24 +48,17 @@ if(!empty($_POST)){
                     uses are PDF's of CDC data or other attachments too large for e-mail.  If you encounter issues, please
                     open a support ticket.
                 </p>
-            </section
-        </div>
-    </div>
-    <div class="row">
-        <div class="12u">
-            <section>
                 <div class="clearfix"><br></div>
                 <form action="/admin/upload" method="POST" enctype="multipart/form-data">
-                    <label for="fileField">File to upload:</label><br>
-                    <input type="file" name="fileField" id="fileField" />
-                    <br>
-                    <label for="fileDescription">File description:</label><br>
-                    <input type="text" name="fileDescription" id="fileDescription" size="30" />
-                    <br>
-                    <br>
-                    <input type="submit" name="submit" value="Upload" />
+                    <label for="fileField">File to upload:</label>
+                    <input type="file" name="fileField" id="fileField" class="input_full" />
+                    <div class="clearfix">&nbsp;</div>
+                    <label for="fileDescription">File description:</label>
+                    <input type="text" name="fileDescription" id="fileDescription" size="30" class="input_full" />
+                    <div class="clearfix">&nbsp;</div>
+                    <input type="submit" name="submit" value="Upload">
                 </form>
-                <div class="clearfix"><br></div>
+                <div class="clearfix">&nbsp;</div>
             </section>
         </div>
     </div>
