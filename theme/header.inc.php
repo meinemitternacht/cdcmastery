@@ -80,7 +80,7 @@
 						<?php endif; ?>
 					</ul>
 				</nav>
-				<div class="clearfix"></div>
+				<div class="clearfix">&nbsp;</div>
 			</div>
 		</div>
 		<!-- Main -->

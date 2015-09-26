@@ -120,11 +120,11 @@ and (max-device-width : 480px) {
 						User Log
 					</div>
 					<ul>
-						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left fa-fw"></i>Return to user manager</a></li>
+						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
 					</ul>
 				</div>
 			</section>
-			<div class="clearfix"></div>
+			<div class="clearfix">&nbsp;</div>
 			<?php if($totalPages): ?>
 			<br>
 			<section>
@@ -148,7 +148,7 @@ and (max-device-width : 480px) {
 					</ul>
 				</div>
 			</section>
-			<div class="clearfix"></div>
+			<div class="clearfix">&nbsp;</div>
 			<?php endif; ?>
 			<br>
 			<section>

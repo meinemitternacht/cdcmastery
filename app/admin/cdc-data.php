@@ -39,7 +39,7 @@ if ($workingAFSC):
                             <li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Admin Panel</a></li>
                         </ul>
                     </div>
-                    <div class="clearfix"></div>
+                    <div class="clearfix">&nbsp;</div>
                     <br>
                     <ul>
                         <li><strong>AFSC:</strong> <a

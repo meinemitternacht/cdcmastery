@@ -228,9 +228,9 @@ else {
                     <div class="4u">
                         <section>
                             <header>
-                                <h2>Start new test</h2>
+                                <h2>Start a new test</h2>
                             </header>
-                            <p>Tap or click the AFSC categories you wish to test on.</p>
+                            <p>Tap or click the AFSC categories you wish to test with.  You may select multiple categories from this list.</p>
 
                             <form id="afscListForm" action="/test/take" method="POST">
                                 <div id="afscList">
@@ -255,6 +255,8 @@ else {
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="clearfix">&nbsp;</div>
+                                <a href="/user/afsc-associations" title="Manage AFSC Associations">Manage AFSC Associations</a>
                             </form>
                         </section>
                     </div>
@@ -266,7 +268,7 @@ else {
                     <div class="4u">
                         <section>
                             <header>
-                                <h2>Resume Incomplete Test</h2>
+                                <h2>Resume an Incomplete Test</h2>
                             </header>
                             <p>Click on a test to resume where you left off.</p>
 
@@ -290,7 +292,7 @@ else {
                                     <?php endforeach; ?>
                                 </ul>
                             </div>
-                            <div class="clearfix"></div>
+                            <div class="clearfix">&nbsp;</div>
                             <br>
 
                             <div class="text-right text-warning">

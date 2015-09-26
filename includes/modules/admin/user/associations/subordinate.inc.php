@@ -101,7 +101,7 @@ $(document).ready(function() {
 					Subordinate Associations
 				</div>
 				<ul>
-					<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="fa fa-caret-square-o-left"></i>Return to user manager</a></li>
+					<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
 				</ul>
 			</div>
 			<br>

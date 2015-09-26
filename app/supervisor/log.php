@@ -159,7 +159,7 @@ if(isset($_SESSION['vars'][0])):
 						</ul>
 					</div>
 				</section>
-				<div class="clearfix"></div>
+				<div class="clearfix">&nbsp;</div>
 				<?php endif; ?>
 				<br>
 				<section>

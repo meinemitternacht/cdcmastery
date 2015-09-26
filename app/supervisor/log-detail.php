@@ -36,7 +36,7 @@ if(isset($_SESSION['vars'][0])):
 					<div class="4u">
 						<div class="sub-menu">
 							<ul>
-								<li><a href="/supervisor/log/<?php echo $targetUUID; ?>" title="First"><i class="fa fa-angle-double-left fa-fw"></i>Return to Log</a></li>
+								<li><a href="/supervisor/log/<?php echo $targetUUID; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Log</a></li>
 							</ul>
 						</div>
 					</div>

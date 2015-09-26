@@ -322,13 +322,13 @@ if(isset($accountType)):
                                 <ul>
                                     <li>
                                         <a id="createAccountButton">
-                                            <i class="fa fa-check fa-fw text-success"></i>
+                                            <i class="icon-inline icon-20 ic-arrow-right"></i>
                                             Finish
                                         </a>
                                     </li>
                                 </ul>
                             </div>
-                            <div class="clearfix"></div>
+                            <div class="clearfix">&nbsp;</div>
                         </section>
                     </div>
                 </div>
@@ -565,10 +565,10 @@ if(isset($accountType)):
                         your AFSC and supervisor/training manager.</p>
                         <div class="sub-menu">
                             <ul>
-                                <li><a id="regFormStep2"><i class="fa fa-arrow-right fa-fw"></i> Next Step</a></li>
+                                <li><a id="regFormStep2"><i class="icon-inline icon-20 ic-arrow-right"></i> Next Step</a></li>
                             </ul>
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix">&nbsp;</div>
                     </section>
                 </div>
             </div>
@@ -608,10 +608,10 @@ if(isset($accountType)):
 					<h2>Before you begin</h2>
 				</header>
 				<ul>
-					<li><i class="fa fa-lightbulb-o fa-fw"></i>You must register with an e-mail address ending with ".mil"</li>
-					<li><i class="fa fa-lightbulb-o fa-fw"></i>Only one account may be registered per e-mail address</li>
-					<li><i class="fa fa-lightbulb-o fa-fw"></i>You may change your account type at any time by sending a message to our support team</li>
-					<li><i class="fa fa-lightbulb-o fa-fw"></i>Supervisor and Training manager accounts require approval. Your account will have user permissions until approval occurs</li>
+					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You must register with an e-mail address ending with ".mil"</li>
+					<li><i class="icon-inline icon-20 ic-lightbulb"></i>Only one account may be registered per e-mail address</li>
+					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You may change your account type at any time by sending a message to our support team</li>
+					<li><i class="icon-inline icon-20 ic-lightbulb"></i>Supervisor and Training manager accounts require approval. Your account will have user permissions until approval occurs</li>
 				</ul>
 			</section>
 		</div>
@@ -619,9 +619,6 @@ if(isset($accountType)):
 	<div class="row text-center">
 		<div class="4u">
 			<section id="reg-user" style="border-bottom: 6px solid #693;">
-				<i class="fa fa-user fa-5x"></i>
-				<br>
-				<br>
 				<header>
 					<h2>User Account</h2>
 				</header>
@@ -632,14 +629,11 @@ if(isset($accountType)):
                         <li><a href="/auth/register/user">Create user account &raquo;</a></li>
                     </ul>
                 </div>
-                <div class="clearfix"></div>
+                <div class="clearfix">&nbsp;</div>
 			</section>
 		</div>
 		<div class="4u">
 			<section style="border-bottom: 6px solid #369;">
-				<i class="fa fa-users fa-5x"></i>
-				<br>
-				<br>
 				<header>
 					<h2>Supervisor Account</h2>
 				</header>
@@ -650,14 +644,11 @@ if(isset($accountType)):
                         <li><a href="/auth/register/supervisor">Create Supervisor Account &raquo;</a></li>
                     </ul>
                 </div>
-                <div class="clearfix"></div>
+                <div class="clearfix">&nbsp;</div>
 			</section>
 		</div>
 		<div class="4u">
 			<section style="border-bottom: 6px solid #933;">
-				<i class="fa fa-cog fa-5x"></i>
-				<br>
-				<br>
 				<header>
 					<h2>Training Manager Account</h2>
 				</header>
@@ -668,7 +659,7 @@ if(isset($accountType)):
                         <li><a href="/auth/register/training-manager">Create Training Manager Account &raquo;</a></li>
                     </ul>
 				</div>
-                <div class="clearfix"></div>
+                <div class="clearfix">&nbsp;</div>
 			</section>
 		</div>
 	</div>
