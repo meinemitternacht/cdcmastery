@@ -46,11 +46,11 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered()); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Tests Started</strong></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_START"><strong>Tests Started</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_START")); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Tests Deleted</strong></td>
+                        <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/INCOMPLETE_TEST_DELETE"><strong>Tests Deleted</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_DELETE") + $statisticsObj->getLogCountByAction("INCOMPLETE_TEST_DELETE")); ?></td>
                     </tr>
                 </table>
@@ -135,7 +135,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Users Deleted</strong></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/USER_DELETE"><strong>Users Deleted</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_DELETE")); ?></td>
                     </tr>
                 </table>
@@ -160,15 +160,15 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getTotalLoginErrors()); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Login Rate Limit Reached</strong></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ERROR_LOGIN_RATE_LIMIT_REACHED"><strong>Login Rate Limit Reached</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_LOGIN_RATE_LIMIT_REACHED")); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Route Errors</strong></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ROUTING_ERROR"><strong>Route Errors</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ROUTING_ERROR")); ?></td>
                     </tr>
                     <tr>
-                        <td><strong>AJAX Direct Access</strong></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/AJAX_DIRECT_ACCESS"><strong>AJAX Direct Access</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("AJAX_DIRECT_ACCESS")); ?></td>
                     </tr>
                     <tr>
