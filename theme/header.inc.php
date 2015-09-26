@@ -7,7 +7,7 @@
 		<meta name="keywords" content="air force cdc, cdc pretest, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide" />
 		<meta name="revisit-after" content="30 days" />
 		<!--[if lte IE 8]><script src="/js/html5shiv.js"></script><![endif]-->
-		<script src="/js/jquery-1.11.1.min.js"></script>
+		<script src="/js/jquery-1.11.3.min.js"></script>
 		<script src="/js/jquery-ui.min.js"></script>
 		<script src="/js/jquery-ui-timepicker.js"></script>
 		<script src="/js/jquery-mask.min.js"></script>
