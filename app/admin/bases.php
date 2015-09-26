@@ -34,17 +34,17 @@ if($action){
 		<?php endif; ?>
 	<?php
 	elseif($action == "edit"):
-		if(isset($_POST['officeSymbolName'])):
-			if($bases->editBase($officeSymbolUUID,$_POST['officeSymbolName'])){
-				$sysMsg->addMessage("Office Symbol edited successfully.");
-				$cdcMastery->redirect("/admin/office-symbols");
+		if(isset($_POST['baseName'])):
+			if($bases->editBase($baseUUID,$_POST['baseName'])){
+				$sysMsg->addMessage("Base edited successfully.");
+				$cdcMastery->redirect("/admin/bases");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem editing the Office Symbol.");
-				$cdcMastery->redirect("/admin/office-symbols/edit/" . $officeSymbolUUID);
+				$sysMsg->addMessage("There was a problem editing that base.");
+				$cdcMastery->redirect("/admin/bases/edit/" . $baseUUID);
 			}
 		else: 
-			if($officeSymbol->loadOfficeSymbol($officeSymbolUUID)): ?>
+			if($bases->loadBase($baseUUID)): ?>
 				<div class="container">
 					<div class="row">
 						<div class="8u">
@@ -53,10 +53,10 @@ if($action){
 									<h2>Edit Base</h2>
 								</header>
 								<form action="/admin/bases/edit/<?php echo $baseUUID; ?>" method="POST">
-									<label for="officeSymbolName">Office Symbol</label>
+									<label for="baseName">Base Name</label>
 									<br>
-									<input type="text" name="officeSymbolName" value="<?php echo $officeSymbol->getOfficeSymbol(); ?>">
-									<input type="submit" value="Edit Office Symbol">
+									<input type="text" name="baseName" value="<?php echo $bases->getBaseName(); ?>">
+									<input type="submit" value="Edit Base">
 								</form>
 							</section>
 						</div>
@@ -64,19 +64,19 @@ if($action){
 				</div>
 			<?php
 			else:
-				$sysMsg->addMessage("That Office Symbol does not exist.");
-				$cdcMastery->redirect("/admin/office-symbols");
+				$sysMsg->addMessage("That base does not exist.");
+				$cdcMastery->redirect("/admin/bases");
 			endif;
 		endif; ?>
 	<?php
 	elseif($action == "delete"):
-		if($officeSymbol->deleteOfficeSymbol($officeSymbolUUID)){
-			$sysMsg->addMessage("Office Symbol deleted successfully.");
-			$cdcMastery->redirect("/admin/office-symbols");
+		if($bases->deleteBase($baseUUID)){
+			$sysMsg->addMessage("Base deleted successfully.");
+			$cdcMastery->redirect("/admin/bases");
 		}
 		else{
-			$sysMsg->addMessage("There was a problem deleting that Office Symbol.");
-			$cdcMastery->redirect("/admin/office-symbols");
+			$sysMsg->addMessage("There was a problem deleting that base.");
+			$cdcMastery->redirect("/admin/bases");
 		}
 	endif;
 }
@@ -84,7 +84,7 @@ else{
 	/*
 	 * Show list of office symbols with options
 	 */
-	$officeSymbolList = $officeSymbol->listOfficeSymbols();
+	$baseList = $bases->listBases();
 	?>
 	<div class="container">
 		<div class="row">
@@ -93,7 +93,7 @@ else{
 					<div class="sub-menu">
 						<ul>
 							<li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
-							<li><a href="/admin/office-symbols/add"><i class="icon-inline icon-20 ic-plus"></i>Add Office Symbol</a>
+							<li><a href="/admin/bases/add"><i class="icon-inline icon-20 ic-plus"></i>Add Base</a>
 						</ul>
 					</div>
 				</section>
@@ -101,24 +101,24 @@ else{
 			<div class="4u">
 				<section>
 					<header>
-						<h2>Office Symbol Management</h2>
+						<h2>Base Management</h2>
 					</header>
-					<form action="/admin/office-symbols/add" method="POST">
+					<form action="/admin/bases/add" method="POST">
 					<table>
 						<tr>
-							<th style="width:80%">Office Symbol</th>
+							<th style="width:80%">Base Name</th>
 							<th style="width:20%">Actions</th>
 						</tr>
 						<tr>
-							<td><input type="text" name="officeSymbolName"></td>
+							<td><input type="text" name="baseName"></td>
 							<td><input type="submit" value="Add"></td>
 						</tr>
-						<?php foreach($officeSymbolList as $osUUID => $officeSymbolText): ?>
+						<?php foreach($baseList as $baseUUID => $baseName): ?>
 						<tr>
-							<td><?php echo $officeSymbolText; ?></td>
+							<td><?php echo $baseName; ?></td>
 							<td>
-								<a href="/admin/office-symbols/edit/<?php echo $osUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>
-								<a href="/admin/office-symbols/delete/<?php echo $osUUID; ?>" title="Delete"><i class="icon-inline icon-20 ic-delete"></i></a>
+								<a href="/admin/bases/edit/<?php echo $baseUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>
+								<a href="/admin/bases/delete/<?php echo $baseUUID; ?>" title="Delete"><i class="icon-inline icon-20 ic-delete"></i></a>
 							</td>
 						</tr>
 						<?php endforeach; ?>
