@@ -8,10 +8,4 @@ if($ajaxRoute){
     elseif($ajaxRoute == "checkHandle"){
         include BASE_PATH . "/app/ajax/registration/checkHandle.php";
     }
-    elseif($ajaxRoute == "listSupervisors"){
-        include BASE_PATH . "/app/ajax/registration/listSupervisors.php";
-    }
-    elseif($ajaxRoute == "listTrainingManagers"){
-        include BASE_PATH . "/app/ajax/registration/listTrainingManagers.php";
-    }
 }
