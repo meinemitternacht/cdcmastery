@@ -15,7 +15,56 @@ class bases extends CDCMastery
 		$this->db = $db;
 		$this->log = $log;
 	}
-	
+
+	public function addBase($baseName){
+		$this->uuid = $this->genUUID();
+		$this->setBaseName($baseName);
+
+		if($this->saveBase()){
+			$this->log->setAction("BASE_ADD");
+			$this->log->setDetail("Base UUID", $this->uuid);
+			$this->log->setDetail("Base Name",$this->baseName);
+			$this->log->saveEntry();
+
+			return true;
+		} else{
+			$this->log->setAction("ERROR_BASE_ADD");
+			$this->log->setDetail("CALLING FUNCTION", "bases->addBase()");
+			$this->log->setDetail("Base UUID", $this->uuid);
+			$this->log->setDetail("Base Name",$this->baseName);
+			$this->log->setDetail("ERROR",$this->error);
+			$this->log->saveEntry();
+
+			return false;
+		}
+	}
+
+	public function editBase($baseUUID,$baseName){
+		if($this->loadBase($baseUUID)) {
+			$this->setBaseName($baseName);
+
+			if ($this->saveBase()) {
+				$this->log->setAction("BASE_EDIT");
+				$this->log->setDetail("Base UUID", $this->uuid);
+				$this->log->setDetail("Base Name", $this->baseName);
+				$this->log->saveEntry();
+
+				return true;
+			} else {
+				$this->log->setAction("ERROR_BASE_EDIT");
+				$this->log->setDetail("CALLING FUNCTION", "bases->editBase()");
+				$this->log->setDetail("Base UUID", $this->uuid);
+				$this->log->setDetail("Base Name", $this->baseName);
+				$this->log->setDetail("ERROR", $this->error);
+				$this->log->saveEntry();
+
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	public function listBases(){
 		$res = $this->db->query("SELECT uuid, baseName FROM baseList ORDER BY baseName ASC");
 		
@@ -74,7 +123,7 @@ class bases extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("ERROR_BASES_LOAD");
+			$this->log->setAction("ERROR_BASE_LOAD");
 			$this->log->setDetail("CALLING FUNCTION", "bases->loadBase()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->setDetail("UUID",$uuid);
@@ -101,7 +150,7 @@ class bases extends CDCMastery
 			$this->error = $stmt->error;
 			$stmt->close();
 			
-			$this->log->setAction("ERROR_BASES_SAVE");
+			$this->log->setAction("ERROR_BASE_SAVE");
 			$this->log->setDetail("CALLING FUNCTION", "bases->saveBase()");
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
