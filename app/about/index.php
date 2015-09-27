@@ -113,7 +113,7 @@ $afscList = $afsc->listAFSC(false);
                 <p>
                     CDCMastery includes the ability for users to take tests relating to FOUO CDC material. This feature comes with additional security to protect the information stored in the database. This includes but is not limited to:
                     <br>
-                    <ul>
+                    <ul style="list-style:square;">
                         <li>User activation using Air Force global e-mail addresses</li>
                         <li>Database encryption for FOUO questions and answers</li>
                         <li>Ability to take FOUO tests controlled by Unit Training Managers</li>
@@ -125,15 +125,36 @@ $afscList = $afsc->listAFSC(false);
         </div>
     </div>
     <div class="row">
-        <div class="12u">
+        <div class="4u">
             <section>
                 <header>
-                    <h2 id="about-version-history">Version History</h2>
+                    <h2 id="about-version-history">Git Project Commits</h2>
+                </header>
+                <p>Git commits for this project will be the standard versionn log, and the version history list to the right will no longer be used.</p>
+                <div class="sub-menu">
+                    <ul>
+                        <li><a href="/about/git"><i class="icon-inline icon-20 icon-clipboard"></i>View Git Commit History</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+        <div class="8u">
+            <section>
+                <header>
+                    <h2>Version History</h2>
                 </header>
                 <p>
-                    Listed below are all of the recorded code changes made to the site.
+                    Listed below are all of the recorded code changes made to the site made before 26 September 2015.
                 </p>
                 <pre>
+<strong>3.00-Production
+    [26 September 2015]</strong>
+    Released production version.
+
+<strong>3.00-Beta
+    [1 September 2015]</strong>
+    Released Beta testing version.
+
 <strong>3.00-Alpha
     [19 January 2015]</strong>
     Released Alpha testing version.
