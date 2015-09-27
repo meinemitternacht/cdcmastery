@@ -14,6 +14,12 @@ class statistics extends CDCMastery {
 
     public $error;
 
+    public $afscPassRateArray;
+    public $testAFSCCount;
+    public $testsAverageScoreArrayLastSeven;
+    public $testsAverageScoreByTimespan;
+
+    public $baseActionsCount;
     public $totalTestsByBase;
     public $averageScoreByBase;
 
@@ -53,6 +59,259 @@ class statistics extends CDCMastery {
         $this->db = $db;
         $this->log = $log;
         $this->emailQueue = $emailQueue;
+    }
+
+    public function getAFSCPassRates($afscUUIDList){
+        if(!$this->queryAFSCPassRates($afscUUIDList)){
+            return false;
+        }
+        else{
+            return $this->afscPassRateArray;
+        }
+    }
+
+    public function queryAFSCPassRates($afscUUIDList){
+        if(is_array($afscUUIDList) && count($afscUUIDList) > 0) {
+            foreach($afscUUIDList as $afscUUID) {
+                $query = "SELECT COUNT(*) AS count FROM `testHistory` WHERE afscList LIKE '%a:1%' AND afscList LIKE '%".$afscUUID."%' AND testScore > " . $this->getPassingScore();
+                $res = $this->db->query($query);
+
+                if($res->num_rows > 0){
+                    while($row = $res->fetch_assoc()) {
+                        $this->afscPassRateArray[$afscUUID]['passingTests'] = $row['count'];
+                    }
+                    $res->close();
+                }
+            }
+
+            foreach($afscUUIDList as $afscUUID){
+                $res = $this->db->query("SELECT COUNT(*) AS count FROM `testHistory` WHERE afscList LIKE '%a:1%' AND afscList LIKE '%".$afscUUID."%'");
+
+                if($res->num_rows > 0){
+                    while($row = $res->fetch_assoc()) {
+                        $this->afscPassRateArray[$afscUUID]['totalTests'] = $row['count'];
+                        if (($this->afscPassRateArray[$afscUUID]['passingTests'] > 0) && ($this->afscPassRateArray[$afscUUID]['totalTests'] > 0)) {
+                            $this->afscPassRateArray[$afscUUID]['passRate'] = round(($this->afscPassRateArray[$afscUUID]['passingTests'] / $this->afscPassRateArray[$afscUUID]['totalTests']) * 100, 2);
+                        } else {
+                            $this->afscPassRateArray[$afscUUID]['passRate'] = 0;
+                        }
+                    }
+
+                    $res->close();
+                }
+            }
+
+            if(isset($this->afscPassRateArray) && is_array($this->afscPassRateArray) && count($this->afscPassRateArray) > 0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAFSCCount($afscUUIDList){
+        if(!$this->queryTestAFSCCount($afscUUIDList)){
+            return false;
+        }
+        else{
+            return $this->testAFSCCount;
+        }
+    }
+
+    public function queryTestAFSCCount($afscUUIDList){
+        if(is_array($afscUUIDList) && count($afscUUIDList) > 0) {
+            foreach($afscUUIDList as $afscUUID) {
+                $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE afscList LIKE ?");
+                $afscUUIDParam = "%".$afscUUID."%";
+                $stmt->bind_param("s",$afscUUIDParam);
+
+                if($stmt->execute()){
+                    $stmt->bind_result($count);
+
+                    while($stmt->fetch()){
+                        $this->testAFSCCount[$afscUUID] = $count;
+                    }
+
+                    $stmt->close();
+                }
+                else{
+                    $this->error = $stmt->error;
+                    $this->log->setAction("MYSQL_ERROR");
+                    $this->log->setDetail("CALLING FUNCTION","statistics->queryTestAFSCCount()");
+                    $this->log->setDetail("MYSQL ERROR",$this->error);
+                    $this->log->saveEntry();
+                    $stmt->close();
+
+                    return false;
+                }
+            }
+
+            if(isset($this->testAFSCCount) && is_array($this->testAFSCCount) && count($this->testAFSCCount) > 0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAverageLastSeven(){
+        if(!$this->queryTestAverageLastSeven()){
+            return false;
+        }
+        else{
+            return $this->testsAverageScoreArrayLastSeven;
+        }
+    }
+
+    public function queryTestAverageLastSeven(){
+        $j=0;
+        for($i=7;$i>0;$i--) {
+            $dateObj = new DateTime('now');
+            $dateObj->modify('-'.$i.' days');
+
+            $startDateTime = $dateObj->format('Y-m-d 00:00:00');
+            $endDateTime = $dateObj->format('Y-m-d 23:59:59');
+
+            $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
+
+            $stmt->bind_param("ss",$startDateTime,$endDateTime);
+
+            if($stmt->execute()){
+                $stmt->bind_result($averageScore);
+
+                while($stmt->fetch()){
+                    if(!$averageScore){
+                        $averageScore = "0";
+                    }
+                    $this->testsAverageScoreArrayLastSeven[$j]['averageScore'] = round($averageScore,2);
+                    $this->testsAverageScoreArrayLastSeven[$j]['dateTime'] = $dateObj->format('j-M-Y');
+                }
+
+                $stmt->close();
+            }
+            else{
+                $this->error = $stmt->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("CALLING FUNCTION","statistics->queryTestAverageLastSeven()");
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return false;
+            }
+            $j++;
+        }
+
+        if(isset($this->testsAverageScoreArrayLastSeven) && is_array($this->testsAverageScoreArrayLastSeven) && count($this->testsAverageScoreArrayLastSeven) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAverageByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
+        if(!$this->queryTestAverageByTimespan($dateTimeStart, $dateTimeEnd)){
+            return false;
+        }
+        else{
+            return $this->testsAverageScoreByTimespan;
+        }
+    }
+
+    public function queryTestAverageByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
+        $startDateTime = $dateTimeStart->format('Y-m-d 00:00:00');
+        $endDateTime = $dateTimeEnd->format('Y-m-d 23:59:59');
+
+        $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
+
+        $stmt->bind_param("ss",$startDateTime,$endDateTime);
+
+        if($stmt->execute()){
+            $stmt->bind_result($averageScore);
+
+            while($stmt->fetch()){
+                if(!$averageScore){
+                    $averageScore = "0";
+                }
+                $this->testsAverageScoreByTimespan = round($averageScore,2);
+            }
+
+            $stmt->close();
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTestAverageByTimespan()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+
+        if(isset($this->testsAverageScoreByTimespan)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestCountByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
+        if(!$this->queryTestCountByTimespan($dateTimeStart, $dateTimeEnd)){
+            return false;
+        }
+        else{
+            return $this->testCountByTimespan;
+        }
+    }
+
+    public function queryTestCountByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
+        $startDateTime = $dateTimeStart->format('Y-m-d 00:00:00');
+        $endDateTime = $dateTimeEnd->format('Y-m-d 23:59:59');
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
+
+        $stmt->bind_param("ss",$startDateTime,$endDateTime);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                if(!$count){
+                    $count = "0";
+                }
+                $this->testCountByTimespan = $count;
+            }
+
+            $stmt->close();
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTestCountByTimespan()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+
+        if(isset($this->testCountByTimespan)){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public function getTotalTestsByBase($baseUUID){
