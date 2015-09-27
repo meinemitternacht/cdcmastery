@@ -177,7 +177,7 @@ if(isset($_POST['registrationFormStep'])):
                 $log->saveEntry();
 
                 $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The
-                good news is that we were able to save your information, so just open a ticket at the
+                good news is that we were able to save most of your information, so just open a ticket at the
                 <a href=\"http://helpdesk.cdcmastery.com/\">CDCMastery Helpdesk</a> and we'll get this sorted
                 out as soon as possible.");
 
