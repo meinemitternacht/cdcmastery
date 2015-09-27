@@ -28,11 +28,11 @@
 						<section>
 							<h2>Latest Changes</h2>
 							<ul class="default">
-								<li>Added a Pending AFSC Queue for users</li>
-								<li>Added ability to reset a user's password from the admin interface</li>
+								<li>Site rebuilt from scratch</li>
+								<li>Added many tools to manage users via the admin interface</li>
 								<li>Improved supervisor and training manager associations interface</li>
-								<li>Updated the role manager interface</li>
-								<li>Completely rebuilt the site</li>
+								<li>Revamped User Profiles</li>
+								<li>Added a new Training Manager and Supervisor Overview section</li>
 							</ul>
 						</section>
 					</div>
@@ -89,5 +89,19 @@
 			$('#system-messages-container-block').show();
 		</script>
 		<?php endif; ?>
+		<script type="text/javascript">
+
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-30696456-1']);
+			_gaq.push(['_setSiteSpeedSampleRate', 100]);
+			_gaq.push(['_trackPageview']);
+
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+
+		</script>
 	</body>
 </html>

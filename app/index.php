@@ -19,16 +19,16 @@
 				</header>
 				<ul class="style">
 					<li>
-						<p class="posted">October 1, 2014</p>
+						<p class="posted">September 27, 2015</p>
 						<p class="text">Site completely redesigned.  Please report any issues that you may come across to <a href="mailto:support@cdcmastery.com">support@cdcmastery.com</a>.</p>
 					</li>
 					<li>
-						<p class="posted">April 21, 2014</p>
-						<p class="text">Fixed various bugs and permission issues.</p>
+						<p class="posted">September 24, 2015</p>
+						<p class="text">Add ability for administrators to manually authorize roles, approve FOUO AFSC associations, and activate users.</p>
 					</li>
 					<li>
-						<p class="posted">April 20, 2014</p>
-						<p class="text">Updated search page to include the ability to search AFSC associations.</p>
+						<p class="posted">September 22, 2015</p>
+						<p class="text">Fix click issue for users with iOS.</p>
 					</li>
 				</ul>
 			</section>
