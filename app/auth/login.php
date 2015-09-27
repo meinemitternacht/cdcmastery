@@ -49,7 +49,7 @@ if(!isset($_SESSION['auth'])):
                     </header>
                     <form id="loginForm" action="/auth/login" method="POST">
                         <div>
-                            <label for="username">Username</label>
+                            <label for="username">Username or E-mail</label>
                             <br>
                             <input type="text" id="username" name="username" class="input_full" />
                         </div>
@@ -78,7 +78,7 @@ if(!isset($_SESSION['auth'])):
                         Don't have an account with us?  Click the button below to create one!
                         <br>
                         <br>
-                        <em>It's easy, fast, and <strong>free</strong>!</em>
+                        <em>It's easy, fast, and best of all, <strong>free</strong>!</em>
                         <br>
                     </p>
                     <div class="sub-menu">
