@@ -3,3 +3,4 @@
 images/icons/Thumbs.db
 *.db
 .idea/
+app/about/git.php
