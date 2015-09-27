@@ -80,9 +80,14 @@ class userActivation extends user {
 				$emailBodyHTML .= "Thank you for registering an account at CDCMastery!  ";
 				$emailBodyHTML .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyHTML .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
+				$emailBodyHTML .= "If you cannot click on the link, copy and paste the address into your browser.";
 				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "<a href=\"http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode."\">Click Here to Activate Your Account</a>";
+				$emailBodyHTML .= "<br /><br />";
+				$emailBodyHTML .= "Regards,";
+				$emailBodyHTML .= "<br /><br />";
+				$emailBodyHTML .= "CDCMastery.com";
 				$emailBodyHTML .= "</body></html>";
 				
 				$emailBodyText = $this->getFullName().",";
@@ -90,9 +95,14 @@ class userActivation extends user {
 				$emailBodyText .= "Thank you for registering an account at CDCMastery!  ";
 				$emailBodyText .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyText .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
+				$emailBodyText .= "If you cannot click on the link, copy and paste the address into your browser.";
 				$emailBodyText .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
+				$emailBodyText .= "\r\n\r\n";
+				$emailBodyText .= "Regards,";
+				$emailBodyText .= "\r\n\r\n";
+				$emailBodyText .= "CDCMastery.com";
 				
 				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, "SYSTEM")){
 					$this->log->setAction("USER_QUEUE_ACTIVATION");
