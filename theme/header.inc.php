@@ -101,20 +101,6 @@
 		</div>
 		<!-- Main -->
 		<div id="main">
-			<?php if($router->getRoute() == "index"): ?>
-			<div class="container">
-				<div class="row">
-					<div class="12u">
-						<div class="informationMessages">
-							This site is in beta testing status.  There are many incomplete features, but core testing functionality and some administration functionality is working.  <strong>The main
-							goal of the redesign is to provide site usability to phone and tablet devices</strong>, and ensure speedy server response times.  Please take tests, and if you have the appropriate
-							permissions, utilize administration features as you deem fit.  Two explicitly disabled features are registration and e-mail functionality (to prevent confusing other members).
-							If you have any questions, or you encounter issues with the site, please <a href="http://helpdesk.cdcmastery.com">open a support ticket</a>.
-						</div>
-					</div>
-				</div>
-			</div>
-			<?php endif; ?>
 			<div class="container" id="system-messages-container-block" style="display:none;">
 				<div class="row">
 					<div class="12u">
