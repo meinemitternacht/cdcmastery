@@ -154,7 +154,7 @@ and (max-device-width : 480px) {
 					</ul>
 				</div>
                 <div class="clearfix">&nbsp;</div>
-                <a href="/admin/log">Reset log</a>
+                <a href="/admin/log">Reset log view</a>
 			</section>
 		</div>
 		<div class="8u">
