@@ -58,6 +58,7 @@ if($formAction){
         case "afsc-edit":
             $afscData['afscName'] = isset($_POST['afscName']) ? $_POST['afscName'] : false;
             $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscName'] : false;
+            $afscData['afscHidden'] = isset($_POST['afscHidden']) ? $_POST['afscHidden'] : false;
             $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscName'] : false;
             $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscName'] : false;
 
@@ -74,9 +75,14 @@ if($formAction){
                 $sysMsg->addMessage("FOUO status must be provided.");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
+            elseif(!$afscData['afscHidden']) {
+                $sysMsg->addMessage("You must select if the AFSC is hidden.");
+                $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
+            }
             else{
                 $afsc->setAFSCName($afscData['afscName']);
                 $afsc->setAFSCFOUO($afscData['afscFOUO']);
+                $afsc->setAFSCHidden($afscData['afscHidden']);
                 $afsc->setAFSCVersion($afscData['afscVersion']);
                 $afsc->setAFSCDescription($afscData['afscDescription']);
 
@@ -94,6 +100,7 @@ if($formAction){
                     $log->setDetail("AFSC Name",$afscData['afscName']);
                     $log->setDetail("AFSC Version",$afscData['afscVersion']);
                     $log->setDetail("AFSC FOUO",$afscData['afscFOUO'] ? "true":"false");
+                    $log->setDetail("AFSC Hidden",$afscData['afscHidden'] ? "true":"false");
                     $log->setDetail("AFSC Description",$afscData['afscDescription']);
                     $log->saveEntry();
 
@@ -103,14 +110,25 @@ if($formAction){
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
         break;
-        case "afsc-delete":
+        case "afsc-hide":
+            if($afsc->loadAFSC($_POST['afscUUID'])){
+                $afsc->setAFSCHidden(true);
 
+                if($afsc->saveAFSC()){
+                    $sysMsg->addMessage("AFSC " . $afsc->getAFSCName() . " is now hidden.");
+                    $cdcMastery->redirect("/admin/afsc");
+                }
+                else{
+                    $sysMsg->addMessage("There was a problem trying to hide " . $afsc->getAFSCName() . ". Please contact the helpdesk for assistance.");
+                    $cdcMastery->redirect("/admin/afsc");
+                }
+            }
         break;
     }
 }
 
 if(!$subAction):
-    $afscList = $afsc->listAFSC(); ?>
+    $afscList = $afsc->listAFSC(false); ?>
     <div class="container">
         <div class="row">
             <div class="3u">
@@ -183,7 +201,7 @@ if(!$subAction):
                                 <td><?php echo $afscDetails['afscFOUO'] ? "Yes" : "No"; ?></td>
                                 <td><?php echo $afscDetails['afscVersion']; ?></td>
                                 <td>
-                                    <a href="/admin/afsc/delete/<?php echo $afscUUID; ?>" title="Delete"><i class="icon-inline icon-20 ic-delete"></i></a>
+                                    <a href="/admin/afsc/hide/<?php echo $afscUUID; ?>" title="Hide"><i class="icon-inline icon-20 ic-delete"></i></a>
                                     <a href="/admin/afsc/edit/<?php echo $afscUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>
                                 </td>
                             </tr>
@@ -241,6 +259,12 @@ if(!$subAction):
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="0" <?php if(!$afsc->getAFSCFOUO()) echo "CHECKED"; ?>> No
                             </li>
                             <li>
+                                <label for="afscHidden">Hide on registration view?</label>
+                                <br>
+                                <input type="radio" name="afscHidden" id="afscHidden" value="1" <?php if($afsc->getAFSCHidden()) echo "CHECKED"; ?>> Yes
+                                <input type="radio" name="afscHidden" id="afscHidden" value="0" <?php if(!$afsc->getAFSCHidden()) echo "CHECKED"; ?>> No
+                            </li>
+                            <li>
                                 <label for="afscVersion">Version</label>
                                 <br>
                                 <input type="text" class="input_full" name="afscVersion" id="afscVersion" value="<?php echo $afsc->getAFSCVersion(); ?>">
@@ -260,7 +284,13 @@ if(!$subAction):
             </div>
         </div>
     </div>
-<?php elseif($subAction == "delete"): ?>
+<?php elseif($subAction == "hide"): ?>
+    <?php
+    if(!$afsc->loadAFSC($workingAFSC)){
+        $sysMsg->addMessage("That AFSC does not exist.");
+        $cdcMastery->redirect("/admin/afsc");
+    }
+    ?>
     <div class="container">
         <div class="row">
             <div class="3u">
@@ -270,76 +300,26 @@ if(!$subAction):
                     </header>
                     <div class="sub-menu">
                         <ul>
-                            <li><a href="/admin">Return to Admin Panel</a></li>
+                            <li><a href="/admin/afsc"><i class="icon-inline icon-20 ic-puzzle"></i>AFSC Manager Menu</a></li>
+                            <li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
                         </ul>
                     </div>
                 </section>
-                <div class="clearfix">&nbsp;</div>
-                <br>
+            </div>
+            <div class="6u">
                 <section>
                     <header>
-                        <h2>Add AFSC</h2>
+                        <h2>Hide AFSC <?php echo $afsc->getAFSCName(); ?></h2>
                     </header>
                     <form action="/admin/afsc" method="POST">
-                        <input type="hidden" name="formAction" value="afsc-add">
-                        <ul>
-                            <li>
-                                <label for="afscName">Name</label>
-                                <br>
-                                <input type="text" class="input_full" name="afscName" id="afscName">
-                            </li>
-                            <li>
-                                <label for="afscFOUO">For Official Use Only?</label>
-                                <br>
-                                <input type="radio" name="afscFOUO" id="afscFOUO" value="1"> Yes
-                                <input type="radio" name="afscFOUO" id="afscFOUO" value="0" CHECKED> No
-                            </li>
-                            <li>
-                                <label for="afscVersion">Version</label>
-                                <br>
-                                <input type="text" class="input_full" name="afscVersion" id="afscVersion">
-                            </li>
-                            <li>
-                                <label for="afscDescription">Description</label>
-                                <br>
-                                <textarea id="afscDescription" name="afscDescription"></textarea>
-                            </li>
-                            <li>
-                                <br>
-                                <input type="submit" value="Add">
-                            </li>
-                        </ul>
+                        <input type="hidden" name="formAction" value="afsc-hide">
+                        <input type="hidden" name="afscUUID" value="<?php echo $workingAFSC; ?>">
+                        <p>
+                            After hiding this AFSC, it will no longer appear in AFSC lists on the administration menu and registration page, however, the data will still be stored in the database
+                            and users can still take tests using the data.  If you would like to remove it completely, please <a href="http://helpdesk.cdcmastery.com">open a support ticket</a>.
+                        </p>
+                        <input type="submit" value="I Understand">
                     </form>
-                </section>
-            </div>
-            <div class="9u">
-                <section>
-                    <header>
-                        <h2>AFSC List - <?php echo count($afscList); ?> Total</h2>
-                    </header>
-                    <table id="afsc-table-1">
-                        <thead>
-                        <tr>
-                            <th>AFSC</th>
-                            <th>FOUO</th>
-                            <th>Version</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach($afscList as $afscUUID => $afscDetails): ?>
-                            <tr>
-                                <td><?php echo $afscDetails['afscName']; ?></td>
-                                <td><?php echo $afscDetails['afscFOUO'] ? "Y" : "N"; ?></td>
-                                <td><?php echo $afscDetails['afscVersion']; ?></td>
-                                <td>
-                                    <a href="/admin/afsc/delete/<?php echo $afscUUID; ?>" title="Delete"><i class="icon-inline icon-20 ic-delete"></i></a>
-                                    <a href="/admin/afsc/edit/<?php echo $afscUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
                 </section>
             </div>
         </div>
