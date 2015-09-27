@@ -37,11 +37,11 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Incomplete Tests</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalIncompleteTests()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Tests</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalTests()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Questions Answered</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered()); ?></td>
                     </tr>
@@ -65,7 +65,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>AFSC Categories</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>FOUO AFSC Categories</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalFOUOAFSCCategories()); ?></td>
                     </tr>
@@ -77,9 +77,9 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>FOUO Questions</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsFOUO()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Questions</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalQuestionsArchived()); ?></td>
+                        <td><?php echo number_format($statisticsObj->getTotalQuestions()); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Archived Answers</strong></td>
@@ -102,7 +102,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     <h2>User Statistics</h2>
                 </header>
                 <table>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Users</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalUsers()); ?></td>
                     </tr>
@@ -126,11 +126,11 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Super Administrators</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalRoleSuperAdministrator()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Question Editors</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalRoleEditor()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Office Symbols</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
                     </tr>
@@ -151,7 +151,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Log Entries</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalLogEntries()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Log Details</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalLogDetails()); ?></td>
                     </tr>
@@ -171,7 +171,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/AJAX_DIRECT_ACCESS"><strong>AJAX Direct Access</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("AJAX_DIRECT_ACCESS")); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Errors</strong></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("%ERROR%")); ?></td>
                     </tr>
