@@ -15,12 +15,12 @@
                     <strong>What we collect</strong><br>
                     We may collect the following information:<br>
                     <br>
-                    <ul>
+                    <ul style="list-style:square;">
                         <li>Your name</li>
                         <li>Your rank</li>
                         <li>Your contact information including email address</li>
                         <li>Your demographic information such as your base and time zone</li>
-                        <li>other information relevant to customer surveys and/or offers</li>
+                        <li>Other information relevant to customer surveys and/or offers</li>
                     </ul>
                     <br>
                     <br>
@@ -47,7 +47,7 @@
                     <strong>Links to other websites</strong><br>
                     Our website may contain links to other websites of interest. However, once you have used these links to leave our site, you should note that we do not have any control over that other website. Therefore, we cannot be responsible for the protection and privacy of any information which you provide whilst visiting such sites and such sites are not governed by this privacy statement. You should exercise caution and look at the privacy statement applicable to the website in question.<br>
                     <br>
-                    You may request details of personal information which we hold about you under the Data Protection Act 1998. A small fee will be payable. If you would like a copy of the information held on you please email <a href="mailto: support@cdcmastery.com?subject=Privacy Request">support@cdcmastery.com</a>.
+                    You may request details of personal information which we hold about you under the Data Protection Act 1998. A small fee may be payable. If you would like a copy of the information held on you please email <a href="mailto: support@cdcmastery.com?subject=Privacy Request">support@cdcmastery.com</a>.
                     <br>
                     If you believe that any information we are holding on you is incorrect or incomplete, please write to or email us as soon as possible at the above address. We will promptly correct any information found to be incorrect.
                 </p>
