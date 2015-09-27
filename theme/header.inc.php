@@ -7,24 +7,40 @@
 		<meta name="keywords" content="air force cdc, cdc pretest, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide" />
 		<meta name="revisit-after" content="30 days" />
 		<!--[if lte IE 8]><script src="/js/html5shiv.js"></script><![endif]-->
-		<script src="/js/jquery-1.11.3.min.js"></script>
-		<script src="/js/jquery-ui.min.js"></script>
-		<script src="/js/jquery-ui-timepicker.js"></script>
-		<script src="/js/jquery-mask.min.js"></script>
-		<script src="/js/skel.min.js"></script>
-		<script src="/js/skel-panels.min.js"></script>
-		<script src="/js/init.js"></script>
-		<script src="/js/jquery.formalize.min.js"></script>
-		<script src="/js/jquery.timeago.js"></script>
-		<link href="/css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-		<link href="/css/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
-		<link href="/css/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
-		<link href="/css/formalize.css" rel="stylesheet" type="text/css" />
-        <link href="/css/icons.css" rel="stylesheet" type="text/css" />
+        <?php
+        /*
+         * Generate URL's to utilize minify subproject
+         */
+
+        $scriptArray = Array(   '/js/jquery-1.11.3.min.js',
+                                '/js/jquery-ui.min.js',
+                                '/js/jquery-ui-timepicker.js',
+                                '/js/jquery-mask.min.js',
+                                '/js/skel.min.js',
+                                '/js/skel-panels.min.js',
+                                '/js/init.js',
+                                '/js/jquery.formalize.min.js',
+                                '/js/jquery.timeago.js',
+                                '/js/jquery.canvasjs.min.js');
+
+        $cssArray = Array(  '/css/jquery-ui.min.css',
+                            '/css/jquery-ui.structure.min.css',
+                            '/css/jquery-ui.theme.min.css',
+                            '/css/formalize.css',
+                            '/css/icons.css');
+
+        $noScriptCSSArray = Array(  '/css/skel-noscript.css',
+                                    '/css/style.css',
+                                    '/css/style-desktop.css');
+
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray);
+        $cssURL = "/minify/min/?f=" . implode(",",$cssArray);
+        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray);
+        ?>
+		<script src="<?php echo $scriptURL; ?>"></script>
+		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
 		<noscript>
-			<link rel="stylesheet" href="/css/skel-noscript.css" />
-			<link rel="stylesheet" href="/css/style.css" />
-			<link rel="stylesheet" href="/css/style-desktop.css" />
+			<link rel="stylesheet" href="<?php echo $noScriptCSSURL; ?>" />
 		</noscript>
 		<!--[if lte IE 8]><link rel="stylesheet" href="/css/ie/v8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="/css/ie/v9.css" /><![endif]-->
