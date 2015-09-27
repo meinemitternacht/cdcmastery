@@ -14,6 +14,12 @@ header('Access-Control-Allow-Origin: *');
 define('BASE_PATH', realpath(__DIR__));
 define('APP_BASE', realpath(__DIR__ . '/app'));
 
+$maintenanceMode = false;
+if($maintenanceMode == true){
+	include APP_BASE . '/errors/maintenance.php';
+	exit();
+}
+
 require BASE_PATH . '/includes/bootstrap.inc.php';
 
 $router = new router();
