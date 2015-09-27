@@ -1,7 +1,5 @@
 <?php
 if(isset($_SESSION['vars'][0])):
-	$targetUUID = $_SESSION['vars'][0];
-
 	if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
 		$sysMsg->addMessage("You are not authorized to use the Supervisor user log page.");
 		$cdcMastery->redirect("/errors/403");
@@ -12,31 +10,32 @@ if(isset($_SESSION['vars'][0])):
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
-	$subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
+	$subordinateUsers = $supOverview->getSubordinateUserList();
 
 	if(empty($subordinateUsers)):
 		$sysMsg->addMessage("You do not have any subordinate users.");
 		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
-	if(!in_array($targetUUID,$subordinateUsers)){
-		$sysMsg->addMessage("That user is not associated with your account.");
-		$cdcMastery->redirect("/supervisor/overview");
-	}
-
-	$logUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
+	$logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 	if($logUUID):
 		if($log->verifyLogUUID($logUUID)):
 			$logData = new log($db);
 			$logData->loadEntry($logUUID);
+
+			if(!in_array($logData->getUserUUID(),$subordinateUsers)){
+				$sysMsg->addMessage("That user is not associated with your account.");
+				$cdcMastery->redirect("/supervisor/overview");
+			}
+
 			$logDetails = $logData->fetchDetails($logUUID); ?>
 			<div class="container">
 				<div class="row">
 					<div class="4u">
 						<div class="sub-menu">
 							<ul>
-								<li><a href="/supervisor/log/<?php echo $targetUUID; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Log</a></li>
+								<li><a href="/supervisor/log/<?php echo $logData->getUserUUID(); ?>" title="Return to Log"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Log</a></li>
 							</ul>
 						</div>
 					</div>

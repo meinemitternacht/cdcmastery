@@ -136,14 +136,22 @@ if(isset($_SESSION['vars'][0])):
 	<div class="container">
 		<div class="row">
 			<div class="3u">
+				<section>
+					<div class="sub-menu">
+						<ul>
+							<li><a href="/supervisor/profile/<?php echo $targetUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to User Profile</a></li>
+						</ul>
+					</div>
+				</section>
+				<div class="clearfix">&nbsp;</div>
 				<?php if($totalPages): ?>
-				<br>
 				<section>
 					<header>
 						<h2>Navigation</h2>
 					</header>
 					<div class="sub-menu">
 						<ul>
+							<li><a href="/supervisor/profile/<?php echo $targetUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to User Profile</a></li>
 							<?php if($pageNumber > 0): ?>
 							<li><a href="/supervisor/log/<?php echo $targetUUID; ?>/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First">First Page</a></li>
 							<?php endif; ?>

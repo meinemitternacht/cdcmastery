@@ -427,7 +427,7 @@ if(isset($_SESSION['vars'][0])):
 										<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
 										<td><?php echo $logData['action']; ?></td>
 										<td><?php echo $logData['ip']; ?></td>
-										<td><a href="/supervisor/log-detail/<?php echo $logUUID; ?>/profile"><i class="icon-inline icon-20 ic-arrow-right"></i>details</a></td>
+										<td><a href="/supervisor/log-detail/<?php echo $logUUID; ?>"><i class="icon-inline icon-20 ic-arrow-right"></i>details</a></td>
 									</tr>
 									<?php endforeach; ?>
 								</table>
