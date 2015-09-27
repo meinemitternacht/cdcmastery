@@ -25,7 +25,7 @@ class passwordReset extends user {
 		}
 		else{
 			$this->log->setAction("ERROR_USER_DELETE_PASSWORD_RESET_TOKEN");
-			$this->log->setDetail("Calling Function","user->deletePasswordResetToken()");
+			$this->log->setDetail("Calling Function","user->passwordReset->deletePasswordResetToken()");
 			$this->log->setDetail("Password Token",$passwordToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
@@ -53,7 +53,7 @@ class passwordReset extends user {
 		}
 		else{
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("Calling Function","user->getPasswordResetUser()");
+			$this->log->setDetail("Calling Function","user->passwordReset->getPasswordResetUser()");
 			$this->log->setDetail("Password Token",$passwordToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
@@ -71,6 +71,7 @@ class passwordReset extends user {
 			$dtObj = new DateTime();
 			$dtObj->modify("+1 day");
 				
+			$timeExpiresEmail = $dtObj->format("l, F d, Y \a\\t h:i A");
 			$timeExpires = $dtObj->format("Y-m-d H:i:s");
 			$uuid = parent::genUUID();
 				
@@ -92,9 +93,13 @@ class passwordReset extends user {
 				$emailBodyHTML .= "You have requested a password reset from CDC Mastery.  ";
 				$emailBodyHTML .= "If you did not request a password reset, ignore this e-mail and contact us (support@cdcmastery.com).  ";
 				$emailBodyHTML .= "Click on the link below to access your account and change your password.  ";
-				$emailBodyHTML .= "This link will be valid for 24 hours, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyHTML .= "This link will be valid for 24 hours, and expires on ".$timeExpiresEmail." GMT.";
 				$emailBodyHTML .= "<br /><br />";
-				$emailBodyHTML .= "<a href=\"http://dev.cdcmastery.com/auth/reset/".$uuid."\">Reset your password</a>";
+				$emailBodyHTML .= "<a href=\"https://cdcmastery.com/auth/reset/".$uuid."\">Reset your password</a>";
+				$emailBodyHTML .= "<br /><br />";
+				$emailBodyHTML .= "Regards,";
+				$emailBodyHTML .= "<br /><br />";
+				$emailBodyHTML .= "CDCMastery.com";
 				$emailBodyHTML .= "</body></html>";
 	
 				$emailBodyText = $this->getFullName().",";
@@ -102,11 +107,16 @@ class passwordReset extends user {
 				$emailBodyText .= "You have requested a password reset from CDC Mastery.  ";
 				$emailBodyText .= "If you did not request a password reset, ignore this e-mail and contact us (support@cdcmastery.com).  ";
 				$emailBodyText .= "Click on the link below to access your account and change your password.  ";
-				$emailBodyText .= "This link will be valid for 24 hours, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyText .= "This link will be valid for 24 hours, and expires on ".$timeExpiresEmail." GMT.";
 				$emailBodyText .= "\r\n\r\n";
-				$emailBodyText .= "http://dev.cdcmastery.com/auth/reset/".$uuid;
+				$emailBodyText .= "Regards,";
+				$emailBodyText .= "\r\n\r\n";
+				$emailBodyText .= "CDCMastery.com";
+				$emailBodyText .= "https://cdcmastery.com/auth/reset/".$uuid;
+
+				$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
 	
-				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $_SESSION['userUUID'])){
+				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
 					$this->log->setAction("USER_PASSWORD_RESET");
 					$this->log->setDetail("User UUID",$userUUID);
 					$this->log->saveEntry();
@@ -114,7 +124,7 @@ class passwordReset extends user {
 				}
 				else{
 					$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-					$this->log->setDetail("Calling Function","user->sendPasswordReset()");
+					$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
 					$this->log->setDetail("Child function","emailQueue->queueEmail()");
 					$this->log->setDetail("User UUID",$userUUID);
 					$this->log->saveEntry();
@@ -123,7 +133,7 @@ class passwordReset extends user {
 			}
 			else{
 				$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-				$this->log->setDetail("Calling Function","user->sendPasswordReset()");
+				$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
 				$this->log->setDetail("MySQL Error",$stmt->error);
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->saveEntry();
@@ -136,7 +146,7 @@ class passwordReset extends user {
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-			$this->log->setDetail("Calling Function","user->sendPasswordReset()");
+			$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->saveEntry();
@@ -148,7 +158,7 @@ class passwordReset extends user {
 		$dtObj = new DateTime();
 		$timeExpires = $dtObj->format("Y-m-d H:i:s");
 
-		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userPasswordResets WHERE uuid = ? AND timeExpires > $timeExpires");
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userPasswordResets WHERE uuid = ? AND timeExpires > '".$timeExpires."'");
 		$stmt->bind_param("s",$passwordToken);
 	
 		if($stmt->execute()){
@@ -163,6 +173,12 @@ class passwordReset extends user {
 			}
 		}
 		else{
+			$this->error = "There was an issue resetting your password.  Contact the helpdesk for assistance.";
+			$this->log->setAction("ERROR_USER_PASSWORD_RESET");
+			$this->log->setDetail("Calling Function","user->passwordReset->verifyPasswordResetToken()");
+			$this->log->setDetail("System Error",$this->error);
+			$this->log->setDetail("Password Reset Token",$passwordToken);
+			$this->log->saveEntry();
 			return false;
 		}
 	}

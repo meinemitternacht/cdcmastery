@@ -6,20 +6,33 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 	$action = $_SESSION['vars'][1];
 	$userPassword = $_POST['newPassword'];
 	$userPasswordConfirm = $_POST['confirmNewPassword'];
-	
-	if($userPassword != $userPasswordConfirm){
+
+    $passwordComplexityCheck = $pwReset->checkPasswordComplexity($userPassword);
+
+    if(is_array($passwordComplexityCheck)){
+        foreach($passwordComplexityCheck as $passwordComplexityCheckError){
+            $sysMsg->addMessage($passwordComplexityCheckError);
+        }
+
+        $cdcMastery->redirect("/auth/reset/".$_SESSION['vars'][0]);
+    }
+	elseif($userPassword != $userPasswordConfirm){
 		$sysMsg->addMessage("Your passwords do not match.");
 	}
 	else{
 		if($pwReset->verifyPasswordResetToken($passwordToken)){
-			$userUUID = $user->getPasswordResetUser($passwordToken);
+			$userUUID = $pwReset->getPasswordResetUser($passwordToken);
 			
 			if($pwReset->verifyUser($userUUID)){
 				$pwReset->loadUser($userUUID);
-				$pwReset->setUserPassword($cdcMastery->hashUserPassword($userPassword));
+				$pwReset->setUserPassword($userPassword);
+				$pwReset->setUserLegacyPassword(false);
 				if($pwReset->saveUser()){
 					$log->setAction("USER_PASSWORD_RESET_COMPLETE");
 					$log->saveEntry();
+                    $pwReset->deletePasswordResetToken($passwordToken);
+
+                    $sysMsg->addMessage("Your password has been reset. You may now log in with your new password.");
 					$cdcMastery->redirect("/auth/login");
 				}
 				else{
@@ -77,9 +90,10 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 						<br>
 						<input type="submit" value="Change Password">
 					</form>
-				<?php else: ?>
-					That password reset token is invalid.
-				<?php endif; ?>
+				<?php else:
+                        $sysMsg->addMessage("That password reset token is invalid.  Please try again or contact the helpdesk for assistance by clicking the 'support' link at the top of the page.");
+                        $cdcMastery->redirect("/auth/reset");
+                    endif; ?>
 			<?php else: ?>
 			In order to reset your password, please type the e-mail address associated with your account in the text box below.  A password reset link will be sent to this address, and will expire in 24 hours.<br>
 			<br>

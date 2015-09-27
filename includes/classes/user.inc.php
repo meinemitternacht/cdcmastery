@@ -15,8 +15,8 @@ class user extends CDCMastery {
 	public $userFirstName;		//varchar 64
 	public $userLastName;		//varchar 64
 	public $userHandle;			//varchar 64
-	protected $userPassword;	//varchar 255 (SHA512)
-	protected $userLegacyPassword;	//varchar 255 (SHA1)
+	public $userPassword;	//varchar 255 (SHA512)
+	public $userLegacyPassword;	//varchar 255 (SHA1)
 	public $userEmail;			//varchar 255
 	public $userRank;			//varchar 255
 	public $userDateRegistered;	//datetime
