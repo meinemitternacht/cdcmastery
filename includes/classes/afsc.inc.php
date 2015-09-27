@@ -114,7 +114,7 @@ class afsc extends CDCMastery
 		}
 
 		$afscArray = Array();
-		
+
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
 				$afscArray[$row['uuid']]['afscName'] = $row['afscName'];
@@ -125,15 +125,50 @@ class afsc extends CDCMastery
 				$afscArray[$row['uuid']]['oldID'] = $row['oldID'];
 				$afscArray[$row['uuid']]['totalQuestions'] = $this->getTotalQuestions($row['uuid']);
 			}
-			
+
 			$noResults = false;
 		}
 		else{
 			$noResults = true;
 		}
-		
+
 		$res->close();
-		
+
+		if($noResults){
+			return false;
+		}
+		else{
+			return $afscArray;
+		}
+	}
+
+	/**
+	 * @param $showHidden
+	 * @return array|bool
+	 */
+	public function listAFSCUUID($showHidden=true){
+		if(!$showHidden) {
+			$res = $this->db->query("SELECT uuid FROM afscList WHERE afscHidden = 0 ORDER BY afscName ASC");
+		}
+		else{
+			$res = $this->db->query("SELECT uuid FROM afscList ORDER BY afscName ASC");
+		}
+
+		$afscArray = Array();
+
+		if($res->num_rows > 0){
+			while($row = $res->fetch_assoc()){
+				$afscArray[] = $row['uuid'];
+			}
+
+			$noResults = false;
+		}
+		else{
+			$noResults = true;
+		}
+
+		$res->close();
+
 		if($noResults){
 			return false;
 		}
