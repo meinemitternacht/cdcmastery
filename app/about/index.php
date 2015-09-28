@@ -9,9 +9,10 @@ $afscList = $afsc->listAFSC(false);
                     About CDCMastery.com
                 </div>
                 <ul>
-                    <li><a href="#about-afsc-listing">Materials Available for Testing</a></li>
-                    <li><a href="#about-fouo-materials">FOUO Information</a></li>
-                    <li><a href="#about-version-history">Version History</a></li>
+                    <li><a href="#about-afsc-listing" title="View Available Materials"><i class="icon-inline icon-20 ic-lightbulb"></i>Materials Available for Testing</a></li>
+                    <li><a href="#about-fouo-materials" title="FOUO Information"><i class="icon-inline icon-20 ic-lightbulb"></i>FOUO Information</a></li>
+                    <li><a href="#about-version-history" title="CDCMastery Changelog"><i class="icon-inline icon-20 ic-lightbulb"></i>Version History</a></li>
+                    <li><a href="/about/statistics" title="View Site Statistics"><i class="icon-inline icon-20 ic-clipboard"></i>View Site Statistics</a></li>
                 </ul>
             </div>
         </div>
