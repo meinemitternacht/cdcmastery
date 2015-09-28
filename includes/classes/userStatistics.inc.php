@@ -458,7 +458,7 @@ class userStatistics extends CDCMastery
 			$stmt->bind_result($averageScore);
 		
 			while($stmt->fetch()){
-				$this->averageScore = $averageScore;
+				$this->averageScore = round($averageScore,2);
 			}
 			
 			$stmt->close();
