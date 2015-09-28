@@ -29,6 +29,7 @@ $baseUserObj = new user($db,$log,$emailQueue);
 $userStatisticsObj = new userStatistics($db,$log,$roles);
 $baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
 $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
+$baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 ?>
 <div class="container">
     <div class="row">
@@ -54,6 +55,11 @@ $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
         <div class="9u">
             <section>
                 <h2>Testing Data</h2>
+                <?php if($baseTestCount > 0): ?>
+                <div id="chart-container" style="height:400px">
+                    &nbsp;
+                </div>
+                <?php endif; ?>
                 <table class="overview-table">
                     <tr>
                         <th>User Name</th>
@@ -63,15 +69,24 @@ $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
                         <th>Last Login</th>
                     </tr>
                     <?php
+                    $i=0;
                     foreach($baseUsers as $baseUser):
                         $baseUserObj->loadUser($baseUser);
                         $userStatisticsObj->setUserUUID($baseUser);
                         $userAverage = round($userStatisticsObj->getAverageScore(),2);
                         $userLatestScore = $userStatisticsObj->getLatestTestScore();
+                        $userTestCount = $userStatisticsObj->getTotalTests();
+
+                        if($userTestCount > 0) {
+                            $chartData[$i]['userName'] = $baseUserObj->getFullName();
+                            $chartData[$i]['userAverage'] = $userAverage;
+                            $chartData[$i]['userTestCount'] = $userTestCount;
+                            $i++;
+                        }
                         ?>
                         <tr>
                             <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getFullName(); ?></a></td>
-                            <td><?php echo $userStatisticsObj->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
+                            <td><?php echo $userTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
                             <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                             <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
                             <td>
@@ -82,6 +97,45 @@ $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
                         </tr>
                     <?php endforeach;?>
                 </table>
+                <?php
+                if(isset($chartData)):
+                    $chartOutputData = "";
+                    $firstRow = true;
+                    $i=0;
+                    foreach($chartData as $rowKey => $rowData){
+                        if ($firstRow == false) {
+                            $chartOutputData .= ",";
+                        }
+
+                        $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+                        $firstRow = false;
+                        $i++;
+                    }
+                    ?>
+                    <script type="text/javascript">
+                        window.onload = function () {
+                            var chart = new CanvasJS.Chart("chart-container", {
+
+                                title:{
+                                    text: "Base Testing Overview"
+                                },
+                                axisX:{
+                                    valueFormatString: " ",
+                                    tickLength: 0
+                                },
+                                data: [
+                                    {
+                                        /*** Change type "column" to "bar", "area", "line" or "pie"***/
+                                        type: "column",
+                                        dataPoints: [<?php echo $chartOutputData; ?>]
+                                    }
+                                ]
+                            });
+
+                            chart.render();
+                        }
+                    </script>
+                <?php endif; ?>
             </section>
         </div>
         <?php else: ?>
