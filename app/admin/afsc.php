@@ -252,12 +252,21 @@ if(!$subAction):
                                 <br>
                                 <input type="text" class="input_full" name="afscName" id="afscName" value="<?php echo $afsc->getAFSCName(); ?>">
                             </li>
+                            <?php if($afsc->getTotalQuestions() > 0): ?>
+                            <li>
+                                <label for="afscFOUO">For Official Use Only?</label>
+                                <br>
+                                <input type="radio" name="afscFOUO" id="afscFOUO" value="1" <?php if($afsc->getAFSCFOUO()) echo "CHECKED"; ?> DISABLED="true"> Yes
+                                <input type="radio" name="afscFOUO" id="afscFOUO" value="0" <?php if(!$afsc->getAFSCFOUO()) echo "CHECKED"; ?> DISABLED="true"> No
+                            </li>
+                            <?php else: ?>
                             <li>
                                 <label for="afscFOUO">For Official Use Only?</label>
                                 <br>
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="1" <?php if($afsc->getAFSCFOUO()) echo "CHECKED"; ?>> Yes
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="0" <?php if(!$afsc->getAFSCFOUO()) echo "CHECKED"; ?>> No
                             </li>
+                            <?php endif; ?>
                             <li>
                                 <label for="afscHidden">Hide on registration view?</label>
                                 <br>
