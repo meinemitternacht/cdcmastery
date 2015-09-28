@@ -33,7 +33,7 @@ $statValueList = Array( 'active',
                         'tests');
 
 if(!$statSection && !$statValue){
-    $cdcMastery->redirect("/about/statistics/afsc/pass-rate");
+    $cdcMastery->redirect("/about/statistics/tests/average-seven-days");
 }
 
 if(!in_array($statSection,$statSectionList) || !in_array($statValue,$statValueList)){
