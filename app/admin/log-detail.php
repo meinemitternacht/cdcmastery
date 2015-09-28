@@ -1,4 +1,6 @@
 <?php
+$testManager = new testManager($db,$log,$afsc);
+
 $logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $returnPath = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : "log";
 
@@ -37,7 +39,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>User</th>
-								<td><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></td>
+								<td><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="View Profile"><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></a></td>
 							</tr>
 							<tr>
 								<th>Action</th>
@@ -81,6 +83,10 @@ if($logUUID):
 										if(strpos($dataTypeSearch,"uuid") !== false):
 											$userName = $user->getUserNameByUUID($detailData['data']);
 										endif;
+                                    elseif($dataTypeSearch == "test uuid"):
+                                        if($testManager->loadTest($detailData['data'])){
+                                            $testUUID = true;
+                                        }
 									endif;
 							?>
 							<tr>
@@ -89,6 +95,10 @@ if($logUUID):
 									<td>
 										<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
 									</td>
+                                <?php elseif(isset($testUUID) && $testUUID == true): ?>
+                                    <td>
+                                        <a href="/test/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
+                                    </td>
 								<?php else: ?>
 									<td><?php echo $detailData['data']; ?></td>
 								<?php endif; ?>
