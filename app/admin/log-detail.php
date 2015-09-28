@@ -83,6 +83,8 @@ if($logUUID):
 										if(strpos($dataTypeSearch,"uuid") !== false):
 											$userName = $user->getUserNameByUUID($detailData['data']);
 										endif;
+									elseif($dataTypeSearch == "afsc uuid"):
+										$afscUUID = true;
                                     elseif($dataTypeSearch == "test uuid"):
                                         if($testManager->loadTest($detailData['data'])){
                                             $testUUID = true;
@@ -94,6 +96,10 @@ if($logUUID):
 								<?php if(isset($userName) && !empty($userName)): ?>
 									<td>
 										<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
+									</td>
+								<?php elseif(isset($afscUUID) && $afscUUID == true): ?>
+									<td>
+										<?php echo $afsc->getAFSCName($detailData['data']); ?>
 									</td>
                                 <?php elseif(isset($testUUID) && $testUUID == true): ?>
                                     <td>
