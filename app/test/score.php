@@ -24,15 +24,15 @@ if($testUUID){
             foreach($testData as $questionUUID => $answerUUID){
                 $answerManager->loadAnswer($answerUUID);
 
-                if(!$answerManager->getAnswerCorrect()){
-                    $incorrectTotal++;
+                if($answerManager->getAnswerCorrect() == true){
+                    $correctTotal++;
                 }
                 else{
-                    $correctTotal++;
+                    $incorrectTotal++;
                 }
             }
 
-            $testScore = intval(($correctTotal / $testManager->getIncompleteTotalQuestions()) * 100);
+            $testScore = round(($correctTotal / $testManager->getIncompleteTotalQuestions()) * 100);
 
             $testManager->setUUID($testUUID);
             $testManager->setUserUUID($testManager->getIncompleteUserUUID());
