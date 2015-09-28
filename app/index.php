@@ -151,13 +151,13 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 					<div class="informationMessages">
 						<ul>
 						<?php if(!empty($pendingAssociationsCount)): ?>
-							<li><a href="/admin/afsc-pending">There are <?php echo $pendingAssociationsCount; ?> FOUO AFSC associations pending.</a></li>
+							<li><a href="/admin/afsc-pending">There <?php echo ($pendingAssociationsCount > 1) ? "are" : "is"; ?> <?php echo $pendingAssociationsCount; ?> FOUO AFSC association<?php echo ($pendingAssociationsCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
 						<?php if(!empty($unactivatedUsersCount)): ?>
-							<li><a href="/admin/activate-users">There are <?php echo $unactivatedUsersCount; ?> user activations pending.</a></li>
+							<li><a href="/admin/activate-users">There <?php echo ($unactivatedUsersCount > 1) ? "are" : "is"; ?> <?php echo $unactivatedUsersCount; ?> user activation<?php echo ($unactivatedUsersCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
 						<?php if(!empty($authorizationQueueCount)): ?>
-							<li><a href="/admin/authorize-users">There are <?php echo $authorizationQueueCount; ?> user role authorizations pending.</a></li>
+							<li><a href="/admin/authorize-users">There <?php echo ($authorizationQueueCount > 1) ? "are" : "is"; ?> <?php echo $authorizationQueueCount; ?> user role authorization<?php echo ($authorizationQueueCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
 						</ul>
 					</div>
