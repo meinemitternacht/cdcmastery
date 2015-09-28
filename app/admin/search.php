@@ -40,31 +40,35 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
             break;
     }
 
-    $searchObj = new search($db, $log);
-    $searchObj->setSearchType($_POST['searchType']);
-    $searchObj->setSearchParameterJoinMethod($_POST['searchParameterJoinMethod']);
-
-    foreach($searchParameterList as $searchParameterKey => $searchParameter){
-        if(!empty($searchParameter)){
-            if(is_array($searchParameter)){
-                $searchObj->addSearchParameterMultipleValues($searchParameterKey,$searchParameter);
-            }
-            else{
-                $searchObj->addSearchParameterSingleValue(Array($searchParameterKey,$searchParameter));
-            }
-        }
-    }
-
-    $searchResults = $searchObj->executeSearch();
-
-    if(!$searchResults){
-        $sysMsg->addMessage("There were no results for that search query.");
-        $sysMsg->addMessage($searchObj->error);
-
+    if(!isset($searchParameterList)){
+        $sysMsg->addMessage("Incorrect search parameters.");
         $cdcMastery->redirect("/admin/search");
     }
-    else{
-        $numSearchResults = count($searchResults);
+    else {
+        $searchObj = new search($db, $log);
+        $searchObj->setSearchType($_POST['searchType']);
+        $searchObj->setSearchParameterJoinMethod($_POST['searchParameterJoinMethod']);
+
+        foreach ($searchParameterList as $searchParameterKey => $searchParameter) {
+            if (!empty($searchParameter)) {
+                if (is_array($searchParameter)) {
+                    $searchObj->addSearchParameterMultipleValues($searchParameterKey, $searchParameter);
+                } else {
+                    $searchObj->addSearchParameterSingleValue(Array($searchParameterKey, $searchParameter));
+                }
+            }
+        }
+
+        $searchResults = $searchObj->executeSearch();
+
+        if (!$searchResults) {
+            $sysMsg->addMessage("There were no results for that search query.");
+            $sysMsg->addMessage($searchObj->error);
+
+            $cdcMastery->redirect("/admin/search");
+        } else {
+            $numSearchResults = count($searchResults);
+        }
     }
 }
 ?>
