@@ -35,6 +35,7 @@ if(!isset($_SESSION['auth'])):
                 $cdcMastery->redirect("/auth/login");
 			}
 			else{
+                $session->regenerate_id();
 				$cdcMastery->redirect("/");
 			}
 		}
