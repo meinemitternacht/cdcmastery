@@ -62,11 +62,13 @@ $logEntries = $logFilter->listEntries();
 $totalPages = ceil($totalLogEntries / $pageRows) - 1;
 
 if($logEntries): ?>
+    <?php if(!isset($_GET['norefresh'])): ?>
     <script>
         $(document).ready(function () {
             setTimeout(function () { location.reload(); }, 30000);
         });
     </script>
+    <?php endif; ?>
     <!--[if !IE]><!-->
     <style type="text/css">
     /*
@@ -148,14 +150,14 @@ if($logEntries): ?>
                     </header>
                     <div class="sub-menu">
                         <ul>
-                            <li><a href="/admin/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>First</a></li>
+                            <li><a href="/admin/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>First</a></li>
                             <?php if($pageNumber > 0): ?>
-                            <li><a href="/admin/log/<?php echo ($pageNumber - 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>Previous</a></li>
+                            <li><a href="/admin/log/<?php echo ($pageNumber - 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>Previous</a></li>
                             <?php endif; ?>
                             <?php if($pageNumber < $totalPages): ?>
-                            <li><a href="/admin/log/<?php echo ($pageNumber + 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Next</a></li>
+                            <li><a href="/admin/log/<?php echo ($pageNumber + 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Next</a></li>
                             <?php endif; ?>
-                            <li><a href="/admin/log/<?php echo $totalPages; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right"></i>Last</a></li>
+                            <li><a href="/admin/log/<?php echo $totalPages; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right"></i>Last</a></li>
                         </ul>
                     </div>
                     <div class="clearfix">&nbsp;</div>
@@ -167,7 +169,11 @@ if($logEntries): ?>
                     <header>
                         <h2>Log Data</h2>
                     </header>
-                    <em>Note: This page will automatically refresh every 30 seconds.</em>
+                    <?php if(!isset($_GET['norefresh'])): ?>
+                    <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
+                    <?php else: ?>
+                    <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
+                    <?php endif; ?>
                     <div class="tableSmallText">
                         <table id="log-table-1">
                             <tr>
@@ -179,7 +185,7 @@ if($logEntries): ?>
                             <?php foreach($logEntries as $logUUID => $logData): ?>
                             <tr>
                                 <td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
-                                <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; ?>" title="Filter by <?php echo $logData['action']; ?>"><?php echo $logData['action']; ?></a></span></td>
+                                <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $logData['action']; ?>"><?php echo $logData['action']; ?></a></span></td>
                                 <?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
                                     <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
                                 <?php else: ?>
@@ -200,24 +206,24 @@ if($logEntries): ?>
                     <ul>
                         <li>
                             <span class="tableLinksDashed">
-                                <a <?php if($sortBy == "timestamp") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Timestamp</a>:
+                                <a <?php if($sortBy == "timestamp") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>">Timestamp</a>:
                             </span>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/timestamp/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
                         </li>
                         <li>
                             <span class="tableLinksDashed">
-                                <a <?php if($sortBy == "action") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Action</a>:
+                                <a <?php if($sortBy == "action") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>">Action</a>:
                             </span>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/action/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
                         </li>
                         <li>
                             <span class="tableLinksDashed">
-                                <a <?php if($sortBy == "useruuid") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">User</a>:
+                                <a <?php if($sortBy == "useruuid") echo "class=\"active\""?> href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>">User</a>:
                             </span>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
-                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/asc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-up"></i></a>
+                            <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/useruuid/desc<?php if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>"><i class="icon-inline icon-20 ic-arrow-down"></i></a>
                         </li>
                     </ul>
                 </section>
