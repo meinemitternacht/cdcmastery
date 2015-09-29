@@ -134,7 +134,7 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">E-Mail</th>
-								<td><?php echo $userProfile->getUserEmail(); ?></td>
+								<td><a href="/admin/users/<?php echo $userProfile->getUUID(); ?>/message" title="Send Message"><?php echo $userProfile->getUserEmail(); ?></a></td>
 							</tr>
 							<tr>
 								<th class="th-child">Time Zone</th>
