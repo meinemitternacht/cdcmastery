@@ -35,7 +35,7 @@ if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserU
  * If user is a supervisor, check that this test is owned by a subordinate
  */
 
-if($cdcMastery->verifySupervisor()){
+if($cdcMastery->verifySupervisor() && $testManager->getUserUUID() != $_SESSION['userUUID']){
 	$supUser = new user($db,$log,$emailQueue);
 	$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
 
