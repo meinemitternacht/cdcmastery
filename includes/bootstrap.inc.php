@@ -11,7 +11,7 @@ require BASE_PATH . '/includes/classes/auth.inc.php';
 require BASE_PATH . '/includes/classes/answerManager.inc.php';
 require BASE_PATH . '/includes/classes/associations.inc.php';
 require BASE_PATH . '/includes/classes/bases.inc.php';
-require BASE_PATH . '/includes/classes/dbSession.inc.php';
+require BASE_PATH . '/includes/classes/zebraSessions.php';
 require BASE_PATH . '/includes/classes/emailQueue.inc.php';
 require BASE_PATH . '/includes/classes/log.inc.php';
 require BASE_PATH . '/includes/classes/logFilter.inc.php';
@@ -47,7 +47,7 @@ if($db->connect_errno){
 }
 
 $cdcMastery = new CDCMastery();
-$session = new dbSession($db);
+$session = new Zebra_Session($db,"92304j8j8fjsdsn923enkc");
 $sysMsg = new systemMessages();
 $log = new log($db);
 
