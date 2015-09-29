@@ -47,7 +47,7 @@
 						<div class="systemMessages">
 							<ul>
                                 <li>
-                                    <strong>We apologize, but the site is currently undergoing maintenance.  Try back in a couple of hours, we should be done!  If you need further assistance, please <a href="http://helpdesk.cdcmastery.com/">visit the helpdesk</a>.</strong>
+                                    <strong>We apologize, but the site is currently undergoing maintenance.  Try back in a couple of minutes, we should be done!  If you need further assistance, please <a href="http://helpdesk.cdcmastery.com/">visit the helpdesk</a>.</strong>
                                 </li>
                             </ul>
 						</div>
