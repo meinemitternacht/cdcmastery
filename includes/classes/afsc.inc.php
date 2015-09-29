@@ -445,7 +445,7 @@ class afsc extends CDCMastery
 	 * @return bool
      */
 	public function setAFSCVersion($afscVersion){
-		$this->afscVersion = htmlspecialchars_decode($afscVersion);
+		$this->afscVersion = $afscVersion;
 		return true;
 	}
 
