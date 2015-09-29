@@ -6,6 +6,7 @@
  * 
  * Data is requested and sent through POST method.
  */
+
 $testManager = new testManager($db, $log, $afsc);
 
 if(isset($_SESSION['vars'][0]))
