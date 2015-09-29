@@ -11,19 +11,19 @@ class CDCMastery
 	}
 
     public function checkEmailAddress($emailAddress){
-        if(strpos($emailAddress,"@") !== false) {
-            $emailArray = explode("@", $emailAddress);
+		if(strpos($emailAddress,"@") !== false) {
+			$emailArray = explode("@", $emailAddress);
 
-            if (!preg_match("/^([^0-9\r\n\.]+\.{1}[^0-9\r\n\.]+\b)$|^([^0-9\r\n\.]+\.{1}[^0-9\r\n\.]+\.{1}[^a-zA-Z\r\n\.\D]{1,5})$/", $emailArray[0]) ||
-                !preg_match("/^\b[^0-9\r\n]+\.mil$/", $emailArray[1])
-            ) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
-        }
+			if (!preg_match("/(af|mail)\.mil$/",$emailArray[1])) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
     }
 
     public function checkPasswordComplexity($passwordString,$userHandleString,$userEmailString){
