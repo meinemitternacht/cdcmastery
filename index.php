@@ -41,6 +41,11 @@ if($router->parseURI()){
 		if(isset($_SERVER['SERVER_PORT'])){
 			$log->setDetail("PORT",$_SERVER{'SERVER_PORT'});
 		}
+        if(isset($_SESSION) && count($_SESSION) > 0){
+            foreach($_SESSION as $sessionKey => $sessionVal){
+                $log->setDetail($sessionKey,$sessionVal);
+            }
+        }
 
 		$log->saveEntry();
 	}
