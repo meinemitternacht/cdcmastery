@@ -61,7 +61,7 @@ if($unactivatedUsersList): ?>
 							<tr>
 								<th><input type="checkbox" name="selectAll" id="selectAll"></th>
 								<th>User</th>
-								<th>AFSC</th>
+								<th>Activation Code Expiration</th>
 							</tr>
 							<?php foreach($unactivatedUsersList as $activationCode => $activationData): ?>
 							<tr>
