@@ -33,6 +33,17 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $answerData[2] = $questionDataSplit[3];
     $answerData[3] = $questionDataSplit[4];
 
+    foreach($answerData as $answerText){
+        if(empty($answerText)){
+            $emptyAnswer = true;
+        }
+    }
+
+    if(isset($emptyAnswer)){
+        $sysMsg->addMessage("You must provide four answers.  Make sure that each answer has a letter and a period followed by a space at the beginning: e.g., A._ where the underscore is a space.");
+        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+    }
+
     function replaceLastDot(&$answerItem,$key){
         $answerItem = preg_replace("/\.$/","",$answerItem);
     }
@@ -91,7 +102,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     }
 }
 ?>
-<div class="6u">
+<div class="8u">
     <section>
         <header>
             <h2>Add Question</h2>
@@ -100,7 +111,6 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
             <input type="hidden" name="confirmQuestionAdd" value="1">
             <div class="informationMessages">
                 To add questions, enter the entire question and answer block in the text area below.  You may only add one question at a time.  For any issues, please contact the helpdesk.
-                <br>
                 <br>
                 <?php if(!isset($_SESSION['prevEnteredQuestion']) || empty($_SESSION['prevEnteredQuestion'])): ?>
                     <pre>
