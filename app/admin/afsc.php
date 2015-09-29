@@ -59,8 +59,8 @@ if($formAction){
             $afscData['afscName'] = isset($_POST['afscName']) ? $_POST['afscName'] : false;
             $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscName'] : false;
             $afscData['afscHidden'] = isset($_POST['afscHidden']) ? $_POST['afscHidden'] : false;
-            $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscName'] : false;
-            $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscName'] : false;
+            $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscVersion'] : false;
+            $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscDescription'] : false;
 
             if(!$afsc->loadAFSC($workingAFSC)){
                 $sysMsg->addMessage("We could not load that AFSC.");
@@ -71,11 +71,11 @@ if($formAction){
                 $sysMsg->addMessage("AFSC Name cannot be blank.");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
-            elseif(!$afscData['afscFOUO']) {
+            elseif(!isset($_POST['afscFOUO'])) {
                 $sysMsg->addMessage("FOUO status must be provided.");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
-            elseif(!$afscData['afscHidden']) {
+            elseif(!isset($_POST['afscHidden'])) {
                 $sysMsg->addMessage("You must select if the AFSC is hidden.");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
