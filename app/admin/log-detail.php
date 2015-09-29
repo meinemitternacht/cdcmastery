@@ -79,17 +79,19 @@ if($logUUID):
 									
 									if(	strpos($dataTypeSearch,"user") !== false ||
 										strpos($dataTypeSearch,"supervisor") !== false ||
-										strpos($dataTypeSearch,"training manager") !== false):
-										if(strpos($dataTypeSearch,"uuid") !== false):
+										strpos($dataTypeSearch,"training manager") !== false) {
+										if (strpos($dataTypeSearch, "uuid") !== false) {
 											$userName = $user->getUserNameByUUID($detailData['data']);
-										endif;
-									elseif($dataTypeSearch == "afsc uuid"):
+										}
+									}
+									elseif($dataTypeSearch == "afsc uuid") {
 										$afscUUID = true;
-                                    elseif($dataTypeSearch == "test uuid"):
-                                        if($testManager->loadTest($detailData['data'])){
-                                            $testUUID = true;
-                                        }
-									endif;
+									}
+                                    elseif($dataTypeSearch == "test uuid") {
+										if ($testManager->loadTest($detailData['data'])) {
+											$testUUID = true;
+										}
+									}
 							?>
 							<tr>
 								<td><?php echo $detailData['dataType']; ?></td>
