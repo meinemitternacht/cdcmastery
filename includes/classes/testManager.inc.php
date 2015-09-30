@@ -725,7 +725,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function deleteTestData($testUUID){
+	public function deleteTestData($testUUID,$logAction=true){
 		$stmt = $this->db->prepare("DELETE FROM testData WHERE testUUID = ?");
 		$stmt->bind_param("s",$testUUID);
 		
@@ -739,10 +739,12 @@ class testManager extends CDCMastery
 			return false;
 		}
 		else{
-			$this->log->setAction("TEST_DATA_DELETE");
-			$this->log->setDetail("Test UUID",$testUUID);
-			$this->log->saveEntry();
-			
+			if($logAction) {
+				$this->log->setAction("TEST_DATA_DELETE");
+				$this->log->setDetail("Test UUID", $testUUID);
+				$this->log->saveEntry();
+			}
+
 			return true;
 		}
 	}
@@ -772,10 +774,14 @@ class testManager extends CDCMastery
 			}
 			else{
 				foreach($incompleteTestList as $incompleteTestUUID){
-					if(!$this->deleteTestData($incompleteTestUUID)){
+					if(!$this->deleteTestData($incompleteTestUUID,false)){
 						$error = true;
 					}
 				}
+
+				$this->log->setAction("INCOMPLETE_TEST_DELETE_ALL");
+				$this->log->setDetail("Test UUID Array",serialize($incompleteTestList));
+				$this->log->saveEntry();
 			}
 			
 			if($error){
