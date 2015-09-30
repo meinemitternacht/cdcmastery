@@ -211,26 +211,26 @@ if(isset($_SESSION['vars'][0])):
 								<th class="th-child">Average Score</th>
 								<td><?php echo $userProfileStatistics->getAverageScore(); ?></td>
 							</tr>
-							<tr>
-								<th class="th-child">Completed Tests</th>
-								<td><?php echo $userProfileStatistics->getCompletedTests(); ?></td>
-							</tr>
-							<tr>
-								<th class="th-child">Incomplete Tests</th>
-								<td><?php echo $userProfileStatistics->getIncompleteTests(); ?></td>
-							</tr>
-							<tr>
-								<th class="th-child">Total Tests</th>
-								<td><?php echo $userProfileStatistics->getTotalTests(); ?></td>
-							</tr>
-							<tr>
-								<th class="th-child">Questions Answered</th>
-								<td><?php echo $userProfileStatistics->getQuestionsAnswered(); ?></td>
-							</tr>
-							<tr>
-								<th class="th-child">Questions Missed</th>
-								<td><?php echo $userProfileStatistics->getQuestionsMissed(); ?></td>
-							</tr>
+                            <tr>
+                                <th class="th-child">Completed Tests</th>
+                                <td><?php echo number_format($userProfileStatistics->getCompletedTests()); ?></td>
+                            </tr>
+                            <tr>
+                                <th class="th-child">Incomplete Tests</th>
+                                <td><?php echo number_format($userProfileStatistics->getIncompleteTests()); ?></td>
+                            </tr>
+                            <tr>
+                                <th class="th-child">Total Tests</th>
+                                <td><?php echo number_format($userProfileStatistics->getTotalTests()); ?></td>
+                            </tr>
+                            <tr>
+                                <th class="th-child">Questions Answered</th>
+                                <td><?php echo number_format($userProfileStatistics->getQuestionsAnswered()); ?></td>
+                            </tr>
+                            <tr>
+                                <th class="th-child">Questions Missed</th>
+                                <td><?php echo number_format($userProfileStatistics->getQuestionsMissed()); ?></td>
+                            </tr>
 							<tr>
 								<th colspan="2"><div class="text-float-left">User Associations</div></th>
 							</tr>

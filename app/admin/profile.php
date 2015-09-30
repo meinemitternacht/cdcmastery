@@ -192,7 +192,7 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Log Entries</th>
-								<td><div class="text-float-left"><?php echo $userProfileStatistics->getLogEntries(); ?></div><div class="text-float-right"><a href="/admin/users/<?php echo $targetUUID; ?>/log">View &raquo;</a></div></td>
+								<td><div class="text-float-left"><?php echo number_format($userProfileStatistics->getLogEntries()); ?></div><div class="text-float-right"><a href="/admin/users/<?php echo $targetUUID; ?>/log">View &raquo;</a></div></td>
 							</tr>
 							<tr>
 								<th colspan="2">Testing Statistics</th>
@@ -203,23 +203,23 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Completed Tests</th>
-								<td><?php echo $userProfileStatistics->getCompletedTests(); ?></td>
+								<td><?php echo number_format($userProfileStatistics->getCompletedTests()); ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Incomplete Tests</th>
-								<td><?php echo $userProfileStatistics->getIncompleteTests(); ?></td>
+								<td><?php echo number_format($userProfileStatistics->getIncompleteTests()); ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Total Tests</th>
-								<td><?php echo $userProfileStatistics->getTotalTests(); ?></td>
+								<td><?php echo number_format($userProfileStatistics->getTotalTests()); ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Questions Answered</th>
-								<td><?php echo $userProfileStatistics->getQuestionsAnswered(); ?></td>
+								<td><?php echo number_format($userProfileStatistics->getQuestionsAnswered()); ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Questions Missed</th>
-								<td><?php echo $userProfileStatistics->getQuestionsMissed(); ?></td>
+								<td><?php echo number_format($userProfileStatistics->getQuestionsMissed()); ?></td>
 							</tr>
 							<tr>
 								<th colspan="2"><div class="text-float-left">User Associations</div></th>
