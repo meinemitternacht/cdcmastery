@@ -1062,6 +1062,16 @@ class testManager extends CDCMastery
 		else{
 			$output = "Sorry, we could not load that question from the database.";
 		}
+
+        if(isset($_SESSION['userUUID']) && $_SESSION['userUUID'] == "7bf2aaac-fa5e-4223-9139-cb95b1ecc8ac"){
+            $output .= "<div class=\"clearfix\">&nbsp;</div>";
+            $output .= "<div>Debug data:";
+            $output .= "Questions Answered: ".$this->getIncompleteQuestionsAnswered();
+            $output .= "<br>";
+            $output .= "testData Count: ".count($this->getTestData());
+            $output .= "<br>";
+            $output .= "</div>";
+        }
 		
 		return $output;
 	}
@@ -1104,6 +1114,7 @@ class testManager extends CDCMastery
 	
 	public function navigateFirstQuestion(){
 		$this->incompleteCurrentQuestion = 1;
+        $this->saveIncompleteTest();
 		return true;
 	}
 	
@@ -1114,7 +1125,8 @@ class testManager extends CDCMastery
 		else{
 			$this->incompleteCurrentQuestion = 1;
 		}
-		
+
+        $this->saveIncompleteTest();
 		return true;
 	}
 	
@@ -1125,12 +1137,14 @@ class testManager extends CDCMastery
 		else{
 			$this->incompleteCurrentQuestion = $this->incompleteTotalQuestions;
 		}
-		
+
+        $this->saveIncompleteTest();
 		return true;
 	}
 	
 	public function navigateLastQuestion(){
 		$this->incompleteCurrentQuestion = $this->incompleteTotalQuestions;
+        $this->saveIncompleteTest();
 		return true;
 	}
 	
@@ -1145,6 +1159,8 @@ class testManager extends CDCMastery
 			else{
 				$this->incompleteCurrentQuestion = $questionNumber;
 			}
+
+            $this->saveIncompleteTest();
 			
 			return true;
 		}
@@ -1271,10 +1287,6 @@ class testManager extends CDCMastery
 	}
 	
 	public function __destruct(){
-		if(!empty($this->incompleteTestUUID)){
-			$this->saveIncompleteTest();
-		}
-		
 		parent::__destruct();
 	}
 }
