@@ -32,6 +32,7 @@ if($router->parseURI()){
 		$log->setDetail("PATH", $router->filePath);
 		$log->setDetail("OUTPUT PAGE", $router->outputPage);
 		$log->setDetail("ROUTE", $router->route);
+
 		if(isset($_SERVER['HTTP_REFERER'])){
 			$log->setDetail("REFERER",$_SERVER{'HTTP_REFERER'});
 		}
