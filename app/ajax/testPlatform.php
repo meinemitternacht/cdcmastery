@@ -23,10 +23,18 @@ if(isset($testUUID)){
 		if(isset($userAction)){
 			switch($userAction){
 				case "answerQuestion":
-					if(isset($actionData)){
-						if($testManager->answerQuestion($testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)],$actionData)) {
+					if(isset($actionData) && !empty($actionData)){
+						if($testManager->answerQuestion($testUUID,$testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)],$actionData)) {
 							$testManager->navigateNextQuestion();
 						}
+					}
+					else{
+						$log->setAction("ERROR_TEST_AJAX_ANSWER_EMPTY");
+						$log->setDetail("Test UUID",$testUUID);
+						$log->setDetail("Action Data",$actionData);
+						$log->setDetail("Question UUID",$testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)]);
+						$log->setDetail("Questions Answered",$testManager->getIncompleteQuestionsAnswered());
+						$log->saveEntry();
 					}
 				break;
 				case "firstQuestion":
