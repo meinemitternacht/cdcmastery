@@ -194,6 +194,7 @@ class router extends CDCMastery
 	
 	public function __destruct(){
 		unset($_SESSION['vars']);
+		session_write_close();
 		parent::__destruct();
 	}
 }

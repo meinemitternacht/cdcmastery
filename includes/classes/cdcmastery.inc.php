@@ -203,6 +203,7 @@ class CDCMastery
 	
 	public function redirect($destination){
 		unset($_SESSION['vars']);
+		session_write_close();
 		header("Location: ".$destination);
 		ob_end_flush();
 		exit();
