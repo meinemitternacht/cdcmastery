@@ -30,8 +30,9 @@ foreach($incompleteTestList as $incompleteTestUUID){
     echo "<br>";
 }
 
+/*
 echo count($deleteTestUUID);
 
 foreach($deleteTestUUID as $dTestUUID){
     $testManager->deleteIncompleteTest(false,$dTestUUID,false,false);
-}
+}*/
