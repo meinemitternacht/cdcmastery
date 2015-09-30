@@ -197,19 +197,19 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <table>
                     <tr>
                         <td style="width: 50%"><strong>Completed Tests</strong></td>
-                        <td><?php echo !empty($userStatistics->getCompletedTests()) ? $userStatistics->getCompletedTests() : "None"; ?></td>
+                        <td><?php echo !empty($userStatistics->getCompletedTests()) ? number_format($userStatistics->getCompletedTests()) : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Incomplete Tests</strong></td>
-                        <td><?php echo !empty($userStatistics->getIncompleteTests()) ? $userStatistics->getIncompleteTests() : "None"; ?></td>
+                        <td><?php echo !empty($userStatistics->getIncompleteTests()) ? number_format($userStatistics->getIncompleteTests()) : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Questions Answered</strong></td>
-                        <td><?php echo !empty($userStatistics->getQuestionsAnswered()) ? $userStatistics->getQuestionsAnswered() : "None"; ?></td>
+                        <td><?php echo !empty($userStatistics->getQuestionsAnswered()) ? number_format($userStatistics->getQuestionsAnswered()) : "None"; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Log Entries</strong></td>
-                        <td><?php echo !empty($userStatistics->getLogEntries()) ? $userStatistics->getLogEntries() : "None"; ?></td>
+                        <td><?php echo !empty($userStatistics->getLogEntries()) ? number_format($userStatistics->getLogEntries()) : "None"; ?></td>
                     </tr>
                 </table>
 			</section>
