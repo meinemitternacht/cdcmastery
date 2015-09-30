@@ -37,7 +37,9 @@ if(!isset($_SESSION['auth'])):
 			else{
                 $session->regenerate_id();
                 if(isset($_SESSION['nextPage']) && !empty($_SESSION['nextPage'])){
-                    $cdcMastery->redirect($_SESSION['nextPage']);
+                    $nextPage = $_SESSION['nextPage'];
+                    unset($_SESSION['nextPage']);
+                    $cdcMastery->redirect($nextPage);
                 }
                 else {
                     $cdcMastery->redirect("/");
