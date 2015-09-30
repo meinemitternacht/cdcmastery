@@ -144,8 +144,9 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 		<div class="12u">
 			<section>
 				<div class="informationMessages">
-					<strong>Notice:</strong> There is a known issue affecting some tests started before 0930 on 29 September 2015.  When scoring the affected tests, the system did not include all applicable questions.  If you would like this
-					test deleted, please open a support ticket.  If you are still encountering this issue with tests started <strong>after 0930 on 29 September 2015</strong>, please <a href="http://helpdesk.cdcmastery.com/">open a support ticket</a>.
+					There was an issue affecting some tests started before 0500 on 30 September 2015.  When scoring the affected tests, the system did not include all applicable questions.
+					<strong>These tests have been removed from the system and the issue has been resolved.</strong>  If you are still encountering this issue with tests started <strong>after</strong>
+					0500 on 30 September 2015, or if you have other questions, please <a href="http://helpdesk.cdcmastery.com/">open a support ticket</a>.
 				</div>
 			</section>
 		</div>
