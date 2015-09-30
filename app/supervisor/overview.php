@@ -34,6 +34,8 @@ if(empty($subordinateUsers)):
     $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.");
     $cdcMastery->redirect("/supervisor/subordinates");
 endif;
+
+$totalUserTestCount = $supOverview->getTotalUserTests();
 ?>
 <div class="container">
     <div class="row">
@@ -59,6 +61,11 @@ endif;
             <div class="9u">
                 <section>
                     <h2>User Data</h2>
+                    <?php if($totalUserTestCount > 0): ?>
+                        <div id="chart-container" style="height:400px">
+                            &nbsp;
+                        </div>
+                    <?php endif; ?>
                     <table class="overview-table">
                         <tr>
                             <th>User Name</th>
@@ -68,11 +75,20 @@ endif;
                             <th>Last Login</th>
                         </tr>
                         <?php
+                        $i=0;
                         foreach($subordinateUsers as $subordinateUser):
                             $supUser->loadUser($subordinateUser);
                             $userStatistics->setUserUUID($subordinateUser);
                             $userAverage = round($userStatistics->getAverageScore(),2);
                             $userLatestScore = $userStatistics->getLatestTestScore();
+                            $userTestCount = $userStatistics->getTotalTests();
+
+                            if($userTestCount > 0) {
+                                $chartData[$i]['userName'] = $supUser->getFullName();
+                                $chartData[$i]['userAverage'] = $userAverage;
+                                $chartData[$i]['userTestCount'] = $userTestCount;
+                                $i++;
+                            }
                             ?>
                             <tr>
                                 <td><a href="/supervisor/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
@@ -87,6 +103,45 @@ endif;
                             </tr>
                         <?php endforeach;?>
                     </table>
+                    <?php
+                    if(isset($chartData)):
+                        $chartOutputData = "";
+                        $firstRow = true;
+                        $i=0;
+                        foreach($chartData as $rowKey => $rowData){
+                            if ($firstRow == false) {
+                                $chartOutputData .= ",";
+                            }
+
+                            $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+                            $firstRow = false;
+                            $i++;
+                        }
+                        ?>
+                        <script type="text/javascript">
+                            window.onload = function () {
+                                var chart = new CanvasJS.Chart("chart-container", {
+
+                                    title:{
+                                        text: "Testing Overview"
+                                    },
+                                    axisX:{
+                                        valueFormatString: " ",
+                                        tickLength: 0
+                                    },
+                                    data: [
+                                        {
+                                            /*** Change type "column" to "bar", "area", "line" or "pie"***/
+                                            type: "column",
+                                            dataPoints: [<?php echo $chartOutputData; ?>]
+                                        }
+                                    ]
+                                });
+
+                                chart.render();
+                            }
+                        </script>
+                    <?php endif; ?>
                 </section>
             </div>
         <?php endif; ?>
@@ -113,7 +168,7 @@ endif;
                     </tr>
                     <tr>
                         <td>Total User Tests</td>
-                        <td><?php echo $supOverview->getTotalUserTests(); ?></td>
+                        <td><?php echo $totalUserTestCount ?></td>
                     </tr>
                     <tr>
                         <td>Average User Test Score</td>
