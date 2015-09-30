@@ -231,7 +231,7 @@ class testManager extends CDCMastery
 		}
 	}
 
-    public function saveTest(){
+    public function saveTest($logSuccess=true){
         $serializedAFSCList = serialize($this->afscList);
 
         $stmt = $this->db->prepare("INSERT INTO testHistory ( uuid,
@@ -262,10 +262,12 @@ class testManager extends CDCMastery
                                         $this->testTimeCompleted);
 
         if($stmt->execute()){
-            $this->log->setAction("SAVE_TEST");
-            $this->log->setDetail("Test UUID",$this->uuid);
-            $this->log->setDetail("User UUID",$this->userUUID);
-            $this->log->saveEntry();
+            if($logSuccess) {
+                $this->log->setAction("SAVE_TEST");
+                $this->log->setDetail("Test UUID", $this->uuid);
+                $this->log->setDetail("User UUID", $this->userUUID);
+                $this->log->saveEntry();
+            }
 
             $stmt->close();
             return true;
@@ -770,7 +772,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false,$userUUID=false,$deleteData=true){
+	public function deleteIncompleteTest($allIncompleteTests=false,$testUUID=false,$userUUID=false,$deleteData=true,$logSuccess=true){
 		$this->incompleteTestUUID = false;
 		
 		if(!$userUUID){
@@ -800,9 +802,11 @@ class testManager extends CDCMastery
 					}
 				}
 
-				$this->log->setAction("INCOMPLETE_TEST_DELETE_ALL");
-				$this->log->setDetail("Test UUID Array",serialize($incompleteTestList));
-				$this->log->saveEntry();
+                if($logSuccess) {
+                    $this->log->setAction("INCOMPLETE_TEST_DELETE_ALL");
+                    $this->log->setDetail("Test UUID Array", serialize($incompleteTestList));
+                    $this->log->saveEntry();
+                }
 			}
 			
 			if($error){
@@ -830,9 +834,11 @@ class testManager extends CDCMastery
 					return false;
 				}
 				else{
-					$this->log->setAction("INCOMPLETE_TEST_DELETE");
-					$this->log->setDetail("Test UUID", $testUUID);
-					$this->log->saveEntry();
+                    if($logSuccess) {
+                        $this->log->setAction("INCOMPLETE_TEST_DELETE");
+                        $this->log->setDetail("Test UUID", $testUUID);
+                        $this->log->saveEntry();
+                    }
 					
 					$stmt->close();
 
