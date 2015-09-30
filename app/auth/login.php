@@ -36,7 +36,12 @@ if(!isset($_SESSION['auth'])):
 			}
 			else{
                 $session->regenerate_id();
-				$cdcMastery->redirect("/");
+                if(isset($_SESSION['nextPage']) && !empty($_SESSION['nextPage'])){
+                    $cdcMastery->redirect($_SESSION['nextPage']);
+                }
+                else {
+                    $cdcMastery->redirect("/");
+                }
 			}
 		}
 	}

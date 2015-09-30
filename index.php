@@ -48,6 +48,20 @@ if($router->parseURI()){
         }
 
 		$log->saveEntry();
+
+		if(isset($router->errorMessage) && !empty($router->errorMessage)){
+			$sysMsg->addMessage($router->errorMessage);
+		}
+
+		if($router->route == "ajax/testPlatform"){
+			$_SESSION['nextPage'] = $_SERVER['HTTP_REFERER'];
+		}
+		else {
+			$_SESSION['nextPage'] = $router->request;
+		}
+
+		echo '<META http-equiv="refresh" content="0;URL=http://cdcmastery.com/auth/login">';
+		exit();
 	}
 
 	if($router->route == "errors/403"){

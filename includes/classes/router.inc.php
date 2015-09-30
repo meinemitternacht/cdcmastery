@@ -10,8 +10,9 @@ class router extends CDCMastery
 	public $route;
 	public $showTheme;
 	public $siteSection;
+	public $errorMessage;
 
-    public $publicRoutes = ['index','about','auth','register','contact','errors'];
+    public $publicRoutes = ['index','about','auth','register','contact','errors','ajax/registration'];
 	
 	public function __construct(){
 		$this->showTheme = true;
@@ -46,7 +47,7 @@ class router extends CDCMastery
 		if(strpos($this->route,"/") !== false){
 			$routeArray = explode("/",$this->route);
 
-            if($routeArray[1] == "register"){
+            if($routeArray[1] == "register" || $routeArray[1] == "registration"){
                 return "register";
             }
             else{
@@ -145,16 +146,17 @@ class router extends CDCMastery
 				$this->errorNumber = 403;
 				return false;
 			}
-            elseif(strpos($this->filePath, "/ajax/") !== false){
-                $this->outputPage = $this->filePath;
-                $this->showTheme = false;
-                return true;
-            }
             elseif(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
-                $this->outputPage = APP_BASE . "/errors/403.php";
-                $this->errorNumber = 403;
+                $this->outputPage = APP_BASE . "/auth/login.php";
+                $this->errorNumber = 404;
+				$this->errorMessage = "We're sorry, but your session has expired.  Please log in to continue.";
                 return false;
             }
+			elseif(strpos($this->filePath, "/ajax/") !== false){
+				$this->outputPage = $this->filePath;
+				$this->showTheme = false;
+				return true;
+			}
 			elseif(strpos($this->filePath, "/export/") !== false){
 				$this->outputPage = $this->filePath;
 				$this->showTheme = false;
