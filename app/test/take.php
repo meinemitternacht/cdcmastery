@@ -11,6 +11,17 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
      * Ensure test is valid
      */
     if ($testManager->loadIncompleteTest($testUUID)) {
+        if($_SESSION['userUUID'] != $testManager->getIncompleteUserUUID()) {
+            /*
+             * Not this user's test!!  Oh boy...
+             */
+            $log->setAction("ERROR_TEST_USER_UUID_NOT_EQUAL");
+            $log->setDetail("Incomplete Test UUID",$testUUID);
+            $log->setDetail("Test Owner",$testManager->getIncompleteUserUUID());
+            $log->saveEntry();
+            $sysMsg->addMessage("Sorry, but you are not authorized to take tests as other users!");
+            $cdcMastery->redirect("/errors/403");
+        }
         ?>
         <script type="text/javascript">
 
