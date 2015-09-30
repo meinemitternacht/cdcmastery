@@ -214,18 +214,17 @@ class testManager extends CDCMastery
 				$this->testTimeStarted = $testTimeStarted;
 				$this->testTimeCompleted = $testTimeCompleted;
 				$this->oldTestID = $oldTestID;
-				
-				$ret = true;
 			}
 			
 			$stmt->close();
 			
 			if(empty($this->uuid)){
 				$this->error = "That test does not exist.";
-				$ret = false;
+				return false;
 			}
-			
-			return $ret;
+			else {
+				return true;
+			}
 		}
 		else{
 			return false;
@@ -580,6 +579,28 @@ class testManager extends CDCMastery
 			return false;
 		}
 	}
+
+	public function listIncompleteTestsByUser($userUUID){
+		$stmt = $this->db->prepare("SELECT testUUID FROM testManager WHERE userUUID = ?");
+		$stmt->bind_param("s",$userUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($testUUID);
+
+			while($stmt->fetch()){
+				$testArray[] = $testUUID;
+			}
+
+			$stmt->close();
+
+			if(empty($testArray)){
+				return false;
+			}
+			else{
+				return $testArray;
+			}
+		}
+	}
 	
 	public function listIncompleteTests($uuidOnly = false){
 		$res = $this->db->query("SELECT testUUID,
@@ -668,7 +689,7 @@ class testManager extends CDCMastery
 			
 			$this->incompleteQuestionList = unserialize($serializedQuestionList);
 			$this->incompleteAFSCList = unserialize($serializedAFSCList);
-			
+
 			return true;
 		}
 		else{
@@ -757,7 +778,7 @@ class testManager extends CDCMastery
 		}
 		
 		if($allIncompleteTests){
-			$incompleteTestList = $this->listIncompleteTests(true);
+			$incompleteTestList = $this->listIncompleteTestsByUser($userUUID);
 			
 			$error = false;
 			
@@ -925,7 +946,7 @@ class testManager extends CDCMastery
 		}
 	}
 	
-	public function answerQuestion($questionUUID, $answerUUID){
+	public function answerQuestion($testUUID, $questionUUID, $answerUUID){
 		/*
 		 * Fix for issue where double-clicking answers will enter false data into testing data table.  Ensure answer provided matches current question.
 		 */
@@ -939,7 +960,7 @@ class testManager extends CDCMastery
 													VALUES (?,?,?)
 													ON DUPLICATE KEY UPDATE
 															answerUUID=VALUES(answerUUID)");
-			$stmt->bind_param("sss", $this->incompleteTestUUID, $questionUUID, $answerUUID);
+			$stmt->bind_param("sss", $testUUID, $questionUUID, $answerUUID);
 
 			if (!$stmt->execute()) {
 				$this->log->setAction("ERROR_TEST_STORE_ANSWER");
@@ -947,6 +968,7 @@ class testManager extends CDCMastery
 				$this->log->setDetail("ERROR", $stmt->error);
 				$this->log->setDetail("QUESTION UUID", $questionUUID);
 				$this->log->setDetail("ANSWER UUID", $answerUUID);
+				$this->log->setDetail("TEST UUID", $testUUID);
 				$this->log->saveEntry();
 
 				$this->error = "A problem occurred saving your test data to the database. Please contact CDCMastery support for assistance.";
