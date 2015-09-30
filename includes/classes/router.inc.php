@@ -19,7 +19,7 @@ class router extends CDCMastery
 	}
 	
 	public function checkAdminPath($path){
-		if(strpos($path, "/admin/") !== false){
+		if((strpos($path, "/admin/") !== false) || (strpos($path, "/dev/") !== false)){
 			return true;
 		}
 		else{
