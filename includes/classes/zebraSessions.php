@@ -224,7 +224,7 @@ class Zebra_Session
      *
      *  @return void
      */
-    function __construct(&$link, $security_code, $session_lifetime = '604800', $lock_to_user_agent = true, $lock_to_ip = false, $gc_probability = '1', $gc_divisor = '100', $table_name = 'sessionData', $lock_timeout = 60)
+    function __construct(&$link, $security_code, $session_lifetime = '604800', $lock_to_user_agent = true, $lock_to_ip = false, $gc_probability = '1', $gc_divisor = '100', $table_name = 'sessionData', $lock_timeout = 50)
     {
 
         // store the connection link
