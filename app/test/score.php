@@ -43,8 +43,8 @@ if($testUUID){
             $testManager->setTestTimeStarted($testManager->getIncompleteTimeStarted());
             $testManager->setTestTimeCompleted(date("Y-m-d H:i:s",time()));
 
-            if($testManager->saveTest()){
-                if($testManager->deleteIncompleteTest(false,$testUUID,false,false)){
+            if($testManager->saveTest(false)){
+                if($testManager->deleteIncompleteTest(false,$testUUID,false,false,false)){
                     $log->setAction("SCORE_TEST");
                     $log->setDetail("Test UUID",$testUUID);
                     $log->setDetail("Score",$testScore);
@@ -86,11 +86,6 @@ if($testUUID){
             $sysMsg->addMessage("There is no test data for that test UUID.");
             $cdcMastery->redirect("/errors/500");
         }
-
-
-        /*
-         * Place a message in the session to let the user know if they passed or failed the test.
-         */
     }
     else{
         $sysMsg->addMessage("That test does not exist.");
