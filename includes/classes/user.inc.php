@@ -39,6 +39,28 @@ class user extends CDCMastery {
 		//nothing :)
 	}
 
+    public function updateLastActiveTimestamp(){
+        if($this->uuid) {
+            $stmt = $this->db->prepare("UPDATE userData SET userLastActive = UTC_TIMESTAMP() WHERE uuid = ?");
+            $stmt->bind_param("s", $this->uuid);
+
+            if(!$stmt->execute()){
+                $this->log->setAction("ERROR_UPDATE_LAST_ACTIVE");
+                $this->log->setDetail("MySQL Error",$stmt->error);
+                $this->log->setDetail("User UUID",$this->uuid);
+                $this->log->saveEntry();
+
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
 	public function listUsers(){
 		$res = $this->db->query("SELECT uuid, userHandle, userFirstName, userLastName, userRank FROM userData ORDER BY userLastName ASC");
 
@@ -296,7 +318,7 @@ class user extends CDCMastery {
 		}
 	}
 
-    public function deleteUser($userUUID){
+    public function deleteUser($userUUID,$deleteLog=true){
         if(!$this->verifyUser($userUUID)){
             $this->error[] = "That user does not exist.";
             return false;

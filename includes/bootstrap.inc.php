@@ -65,6 +65,10 @@ $userStatistics = new userStatistics($db, $log, $roles);
 $assoc = new associations($db, $log, $user, $afsc);
 
 if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
-	$user->loadUser($_SESSION['userUUID']);
+	if(!$user->loadUser($_SESSION['userUUID'])){
+        session_destroy();
+        $cdcMastery->redirect("/auth/logout");
+    }
+    $user->updateLastActiveTimestamp();
 	$userStatistics->setUserUUID($_SESSION['userUUID']);
 }
