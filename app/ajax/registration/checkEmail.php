@@ -26,6 +26,7 @@ if($emailString){
         $emailUsed = false;
     }
 
+    $stmt->close();
     /*
      * Check if it's valid first
      */

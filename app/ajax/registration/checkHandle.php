@@ -15,6 +15,8 @@ if($userHandleString){
         else{
             echo "0";
         }
+
+        $stmt->close();
     }
     else{
         $log->setAction("ERROR_AJAX_CHECK_USER_HANDLE");
@@ -22,6 +24,7 @@ if($userHandleString){
         $log->setDetail("User Handle String",$userHandleString);
         $log->setDetail("MySQL Error",$stmt->error);
         $log->saveEntry();
+        $stmt->close();
 
         echo "0";
     }
