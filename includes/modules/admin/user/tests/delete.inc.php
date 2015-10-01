@@ -11,7 +11,7 @@ if(isset($_POST['confirmTestDeleteAll'])){
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $sysMsg->addMessage("We could not delete the completed tests taken by this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
+        $sysMsg->addMessage("We could not delete the completed tests taken by this user, please contact the support helpdesk.");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

@@ -15,7 +15,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty."); $error = true; }
     if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty."); $error = true; }
     if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty."); $error = true; }
-    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If base is not listed, choose \"Other\"."); $error = true; }
+    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If base is not listed, choose 'Other'."); $error = true; }
     if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty."); $error = true; }
     if(empty($_POST['userRole'])){ $sysMsg->addMessage("User role cannot be empty."); $error = true; }
 

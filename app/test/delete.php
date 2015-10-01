@@ -24,7 +24,7 @@ else{
 					$cdcMastery->redirect("/");
 				}
 				else{
-					$sysMsg->addMessage("We could not delete your incomplete tests, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
+					$sysMsg->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.");
 					$cdcMastery->redirect("/errors/500");
 				}
 			}
@@ -80,7 +80,7 @@ else{
 						$cdcMastery->redirect("/");
 					}
 					else{
-                        $sysMsg->addMessage("We could not delete that test, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
+                        $sysMsg->addMessage("We could not delete that test, please contact the support helpdesk.");
 						$cdcMastery->redirect("/errors/500");
 					}
 				}

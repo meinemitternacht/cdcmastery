@@ -204,7 +204,7 @@ else {
 
                 $cdcMastery->redirect("/test/take/" . $testManager->getIncompleteTestUUID());
             } else {
-                $sysMsg->addMessage("That AFSC does not have any questions.  If you would like to add them, please <a href=\"http://helpdesk.cdcmastery.com/\"contact the helpdesk</a>.");
+                $sysMsg->addMessage("That AFSC does not have any questions.  If you would like to add them, please contact the support helpdesk.");
                 $cdcMastery->redirect("/test/take");
             }
         } else {

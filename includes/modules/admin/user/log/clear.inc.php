@@ -6,7 +6,7 @@ if(isset($_POST['confirmClearLogEntries'])){
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $sysMsg->addMessage("We could not delete the log entries for this user, please <a href=\"http://helpdesk.cdcmastery.com\">submit a ticket</a>.");
+        $sysMsg->addMessage("We could not delete the log entries for this user, please contact the support helpdesk.");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }
