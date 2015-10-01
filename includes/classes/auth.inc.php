@@ -63,7 +63,8 @@ class auth extends user
      */
     function getActivationStatus(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM queueUnactivatedUsers WHERE userUUID = ?");
-		$stmt->bind_param("s",$this->uuid);
+        $stmt->bind_param("s", $this->uuid);
+
 		$stmt->execute();
 		$stmt->bind_result($count);
 
@@ -71,7 +72,7 @@ class auth extends user
 			$tempCount = $count;
 		}
 
-		if($tempCount > 0){
+		if(isset($tempCount) && $tempCount > 0){
 			$this->activationStatus = false;
 		}
 		else{
@@ -163,9 +164,9 @@ class auth extends user
 			return false;
 		}
 		elseif(!$this->comparePassword($password)){
-			$this->error = "Your password is incorrect";
+			$this->error = "Your password is incorrect, please try again. You have " . (10 - $_SESSION['limitAttempts']) . " login attempts remaining.";
 			$this->limitLogins(true);
-			
+
 			$this->log->setAction("ERROR_LOGIN_INVALID_PASSWORD");
 			$this->log->setDetail("User UUID",$this->getUUID());
 			$this->log->saveEntry();
@@ -173,7 +174,7 @@ class auth extends user
 			return false;
 		}
 		elseif(!$this->getActivationStatus()){
-			$this->error = "Your account has not been activated. <a href=\"/auth/activate\">Click Here</a> to activate your account.";
+			$this->error = "Your account has not been activated. Please check your e-mail inbox for the activation e-mail, or contact the support helpdesk for assistance.";
 			$this->log->setAction("ERROR_LOGIN_UNACTIVATED_ACCOUNT");
 			$this->log->setDetail("User UUID",$this->getUUID());
 			$this->log->saveEntry();
@@ -181,7 +182,7 @@ class auth extends user
 			return false;
 		}
         elseif($this->getUserDisabled()){
-            $this->error = "Your account has been disabled.  If you feel this is in error, <a href=\"http://helpdesk.cdcmastery.com/\">Open a Support Ticket</a>.";
+            $this->error = "Your account has been disabled.  If you feel this is in error, open a support ticket.";
             $this->log->setAction("ERROR_LOGIN_USER_DISABLED");
 			$this->log->setDetail("User UUID",$this->getUUID());
             $this->log->saveEntry();
