@@ -16,6 +16,25 @@ class userActivation extends user {
 		parent::__destruct();
 	}
 
+    public function deleteUserActivationToken($userUUID){
+        $stmt = $this->db->prepare("DELETE FROM queueUnactivatedUsers WHERE userUUID = ?");
+        $stmt->bind_param("s",$userUUID);
+
+        if($stmt->execute()){
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","userActivation->deleteUserActivationToken()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
 	public function listUnactivatedUsers(){
 		$stmt = $this->db->prepare("SELECT activationCode, userUUID, timeExpires
                                     FROM queueUnactivatedUsers
@@ -166,12 +185,25 @@ class userActivation extends user {
 		}
 	}
 	
-	public function activateUser($activationToken){
+	public function activateUser($activationToken,$activatingUser=false){
+        $targetUserUUID = $this->getActivationTokenUserUUID($activationToken);
+
 		$stmt = $this->db->prepare("DELETE FROM queueUnactivatedUsers WHERE activationCode = ?");
 		$stmt->bind_param("s",$activationToken);
 		
 		if($stmt->execute()){
 			$stmt->close();
+            if($targetUserUUID && !$activatingUser){
+                $this->log->setAction("USER_ACTIVATE");
+                $this->log->setUserUUID($targetUserUUID);
+            }
+            elseif($activatingUser){
+                $this->log->setAction("ADMIN_ACTIVATE_USER");
+                $this->log->setUserUUID($activatingUser);
+                $this->log->setDetail("User UUID",$targetUserUUID);
+            }
+            $this->log->saveEntry();
+
 			return true;
 		}
 		else{
@@ -186,4 +218,21 @@ class userActivation extends user {
 			return false;
 		}
 	}
+
+    public function getActivationTokenUserUUID($activationToken){
+        $stmt = $this->db->prepare("SELECT userUUID FROM queueUnactivatedUsers WHERE activationCode = ?");
+        $stmt->bind_param("s",$activationToken);
+
+        if($stmt->execute()){
+            $stmt->bind_result($userUUID);
+            $stmt->fetch();
+            $stmt->close();
+
+            return $userUUID;
+        }
+        else{
+            $stmt->close();
+            return false;
+        }
+    }
 }
