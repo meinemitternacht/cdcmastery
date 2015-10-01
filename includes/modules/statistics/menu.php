@@ -19,6 +19,8 @@
         <li><strong>Tests</strong></li>
         <li><a href="/about/statistics/afsc/pass-rate">AFSC Pass Rate</a></li>
         <li><a href="/about/statistics/tests/category">Tests Taken by AFSC</a></li>
+        <li><a href="/about/statistics/tests/count-hour">Tests Taken by Hour of Day</a></li>
+        <li><a href="/about/statistics/tests/count-day">Tests Taken by Day of Month</a></li>
         <li><a href="/about/statistics/tests/count-week">Tests Taken by Week</a></li>
         <li><a href="/about/statistics/tests/count-month">Tests Taken by Month</a></li>
         <li><a href="/about/statistics/tests/count-year">Tests Taken by Year</a></li>

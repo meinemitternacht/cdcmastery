@@ -18,6 +18,9 @@ class statistics extends CDCMastery {
     public $testAFSCCount;
     public $testsAverageScoreArrayLastSeven;
     public $testsAverageScoreByTimespan;
+    public $testsByHourOfDay;
+    public $testsByDayOfMonth;
+    public $testCountByTimespan;
 
     public $baseActionsCount;
     public $totalTestsByBase;
@@ -52,8 +55,14 @@ class statistics extends CDCMastery {
     public $totalLoginErrors;
 
     public $logActionCount;
+    public $logActionCountByHourOfDay;
 
     public $totalOfficeSymbols;
+
+    public $usersActiveToday;
+    public $usersActiveThisWeek;
+    public $usersActiveThisMonth;
+    public $usersActiveThisYear;
 
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
         $this->db = $db;
@@ -259,6 +268,90 @@ class statistics extends CDCMastery {
         }
 
         if(isset($this->testsAverageScoreByTimespan)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestsByHourOfDay(){
+        if(!$this->queryTestsByHourOfDay()){
+            return false;
+        }
+        else{
+            return $this->testsByHourOfDay;
+        }
+    }
+
+    public function queryTestsByHourOfDay(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testTimeCompleted LIKE CONCAT('____-__-__%', ? , ':__:__')");
+
+        for($i=0;$i<24;$i++){
+            $hourString = ($i < 10) ? "0".$i : $i;
+            $stmt->bind_param("s",$hourString);
+
+            if($stmt->execute()){
+                $stmt->bind_result($testCount);
+                $stmt->fetch();
+
+                $this->testsByHourOfDay[$hourString] = $testCount;
+            }
+            else{
+                $this->error = $stmt->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("CALLING FUNCTION","statistics->queryTestsByHourOfDay()");
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return false;
+            }
+        }
+
+        if(!empty($this->testsByHourOfDay)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestsByDayOfMonth(){
+        if(!$this->queryTestsByDayOfMonth()){
+            return false;
+        }
+        else{
+            return $this->testsByDayOfMonth;
+        }
+    }
+
+    public function queryTestsByDayOfMonth(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testTimeCompleted LIKE CONCAT('____-__-%', ? , '%')");
+
+        for($i=1;$i<32;$i++){
+            $dayString = ($i < 10) ? "0".$i : $i;
+            $stmt->bind_param("s",$dayString);
+
+            if($stmt->execute()){
+                $stmt->bind_result($testCount);
+                $stmt->fetch();
+
+                $this->testsByDayOfMonth[$dayString] = $testCount;
+            }
+            else{
+                $this->error = $stmt->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("CALLING FUNCTION","statistics->queryTestsByDayOfMonth()");
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return false;
+            }
+        }
+
+        if(!empty($this->testsByDayOfMonth)){
             return true;
         }
         else{
@@ -1182,6 +1275,48 @@ class statistics extends CDCMastery {
         }
     }
 
+    public function getLogActionCountByHourOfDay($logAction){
+        if(!$this->queryLogActionCountByHourOfDay($logAction)){
+            return false;
+        }
+        else{
+            return $this->logActionCountByHourOfDay;
+        }
+    }
+
+    public function queryLogActionCountByHourOfDay($logAction){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS logCount FROM `systemLog` WHERE action = ? AND timestamp LIKE CONCAT('____-__-__%', ? , ':__:__')");
+
+        for($i=0;$i<24;$i++){
+            $hourString = ($i < 10) ? "0".$i : $i;
+            $stmt->bind_param("ss",$logAction,$hourString);
+
+            if($stmt->execute()){
+                $stmt->bind_result($logCount);
+                $stmt->fetch();
+
+                $this->logActionCountByHourOfDay[$hourString] = $logCount;
+            }
+            else{
+                $this->error = $stmt->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("CALLING FUNCTION","statistics->queryLogActionCountByHourOfDay()");
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+                $stmt->close();
+
+                return false;
+            }
+        }
+
+        if(!empty($this->testsByHourOfDay)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     public function getTotalOfficeSymbols(){
         if(!$this->queryTotalOfficeSymbols()){
             return false;
@@ -1208,6 +1343,175 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalOfficeSymbols()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getUsersActiveToday(){
+        if($this->queryUsersActiveToday()){
+            return $this->usersActiveToday;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryUsersActiveToday(){
+        $dateTimeStartObj = new DateTime("now");
+        $dateTimeStart = $dateTimeStartObj->format("Y-m-d 00:00:00");
+
+        $dateTimeEndObj = new DateTime("now");
+        $dateTimeEnd = $dateTimeEndObj->format("Y-m-d 23:59:59");
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?)");
+        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->usersActiveToday = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveToday()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getUsersActiveThisWeek(){
+        if($this->queryUsersActiveThisWeek()){
+            return $this->usersActiveThisWeek;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryUsersActiveThisWeek(){
+        $dateTimeStartObj = new DateTime("now");
+        $dateTimeStartObj->setISODate($dateTimeStartObj->format("Y"),$dateTimeStartObj->format("W"));
+        $dateTimeStartObj->modify("-1 day");
+        $dateTimeStart = $dateTimeStartObj->format("Y-m-d 00:00:00");
+
+        $dateTimeEndObj = new DateTime("now");
+        $dateTimeEndObj->setISODate($dateTimeEndObj->format("Y"),$dateTimeEndObj->format("W"),6);
+        $dateTimeEnd = $dateTimeEndObj->format("Y-m-d 23:59:59");
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?)");
+        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->usersActiveThisWeek = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveThisWeek()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getUsersActiveThisMonth(){
+        if($this->queryUsersActiveThisMonth()){
+            return $this->usersActiveThisMonth;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryUsersActiveThisMonth(){
+        $dateObj = new DateTime("now");
+
+        $dateTimeStartObj = new DateTime("first day of " . $dateObj->format('F') . " " . $dateObj->format("Y"));
+        $dateTimeEndObj = new DateTime("last day of " . $dateObj->format('F') . " " . $dateObj->format("Y"));
+
+        $dateTimeStart = $dateTimeStartObj->format("Y-m-d 00:00:00");
+        $dateTimeEnd = $dateTimeEndObj->format("Y-m-d 23:59:59");
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?)");
+        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->usersActiveThisMonth = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveThisMonth()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getUsersActiveThisYear(){
+        if($this->queryUsersActiveThisYear()){
+            return $this->usersActiveThisYear;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryUsersActiveThisYear(){
+        $dateTimeStartObj = new DateTime("now");
+        $dateTimeEndObj = new DateTime("now");
+
+        $dateTimeStart = $dateTimeStartObj->format("Y-01-01 00:00:00");
+        $dateTimeEnd = $dateTimeEndObj->format("Y-12-31 23:59:59");
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?)");
+        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->usersActiveThisYear = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveThisYear()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();

@@ -140,6 +140,30 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     </tr>
                 </table>
             </section>
+            <div class="clearfix">&nbsp;</div>
+            <section>
+                <header>
+                    <h2>User Activity</h2>
+                </header>
+                <table>
+                    <tr>
+                        <td><strong>Active Today</strong></td>
+                        <td><?php echo number_format($statisticsObj->getUsersActiveToday()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active This Week</strong></td>
+                        <td><?php echo number_format($statisticsObj->getUsersActiveThisWeek()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active This Month</strong></td>
+                        <td><?php echo number_format($statisticsObj->getUsersActiveThisMonth()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active This Year</strong></td>
+                        <td><?php echo number_format($statisticsObj->getUsersActiveThisYear()); ?></td>
+                    </tr>
+                </table>
+            </section>
         </div>
         <div class="4u">
             <section>

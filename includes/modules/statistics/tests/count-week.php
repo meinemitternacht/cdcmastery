@@ -9,7 +9,13 @@
 $statsObj = new statistics($db,$log,$emailQueue);
 
 $x=0;
+/*
+ * Testing started on February 14th, 2012
+ */
 for($i=2012;$i<=date("Y",time());$i++){
+    /*
+     * 52 weeks in a year!
+     */
     for($j=1;$j<=52;$j++) {
         if($i==date("Y",time()) && $j > date("W",time())){
             continue;
@@ -23,6 +29,12 @@ for($i=2012;$i<=date("Y",time());$i++){
 
             $countData = $statsObj->getTestCountByTimespan($dateTimeStartObj, $dateTimeEndObj);
 
+            /*
+             * Align start of week to Sunday
+             */
+            $dateTimeStartObj->modify("-1 day");
+            $dateTimeEndObj->modify("-1 day");
+
             $startLabel = $dateTimeStartObj->format("j M Y");
             $endLabel = $dateTimeEndObj->format("j M Y");
             $fullLabel = $startLabel . " - " . $endLabel;
@@ -34,6 +46,11 @@ for($i=2012;$i<=date("Y",time());$i++){
             }
         }
     }
+}
+
+if(empty($testCountByTimespanData)){
+    $sysMsg->addMessage("That statistic has no data.");
+    $cdcMastery->redirect("/errors/500");
 }
 
 $testCountData = "";
