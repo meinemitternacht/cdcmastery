@@ -1,4 +1,7 @@
 <?php
+if(isset($_SESSION['queueActivation']))
+    $sysMsg->addMessage("Your account has not yet been activated. Please activate your account by following the link in the e-mail sent to the address you registered with.");
+
 if(!isset($_SESSION['auth'])):
 	if(!empty($_POST)){
         if(!isset($_POST['username']) || empty($_POST['username'])){

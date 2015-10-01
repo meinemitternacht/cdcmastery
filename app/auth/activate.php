@@ -31,6 +31,10 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 if(isset($activationToken)):
 	if($userActivate->verifyActivationToken($activationToken)):
 		if($userActivate->activateUser($activationToken)):
+            if(isset($_SESSION['queueActivation'])){
+                unset($_SESSION['queueActivation']);
+            }
+
 			$sysMsg->addMessage("Thank you for activating your account.  Please login using the form below.");
 			$cdcMastery->redirect("/auth/login");
 		else:
