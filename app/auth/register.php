@@ -1,14 +1,15 @@
 <?php
-//$sysMsg->addMessage("Registration is disabled during the alpha testing phase of this version.");
-//$cdcMastery->redirect("/");
-
 if(isset($_SESSION['auth'])){
     $sysMsg->addMessage("You are already registered.");
     $cdcMastery->redirect("/");
 }
 
-if(isset($_SESSION['vars'][0]))
-	$accountType = $_SESSION['vars'][0];
+if(isset($_SESSION['vars'][0])) {
+    $accountType = $_SESSION['vars'][0];
+}
+else{
+    $accountType = false;
+}
 
 if(isset($_SESSION['vars'][1]))
     $step = $_SESSION['vars'][1];
@@ -58,7 +59,7 @@ if(isset($_POST['registrationFormStep'])):
         }
 
         if($user->getUUIDByEmail($_SESSION['registrationArray']['userEmail']['data'])){
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one or reset your password by clicking the link on the login page.");
             $error = true;
         }
 
@@ -160,9 +161,8 @@ if(isset($_POST['registrationFormStep'])):
                 $log->setDetail("User Handle",$registerUser->getUserHandle());
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your
-                                            e-mail address in the next few minutes. If you don't receive the link,
-                                            open a ticket with our helpdesk: <a href=\"http://helpdesk.cdcmastery.com/\">CDCMastery Helpdesk</a>");
+                $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.");
+                $_SESSION['queueActivation'] = true;
                 $cdcMastery->redirect("/");
             }
             else {
@@ -176,10 +176,7 @@ if(isset($_POST['registrationFormStep'])):
                 $log->setDetail("Error Reason","Unable to queue user activation");
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The
-                good news is that we were able to save most of your information, so just open a ticket at the
-                <a href=\"http://helpdesk.cdcmastery.com/\">CDCMastery Helpdesk</a> and we'll get this sorted
-                out as soon as possible.");
+                $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The good news is that we were able to save most of your information, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.");
 
                 $cdcMastery->redirect("/errors/500");
             }
@@ -195,10 +192,7 @@ if(isset($_POST['registrationFormStep'])):
             $log->setDetail("Error reason","Unable to save user data");
             $log->saveEntry();
 
-            $sysMsg->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to
-            log all of your information, so just open a ticket at the
-            <a href=\"http://helpdesk.cdcmastery.com/\">CDCMastery Helpdesk</a> and we'll get this sorted out
-            as soon as possible.");
+            $sysMsg->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to log most of it, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.");
 
             $cdcMastery->redirect("/errors/500");
         }
@@ -391,6 +385,26 @@ if(isset($accountType)):
 
                 });
 
+                $('#userEmail_confirmation').change(function () {
+                    var userEmail = $('#userEmail_confirmation').val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/ajax/registration/checkEmail",
+                        data: {'userEmail': userEmail },
+                        success: function (response) {
+                            if(response != 0) {
+                                finishAjax('system-messages-block', '<ul><li><strong>' + escape(response) + '</strong></li></ul>');
+                            }
+                            else{
+                                $('#system-messages-container-block').hide();
+                            }
+                        }
+                    });
+
+                    return false;
+
+                });
+
             });
 
             function finishAjax(id, response) {
@@ -551,16 +565,29 @@ if(isset($accountType)):
                                        data-validation-error-msg="You must provide your last name">
                             </li>
                             <li>
-                                <label for="userEmail">E-mail</label>
+                                <label for="userEmail_confirmation">E-mail</label>
+                                <br>
+                                <input id="userEmail_confirmation"
+                                       name="userEmail_confirmation"
+                                       type="text"
+                                       class="input_full"
+                                       <?php if(isset($_SESSION['registrationArray']['userEmail_confirmation']['data'])): ?>
+                                       value="<?php echo $_SESSION['registrationArray']['userEmail_confirmation']['data']; ?>"
+                                       <?php endif; ?>
+                                       data-validation="email">
+                            </li>
+                            <li>
+                                <label for="userEmail">Confirm E-mail</label>
                                 <br>
                                 <input id="userEmail"
                                        name="userEmail"
                                        type="text"
                                        class="input_full"
-                                       <?php if(isset($_SESSION['registrationArray']['userEmail']['data'])): ?>
-                                       value="<?php echo $_SESSION['registrationArray']['userEmail']['data']; ?>"
-                                       <?php endif; ?>
-                                       data-validation="email">
+                                    <?php if(isset($_SESSION['registrationArray']['userEmail']['data'])): ?>
+                                        value="<?php echo $_SESSION['registrationArray']['userEmail']['data']; ?>"
+                                    <?php endif; ?>
+                                       data-validation="confirmation"
+                                       data-validation-error-msg="The e-mail addresses do not match">
                             </li>
                             <li>
                                 <label for="userBase">Base</label>
