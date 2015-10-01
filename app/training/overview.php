@@ -82,7 +82,7 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
                         $userStatistics->setUserUUID($subordinateUser);
                         $userAverage = round($userStatistics->getAverageScore(),2);
                         $userLatestScore = $userStatistics->getLatestTestScore();
-                        $userTestCount = $userStatisticsObj->getTotalTests();
+                        $userTestCount = $userStatistics->getTotalTests();
 
                         if($userTestCount > 0) {
                             $chartData[$i]['userName'] = $tmUser->getFullName();
