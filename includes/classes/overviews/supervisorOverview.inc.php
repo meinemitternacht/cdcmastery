@@ -51,9 +51,7 @@ class supervisorOverview extends CDCMastery
             $stmt->close();
 
             foreach($tempList as $userUUID) {
-                if ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "user") {
                     $this->subordinateUserList[] = $userUUID;
-                }
             }
 
             return true;
