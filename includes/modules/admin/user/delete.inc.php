@@ -13,8 +13,16 @@ if(isset($_POST['confirmUserDelete'])){
             $userFullName = $delUserObj->getFullName();
 
             if($roles->getRoleType($delUserObj->getUserRole()) != "admin") {
+                $authObj = new auth($userUUID,$log,$db,$roles,$emailQueue);
                 $testManager = new testManager($db,$log,$afsc);
                 $userTestList = $testManager->getTestUUIDList($userUUID);
+
+                if(!$authObj->getActivationStatus()){
+                    $activateObj = new userActivation($db,$log,$emailQueue);
+                    if(!$activateObj->deleteUserActivationToken($userUUID)){
+                        $sysMsg->addMessage("User activation token not cleared.");
+                    }
+                }
 
                 if(!$log->clearLogEntries($userUUID)){
                     $sysMsg->addMessage("Log Entries not cleared.");
