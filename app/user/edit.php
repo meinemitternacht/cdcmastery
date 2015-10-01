@@ -271,6 +271,8 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                     </ul>
                     <input type="submit" value="Save">
                 </form>
+                <div class="clearfix">&nbsp;</div>
+                <a href="/user/disable" class="text-warning">Disable my account</a>
             </section>
         </div>
     </div>
