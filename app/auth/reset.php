@@ -55,12 +55,19 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 	$userUUID = $pwReset->getUUIDByEmail($userEmail);
 	
 	if($userUUID){
-		if($pwReset->sendPasswordReset($userUUID)){
-			$sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.");
-		}
-		else{
-			$sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
-		}
+        $auth = new auth($userUUID,$log,$db,$roles,$emailQueue);
+
+        if($auth->getActivationStatus()) {
+            if ($pwReset->sendPasswordReset($userUUID)) {
+                $sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.");
+            } else {
+                $sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
+            }
+        }
+        else{
+            $sysMsg->addMessage("Please activate your account before performing a password reset. If you did not receive an activation e-mail within one hour of registering, please send a new activation e-mail below.");
+            $cdcMastery->redirect("/auth/activate");
+        }
 	}
 	else{
 		$sysMsg->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.");
