@@ -13,6 +13,26 @@
 			</section>
 		</div>
 		<div id="sidebar" class="4u">
+            <section>
+                <header>
+                    <h3>Log In</h3>
+                </header>
+                <form id="loginForm" action="/auth/login" method="POST">
+                    <label for="username">Username or E-mail</label>
+                    <br>
+                    <input type="text" id="username" name="username" class="input_full">
+                    <br>
+                    <label for="password">Password</label>
+                    <br>
+                    <input type="password" id="password" name="password" class="input_full">
+                    <div class="clearfix">&nbsp;</div>
+                    <input type="submit" value="Log in">
+                    <br>
+                    <br>
+                    <a href="/auth/reset">Forgot Password</a>
+                </form>
+            </section>
+            <div class="clearfix">&nbsp;</div>
 			<section>
 				<header>
 					<h2>Recent Updates</h2>
@@ -140,17 +160,6 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 }
 ?>
 <div class="container">
-	<div class="row">
-		<div class="12u">
-			<section>
-				<div class="informationMessages">
-					There was an issue affecting some tests started before 0500 on 30 September 2015.  When scoring the affected tests, the system did not include all applicable questions.
-					<strong>These tests have been removed from the system and the issue has been resolved.</strong>  If you are still encountering this issue with tests started <strong>after</strong>
-					0500 on 30 September 2015, or if you have other questions, please <a href="http://helpdesk.cdcmastery.com/">open a support ticket</a>.
-				</div>
-			</section>
-		</div>
-	</div>
 	<div class="row">
         <div class="4u">
 			<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
