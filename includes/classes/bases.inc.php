@@ -127,6 +127,30 @@ class bases extends CDCMastery
 			return $baseArray;
 		}
 	}
+
+    public function listUserBases(){
+        $res = $this->db->query("SELECT DISTINCT(userBase), baseName FROM userData LEFT JOIN baseList ON baseList.uuid = userData.userBase ORDER BY baseName ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $baseArray[$row['userBase']] = $row['baseName'];
+            }
+
+            $noResults = false;
+        }
+        else{
+            $noResults = true;
+        }
+
+        $res->close();
+
+        if($noResults){
+            return false;
+        }
+        else{
+            return $baseArray;
+        }
+    }
 	
 	public function loadBase($uuid){
 		$stmt = $this->db->prepare("SELECT	uuid,
