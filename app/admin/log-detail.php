@@ -47,7 +47,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>IP</th>
-								<td><?php echo $logData->getIP(); ?></td>
+								<td><a href="/admin/log/0/25/timestamp/DESC/ip/<?php echo base64_encode($logData->getIP()); ?>" title="Show log entries for this IP"><?php echo $logData->getIP(); ?></a></td>
 							</tr>
 							<tr>
 								<th>Timestamp</th>

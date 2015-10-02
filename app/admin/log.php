@@ -36,6 +36,9 @@ if($filterBy && $filterValue){
         case "user":
             $logFilter->setFilterUserUUID($filterValue);
             break;
+        case "ip":
+            $logFilter->setFilterIP(base64_decode($filterValue));
+            break;
     }
 
     $logFiltered = true;
