@@ -11,6 +11,9 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
      * Ensure test is valid
      */
     if ($testManager->loadIncompleteTest($testUUID)) {
+        if(empty($testManager->getIncompleteUserUUID())){
+            $cdcMastery->redirect("/test/take");
+        }
         if($_SESSION['userUUID'] != $testManager->getIncompleteUserUUID()) {
             /*
              * Not this user's test!!  Oh boy...
@@ -222,17 +225,6 @@ else {
             });
         </script>
         <div class="container">
-            <div class="row">
-                <div class="12u">
-                    <section>
-                        <div class="informationMessages">
-                            There was an issue affecting some tests started before 0500 on 30 September 2015.  When scoring the affected tests, the system did not include all applicable questions.
-                            <strong>These tests have been removed from the system and the issue has been resolved.</strong>  If you are still encountering this issue with tests started <strong>after</strong>
-                            0500 on 30 September 2015, or if you have other questions, please <a href="http://helpdesk.cdcmastery.com/">open a support ticket</a>.
-                        </div>
-                    </section>
-                </div>
-            </div>
             <div class="row">
                 <?php if ($userStatistics->getIncompleteTests() >= 5): ?>
                     <div class="4u">
