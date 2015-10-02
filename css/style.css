@@ -748,7 +748,7 @@ tr:nth-child(odd) td {
     color: #000
 }
 
-#list-answers ul li:hover {
+#list-answers ul li:hover, .answer-jquery-hover {
     background-color: #8C9FFF !important;
     color: #fff;
     cursor: pointer
