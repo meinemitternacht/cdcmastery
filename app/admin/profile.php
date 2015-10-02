@@ -111,7 +111,7 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Base</th>
-								<td><?php echo $bases->getBaseName($userProfile->getUserBase()); ?></td>
+								<td><a href="/admin/base-overview/<?php echo $userProfile->getUserBase(); ?>" title="Go to Base Overview"><?php echo $bases->getBaseName($userProfile->getUserBase()); ?></a></td>
 							</tr>
 							<tr>
 								<th class="th-child">Office Symbol</th>
