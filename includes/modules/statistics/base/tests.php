@@ -19,6 +19,7 @@ foreach($baseList as $baseUUID => $baseName){
         if ($firstRow == false) {
             $chartTestsByBaseData .= ",";
         }
+        $tableData[$i]['baseUUID'] = $baseUUID;
         $tableData[$i]['baseName'] = $baseName;
         $tableData[$i]['testCount'] = $testCount;
         $chartTestsByBaseData .= "{ x: " . $i . ", toolTipContent: \"" . $baseName . ": {y}\", y: " . $testCount . " }";
@@ -73,7 +74,11 @@ foreach($baseList as $baseUUID => $baseName){
                     </tr>
                     <?php foreach($tableData as $tableRow): ?>
                         <tr>
+                            <?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
+                            <td><a href="/admin/base-overview/<?php echo $tableRow['baseUUID']; ?>"><?php echo $tableRow['baseName']; ?></a></td>
+                            <?php else: ?>
                             <td><?php echo $tableRow['baseName']; ?></td>
+                            <?php endif; ?>
                             <td><?php echo $tableRow['testCount']; ?></td>
                         </tr>
                     <?php endforeach; ?>
