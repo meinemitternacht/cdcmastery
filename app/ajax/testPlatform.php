@@ -20,7 +20,10 @@ if(isset($_POST['actionData']))
 
 if(isset($testUUID)){
 	if($testManager->loadIncompleteTest($testUUID)){
-		if(isset($userAction)){
+        if(!$testManager->getIncompleteTestUUID()){
+            echo '<META http-equiv="refresh" content="0;URL=https://cdcmastery.com/test/take">';
+        }
+		elseif(isset($userAction)){
 			switch($userAction){
 				case "answerQuestion":
 					if(isset($actionData) && !empty($actionData)){
