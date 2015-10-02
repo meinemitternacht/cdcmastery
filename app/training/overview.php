@@ -37,6 +37,7 @@ if(empty($subordinateSupervisors) && empty($subordinateUsers)):
 endif;
 
 $totalUserTestCount = $tmOverview->getTotalUserTests();
+$totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
 ?>
 <div class="container">
     <div class="row">
@@ -104,45 +105,6 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
                         </tr>
                     <?php endforeach;?>
                 </table>
-                <?php
-                if(isset($chartData)):
-                    $chartOutputData = "";
-                    $firstRow = true;
-                    $i=0;
-                    foreach($chartData as $rowKey => $rowData){
-                        if ($firstRow == false) {
-                            $chartOutputData .= ",";
-                        }
-
-                        $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
-                        $firstRow = false;
-                        $i++;
-                    }
-                    ?>
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            var chart = new CanvasJS.Chart("chart-container", {
-
-                                title:{
-                                    text: "Testing Overview"
-                                },
-                                axisX:{
-                                    valueFormatString: " ",
-                                    tickLength: 0
-                                },
-                                data: [
-                                    {
-                                        /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                                        type: "column",
-                                        dataPoints: [<?php echo $chartOutputData; ?>]
-                                    }
-                                ]
-                            });
-
-                            chart.render();
-                        }
-                    </script>
-                <?php endif; ?>
             </section>
         </div>
         <?php endif; ?>
@@ -177,7 +139,7 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
                     </tr>
                     <tr>
                         <td>Total Supervisor Tests</td>
-                        <td><?php echo $tmOverview->getTotalSupervisorTests(); ?></td>
+                        <td><?php echo $totalSupervisorTestCount; ?></td>
                     </tr>
                     <tr>
                         <td>Average User Test Score</td>
@@ -196,6 +158,11 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
         <div class="9u">
             <section>
                 <h2>Supervisor Data</h2>
+                <?php if($totalUserTestCount > 0): ?>
+                    <div id="supervisor-chart-container" style="height:400px">
+                        &nbsp;
+                    </div>
+                <?php endif; ?>
                 <table>
                     <tr>
                         <th>User Name</th>
@@ -210,10 +177,18 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
                         $userStatistics->setUserUUID($subordinateSupervisor);
                         $supervisorAverage = round($userStatistics->getAverageScore(),2);
                         $supervisorLatestTestScore = $userStatistics->getLatestTestScore();
+                        $supervisorTestCount = $userStatistics->getTotalTests();
+
+                        if($supervisorTestCount > 0) {
+                            $supervisorChartData[$i]['userName'] = $tmUser->getFullName();
+                            $supervisorChartData[$i]['userAverage'] = $supervisorAverage;
+                            $supervisorChartData[$i]['userTestCount'] = $supervisorTestCount;
+                            $i++;
+                        }
                         ?>
                         <tr>
                             <td><a href="/admin/profile/<?php echo $tmUser->getUUID(); ?>"><?php echo $tmUser->getFullName(); ?></a></td>
-                            <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
+                            <td><?php echo $supervisorTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
                             <td<?php if($cdcMastery->scoreColor($supervisorAverage)){ echo " class=\"".$cdcMastery->scoreColor($supervisorAverage)."\""; }?>><?php echo $supervisorAverage; ?></td>
                             <td<?php if($cdcMastery->scoreColor($supervisorLatestTestScore)){ echo " class=\"".$cdcMastery->scoreColor($supervisorLatestTestScore)."\""; }?>><?php echo $supervisorLatestTestScore; ?></td>
                             <td><?php echo $tmUser->getUserLastLogin(); ?></td>
@@ -224,5 +199,65 @@ $totalUserTestCount = $tmOverview->getTotalUserTests();
         </div>
     </div>
     <?php endif; ?>
+    <?php
+    if(isset($chartData)):
+        $chartOutputData = "";
+        $firstRow = true;
+        $i=0;
+        foreach($chartData as $rowKey => $rowData){
+            if ($firstRow == false) {
+                $chartOutputData .= ",";
+            }
+
+            $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+            $firstRow = false;
+            $i++;
+        }
+    endif;
+
+    if(isset($supervisorChartData)):
+        $supervisorChartOutputData = "";
+        $firstRow = true;
+        $i=0;
+        foreach($supervisorChartData as $rowKey => $rowData){
+            if ($firstRow == false) {
+                $supervisorChartOutputData .= ",";
+            }
+
+            $supervisorChartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+            $firstRow = false;
+            $i++;
+        }
+        ?>
+    <?php endif; ?>
+    <script type="text/javascript">
+        window.onload = function () {
+            var dataPoints = [<?php echo $chartOutputData; ?>];
+            renderMyChart("chart-container", dataPoints, "User Testing Overview");
+            <?php if($supervisorChartOutputData): ?>
+            var supervisorDataPoints = [<?php echo $supervisorChartOutputData; ?>];
+            renderMyChart("supervisor-chart-container", supervisorDataPoints, "Supervisor Testing Overview");
+            <?php endif; ?>
+
+            function renderMyChart(theDIVid, myData, chartTitle) {
+                var chart = new CanvasJS.Chart(theDIVid, {
+                    title:{
+                        text: chartTitle
+                    },
+                    axisX:{
+                        valueFormatString: " ",
+                        tickLength: 0
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            dataPoints: myData
+                        }
+                    ]
+                });
+                chart.render();
+            }
+        }
+    </script>
 </div>
 <div class="clearfix"><br></div>
