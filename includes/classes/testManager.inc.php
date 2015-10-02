@@ -1091,7 +1091,7 @@ class testManager extends CDCMastery
 			$output = "Sorry, we could not load that question from the database.";
 		}
 
-        if(isset($_SESSION['userUUID']) && $_SESSION['userUUID'] == "7bf2aaac-fa5e-4223-9139-cb95b1ecc8ac"){
+        /*if(isset($_SESSION['userUUID']) && $_SESSION['userUUID'] == "7bf2aaac-fa5e-4223-9139-cb95b1ecc8ac"){
             $output .= "<div class=\"clearfix\">&nbsp;</div>";
             $output .= "<div>Debug data:";
             $output .= "Questions Answered: ".$this->getIncompleteQuestionsAnswered();
@@ -1099,7 +1099,7 @@ class testManager extends CDCMastery
             $output .= "testData Count: ".count($this->getTestData());
             $output .= "<br>";
             $output .= "</div>";
-        }
+        }*/
 		
 		return $output;
 	}
