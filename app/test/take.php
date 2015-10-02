@@ -50,6 +50,103 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
                     });
                 }
 
+                function navigateTest(destination) {
+                    loading_show();
+
+                    $.post("/ajax/testPlatform/<?php echo $testUUID; ?>", {
+                        action: destination
+                    }, function (response) {
+                        setTimeout("finishAjax('questionAnswer', '" + escape(response) + "')", 500);
+                    });
+
+                    return false;
+
+                }
+
+                $(window).keydown(function(e) {
+                    switch (e.keyCode) {
+                        case 35:
+                            e.preventDefault();
+                            navigateTest("lastQuestion");
+                            return;
+                        case 36:
+                            e.preventDefault();
+                            navigateTest("firstQuestion");
+                            return;
+                        case 37:
+                            navigateTest("previousQuestion");
+                            return;
+                        case 38:
+                            e.preventDefault();
+                            return;
+                        case 39:
+                            navigateTest("nextQuestion");
+                            return;
+                        case 40:
+                            e.preventDefault();
+                            return;
+                        case 49:
+                            $("#answer1").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer1').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 50:
+                            $("#answer2").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer2').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 51:
+                            $("#answer3").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer3').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 52:
+                            $("#answer4").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer4').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 65:
+                            $("#answer1").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer1').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 66:
+                            $("#answer2").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer2').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 67:
+                            $("#answer3").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer3').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 68:
+                            $("#answer4").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer4').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 97:
+                            $("#answer1").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer1').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 98:
+                            $("#answer2").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer2').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 99:
+                            $("#answer3").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer3').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                        case 100:
+                            $("#answer4").toggleClass("answer-jquery-hover");
+                            var ansID = $('#answer4').attr('p');
+                            submitAnswer(ansID);
+                            return;
+                    }
+                });
 
                 $.post("/ajax/testPlatform/<?php echo $testUUID; ?>", {
                     action: 'specificQuestion',
@@ -160,12 +257,16 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
                 <div class="12u">
                     <section>
                         <div class="test-nav" style="display: none;">
-                            <button class="test-nav-button" id="goFirst">&lt;&lt;</button>
-                            <button class="test-nav-button" id="goPrevious">&lt;</button>
-                            <button class="test-nav-button" id="goNext">&gt;</button>
-                            <button class="test-nav-button" id="goLast">&gt;&gt;</button>
+                            <button class="test-nav-button" id="goFirst" title="First Question">&lt;&lt;</button>
+                            <button class="test-nav-button" id="goPrevious" title="Previous Question">&lt;</button>
+                            <button class="test-nav-button" id="goNext" title="Next Question">&gt;</button>
+                            <button class="test-nav-button" id="goLast" title="Last Question">&gt;&gt;</button>
                         </div>
                         <div class="clearfix">&nbsp;</div>
+                        <div class="text-center">
+                            <strong>Tip:</strong> You can use the <strong>Left</strong> and <strong>Right</strong> arrow keys to navigate through the test.  <strong>Home</strong> and <strong>End</strong> will take you to the first and last questions.<br>
+                            To answer a question, click on the answer or press the numbers <strong>1-4</strong> or the letters <strong>a</strong>, <strong>b</strong>, <strong>c</strong>, or <strong>d</strong>.
+                        </div>
                     </section>
                 </div>
             </div>
