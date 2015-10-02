@@ -4,7 +4,7 @@ if(isset($_SESSION['auth'])){
     $cdcMastery->redirect("/");
 }
 
-if(isset($_SESSION['vars'][0])) {
+if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
     $accountType = $_SESSION['vars'][0];
 }
 else{
@@ -199,7 +199,7 @@ if(isset($_POST['registrationFormStep'])):
     }
 endif;
 
-if(isset($accountType)):
+if($accountType):
     if(isset($step) && $step == 2):
         if(!isset($_SESSION['registrationArray'])){
             $cdcMastery->redirect("/auth/register");
@@ -677,7 +677,7 @@ if(isset($accountType)):
             });
         </script>
         <?php endif; ?>
-<?php else:?>
+<?php else: ?>
 <div class="container">
 	<div class="row">
 		<div class="12u">
@@ -689,7 +689,7 @@ if(isset($accountType)):
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You must register with an e-mail address ending with ".mil"</li>
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>Only one account may be registered per e-mail address</li>
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You may change your account type at any time by sending a message to our support team</li>
-					<li><i class="icon-inline icon-20 ic-lightbulb"></i>Supervisor and Training manager accounts require approval. Your account will have user permissions until approval occurs</li>
+					<li><i class="icon-inline icon-20 ic-lightbulb"></i><strong>Supervisor and Training manager accounts require approval. Your account will have user permissions until approval occurs</strong></li>
 				</ul>
 			</section>
 		</div>
