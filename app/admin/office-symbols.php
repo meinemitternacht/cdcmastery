@@ -110,7 +110,7 @@ else{
 							<th style="width:20%">Actions</th>
 						</tr>
 						<tr>
-							<td><input type="text" name="officeSymbolName"></td>
+							<td><input type="text" name="officeSymbolName" id="officeSymbolName" autofocus></td>
 							<td><input type="submit" value="Add"></td>
 						</tr>
 						<?php foreach($officeSymbolList as $osUUID => $officeSymbolText): ?>
