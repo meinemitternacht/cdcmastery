@@ -82,3 +82,10 @@ body,input,textarea,select{font-size: 11pt;}
  * Tables
  */
 th, td{padding:0.4em;}
+
+/*
+ * Mobile login block
+ */
+
+#mobile-login { display:none; }
+#desktop-login { display:block; }

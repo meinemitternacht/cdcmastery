@@ -1,5 +1,30 @@
 <?php if(!$cdcMastery->loggedIn()): ?>
 <div class="container">
+    <div id="mobile-login">
+        <div class="row">
+            <div class="12u">
+                <section>
+                    <header>
+                        <h3>Log In</h3>
+                    </header>
+                    <form id="loginForm" action="/auth/login" method="POST">
+                        <label for="username">Username or E-mail</label>
+                        <br>
+                        <input type="text" id="username" name="username" class="input_full">
+                        <br>
+                        <label for="password">Password</label>
+                        <br>
+                        <input type="password" id="password" name="password" class="input_full">
+                        <div class="clearfix">&nbsp;</div>
+                        <input type="submit" value="Log in">
+                        <br>
+                        <br>
+                        <a href="/auth/reset">Forgot Password</a>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
 	<div class="row">
 		<!-- Content -->
 		<div id="content" class="8u skel-cell-important">
@@ -13,25 +38,27 @@
 			</section>
 		</div>
 		<div id="sidebar" class="4u">
-            <section>
-                <header>
-                    <h3>Log In</h3>
-                </header>
-                <form id="loginForm" action="/auth/login" method="POST">
-                    <label for="username">Username or E-mail</label>
-                    <br>
-                    <input type="text" id="username" name="username" class="input_full">
-                    <br>
-                    <label for="password">Password</label>
-                    <br>
-                    <input type="password" id="password" name="password" class="input_full">
-                    <div class="clearfix">&nbsp;</div>
-                    <input type="submit" value="Log in">
-                    <br>
-                    <br>
-                    <a href="/auth/reset">Forgot Password</a>
-                </form>
-            </section>
+            <div id="desktop-login">
+                <section>
+                    <header>
+                        <h3>Log In</h3>
+                    </header>
+                    <form id="loginForm" action="/auth/login" method="POST">
+                        <label for="username">Username or E-mail</label>
+                        <br>
+                        <input type="text" id="username" name="username" class="input_full">
+                        <br>
+                        <label for="password">Password</label>
+                        <br>
+                        <input type="password" id="password" name="password" class="input_full">
+                        <div class="clearfix">&nbsp;</div>
+                        <input type="submit" value="Log in">
+                        <br>
+                        <br>
+                        <a href="/auth/reset">Forgot Password</a>
+                    </form>
+                </section>
+            </div>
             <div class="clearfix">&nbsp;</div>
 			<section>
 				<header>
@@ -58,21 +85,13 @@
 <?php elseif($cdcMastery->loggedIn()): ?>
 <!--[if !IE]><!-->
 <style type="text/css">
-/*
-Max width before this PARTICULAR table gets nasty
-This query will take effect for any screen smaller than 760px
-and also iPads specifically.
-*/
 @media
 only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
-
-	/* Force table to not be like tables anymore */
 	table, thead, tbody, th, td, tr {
 		display: block;
 	}
 
-	/* Hide table headers (but not display: none;, for accessibility) */
 	thead tr {
 		position: absolute;
 		top: -9999px;
@@ -82,7 +101,6 @@ only screen and (max-width: 760px),
 	tr { border: 1px solid #ccc; }
 
 	td {
-		/* Behave  like a "row" */
 		border: none;
 		border-bottom: 1px solid #eee;
 		position: relative;
@@ -90,9 +108,7 @@ only screen and (max-width: 760px),
 	}
 
 	td:before {
-		/* Now like a table header */
 		position: absolute;
-		/* Top/left values mimic padding */
 		top: 6px;
 		left: 6px;
 		width: 25%;
@@ -100,9 +116,6 @@ only screen and (max-width: 760px),
 		white-space: nowrap;
 	}
 
-	/*
-	Label the data
-	*/
 	table#index-table-1 td:nth-of-type(1):before { content: "Completed"; }
 	table#index-table-1 td:nth-of-type(2):before { content: "AFSC"; }
 	table#index-table-1 td:nth-of-type(3):before { content: "Score"; }
@@ -114,7 +127,6 @@ only screen and (max-width: 760px),
 	table#index-table-2 td:nth-of-type(4):before { content: "Actions"; }
 }
 
-/* Smartphones (portrait and landscape) ----------- */
 @media only screen
 and (min-device-width : 320px)
 and (max-device-width : 480px) {
@@ -124,7 +136,6 @@ and (max-device-width : 480px) {
 		width: 320px; }
 	}
 
-/* iPads (portrait and landscape) ----------- */
 @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
 	body {
 		width: 495px;
@@ -224,6 +235,26 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 			</section>
         </div>
 		<div class="8u">
+            <section>
+                <header>
+                    <h2>Welcome, <?php echo $user->getFullName(); ?></h2>
+                </header>
+                <p>
+                    We want your feedback!  If you have suggestions on how we can improve this service, or if you want to tell us your success story, drop us a line
+                    by clicking "Support" at the top and creating a ticket under the category "Feedback".<br>
+                    <br>
+                    Also, there are a few features we are actively
+                    working on:
+                </p>
+                <blockquote>
+                    <ul style="list-style: circle">
+                        <li>Flash Cards</li>
+                        <li>Custom Tests (where you create the questions you want to see)</li>
+                        <li>Printed tests</li>
+                    </ul>
+                </blockquote>
+            </section>
+            <div class="clearfix">&nbsp;</div>
 			<section>
 				<header>
 					<h2>Overview</h2>

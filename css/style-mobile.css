@@ -4,10 +4,7 @@
     Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 */
 
-/*********************************************************************************/
-/* Basic                                                                         */
-/*********************************************************************************/
-
+/* Basic */
 	body,input,textarea,select
 	{
 		line-height: 1.75em;
@@ -55,10 +52,7 @@
 		text-align: center;
 	}
 	
-/*********************************************************************************/
-/* UI                                                                            */
-/*********************************************************************************/
-
+/* UI */
 	#titleBar
 	{
 		background: none;
@@ -136,20 +130,14 @@
 			#navPanel .indent-5 { display: inline-block; width: 5em; }
 			#navPanel .depth-0 { color: #fff; }
 			
-/*********************************************************************************/
-/* Header                                                                        */
-/*********************************************************************************/
-
+/* Header */
 	#header
 	{
 		padding: 1em 0em 0em 0em;
 		text-align: center;
 	}
 
-/*********************************************************************************/
-/* Logo                                                                          */
-/*********************************************************************************/
-
+/* Logo */
 	#logo
 	{
 		margin-bottom: 1em;
@@ -186,67 +174,52 @@
 		display: none;
 	}
 	
-/*********************************************************************************/
-/* Main                                                                          */
-/*********************************************************************************/
+/* Main */
+#main {
+    padding: 1em 0em 1em 0em;
+}
 
-	#main
-	{
-		padding: 1em 0em 1em 0em;
-	}
+#content {
+}
 
-	#content
-	{
-	}
-	
-	#content header
-	{
-		margin-bottom: 2em;
-	}
-	
-	#content header h2
-	{
-		line-height: 1em;
-		font-size: 1.8em;
-	}
-	
-	#content header .byline
-	{
-		line-height: 1.5em;
-		font-size: 1.20em;
-	}
-	
-	#sidebar h2
-	{
-		display: block;
-		padding-bottom: 1em;
-		font-size: 1.4em;
-	}
-	
+#content header {
+    margin-bottom: 2em;
+}
 
-/*********************************************************************************/
-/* Featured                                                                      */
-/*********************************************************************************/
-	
-	#featured
-	{
-		padding: 4em 0em 4em 0em;
-	}
-	
-/*********************************************************************************/
-/* Footer                                                                        */
-/*********************************************************************************/
-	
-	#footer
-	{
-		padding: 4em 0em 2em 0em;
-	}
-	
-	#footer h2
-	{
-		padding-bottom: 2em;
-		font-size: 1.4em;
-	}
+#content header h2 {
+    line-height: 1em;
+    font-size: 1.8em;
+}
 
-/* testing pages */
+#content header .byline {
+    line-height: 1.5em;
+    font-size: 1.20em;
+}
+
+#sidebar h2 {
+    display: block;
+    padding-bottom: 1em;
+    font-size: 1.4em;
+}
+	
+/* Featured */
+#featured {
+    padding: 4em 0em 4em 0em;
+}
+	
+/* Footer */
+#footer {
+    padding: 4em 0em 2em 0em;
+}
+
+#footer h2 {
+    padding-bottom: 2em;
+    font-size: 1.4em;
+}
+
+/* Testing Pages */
 #list-answers ul li {margin-bottom:5px;padding:5px;width:100%;}
+
+/* Mobile login block */
+#mobile-login {display:block;}
+#desktop-login {display:none;}
