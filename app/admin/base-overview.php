@@ -6,6 +6,7 @@
  * Time: 1:54 AM
  */
 $baseUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
+$sortBy = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
 if(!$baseUUID){
     $baseUUID = $user->getUserBase();
@@ -28,7 +29,12 @@ $statistics = new statistics($db,$log,$emailQueue);
 $baseUserObj = new user($db,$log,$emailQueue);
 $userStatisticsObj = new userStatistics($db,$log,$roles);
 $baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
-$baseUsers = $user->sortUserUUIDList($baseUsersUUIDList,"userLastName");
+if(!$sortBy || $sortBy == "user") {
+    $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastName");
+}
+elseif($sortBy == "last-login"){
+    $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastLogin", "DESC");
+}
 $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 ?>
 <div class="container">
@@ -62,11 +68,11 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                 <?php endif; ?>
                 <table class="overview-table">
                     <tr>
-                        <th>User Name</th>
+                        <th><a href="/admin/base-overview/<?php echo $baseUUID; ?>/user" class="text-white">User Name</a></th>
                         <th>Total Tests</th>
                         <th>Average Score</th>
                         <th>Last Score</th>
-                        <th>Last Login</th>
+                        <th><a href="/admin/base-overview/<?php echo $baseUUID; ?>/last-login" class="text-white">Last Login</a></th>
                     </tr>
                     <?php
                     $i=0;
@@ -157,7 +163,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                                     class="input_full"
                                     size="1">
                                 <?php
-                                $baseList = $bases->listBases();
+                                $baseList = $bases->listUserBases();
                                 foreach($baseList as $baseListUUID => $baseName): ?>
                                     <?php if($baseUUID == $baseListUUID): ?>
                                     <option value="<?php echo $baseListUUID; ?>" SELECTED><?php echo $baseName; ?></option>
