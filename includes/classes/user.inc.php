@@ -62,7 +62,7 @@ class user extends CDCMastery {
     }
 
 	public function listUsers(){
-		$res = $this->db->query("SELECT uuid, userHandle, userFirstName, userLastName, userRank FROM userData ORDER BY userLastName ASC");
+		$res = $this->db->query("SELECT uuid, userHandle, userFirstName, userLastName, userRank FROM userData ORDER BY userLastName, userFirstName ASC");
 
 		$userArray = Array();
 
