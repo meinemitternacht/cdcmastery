@@ -34,8 +34,8 @@
                                     '/css/style-desktop.css');
 
         $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray);
-        $cssURL = "/minify/min/?f=" . implode(",",$cssArray);
-        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray);
+        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=51651815";
+        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=51651815";
         ?>
 		<script src="<?php echo $scriptURL; ?>"></script>
 		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
