@@ -95,7 +95,7 @@ class passwordReset extends user {
 				$emailBodyHTML .= "Click on the link below to access your account and change your password.  ";
 				$emailBodyHTML .= "This link will be valid for 24 hours, and expires on ".$timeExpiresEmail." GMT.";
 				$emailBodyHTML .= "<br /><br />";
-				$emailBodyHTML .= "<a href=\"https://cdcmastery.com/auth/reset/".$uuid."\">Reset your password</a>";
+				$emailBodyHTML .= "https://cdcmastery.com/auth/reset/".$uuid;
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "Regards,";
 				$emailBodyHTML .= "<br /><br />";
@@ -108,11 +108,12 @@ class passwordReset extends user {
 				$emailBodyText .= "If you did not request a password reset, ignore this e-mail and contact us (support@cdcmastery.com).  ";
 				$emailBodyText .= "Click on the link below to access your account and change your password.  ";
 				$emailBodyText .= "This link will be valid for 24 hours, and expires on ".$timeExpiresEmail." GMT.";
+                $emailBodyText .= "\r\n\r\n";
+                $emailBodyText .= "https://cdcmastery.com/auth/reset/".$uuid;
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "Regards,";
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "CDCMastery.com";
-				$emailBodyText .= "https://cdcmastery.com/auth/reset/".$uuid;
 
 				$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
 	

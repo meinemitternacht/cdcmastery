@@ -102,7 +102,7 @@ class userActivation extends user {
 				$emailBodyHTML .= "If you cannot click on the link, copy and paste the address into your browser.";
 				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
 				$emailBodyHTML .= "<br /><br />";
-				$emailBodyHTML .= "<a href=\"http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode."\">Click Here to Activate Your Account</a>";
+				$emailBodyHTML .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "Regards,";
 				$emailBodyHTML .= "<br /><br />";
