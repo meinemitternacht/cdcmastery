@@ -127,7 +127,10 @@ else{
 				$testManager->loadTestData($testUUID);
 				$testData = $testManager->getTestData();
 
-                if($testData):
+                if($testData): ?>
+                    <p>Show below are the results of your test.  If you hover on an answer, you can view how often you have selected that particular answer across all of your tests. Clicking the
+                    "Show all answers" link below the test details will detail all of the answers for each question.</p>
+                    <?php
                     $i=1;
                     $c=0;
                     foreach($testData as $questionUUID => $answerUUID):
