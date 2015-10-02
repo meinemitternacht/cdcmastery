@@ -61,7 +61,7 @@ if($router->parseURI()){
 			$_SESSION['nextPage'] = $router->request;
 		}
 
-		echo '<META http-equiv="refresh" content="0;URL=http://cdcmastery.com/auth/login">';
+		echo '<META http-equiv="refresh" content="0;URL=https://cdcmastery.com/auth/login">';
 		exit();
 	}
 
