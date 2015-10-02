@@ -447,7 +447,7 @@ if(isset($_SESSION['vars'][0])):
 										</tr>
                                         <?php foreach($ipAddressList as $ipAddress): ?>
                                         <tr>
-                                            <td><?php echo $ipAddress; ?></td>
+                                            <td><a href="/admin/log/0/25/timestamp/DESC/ip/<?php echo base64_encode($ipAddress); ?>" title="Show log entries for this IP"><?php echo $ipAddress; ?></a></td>
                                             <?php if(isset($_GET['resolve'])): ?>
                                             <td><?php if(!empty($ipAddress)) echo gethostbyaddr($ipAddress); ?></td>
                                             <?php endif; ?>
