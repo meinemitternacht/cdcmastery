@@ -21,7 +21,8 @@
                                 '/js/init.js',
                                 '/js/jquery.formalize.min.js',
                                 '/js/jquery.timeago.js',
-                                '/js/jquery.canvasjs.min.js');
+                                '/js/jquery.canvasjs.min.js',
+								'/js/jquery.tablesorter.min.js');
 
         $cssArray = Array(  '/css/jquery-ui.min.css',
                             '/css/jquery-ui.structure.min.css',
@@ -33,7 +34,7 @@
                                     '/css/style.css',
                                     '/css/style-desktop.css');
 
-        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray);
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=51651816";
         $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=51651815";
         $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=51651815";
         ?>
