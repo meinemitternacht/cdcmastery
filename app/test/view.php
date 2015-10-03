@@ -57,7 +57,12 @@ if($cdcMastery->verifySupervisor() && $testManager->getUserUUID() != $_SESSION['
 $rawAFSCList = $testManager->getAFSCList();
 
 foreach($rawAFSCList as $key => $val){
-	$rawAFSCList[$key] = $afsc->getAFSCName($val);
+    if($cdcMastery->verifyTrainingManager() || $cdcMastery->verifyAdmin()) {
+        $rawAFSCList[$key] = "<a href=\"/admin/cdc-data/".$val."\" title=\"View CDC Data\">".$afsc->getAFSCName($val)."</a>";
+    }
+    else{
+        $rawAFSCList[$key] = $afsc->getAFSCName($val);
+    }
 }
 
 if(count($rawAFSCList) > 1){
