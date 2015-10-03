@@ -105,7 +105,12 @@ class log extends CDCMastery
 		while ($stmt->fetch()) {
 			$this->detailArray[$i]['uuid'] = $detailUUID;
 			$this->detailArray[$i]['dataType'] = htmlspecialchars($dataType);
-			$this->detailArray[$i]['data'] = htmlspecialchars($data);
+			if($dataType != "AFSC ARRAY") {
+				$this->detailArray[$i]['data'] = htmlspecialchars($data);
+			}
+			else{
+				$this->detailArray[$i]['data'] = $data;
+			}
 
 			$i++;
 		}
