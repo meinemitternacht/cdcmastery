@@ -83,6 +83,9 @@ and (max-device-width : 480px) {
 				<header>
 					<h2>Test History For <?php echo $user->getUserNameByUUID($_SESSION['userUUID']); ?></h2>
 				</header>
+				<br>
+				<a href="/user/history-split" title="View Split History">View Split History</a>
+				<br>
                 <div id="chart-container" style="height:400px">
                     &nbsp;
                 </div>
@@ -95,34 +98,34 @@ and (max-device-width : 480px) {
 						<th>Actions</th>
 					</tr>
 					<?php
-                        $i=0;
-                        foreach($testList as $testUUID => $testDetails):
-							if(is_array($testDetails['afscList'])){
-								$rawAFSCList = $testDetails['afscList'];
-								
-								foreach($rawAFSCList as $key => $val){
-									$rawAFSCList[$key] = $afsc->getAFSCName($val);
-								}
-								
-								if(count($rawAFSCList) > 1){
-									$testAFSCList = implode(",",$rawAFSCList);
-								}
-								else{
-									$testAFSCList = $rawAFSCList[0];
-								}
-							}
-							else{
-								$testAFSCList = $testDetails['afscList'];
-							}
-							
-							if(strlen($testAFSCList) > 24){
-								$testAFSCList = substr($testAFSCList,0,25) . "...";
+					$i=0;
+					foreach($testList as $testUUID => $testDetails):
+						if(is_array($testDetails['afscList'])){
+							$rawAFSCList = $testDetails['afscList'];
+
+							foreach($rawAFSCList as $key => $val){
+								$rawAFSCList[$key] = $afsc->getAFSCName($val);
 							}
 
-                            $chartData[$i]['timeCompleted'] = $testDetails['testTimeCompleted'];
-                            $chartData[$i]['testScore'] = $testDetails['testScore'];
-                            $i++;
-					?>
+							if(count($rawAFSCList) > 1){
+								$testAFSCList = implode(",",$rawAFSCList);
+							}
+							else{
+								$testAFSCList = $rawAFSCList[0];
+							}
+						}
+						else{
+							$testAFSCList = $testDetails['afscList'];
+						}
+
+						if(strlen($testAFSCList) > 11){
+							$testAFSCList = substr($testAFSCList,0,12) . "...";
+						}
+
+						$chartData[$i]['timeCompleted'] = $testDetails['testTimeCompleted'];
+						$chartData[$i]['testScore'] = $testDetails['testScore'];
+						$i++;
+						?>
 					<tr>
 						<td><?php echo $cdcMastery->outputDateTime($testDetails['testTimeCompleted'], $_SESSION['timeZone']); ?></td>
 						<td><?php echo $testAFSCList; ?></td>
@@ -132,44 +135,45 @@ and (max-device-width : 480px) {
 					</tr>
 					<?php endforeach; ?>
 				</table>
-                <?php
-                $chartOutputData = "";
-                $firstRow = true;
-                $i=0;
-                $chartData = array_reverse($chartData);
-                foreach($chartData as $rowKey => $rowData){
-                    if ($firstRow == false) {
-                        $chartOutputData .= ",";
-                    }
+				<?php
 
-                    $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['timeCompleted'] . "<br>Score: <strong>{y}</strong>\", y: " . $rowData['testScore'] . " }";
-                    $firstRow = false;
-                    $i++;
-                }
-                ?>
-                <script type="text/javascript">
-                    window.onload = function () {
-                        var chart = new CanvasJS.Chart("chart-container", {
+				$chartOutputData = "";
+				$firstRow = true;
+				$i=0;
+				$chartData = array_reverse($chartData);
+				foreach($chartData as $rowKey => $rowData){
+					if ($firstRow == false) {
+						$chartOutputData .= ",";
+					}
 
-                            title:{
-                                text: "Test History"
-                            },
-                            axisX:{
-                                valueFormatString: " ",
-                                tickLength: 0
-                            },
-                            data: [
-                                {
-                                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                                    <?php if(count($chartData > 50)){ ?>type: "line",<?php } else{ ?>type: "column",<?php } ?>
-                                    dataPoints: [<?php echo $chartOutputData; ?>]
-                                }
-                            ]
-                        });
+					$chartOutputData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['timeCompleted'] . "<br>Score: <strong>{y}</strong>\", y: " . $rowData['testScore'] . " }";
+					$firstRow = false;
+					$i++;
+				}
+				?>
+				<script type="text/javascript">
+					window.onload = function () {
+						var chart = new CanvasJS.Chart("chart-container", {
 
-                        chart.render();
-                    }
-                </script>
+							title:{
+								text: "Test History"
+							},
+							axisX:{
+								valueFormatString: " ",
+								tickLength: 0
+							},
+							data: [
+								{
+									/*** Change type "column" to "bar", "area", "line" or "pie"***/
+										<?php if($i > 75){ ?>type: "line",<?php } else{ ?>type: "spline",<?php } ?>
+									dataPoints: [<?php echo $chartOutputData; ?>]
+								}
+							]
+						});
+
+						chart.render();
+					}
+				</script>
 			</section>
 		</div>
 	</div>
@@ -177,5 +181,5 @@ and (max-device-width : 480px) {
 <?php
 else:
 	$sysMsg->addMessage("You have not completed any tests.");
-	$cdcMastery->redirect("/errors/404");
+	$cdcMastery->redirect("/");
 endif;

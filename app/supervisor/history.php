@@ -108,6 +108,9 @@ if(isset($_SESSION['vars'][0])):
 					<header>
 						<h2>Test History For <?php echo $user->getUserNameByUUID($targetUUID); ?></h2>
 					</header>
+					<br>
+					<a href="/supervisor/history-split/<?php echo $targetUUID; ?>" title="View Split History">View Split History</a>
+					<br>
                     <div id="chart-container" style="height:400px">
                         &nbsp;
                     </div>
