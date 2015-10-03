@@ -71,7 +71,7 @@ if ($workingAFSC):
                         <div class="sub-menu">
                             <ul>
                                 <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/list-questions"><i
-                                            class="icon-inline icon-20 ic-arrow-right"></i>List Questions</a></li>
+                                            class="icon-inline icon-20 ic-arrow-right"></i>List Questions / View Stats</a></li>
                                 <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/add-questions"><i
                                             class="icon-inline icon-20 ic-plus"></i>Add Questions</a></li>
                                 <li><a href="/admin/cdc-data/<?php echo $workingAFSC; ?>/delete-questions"><i

@@ -64,6 +64,10 @@ class statistics extends CDCMastery {
     public $usersActiveThisMonth;
     public $usersActiveThisYear;
 
+    public $totalQuestionOccurrences;
+    public $totalAnswerOccurrences;
+    public $totalQuestionAnswerPairOccurrences;
+
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
         $this->db = $db;
         $this->log = $log;
@@ -1512,6 +1516,108 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveThisYear()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalQuestionOccurrences($questionUUID){
+        if($this->queryTotalQuestionOccurrences($questionUUID)){
+            return $this->totalQuestionOccurrences;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalQuestionOccurrences($questionUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData WHERE questionUUID = ?");
+
+        $stmt->bind_param("s", $questionUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalQuestionOccurrences = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalQuestionOccurrences()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalAnswerOccurrences($answerUUID){
+        if($this->queryTotalAnswerOccurrences($answerUUID)){
+            return $this->totalAnswerOccurrences;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalAnswerOccurrences($answerUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData WHERE answerUUID = ?");
+
+        $stmt->bind_param("s", $answerUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalAnswerOccurrences = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalAnswerOccurrences()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalQuestionAnswerPairOccurrences($questionUUID,$answerUUID){
+        if($this->queryTotalQuestionAnswerPairOccurrences($questionUUID,$answerUUID)){
+            return $this->totalQuestionAnswerPairOccurrences;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalQuestionAnswerPairOccurrences($questionUUID,$answerUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData WHERE questionUUID = ? AND answerUUID = ?");
+
+        $stmt->bind_param("ss",$questionUUID, $answerUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalQuestionAnswerPairOccurrences = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalQuestionAnswerPairOccurrences()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
