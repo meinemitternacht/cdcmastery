@@ -124,11 +124,37 @@ if($formAction){
                 }
             }
         break;
+        case "afsc-migrate-associations":
+            $afscMigrateSource = isset($_POST['afsc-migrate-from']) ? $_POST['afsc-migrate-from'] : false;
+            $afscMigrateDestination = isset($_POST['afsc-migrate-to']) ? $_POST['afsc-migrate-to'] : false;
+            $afscRemovePrevious = isset($_POST['remove-old-assoc']) ? $_POST['remove-old-assoc'] : false;
+
+            if($afscMigrateSource == $afscMigrateDestination){
+                $sysMsg->addMessage("The AFSC you are migrating from cannot be the AFSC you are migrating to.");
+                $cdcMastery->redirect("/admin/afsc");
+            }
+            elseif(!$afscMigrateSource || !$afscMigrateDestination){
+                $sysMsg->addMessage("You must select an AFSC to migrate from and an AFSC to migrate to.");
+                $cdcMastery->redirect("/admin/afsc");
+            }
+            elseif(!isset($_POST['remove-old-assoc'])){
+                $sysMsg->addMessage("You must specify whether or not to remove previous AFSC associations.");
+                $cdcMastery->redirect("/admin/afsc");
+            }
+
+            if($assoc->migrateAFSCAssociations($afscMigrateSource,$afscMigrateDestination,$afscRemovePrevious)){
+                $sysMsg->addMessage("Associations migrated successfully.");
+            }
+            else{
+                $sysMsg->addMessage("Associations were not migrated successfully. Please check the log for details.");
+            }
+            break;
     }
 }
 
 if(!$subAction):
-    $afscList = $afsc->listAFSC(false); ?>
+    $afscList = $afsc->listAFSC(false);
+    $fullAFSCList = $afsc->listAFSC(true); ?>
     <div class="container">
         <div class="row">
             <div class="3u">
@@ -143,7 +169,6 @@ if(!$subAction):
                     </div>
                 </section>
                 <div class="clearfix">&nbsp;</div>
-                <br>
                 <section>
                     <header>
                         <h2>Add AFSC</h2>
@@ -175,6 +200,74 @@ if(!$subAction):
                             <li>
                                 <br>
                                 <input type="submit" value="Add">
+                            </li>
+                        </ul>
+                    </form>
+                </section>
+                <div class="clearfix">&nbsp;</div>
+                <section>
+                    <script>
+                        $(document).ready(function(){
+                            $('select').on('change', function(event ) {
+                                //restore previously selected value
+                                var prevValue = $(this).data('previous');
+                                $('select').not(this).find('option[value="'+prevValue+'"]').show();
+
+                                //hide option selected now
+                                var value = $(this).val();
+                                //update previously selected data
+                                $(this).data('previous',value);
+                                $('select').not(this).find('option[value="'+value+'"]').hide();
+                            });
+                        });
+                    </script>
+                    <header>
+                        <h2>Migrate Associations</h2>
+                    </header>
+                    <p>
+                        This will migrate all user associations with a target AFSC to a destination AFSC.  Please be certain the correct AFSC's are selected: <br><strong>there is no going back</strong>.
+                    </p>
+                    <form action="/admin/afsc" method="POST">
+                        <input type="hidden" name="formAction" value="afsc-migrate-associations">
+                        <ul>
+                            <li>
+                                <label for="afsc-migrate-from">Migrate from</label>
+                                <select class="input_full" name="afsc-migrate-from" id="afsc-migrate-from" size="1">
+                                    <option value="">Select AFSC...</option>
+                                <?php foreach($fullAFSCList as $afscUUID => $afscDetails): ?>
+                                    <?php if($afscDetails['afscFOUO'] == true): ?>
+                                    <option value="<?php echo $afscUUID; ?>" class="text-warning"><?php echo $afscDetails['afscName']; ?></option>
+                                    <?php else: ?>
+                                    <option value="<?php echo $afscUUID; ?>"><?php echo $afscDetails['afscName']; ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                </select>
+                                <div class="clearfix">&nbsp;</div>
+                            </li>
+                            <li>
+                                <label for="afsc-migrate-to">Migrate to</label>
+                                <select class="input_full" name="afsc-migrate-to" id="afsc-migrate-to" size="1">
+                                    <option value="">Select AFSC...</option>
+                                <?php foreach($fullAFSCList as $afscUUID => $afscDetails): ?>
+                                    <?php if($afscDetails['afscFOUO'] == true): ?>
+                                    <option value="<?php echo $afscUUID; ?>" class="text-warning"><?php echo $afscDetails['afscName']; ?></option>
+                                    <?php else: ?>
+                                    <option value="<?php echo $afscUUID; ?>"><?php echo $afscDetails['afscName']; ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                </select>
+                                <div class="clearfix">&nbsp;</div>
+                            </li>
+                            <li>
+                                <label for="remove-old-assoc">Remove associations with previous AFSC?</label>
+                                <br>
+                                <input type="radio" name="remove-old-assoc" value="1"> <span class="text-warning-bold">Yes</span>
+                                <input type="radio" name="remove-old-assoc" value="0" CHECKED> No
+                                <div class="clearfix">&nbsp;</div>
+                            </li>
+                            <li>
+                                <div class="clearfix">&nbsp;</div>
+                                <input type="submit" value="Migrate">
                             </li>
                         </ul>
                     </form>
