@@ -57,9 +57,25 @@ class testManager extends CDCMastery
 	 * testHistory Table Related Functions
 	 */
 
-	public function listUserTests($userUUID,$limit=false){
+	public function listUserTests($userUUID,$limit=false,$historyOrderBy=false){
 		if($limit && is_int($limit)){
-			$stmt = $this->db->prepare("SELECT 	uuid,
+			if($historyOrderBy){
+				$stmt = $this->db->prepare("SELECT 	uuid,
+												userUUID,
+												afscList,
+												totalQuestions,
+												questionsMissed,
+												testScore,
+												testTimeStarted,
+												testTimeCompleted,
+												oldTestID
+										FROM testHistory
+										WHERE userUUID = ?
+										ORDER BY afscList, testTimeStarted DESC
+										LIMIT 0, ?");
+			}
+			else{
+				$stmt = $this->db->prepare("SELECT 	uuid,
 												userUUID,
 												afscList,
 												totalQuestions,
@@ -72,11 +88,13 @@ class testManager extends CDCMastery
 										WHERE userUUID = ?
 										ORDER BY testTimeStarted DESC
 										LIMIT 0, ?");
+			}
 			
 			$stmt->bind_param("si",$userUUID,$limit);
 		}
 		else{
-			$stmt = $this->db->prepare("SELECT 	uuid,
+			if($historyOrderBy){
+				$stmt = $this->db->prepare("SELECT 	uuid,
 												userUUID,
 												afscList,
 												totalQuestions,
@@ -87,7 +105,22 @@ class testManager extends CDCMastery
 												oldTestID
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY testTimeStarted DESC");
+										ORDER BY afscList, testTimeStarted DESC");
+			}
+			else{
+				$stmt = $this->db->prepare("SELECT 	uuid,
+												userUUID,
+												afscList,
+												totalQuestions,
+												questionsMissed,
+												testScore,
+												testTimeStarted,
+												testTimeCompleted,
+												oldTestID
+										FROM testHistory
+										WHERE userUUID = ?
+										ORDER BY afscList, testTimeStarted DESC");
+			}
 				
 			$stmt->bind_param("s",$userUUID);
 		}
