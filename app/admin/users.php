@@ -51,6 +51,9 @@ if(isset($_SESSION['vars'][0])){
 							require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete.inc.php";
 						}
 					}
+					elseif($subAction == "split"){
+						require_once BASE_PATH . "/includes/modules/admin/user/tests/history-split.inc.php";
+					}
 				}
 				else{
 					require_once BASE_PATH . "/includes/modules/admin/user/tests/tests.inc.php";
