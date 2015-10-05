@@ -40,8 +40,11 @@ if(isset($_SESSION['vars'][0])){
 			 */
 			case "tests":
 				if($subAction){
-                    if($subAction == "delete"){
+					if($subAction == "delete"){
 						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete.inc.php";
+					}
+                    if($subAction == "delete-all"){
+						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete-all.inc.php";
 					}
 					elseif($subAction == "incomplete"){
                         if($finalAction == "delete"){
@@ -149,7 +152,8 @@ if(isset($_SESSION['vars'][0])){
 							<ul>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests"><i class="icon-inline icon-20 ic-folder"></i>View Tests</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete"><i class="icon-inline icon-20 ic-folder"></i>View Incomplete Tests</a></li>
-								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a></li>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete Tests</a></li>
+								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete-all"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete All Incomplete Tests</a></li>
 							</ul>
 						</div>
