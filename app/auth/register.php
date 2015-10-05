@@ -11,6 +11,10 @@ else{
     $accountType = false;
 }
 
+if(isset($_GET['referral'])){
+    $_SESSION['referralID'] = $_GET['referral'];
+}
+
 if(isset($_SESSION['vars'][1]))
     $step = $_SESSION['vars'][1];
 
@@ -139,6 +143,15 @@ if(isset($_POST['registrationFormStep'])):
                     } else {
                         $assoc->addAFSCAssociation($registerUser->getUUID(), $afscUUID);
                     }
+                }
+            }
+
+            if(!empty($_SESSION['referralID'])){
+                if($roles->verifyUserRole($_SESSION['referralID']) == "supervisor"){
+                    $assoc->addSupervisorAssociation($_SESSION['referralID'],$registerUser->getUUID());
+                }
+                elseif($roles->verifyUserRole($_SESSION['referralID']) == "trainingManager"){
+                    $assoc->addTrainingManagerAssociation($_SESSION['referralID'],$registerUser->getUUID());
                 }
             }
 
