@@ -66,6 +66,113 @@ class supervisorOverview extends CDCMastery
         }
     }
 
+    public function getUserAFSCAssociations(){
+        if(!empty($this->subordinateSupervisorList) && !empty($this->subordinateUserList)){
+            $masterArray = array_merge($this->subordinateSupervisorList,$this->subordinateUserList);
+        }
+        elseif(empty($this->subordinateSupervisorList)){
+            $masterArray = $this->subordinateUserList;
+        }
+        else{
+            $masterArray = $this->subordinateSupervisorList;
+        }
+
+        $userConstraint = "('".implode("','",$masterArray)."')";
+        $query = "SELECT DISTINCT(afscUUID) FROM userAFSCAssociations LEFT JOIN afscList ON userAFSCAssociations.afscUUID=afscList.uuid WHERE userUUID IN ".$userConstraint." ORDER BY afscList.afscName ASC";
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $afscArray[] = $row['afscUUID'];
+            }
+
+            if(is_array($afscArray) && !empty($afscArray)){
+                return $afscArray;
+            }
+            else{
+                $this->error = "No results found.";
+                return false;
+            }
+        }
+        else{
+            $this->error = "No results found.";
+            return false;
+        }
+    }
+
+    public function getQuestionsShownCountByAFSC($afscUUID,array $userList){
+        if(count($userList) > 1){
+            $userConstraint = "AND testHistory.userUUID IN ('".implode("','",$userList)."')";
+        }
+        else{
+            $userConstraint = "AND testHistory.userUUID = '".$userList[0]."'";
+        }
+
+        $query = "SELECT COUNT(*) AS count, testData.questionUUID
+                    FROM testData
+                    LEFT JOIN answerData ON testData.answerUUID=answerData.uuid
+                    LEFT JOIN questionData ON testData.questionUUID=questionData.uuid
+                    LEFT JOIN testHistory ON testData.testUUID=testHistory.uuid
+                      WHERE questionData.afscUUID = '".$afscUUID."'
+                      ".$userConstraint."
+                      GROUP BY testData.questionUUID";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $questionCountArray[$row['questionUUID']] = $row['count'];
+            }
+
+            if(count($questionCountArray) > 0){
+                return $questionCountArray;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getQuestionsMissedOverviewByAFSC($afscUUID,array $userList){
+        if(count($userList) > 1){
+            $userConstraint = "AND testHistory.userUUID IN ('".implode("','",$userList)."')";
+        }
+        else{
+            $userConstraint = "AND testHistory.userUUID = '".$userList[0]."'";
+        }
+
+        $query = "SELECT COUNT(*) AS count, testData.questionUUID
+                    FROM testData
+                    LEFT JOIN answerData ON testData.answerUUID=answerData.uuid
+                    LEFT JOIN questionData ON testData.questionUUID=questionData.uuid
+                    LEFT JOIN testHistory ON testData.testUUID=testHistory.uuid
+                      WHERE questionData.afscUUID = '".$afscUUID."'
+                      ".$userConstraint."
+                      AND answerData.answerCorrect=0
+                    GROUP BY testData.questionUUID";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $missedQuestionsArray[$row['questionUUID']] = $row['count'];
+            }
+
+            if(count($missedQuestionsArray) > 0){
+                return $missedQuestionsArray;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
     public function getTotalUserTests(){
         if(!empty($this->subordinateUserList)){
             foreach($this->subordinateUserList as $subordinateUser){

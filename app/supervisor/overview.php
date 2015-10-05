@@ -176,6 +176,20 @@ $totalUserTestCount = $supOverview->getTotalUserTests();
                     </tr>
                 </table>
             </section>
+            <?php
+            $superAFSCUUIDArray = $supOverview->getUserAFSCAssociations();
+
+            if(is_array($superAFSCUUIDArray) && !empty($superAFSCUUIDArray)): ?>
+                <div class="clearfix">&nbsp;</div>
+                <section>
+                    <h2>Top Questions Missed</h2>
+                    <ul>
+                        <?php foreach($superAFSCUUIDArray as $superAFSCUUID): ?>
+                            <li><a href="/supervisor/top-missed/<?php echo $superAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afsc->getAFSCName($superAFSCUUID); ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </section>
+            <?php endif; ?>
         </div>
     </div>
 </div>
