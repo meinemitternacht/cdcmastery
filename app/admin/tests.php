@@ -44,7 +44,7 @@ $workingChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                                 require_once BASE_PATH . "/includes/modules/admin/tests/completed/edit.inc.php";
                                 break;
                             case "delete":
-                                require_once BASE_PATH . "/includes/modules/admin/tests/completed/delete.inc.php";
+                                require_once BASE_PATH . "/includes/modules/admin/tests/completed/delete-all.inc.php";
                                 break;
                         }
                     }
@@ -62,7 +62,7 @@ $workingChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                                 require_once BASE_PATH . "/includes/modules/admin/tests/incomplete/edit.inc.php";
                                 break;
                             case "delete":
-                                require_once BASE_PATH . "/includes/modules/admin/tests/incomplete/delete.inc.php";
+                                require_once BASE_PATH . "/includes/modules/admin/tests/incomplete/delete-all.inc.php";
                                 break;
                             case "score":
                                 require_once BASE_PATH . "/includes/modules/admin/tests/incomplete/score.inc.php";
