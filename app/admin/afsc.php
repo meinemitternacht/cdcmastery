@@ -284,6 +284,7 @@ if(!$subAction):
                                 <th>AFSC</th>
                                 <th>FOUO</th>
                                 <th>Version</th>
+                                <th>Users</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -293,6 +294,7 @@ if(!$subAction):
                                 <td><?php echo $afscDetails['afscName']; ?></td>
                                 <td><?php echo $afscDetails['afscFOUO'] ? "Yes" : "No"; ?></td>
                                 <td><?php echo $afscDetails['afscVersion']; ?></td>
+                                <td><?php echo $assoc->listUserCountByAFSC($afscUUID); ?></td>
                                 <td>
                                     <a href="/admin/afsc/hide/<?php echo $afscUUID; ?>" title="Hide"><i class="icon-inline icon-20 ic-delete"></i></a>
                                     <a href="/admin/afsc/edit/<?php echo $afscUUID; ?>" title="Edit"><i class="icon-inline icon-20 ic-pencil"></i></a>

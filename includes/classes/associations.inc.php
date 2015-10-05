@@ -76,6 +76,35 @@ class associations extends CDCMastery
         }
     }
 
+	public function listUserCountByAFSC($afscUUID){
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE afscUUID = ?");
+		$stmt->bind_param("s",$afscUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($userCount);
+			$stmt->fetch();
+
+			if($userCount > 0){
+				return $userCount;
+			}
+			else{
+				$this->error[] = "No associations.";
+				return false;
+			}
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("ERROR_ASSOCIATIONS_LIST_USERS_BY_AFSC");
+			$this->log->setDetail("CALLING FUNCTION","associations->listUserCountByAFSC()");
+			$this->log->setDetail("MySQL ERROR",$this->error);
+			$this->log->setDetail("AFSC UUID",$afscUUID);
+			$this->log->saveEntry();
+			$stmt->close();
+
+			return false;
+		}
+	}
+
 	public function listUsersByAFSC($afscUUID){
 		$stmt = $this->db->prepare("SELECT userUUID FROM userAFSCAssociations WHERE afscUUID = ?");
 		$stmt->bind_param("s",$afscUUID);
@@ -245,72 +274,40 @@ class associations extends CDCMastery
 			return false;
 		}
 
-		if($removeOld){
-			$userUUIDArray = $this->listUsersByAFSC($sourceAFSC);
 
-			if(is_array($userUUIDArray) && !empty($userUUIDArray)){
-				foreach($userUUIDArray as $userUUID){
-					$this->deleteAFSCAssociation($userUUID,$sourceAFSC,false);
-					$this->addAFSCAssociation($userUUID,$destinationAFSC,true,false);
+		$userUUIDArray = $this->listUsersByAFSC($sourceAFSC);
+
+		if(is_array($userUUIDArray) && !empty($userUUIDArray)){
+			foreach($userUUIDArray as $userUUID){
+				if($removeOld) {
+					$this->deleteAFSCAssociation($userUUID, $sourceAFSC, false);
 				}
-
-				$this->log->setAction("MIGRATE_AFSC_ASSOCIATIONS");
-				$this->log->setDetail("Source AFSC",$sourceAFSC);
-				$this->log->setDetail("Source AFSC Name",$this->afsc->getAFSCName($sourceAFSC));
-				$this->log->setDetail("Destination AFSC",$destinationAFSC);
-				$this->log->setDetail("Destination AFSC Name",$this->afsc->getAFSCName($destinationAFSC));
-				$this->log->setDetail("Remove Previous Associations",$removeOld);
-				$this->log->setDetail("Affected Users",count($userUUIDArray));
-				$this->log->saveEntry();
-
-				return true;
+				$this->addAFSCAssociation($userUUID,$destinationAFSC,true,false);
 			}
-			else{
-				$this->error[] = "There are no user associations for that AFSC";
 
-				$this->log->setAction("ERROR_MIGRATE_AFSC_ASSOCIATIONS");
-				$this->log->setDetail("Calling Function","associations->migrateAFSCAssociations()");
-				$this->log->setDetail("Source AFSC",$sourceAFSC);
-				$this->log->setDetail("Destination AFSC",$destinationAFSC);
-				$this->log->setDetail("Remove Previous Associations",$removeOld);
-				$this->log->setDetail("Error","There are no user associations for that AFSC");
-				$this->log->saveEntry();
+			$this->log->setAction("MIGRATE_AFSC_ASSOCIATIONS");
+			$this->log->setDetail("Source AFSC",$sourceAFSC);
+			$this->log->setDetail("Source AFSC Name",$this->afsc->getAFSCName($sourceAFSC));
+			$this->log->setDetail("Destination AFSC",$destinationAFSC);
+			$this->log->setDetail("Destination AFSC Name",$this->afsc->getAFSCName($destinationAFSC));
+			$this->log->setDetail("Remove Previous Associations",$removeOld);
+			$this->log->setDetail("Affected Users",count($userUUIDArray));
+			$this->log->saveEntry();
 
-				return false;
-			}
+			return true;
 		}
 		else{
-			$userUUIDArray = $this->listUsersByAFSC($sourceAFSC);
+			$this->error[] = "There are no user associations for that AFSC";
 
-			if(is_array($userUUIDArray) && !empty($userUUIDArray)){
-				foreach($userUUIDArray as $userUUID){
-					$this->addAFSCAssociation($userUUID,$destinationAFSC,true,false);
-				}
+			$this->log->setAction("ERROR_MIGRATE_AFSC_ASSOCIATIONS");
+			$this->log->setDetail("Calling Function","associations->migrateAFSCAssociations()");
+			$this->log->setDetail("Source AFSC",$sourceAFSC);
+			$this->log->setDetail("Destination AFSC",$destinationAFSC);
+			$this->log->setDetail("Remove Previous Associations",$removeOld);
+			$this->log->setDetail("Error","There are no user associations for that AFSC");
+			$this->log->saveEntry();
 
-				$this->log->setAction("MIGRATE_AFSC_ASSOCIATIONS");
-				$this->log->setDetail("Source AFSC",$sourceAFSC);
-				$this->log->setDetail("Source AFSC Name",$this->afsc->getAFSCName($sourceAFSC));
-				$this->log->setDetail("Destination AFSC",$destinationAFSC);
-				$this->log->setDetail("Destination AFSC Name",$this->afsc->getAFSCName($destinationAFSC));
-				$this->log->setDetail("Remove Previous Associations",$removeOld);
-				$this->log->setDetail("Affected Users",count($userUUIDArray));
-				$this->log->saveEntry();
-
-				return true;
-			}
-			else{
-				$this->error[] = "There are no user associations for that AFSC";
-
-				$this->log->setAction("ERROR_MIGRATE_AFSC_ASSOCIATIONS");
-				$this->log->setDetail("Calling Function","associations->migrateAFSCAssociations()");
-				$this->log->setDetail("Source AFSC",$sourceAFSC);
-				$this->log->setDetail("Destination AFSC",$destinationAFSC);
-				$this->log->setDetail("Remove Previous Associations",$removeOld);
-				$this->log->setDetail("Error","There are no user associations for that AFSC");
-				$this->log->saveEntry();
-
-				return false;
-			}
+			return false;
 		}
 	}
 	
