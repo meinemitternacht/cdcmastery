@@ -22,12 +22,16 @@ class flashCardManager extends CDCMastery
     public $categoryCreatedBy;
     public $categoryComments;
 
+    public $categoryList;
+
     public $cardUUID;
     public $frontText;
     public $backText;
     public $cardCategory;
 
     public $flashCardArray;
+    public $currentCard;
+    public $totalCards;
 
     public function __construct(mysqli $db, log $log){
         $this->db = $db;
@@ -45,6 +49,70 @@ class flashCardManager extends CDCMastery
         $this->categoryCreatedBy = NULL;
 
         return true;
+    }
+
+    public function listCardCategories($globalOnly=false){
+        if($globalOnly) {
+            $stmt = $this->db->prepare("SELECT  uuid,
+                                            categoryName,
+                                            categoryEncrypted,
+                                            categoryType,
+                                            categoryBinding,
+                                            categoryPrivate,
+                                            categoryCreatedBy,
+                                            categoryComments
+                                        FROM flashCardCategories
+                                        WHERE categoryType = ?
+                                        ORDER BY categoryName ASC");
+            $paramValue = "global";
+            $stmt->bind_param("s",$paramValue);
+        }
+        else{
+            $stmt = $this->db->prepare("SELECT  uuid,
+                                            categoryName,
+                                            categoryEncrypted,
+                                            categoryType,
+                                            categoryBinding,
+                                            categoryPrivate,
+                                            categoryCreatedBy,
+                                            categoryComments
+                                        FROM flashCardCategories
+                                        ORDER BY categoryName ASC");
+        }
+
+        if($stmt->execute()){
+            $stmt->bind_result($uuid,$categoryName,$categoryEncrypted,$categoryType,$categoryBinding,$categoryPrivate,$categoryCreatedBy,$categoryComments);
+            while($stmt->fetch()){
+                $this->categoryList[$uuid]['categoryName'] = $categoryName;
+                $this->categoryList[$uuid]['categoryEncrypted'] = $categoryEncrypted;
+                $this->categoryList[$uuid]['categoryType'] = $categoryType;
+                $this->categoryList[$uuid]['categoryBinding'] = $categoryBinding;
+                $this->categoryList[$uuid]['categoryPrivate'] = $categoryPrivate;
+                $this->categoryList[$uuid]['categoryCreatedBy'] = $categoryCreatedBy;
+                $this->categoryList[$uuid]['categoryComments'] = $categoryComments;
+            }
+
+            $stmt->close();
+
+            if(is_array($this->categoryList) && !empty($this->categoryList)){
+                return $this->categoryList;
+            }
+            else{
+                $this->error = "There are no categories.";
+                return false;
+            }
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LIST");
+            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("Calling Function","flashCardManager->listCardCategories()");
+            $this->log->saveEntry();
+
+            $stmt->close();
+
+            return false;
+        }
     }
 
     public function loadCardCategory($categoryUUID){
@@ -200,8 +268,29 @@ class flashCardManager extends CDCMastery
         }
     }
 
+    public function getCardCount($categoryUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardData WHERE cardCategory = ?");
+        $stmt->bind_param("s",$categoryUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+
+            return $count;
+        }
+        else{
+            $this->log->setAction("ERROR_FLASH_CARD_COUNT_CARDS");
+            $this->log->setDetail("MySQL Error", $stmt->error);
+            $this->log->setDetail("Calling Function", "flashCardManager->getCardCount()");
+            $this->log->setDetail("Category UUID", $categoryUUID);
+            $this->log->saveEntry();
+
+            return false;
+        }
+    }
+
     public function newFlashCard(){
-        $this->cardUUID = NULL;
+        $this->cardUUID = $this->genUUID();
         $this->frontText = NULL;
         $this->backText = NULL;
         $this->cardCategory = NULL;
@@ -266,6 +355,7 @@ class flashCardManager extends CDCMastery
             $stmt->bind_param("ssss",$this->cardUUID,$this->frontText,$this->backText,$this->cardCategory);
 
             if($stmt->execute()){
+                $stmt->close();
                 return true;
             }
             else{
@@ -426,13 +516,19 @@ class flashCardManager extends CDCMastery
 
     public function saveSession(){
         if(is_array($this->flashCardArray) && count($this->flashCardArray) > 0){
-            $_SESSION['flashCardStorage'] = serialize($this->flashCardArray);
+            $_SESSION['flashCardStorage']['cardArray'] = serialize($this->flashCardArray);
+            $_SESSION['flashCardStorage']['currentCard'] = $this->currentCard;
+            $_SESSION['flashCardStorage']['totalCards'] = $this->totalCards;
         }
+
+        return true;
     }
 
     public function loadSession(){
         if(isset($_SESSION['flashCardStorage']) && !empty($_SESSION['flashCardStorage'])){
-            $this->flashCardArray = unserialize($_SESSION['flashCardStorage']);
+            $this->flashCardArray = unserialize($_SESSION['flashCardStorage']['cardArray']);
+            $this->currentCard = $_SESSION['flashCardStorage']['currentCard'];
+            $this->totalCards = count($this->flashCardArray);
             return true;
         }
         else{
@@ -446,6 +542,38 @@ class flashCardManager extends CDCMastery
         if(isset($_SESSION['flashCardStorage']))
             unset($_SESSION['flashCardStorage']);
 
+        $this->currentCard = 1;
+
+        return true;
+    }
+
+    public function navigateFirstCard(){
+        $this->currentCard = 1;
+        return true;
+    }
+
+    public function navigatePreviousCard(){
+        if($this->currentCard > 1){
+            $this->currentCard--;
+        }
+        else{
+            $this->currentCard = 1;
+        }
+        return true;
+    }
+
+    public function navigateNextCard(){
+        if($this->currentCard < $this->totalCards){
+            $this->currentCard++;
+        }
+        else{
+            $this->currentCard = $this->totalCards;
+        }
+        return true;
+    }
+
+    public function navigateLastCard(){
+        $this->currentCard = $this->totalCards;
         return true;
     }
 
