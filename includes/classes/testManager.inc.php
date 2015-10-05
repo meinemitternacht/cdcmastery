@@ -119,7 +119,7 @@ class testManager extends CDCMastery
 												oldTestID
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY afscList, testTimeStarted DESC");
+										ORDER BY testTimeStarted DESC");
 			}
 				
 			$stmt->bind_param("s",$userUUID);
