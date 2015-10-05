@@ -151,6 +151,20 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
                     </tr>
                 </table>
             </section>
+            <?php
+            $tmAFSCUUIDArray = $tmOverview->getUserAFSCAssociations();
+
+            if(is_array($tmAFSCUUIDArray) && !empty($tmAFSCUUIDArray)): ?>
+            <div class="clearfix">&nbsp;</div>
+            <section>
+                <h2>Top Questions Missed</h2>
+                <ul>
+                    <?php foreach($tmAFSCUUIDArray as $tmAFSCUUID): ?>
+                    <li><a href="/training/top-missed/<?php echo $tmAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afsc->getAFSCName($tmAFSCUUID); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </section>
+            <?php endif; ?>
         </div>
     </div>
     <?php if(!empty($subordinateSupervisors)): ?>
@@ -234,7 +248,7 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
         window.onload = function () {
             var dataPoints = [<?php echo $chartOutputData; ?>];
             renderMyChart("chart-container", dataPoints, "User Testing Overview");
-            <?php if($supervisorChartOutputData): ?>
+            <?php if(isset($supervisorChartOutputData)): ?>
             var supervisorDataPoints = [<?php echo $supervisorChartOutputData; ?>];
             renderMyChart("supervisor-chart-container", supervisorDataPoints, "Supervisor Testing Overview");
             <?php endif; ?>
