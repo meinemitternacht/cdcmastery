@@ -100,7 +100,7 @@ class userActivation extends user {
 				$emailBodyHTML .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyHTML .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
 				$emailBodyHTML .= "If you cannot click on the link, copy and paste the address into your browser.";
-				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".$timeExpires." UTC.";
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				$emailBodyHTML .= "<br /><br />";
@@ -115,7 +115,7 @@ class userActivation extends user {
 				$emailBodyText .= "Please click on the link at the bottom of this message to activate your account.  ";
 				$emailBodyText .= "If you did not register an account or you are having issues, please contact us at support@cdcmastery.com.  ";
 				$emailBodyText .= "If you cannot click on the link, copy and paste the address into your browser.";
-				$emailBodyText .= "This link will be valid for 7 days, and expires on ".parent::outputDateTime($timeExpires,$_SESSION['timeZone']).".";
+				$emailBodyText .= "This link will be valid for 7 days, and expires on ".$timeExpires."UTC.";
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				$emailBodyText .= "\r\n\r\n";
