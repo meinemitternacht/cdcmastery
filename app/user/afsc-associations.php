@@ -144,7 +144,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 				</select>
 				<div class="clearfix">&nbsp;</div>
 				<input type="submit" value="Add">
-				<p><em>An asterisk (*) denotes a FOUO AFSC.  If you add one of these, you will be placed into a queue for approval by an administrator or training manager.</em></p>
+				<p><em>An asterisk (*) denotes a FOUO AFSC.  If you add one of these, you will be placed into a queue for approval by an administrator or training manager.  This process is not immediate, and may take up to 24 hours.</em></p>
 				<?php else: ?>
 				<em>There are no AFSCs in the database.</em>
 				<?php endif; ?>
@@ -166,6 +166,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 				</select>
 				<div class="clearfix">&nbsp;</div>
 				<input type="submit" value="Remove">
+				<p><em>Note: If you accidentally remove a FOUO AFSC from this list, re-adding it to your account will require administrator or training manager approval, which may take up to 24 hours.</em></p>
 				<?php else: ?>
 				<em>You have no AFSC associations.</em>
 				<?php endif; ?>
