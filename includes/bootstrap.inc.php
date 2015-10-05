@@ -30,6 +30,7 @@ require BASE_PATH . '/includes/classes/overviews/trainingManagerOverview.inc.php
 require BASE_PATH . '/includes/classes/overviews/supervisorOverview.inc.php';
 require BASE_PATH . '/includes/classes/search.inc.php';
 require BASE_PATH . '/includes/classes/statistics.inc.php';
+require BASE_PATH . '/includes/classes/flashCardManager.inc.php';
 
 require 'Mail.php';
 require 'Mail/mime.php';
