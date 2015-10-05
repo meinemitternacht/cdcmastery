@@ -67,35 +67,29 @@ class supervisorOverview extends CDCMastery
     }
 
     public function getUserAFSCAssociations(){
-        if(!empty($this->subordinateSupervisorList) && !empty($this->subordinateUserList)){
-            $masterArray = array_merge($this->subordinateSupervisorList,$this->subordinateUserList);
-        }
-        elseif(empty($this->subordinateSupervisorList)){
-            $masterArray = $this->subordinateUserList;
-        }
-        else{
-            $masterArray = $this->subordinateSupervisorList;
-        }
+        if(is_array($this->subordinateUserList) && !empty($this->subordinateUserList)) {
+            $userConstraint = "('" . implode("','", $this->subordinateUserList) . "')";
+            $query = "SELECT DISTINCT(afscUUID) FROM userAFSCAssociations LEFT JOIN afscList ON userAFSCAssociations.afscUUID=afscList.uuid WHERE userUUID IN " . $userConstraint . " ORDER BY afscList.afscName ASC";
+            $res = $this->db->query($query);
 
-        $userConstraint = "('".implode("','",$masterArray)."')";
-        $query = "SELECT DISTINCT(afscUUID) FROM userAFSCAssociations LEFT JOIN afscList ON userAFSCAssociations.afscUUID=afscList.uuid WHERE userUUID IN ".$userConstraint." ORDER BY afscList.afscName ASC";
-        $res = $this->db->query($query);
+            if ($res->num_rows > 0) {
+                while ($row = $res->fetch_assoc()) {
+                    $afscArray[] = $row['afscUUID'];
+                }
 
-        if($res->num_rows > 0){
-            while($row = $res->fetch_assoc()){
-                $afscArray[] = $row['afscUUID'];
-            }
-
-            if(is_array($afscArray) && !empty($afscArray)){
-                return $afscArray;
-            }
-            else{
+                if (is_array($afscArray) && !empty($afscArray)) {
+                    return $afscArray;
+                } else {
+                    $this->error = "No results found.";
+                    return false;
+                }
+            } else {
                 $this->error = "No results found.";
                 return false;
             }
         }
         else{
-            $this->error = "No results found.";
+            $this->error = "No subordinate users.";
             return false;
         }
     }
