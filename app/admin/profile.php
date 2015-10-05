@@ -362,7 +362,7 @@ if(isset($_SESSION['vars'][0])):
 									</tbody>
 								</table>
 								<div class="text-right text-warning">
-									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-tests"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/tests/delete-all"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no tests to show.</p>
