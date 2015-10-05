@@ -27,8 +27,8 @@ if(isset($_POST['registrationFormStep'])):
         $registrationArray['userPassword_confirmation']['data'] = isset($_POST['userPassword_confirmation']) ? $_POST['userPassword_confirmation'] : false;
         $registrationArray['userTimeZone']['data'] = isset($_POST['timeZone']) ? $_POST['timeZone'] : false;
         $registrationArray['userRank']['data'] = isset($_POST['userRank']) ? $_POST['userRank'] : false;
-        $registrationArray['userFirstName']['data'] = isset($_POST['userFirstName']) ? $_POST['userFirstName'] : false;
-        $registrationArray['userLastName']['data'] = isset($_POST['userLastName']) ? $_POST['userLastName'] : false;
+        $registrationArray['userFirstName']['data'] = isset($_POST['userFirstName']) ? ucfirst($_POST['userFirstName']) : false;
+        $registrationArray['userLastName']['data'] = isset($_POST['userLastName']) ? ucfirst($_POST['userLastName']) : false;
         $registrationArray['userEmail']['data'] = isset($_POST['userEmail']) ? $_POST['userEmail'] : false;
         $registrationArray['userBase']['data'] = isset($_POST['userBase']) ? $_POST['userBase'] : false;
         $registrationArray['userOfficeSymbol']['data'] = isset($_POST['userOfficeSymbol']) ? $_POST['userOfficeSymbol'] : false;

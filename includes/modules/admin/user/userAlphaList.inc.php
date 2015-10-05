@@ -64,9 +64,9 @@ if($userList): ?>
 				$secondColComplete = false;
 
 				foreach($userList as $uuid => $userRow){
-					$letter = substr($userRow['userLastName'],0,1);
+					$letter = strtolower(substr($userRow['userLastName'],0,1));
 
-					if($letter == "H" && $firstColComplete == false){ ?>
+					if($letter == "h" && $firstColComplete == false){ ?>
 						</section>
 						</div>
 						<div class="4u">
@@ -75,7 +75,7 @@ if($userList): ?>
 						$firstColComplete = true;
 					}
 
-					if($letter == "Q" && $secondColComplete == false){ ?>
+					if($letter == "q" && $secondColComplete == false){ ?>
 						</section>
 						</div>
 						<div class="4u">
