@@ -28,11 +28,9 @@
 						<section>
 							<h2>Latest Changes</h2>
 							<ul class="default">
-								<li>Site rebuilt from scratch</li>
-								<li>Added many tools to manage users via the admin interface</li>
-								<li>Improved supervisor and training manager associations interface</li>
-								<li>Revamped User Profiles</li>
-								<li>Added a new Training Manager and Supervisor Overview section</li>
+                                <li>Add top-missed question overview for Training Managers and Supervisors</li>
+                                <li>Added site statistics</li>
+                                <li>Added detailed statistics to test reviews</li>
 							</ul>
 						</section>
 					</div>
