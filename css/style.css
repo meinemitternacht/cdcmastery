@@ -666,14 +666,24 @@ tr:nth-child(odd) td {
  *	Test Pages
  */
 #loading img {
-    position: fixed; /* forces the element to stay fixed in relation to the viewport */
-    top: 50%; /* sets the top of the image 50% of the page height */
-    left: 50%; /* sets the left side of the image 50% across the page */
-    margin-left: -33px; /* moves the image half of its own width to the left-side of the page */
-    margin-top: -33px; /* moves the image half its height 'up' the page */
-    box-shadow: 0.5em 0.5em 0.7em #333; /* to give the illusion of 'floating' */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -33px;
+    margin-top: -33px;
+    box-shadow: 0.5em 0.5em 0.7em #333;
     border-radius: 1em;
 }
+
+#cardLoading img {
+     position: fixed; /* forces the element to stay fixed in relation to the viewport */
+     top: 35%; /* sets the top of the image 50% of the page height */
+     left: 50%; /* sets the left side of the image 50% across the page */
+     margin-left: -33px; /* moves the image half of its own width to the left-side of the page */
+     margin-top: -33px; /* moves the image half its height 'up' the page */
+     box-shadow: 0.5em 0.5em 0.7em #333; /* to give the illusion of 'floating' */
+     border-radius: 1em;
+ }
 
 #questionAnswer {
     min-height: 100px;
@@ -701,8 +711,7 @@ tr:nth-child(odd) td {
     cursor: pointer;
     font-weight: 700;
     margin-left: 3px;
-    padding: 2px 6px;
-    width: 50px;
+    min-width: 50px;
     text-align: center;
 }
 
@@ -817,4 +826,83 @@ tr:nth-child(odd) td {
     height:auto;
     top:1em; /* (line-height/2) */
     bottom:0;
+}
+
+/*
+ * Flash cards
+ */
+.flashCardCategories ul li:first-child {
+    margin-left: 0 !important;
+}
+
+.flashCardCategories ul li {
+    float: left;
+    height: 3em;
+    background-color: #4277AB;
+    border: 2px solid #000;
+    margin-bottom: 0.1em;
+    text-align:center;
+    margin-left: 1em;
+}
+
+.flashCardCategories ul li a {
+    text-decoration: none;
+    color: #fff;
+    display: block;
+    padding: 0.5em;
+    text-align: center;
+}
+
+.flashCardCategories ul li:hover {
+    background-color: #0e96c3;
+    color: #000;
+    cursor: pointer;
+}
+
+#flashCardArea{
+    background: #fff url('/images/index-card.png') repeat-x top;
+    background-size: auto 100%;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+    border: 1px solid navy;
+    font-family: cursive;
+    text-align: center;
+    font-size: 1.1em;
+    min-height: 12em;
+}
+
+#cardFront, #cardBack {
+    margin-top: 0.5em;
+    line-height: 1.333em;
+}
+
+#cardFront br, #cardBack br {
+    display: block;
+    margin: 1.333em 0;
+    line-height: 1.333em;
+}
+
+.flip-button {
+    width: 100%;
+    color: #222;
+    font-weight: 900;
+    background-color: #ddd;
+    border: 2px solid #aaa;
+    margin-bottom: 0.1em;
+    text-align:center;
+}
+
+.flip-button:hover {
+    color: #fff;
+    background-color: #99ccff;
+    border: 2px solid #0066ff;
+    cursor: pointer;
+}
+
+.flip-button a {
+    text-align:center;
+    padding: 0.5em;
+    text-decoration: none;
+    display: block;
 }
