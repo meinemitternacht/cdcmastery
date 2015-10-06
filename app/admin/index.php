@@ -41,6 +41,8 @@ else{
 						<li><a href="/admin/cdc-data" title="CDC Data"><i class="icon-inline icon-20 ic-book"></i>CDC Data</a></li>
 						<li><a href="/admin/base-overview" title="Base Overview"><i class="icon-inline icon-20 ic-clipboard"></i>Base Overview</a></li>
 						<li><a href="/admin/afsc-pending" title="Approve Pending AFSC Associations"><i class="icon-inline icon-20 ic-relationship"></i>Pending AFSC Associations (<?php echo ($pendingAssociationsCount > 0) ? '<span style="color:red;">'.$pendingAssociationsCount.'</span>' : $pendingAssociationsCount ; ?>)</a></li>
+                        <li><a href="/admin/flash-card-categories" title="Manage Flash Card Categories"><i class="icon-inline icon-20 ic-chalkboard"></i>Flash Card Categories</a></li>
+                        <li><a href="/admin/card-data" title="Manage Flash Card Data"><i class="icon-inline icon-20 ic-chalkboard"></i>Flash Card Data</a></li>
 					</ul>
 				</div>
 			</section>

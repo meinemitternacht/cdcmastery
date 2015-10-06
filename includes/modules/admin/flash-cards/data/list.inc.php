@@ -25,7 +25,7 @@ else{
         Note: This data is truncated to fit in the table.  Click on the "Edit" link to the right of the card data to view the full text.  Note:  If the flash card category is AFSC-based, you will
         have to edit the questions and answers in the CDC Data section of the Admin Panel.
     </p>
-    <?php if(is_array($flashCardList) && !empty($flashCardList)): ?>
+    <?php if(isset($flashCardList) && is_array($flashCardList) && !empty($flashCardList)): ?>
         <table>
             <thead>
                 <tr>
@@ -54,7 +54,10 @@ else{
                         <tr>
                             <td><?php echo $cdcMastery->formatOutputString($flashCardManager->getFrontText(),100); ?></td>
                             <td><?php echo $cdcMastery->formatOutputString($flashCardManager->getBackText(),100); ?></td>
-                            <td><a href="/admin/card-data/<?php echo $workingChild; ?>/edit/<?php echo $flashCardRow['uuid']; ?>">[edit]</a></td>
+                            <td>
+                                <a href="/admin/card-data/<?php echo $workingChild; ?>/delete/<?php echo $flashCardRow['uuid']; ?>"><i class="icon-inline icon-20 ic-delete"></i></a>
+                                <a href="/admin/card-data/<?php echo $workingChild; ?>/edit/<?php echo $flashCardRow['uuid']; ?>"><i class="icon-inline icon-20 ic-pencil"></i></a>
+                            </td>
                         </tr>
                     <?php else: ?>
                         <tr>

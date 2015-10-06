@@ -23,6 +23,7 @@ class flashCardManager extends CDCMastery
     public $categoryComments;
 
     public $categoryList;
+    public $privateCategoryList;
 
     public $cardUUID;
     public $frontText;
@@ -49,6 +50,55 @@ class flashCardManager extends CDCMastery
         $this->categoryCreatedBy = NULL;
 
         return true;
+    }
+
+    public function listPrivateCardCategories($userUUID) {
+        $stmt = $this->db->prepare("SELECT  uuid,
+                                            categoryName,
+                                            categoryEncrypted,
+                                            categoryType,
+                                            categoryBinding,
+                                            categoryPrivate,
+                                            categoryCreatedBy,
+                                            categoryComments
+                                        FROM flashCardCategories
+                                        WHERE categoryBinding = ?
+                                          AND categoryType = 'private'
+                                        ORDER BY categoryName ASC");
+        $stmt->bind_param("s",$userUUID);
+
+        if ($stmt->execute()) {
+            $stmt->bind_result($uuid, $categoryName, $categoryEncrypted, $categoryType, $categoryBinding, $categoryPrivate, $categoryCreatedBy, $categoryComments);
+            while ($stmt->fetch()) {
+                $this->privateCategoryList[$uuid]['categoryName'] = $categoryName;
+                $this->privateCategoryList[$uuid]['categoryEncrypted'] = $categoryEncrypted;
+                $this->privateCategoryList[$uuid]['categoryType'] = $categoryType;
+                $this->privateCategoryList[$uuid]['categoryBinding'] = $categoryBinding;
+                $this->privateCategoryList[$uuid]['categoryPrivate'] = $categoryPrivate;
+                $this->privateCategoryList[$uuid]['categoryCreatedBy'] = $categoryCreatedBy;
+                $this->privateCategoryList[$uuid]['categoryComments'] = $categoryComments;
+            }
+
+            $stmt->close();
+
+            if (is_array($this->privateCategoryList) && !empty($this->privateCategoryList)) {
+                return $this->privateCategoryList;
+            } else {
+                $this->error = "There are no categories bound to this user.";
+                return false;
+            }
+        } else {
+            $this->error = $stmt->error;
+            $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LIST");
+            $this->log->setDetail("MySQL Error", $stmt->error);
+            $this->log->setDetail("Calling Function", "flashCardManager->listPrivateCardCategories()");
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->saveEntry();
+
+            $stmt->close();
+
+            return false;
+        }
     }
 
     public function listCardCategories($globalOnly=false){
@@ -407,12 +457,22 @@ class flashCardManager extends CDCMastery
     }
 
     public function loadFlashCardData($cardUUID){
-        $stmt = $this->db->prepare("SELECT  uuid,
+        if($this->getCategoryEncrypted()){
+            $stmt = $this->db->prepare("SELECT  uuid,
+                                            AES_DECRYPT(frontText,'".$this->getEncryptionKey()."') AS frontText,
+                                            AES_DECRYPT(backText,'".$this->getEncryptionKey()."') AS backText,
+                                            cardCategory
+                                        FROM flashCardData
+                                        WHERE uuid = ?");
+        }
+        else {
+            $stmt = $this->db->prepare("SELECT  uuid,
                                             frontText,
                                             backText,
                                             cardCategory
                                         FROM flashCardData
                                         WHERE uuid = ?");
+        }
 
         $stmt->bind_param("s",$cardUUID);
 
@@ -447,7 +507,22 @@ class flashCardManager extends CDCMastery
 
     public function saveFlashCardData(){
         if(!empty($this->cardUUID)){
-            $stmt = $this->db->prepare("INSERT INTO flashCardData
+            if($this->getCategoryEncrypted()){
+                $stmt = $this->db->prepare("INSERT INTO flashCardData
+                                                    (uuid,
+                                                    frontText,
+                                                    backText,
+                                                    cardCategory)
+                                                VALUES
+                                                    (?,AES_ENCRYPT(?,'".$this->getEncryptionKey()."'),AES_ENCRYPT(?,'".$this->getEncryptionKey()."'),?)
+                                                ON DUPLICATE KEY UPDATE
+                                                  uuid=VALUES(uuid),
+                                                  frontText=VALUES(frontText),
+                                                  backText=VALUES(backText),
+                                                  cardCategory=VALUES(cardCategory)");
+            }
+            else {
+                $stmt = $this->db->prepare("INSERT INTO flashCardData
                                                     (uuid,
                                                     frontText,
                                                     backText,
@@ -459,6 +534,7 @@ class flashCardManager extends CDCMastery
                                                   frontText=VALUES(frontText),
                                                   backText=VALUES(backText),
                                                   cardCategory=VALUES(cardCategory)");
+            }
 
             $stmt->bind_param("ssss",$this->cardUUID,$this->frontText,$this->backText,$this->cardCategory);
 
@@ -474,6 +550,7 @@ class flashCardManager extends CDCMastery
                 $this->log->setDetail("Front Text",$this->frontText);
                 $this->log->setDetail("Back Text",$this->backText);
                 $this->log->setDetail("Card Category",$this->cardCategory);
+                $this->log->setDetail("Card Category Encrypted",$this->categoryEncrypted);
                 $this->log->saveEntry();
                 $stmt->close();
 
@@ -516,6 +593,41 @@ class flashCardManager extends CDCMastery
         }
     }
 
+    public function deleteCategoryFlashCardData($categoryUUID){
+        if($this->loadCardCategory($categoryUUID)) {
+        $stmt = $this->db->prepare("DELETE FROM flashCardData WHERE cardCategory = ?");
+        $stmt->bind_param("s", $categoryUUID);
+
+        if ($stmt->execute()) {
+            $this->log->setAction("FLASH_CARD_DATA_DELETE");
+            $this->log->setDetail("Category UUID", $categoryUUID);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return true;
+        } else {
+            $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
+            $this->log->setDetail("MySQL Error", $stmt->error);
+            $this->log->setDetail("Calling Function", "flashCardManager->deleteCategoryFlashCardData()");
+            $this->log->setDetail("Category UUID", $categoryUUID);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+    else{
+        $this->error = "That flash card category does not exist.";
+        $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
+        $this->log->setDetail("Error", $this->error);
+        $this->log->setDetail("Calling Function", "flashCardManager->deleteCategoryFlashCardData()");
+        $this->log->setDetail("Category UUID", $categoryUUID);
+        $this->log->saveEntry();
+
+        return false;
+    }
+    }
+
     public function listFlashCards($categoryUUID=false,$uuidOnly=false){
         if(!$categoryUUID && empty($this->categoryUUID)){
             $this->error = "No category loaded.";
@@ -550,7 +662,7 @@ class flashCardManager extends CDCMastery
                     }
                 }
                 else {
-                    $stmt = $this->db->prepare("SELECT uuid FROM flashCardData WHERE cardCategory = ?");
+                    $stmt = $this->db->prepare("SELECT uuid FROM flashCardData WHERE cardCategory = ? ORDER BY RAND()");
                     $stmt->bind_param("s", $this->categoryUUID);
 
                     if ($stmt->execute()) {
@@ -587,7 +699,8 @@ class flashCardManager extends CDCMastery
                                                     backText,
                                                     cardCategory
                                                 FROM flashCardData
-                                                WHERE cardCategory = ?");
+                                                WHERE cardCategory = ?
+                                                ORDER BY RAND()");
                 $stmt->bind_param("s",$this->categoryUUID);
 
                 if($stmt->execute()){

@@ -65,6 +65,10 @@
 					<h2>Recent Updates</h2>
 				</header>
 				<ul class="style">
+                    <li>
+                        <p class="posted">October 6, 2015</p>
+                        <p class="text">Add Flash Cards utility to the site. This enables users to create their own flash cards, or study the testing data already in the database.</p>
+                    </li>
 					<li>
 						<p class="posted">September 27, 2015</p>
 						<p class="text">Site completely redesigned.  Please report any issues that you may come across to <a href="mailto:support@cdcmastery.com">support@cdcmastery.com</a>.</p>
@@ -72,10 +76,6 @@
 					<li>
 						<p class="posted">September 24, 2015</p>
 						<p class="text">Add ability for administrators to manually authorize roles, approve FOUO AFSC associations, and activate users.</p>
-					</li>
-					<li>
-						<p class="posted">September 22, 2015</p>
-						<p class="text">Fix click issue for users with iOS.</p>
 					</li>
 				</ul>
 			</section>
@@ -240,6 +240,11 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <header>
                     <h2>Welcome, <?php echo $user->getFullName(); ?></h2>
                 </header>
+                <div class="informationMessages">
+                    <ul>
+                        <li>Flash cards are live!  Click the "Study Flashcards" link in the Tasks menu to get started.  You can create your own flash cards or use the ones provided!</li>
+                    </ul>
+                </div>
                 <p>
                     We want your feedback!  If you have suggestions on how we can improve this service, or if you want to tell us your success story, drop us a line
                     by clicking "Support" at the top and creating a ticket under the category "Feedback".<br>
@@ -249,7 +254,6 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 </p>
                 <blockquote>
                     <ul style="list-style: circle">
-                        <li>Flash Cards</li>
                         <li>Custom Tests (where you create the questions you want to see)</li>
                         <li>Printed tests</li>
                     </ul>

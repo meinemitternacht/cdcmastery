@@ -7,11 +7,11 @@
  */
 if(!isset($actionChild)){
     $sysMsg->addMessage("You must specify a flash card to edit.");
-    $cdcMastery->redirect("/admin/card-data/".$workingChild);
+    $cdcMastery->redirect("/cards/data/".$workingChild);
 }
 elseif(!$flashCardManager->loadFlashCardData($actionChild)){
     $sysMsg->addMessage("That flash card does not exist.");
-    $cdcMastery->redirect("/admin/card-data/".$workingChild);
+    $cdcMastery->redirect("/cards/data/".$workingChild);
 }
 
 if(isset($_POST['confirmFlashCardEdit'])){
@@ -75,7 +75,7 @@ if(!isset($cardBackText)){
     <header>
         <h2>Edit Flash Card</h2>
     </header>
-    <form action="/admin/card-data/<?php echo $workingChild; ?>/edit/<?php echo $actionChild; ?>" method="POST">
+    <form action="/cards/data/<?php echo $workingChild; ?>/edit/<?php echo $actionChild; ?>" method="POST">
         <input type="hidden" name="confirmFlashCardEdit" value="1">
         <p>
             Edit the details of the flash card below.

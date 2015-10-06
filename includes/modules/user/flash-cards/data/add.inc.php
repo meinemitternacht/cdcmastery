@@ -53,7 +53,7 @@ if(isset($_POST['confirmFlashCardAdd'])){
     <header>
         <h2>Add Flash Card to <?php echo $flashCardManager->getCategoryName(); ?></h2>
     </header>
-    <form action="/admin/card-data/<?php echo $workingChild; ?>/add" method="POST">
+    <form action="/cards/data/<?php echo $workingChild; ?>/add" method="POST">
         <input type="hidden" name="confirmFlashCardAdd" value="1">
         <p>
             Enter the details of the flash card below.
@@ -66,30 +66,22 @@ if(isset($_POST['confirmFlashCardAdd'])){
                 <strong>Back:</strong> <?php echo $_SESSION['previousFlashCardBack']; ?>
             </blockquote>
             <?php endif; ?>
-        <div class="row">
-            <div class="5u">
-                <ul class="form-field-list">
-                    <li>
-                        <label for="cardFrontText">Flash Card Front</label>
-                        <p>
-                            Enter text to show on the front of the flash card.  This is usually a question or term.
-                        </p>
-                        <textarea class="input_full" name="cardFrontText" id="cardFrontText" style="height:6em;"><?php if(isset($cardFrontText)): echo $cardFrontText; endif; ?></textarea>
-                    </li>
-                </ul>
-            </div>
-            <div class="5u">
-                <ul class="form-field-list">
-                    <li>
-                        <label for="cardBackText">Flash Card Back</label>
-                        <p>
-                            Enter text to show on the back of the flash card.  This is normally the response.
-                        </p>
-                        <textarea class="input_full" name="cardBackText" id="cardBackText" style="height:6em;"><?php if(isset($cardBackText)): echo $cardBackText; endif; ?></textarea>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <ul class="form-field-list">
+            <li>
+                <label for="cardFrontText">Flash Card Front</label>
+                <p>
+                    Enter text to show on the front of the flash card.  This is usually a question or term.
+                </p>
+                <textarea class="input_full" name="cardFrontText" id="cardFrontText" style="height:6em;"><?php if(isset($cardFrontText)): echo $cardFrontText; endif; ?></textarea>
+            </li>
+            <li>
+                <label for="cardBackText">Flash Card Back</label>
+                <p>
+                    Enter text to show on the back of the flash card.  This is usually the answer to the question or definition of a term.
+                </p>
+                <textarea class="input_full" name="cardBackText" id="cardBackText" style="height:6em;"><?php if(isset($cardBackText)): echo $cardBackText; endif; ?></textarea>
+            </li>
+        </ul>
         <input type="submit" value="Add Flash Card">
     </form>
 </section>

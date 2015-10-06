@@ -42,6 +42,10 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                     <header>
                         <h2>Category List</h2>
                     </header>
+                    <p>
+                        Click on the category name to manage flash card data for that particular category.  To edit or delete the category, click on the appropriate icons
+                        show in the last column.
+                    </p>
                     <table>
                         <thead>
                             <tr>
@@ -54,12 +58,36 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                         </thead>
                         <tbody>
                         <?php foreach($cardCategoryList as $categoryUUID => $categoryData): ?>
+                            <?php
+                            switch($categoryData['categoryType']){
+                                case "afsc":
+                                    $titleText = "This category is shown to all users associated with ".$afsc->getAFSCName($categoryData['categoryBinding']);
+                                    break;
+                                case "global":
+                                    if(!empty($categoryData['categoryBinding'])){
+                                        $titleText = "This category is shown to all users associated with ".$afsc->getAFSCName($categoryData['categoryBinding']);
+                                    }
+                                    else{
+                                        $titleText = "This category is shown to all users.";
+                                    }
+                                    break;
+                                case "private":
+                                    $titleText = "This category is only shown to ".$user->getUserNameByUUID($categoryData['categoryBinding']);
+                                    break;
+                                default:
+                                    $titleText = "Undefined";
+                                    break;
+                            }
+                            ?>
                             <tr>
-                                <td><?php echo $categoryData['categoryName']; ?></td>
+                                <td><a href="/admin/card-data/<?php echo $categoryUUID; ?>" title="Manage Flash Card Data"><?php echo $categoryData['categoryName']; ?></a></td>
                                 <td><?php echo $flashCardManager->getCardCount($categoryUUID); ?></td>
-                                <td><?php echo $categoryData['categoryType']; ?></td>
+                                <td title="<?php echo $titleText; ?>"><?php echo $categoryData['categoryType']; ?></td>
                                 <td><?php echo ($categoryData['categoryEncrypted']) ? "<strong>Yes</strong>" : "No"; ?></td>
-                                <td><a href="/admin/flash-card-categories/delete/<?php echo $categoryUUID; ?>">[delete]</a></td>
+                                <td>
+                                    <a href="/admin/flash-card-categories/delete/<?php echo $categoryUUID; ?>" title="Delete Category"><i class="icon-inline icon-20 ic-delete"></i></a>
+                                    <a href="/admin/flash-card-categories/edit/<?php echo $categoryUUID; ?>" title="Edit Category"><i class="icon-inline icon-20 ic-pencil"></i></a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>

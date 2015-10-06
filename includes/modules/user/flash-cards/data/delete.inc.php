@@ -9,7 +9,7 @@
 if(isset($_POST['confirmFlashCardDelete'])){
     if($flashCardManager->deleteFlashCardData($actionChild)){
         $sysMsg->addMessage("Flash card deleted successfully.");
-        $cdcMastery->redirect("/admin/card-data/".$workingChild);
+        $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     else{
         $sysMsg->addMessage("That flash card could not be deleted. Contact the support help desk for assistance.");
@@ -19,7 +19,7 @@ if(isset($_POST['confirmFlashCardDelete'])){
 if(isset($_POST['confirmDeleteMultipleFlashCards'])){
     if(!isset($_POST['flashCardUUIDList']) || !is_array($_POST['flashCardUUIDList']) || empty($_POST['flashCardUUIDList'])){
         $sysMsg->addMessage("You must specify flash cards to delete.");
-        $cdcMastery->redirect("/admin/card-data/".$workingChild);
+        $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     else{
         $error = false;
@@ -31,7 +31,7 @@ if(isset($_POST['confirmDeleteMultipleFlashCards'])){
 
         if(!$error){
             $sysMsg->addMessage("Flash cards deleted successfully.");
-            $cdcMastery->redirect("/admin/card-data/".$workingChild);
+            $cdcMastery->redirect("/cards/data/".$workingChild);
         }
         else{
             $sysMsg->addMessage("Some flash cards could not be deleted. Contact the support help desk for assistance.");
@@ -42,14 +42,14 @@ if(isset($_POST['confirmDeleteMultipleFlashCards'])){
 if(!empty($actionChild)):
     if(!$flashCardManager->loadFlashCardData($actionChild)){
         $sysMsg->addMessage("That flash card does not exist.");
-        $cdcMastery->redirect("/admin/card-data/".$workingChild);
+        $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     ?>
     <section>
         <header>
             <h2>Delete flash card</h2>
         </header>
-        <form action="/admin/card-data/<?php echo $workingChild; ?>/delete/<?php echo $actionChild; ?>" method="POST">
+        <form action="/cards/data/<?php echo $workingChild; ?>/delete/<?php echo $actionChild; ?>" method="POST">
             <input type="hidden" name="confirmFlashCardDelete" value="1">
             <p>
                 Are you sure you wish to delete this flash card?
@@ -92,7 +92,7 @@ else:
 
                     });
                 </script>
-                <form action="/admin/card-data/<?php echo $workingChild; ?>/delete" method="POST">
+                <form action="/cards/data/<?php echo $workingChild; ?>/delete" method="POST">
                     <input type="hidden" name="confirmDeleteMultipleFlashCards" value="1">
                     <p>
                         Note: This data is truncated to fit in the table.  Select the flash cards you would like to delete and click "Delete Selected".

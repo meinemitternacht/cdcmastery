@@ -7,7 +7,7 @@
  */
 $flashCardManager = new flashCardManager($db,$log);
 
-$stmt = $db->prepare("SELECT systemLogData.dataType, systemLogData.data, action, timestamp, microtime FROM systemLogData LEFT JOIN systemLog ON systemLogData.logUUID=systemLog.uuid WHERE systemLog.action='FLASH_CARD_ADD' AND systemLogData.dataType='Card UUID' AND systemLog.microtime > '1444107370' ORDER BY systemLog.microtime DESC");
+$stmt = $db->prepare("SELECT systemLogData.dataType, systemLogData.data, action, timestamp, microtime FROM systemLogData LEFT JOIN systemLog ON systemLogData.logUUID=systemLog.uuid WHERE systemLog.action='FLASH_CARD_ADD' AND systemLogData.dataType='Card UUID' AND systemLog.microtime > '1444165738' AND systemLog.microtime < '1444167120' ORDER BY systemLog.microtime DESC");
 
 if($stmt->execute()){
     $stmt->bind_result($dataType,$data,$action,$timestamp,$microtime);
@@ -45,6 +45,7 @@ if($stmt->execute()){
     $stmt->close();
 
     foreach($fcArray as $fcRow) {
+        $flashCardManager->setCategoryEncrypted(true);
         if ($flashCardManager->loadFlashCardData($fcRow['data'])) {
             ?>
             <tr>
@@ -60,10 +61,10 @@ if($stmt->execute()){
     ?>
     </table>
     <?php
-    /*
-    $query = "UPDATE flashCardData SET cardCategory='a056acb9-22ef-44fc-823a-36ad9ef90e75' WHERE uuid IN ('".implode("','",$sqlArray)."')";
+
+    $query = "UPDATE flashCardData SET cardCategory='beb0e81a-5b81-470e-8415-dcaf8789309b' WHERE uuid IN ('".implode("','",$sqlArray)."')";
     echo $query;
     if($db->query($query)){
         echo "Updated.";
-    }*/
+    }
 }

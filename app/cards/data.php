@@ -16,22 +16,22 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
         <div class="3u">
             <section>
                 <header>
-                    <h2>Flash Card Data</h2>
+                    <h2>Flash Card Manager</h2>
                 </header>
                 <div class="sub-menu">
                     <ul>
                         <?php if(!$action): ?>
-                            <li><a href="/admin/flash-card-categories"><i class="icon-inline icon-20 ic-arrow-right"></i>Manage Categories</a></li>
+                            <li><a href="/cards/categories"><i class="icon-inline icon-20 ic-arrow-right"></i>Manage Categories</a></li>
                         <?php else: ?>
-                            <li><a href="/admin/card-data"><i class="icon-inline icon-20 ic-arrow-left"></i>Flash Card Data Home</a></li>
+                            <li><a href="/cards/data"><i class="icon-inline icon-20 ic-arrow-left"></i>Flash Cards</a></li>
                             <?php if(!empty($workingChild)): ?>
-                                <li><a href="/admin/card-data/<?php echo $workingChild; ?>"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>Flash Card List</a></li>
+                                <li><a href="/cards/data/<?php echo $workingChild; ?>"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>List Flash Cards</a></li>
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php if(!empty($workingChild)): ?>
-                            <li><a href="/admin/card-data/<?php echo $workingChild; ?>/add"><i class="icon-inline icon-20 ic-plus"></i>Add Flash Cards</a></li>
+                            <li><a href="/cards/data/<?php echo $workingChild; ?>/add"><i class="icon-inline icon-20 ic-plus"></i>Add Flash Cards</a></li>
                         <?php endif; ?>
-                        <li><a href="/admin/card-data/<?php echo $workingChild; ?>/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete Flash Cards</a></li>
+                        <li><a href="/cards/data/<?php echo $workingChild; ?>/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete Flash Cards</a></li>
                     </ul>
                 </div>
             </section>
@@ -39,7 +39,7 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
         <div class="9u">
             <?php
             if(!$workingChild):
-                $cardCategoryList = $flashCardManager->listCardCategories();
+                $cardCategoryList = $flashCardManager->listPrivateCardCategories($_SESSION['userUUID']);
                 if($cardCategoryList): ?>
                     <section>
                         <header>
@@ -60,7 +60,7 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                             <tbody>
                             <?php foreach($cardCategoryList as $categoryUUID => $categoryData): ?>
                                 <tr>
-                                    <td><a href="/admin/card-data/<?php echo $categoryUUID; ?>/list"><?php echo $categoryData['categoryName']; ?></a></td>
+                                    <td><a href="/cards/data/<?php echo $categoryUUID; ?>/list"><?php echo $categoryData['categoryName']; ?></a></td>
                                     <td><?php echo $flashCardManager->getCardCount($categoryUUID); ?></td>
                                     <td><?php echo $categoryData['categoryType']; ?></td>
                                     <td><?php echo ($categoryData['categoryEncrypted']) ? "<strong>Yes</strong>" : "No"; ?></td>
@@ -70,15 +70,20 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                         </table>
                     </section>
                     <?php
-                else: ?>
-                    There are no Flash Card Categories in the database.
-                    <?php
+                else:
+                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!");
+                    $cdcMastery->redirect("/cards/categories/add");
                 endif; ?>
                 <?php
             else:
                 if(!$flashCardManager->loadCardCategory($workingChild)){
                     $sysMsg->addMessage("That flash card category does not exist.");
-                    $cdcMastery->redirect("/admin/card-data");
+                    $cdcMastery->redirect("/cards/data");
+                }
+
+                if($flashCardManager->getCategoryBinding() != $_SESSION['userUUID']){
+                    $sysMsg->addMessage("That flash card category does not belong to you.");
+                    $cdcMastery->redirect("/cards/data");
                 }
 
                 if(empty($action)){
@@ -87,16 +92,16 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
 
                 switch($action){
                     case "add":
-                        include_once BASE_PATH . "/includes/modules/admin/flash-cards/data/add.inc.php";
+                        include_once BASE_PATH . "/includes/modules/user/flash-cards/data/add.inc.php";
                         break;
                     case "edit":
-                        include_once BASE_PATH . "/includes/modules/admin/flash-cards/data/edit.inc.php";
+                        include_once BASE_PATH . "/includes/modules/user/flash-cards/data/edit.inc.php";
                         break;
                     case "delete":
-                        include_once BASE_PATH . "/includes/modules/admin/flash-cards/data/delete.inc.php";
+                        include_once BASE_PATH . "/includes/modules/user/flash-cards/data/delete.inc.php";
                         break;
                     case "list":
-                        include_once BASE_PATH . "/includes/modules/admin/flash-cards/data/list.inc.php";
+                        include_once BASE_PATH . "/includes/modules/user/flash-cards/data/list.inc.php";
                         break;
                 }
                 ?>
