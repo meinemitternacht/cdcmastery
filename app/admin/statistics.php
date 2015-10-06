@@ -49,9 +49,13 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_START"><strong>Tests Started</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_START")); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/INCOMPLETE_TEST_DELETE"><strong>Tests Deleted</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_DELETE") + $statisticsObj->getLogCountByAction("INCOMPLETE_TEST_DELETE")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flash Card Sessions</strong></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("NEW_FLASH_CARD_SESSION")); ?></td>
                     </tr>
                 </table>
             </section>
