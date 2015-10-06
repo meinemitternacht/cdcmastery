@@ -22,7 +22,8 @@
                                 '/js/jquery.formalize.min.js',
                                 '/js/jquery.timeago.js',
                                 '/js/jquery.canvasjs.min.js',
-								'/js/jquery.tablesorter.min.js');
+								'/js/jquery.tablesorter.min.js',
+								'/js/jquery.touchSwipe.min.js');
 
         $cssArray = Array(  '/css/jquery-ui.min.css',
                             '/css/jquery-ui.structure.min.css',
@@ -34,9 +35,9 @@
                                     '/css/style.css',
                                     '/css/style-desktop.css');
 
-        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=5161816";
-        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=5161815";
-        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=5161815";
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=51A61816";
+        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=51A61815";
+        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=51A61815";
         ?>
 		<script src="<?php echo $scriptURL; ?>"></script>
 		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
