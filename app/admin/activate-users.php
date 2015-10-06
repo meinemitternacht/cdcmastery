@@ -7,7 +7,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 
 			foreach($_POST['activationCodeList'] as $activationCode){
-				if(!$userActivation->activateUser($activationCode)){
+				if(!$userActivation->activateUser($activationCode,$_SESSION['userUUID'])){
 					$error = true;
 				}
 			}
