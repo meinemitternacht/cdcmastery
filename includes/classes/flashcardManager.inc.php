@@ -32,11 +32,11 @@ class flashCardManager extends CDCMastery
     public $flashCardArray;
     public $currentCard;
     public $totalCards;
+    public $cardCurrentState;
 
     public function __construct(mysqli $db, log $log){
         $this->db = $db;
         $this->log = $log;
-        $this->loadSession();
     }
 
     public function newFlashCardCategory(){
@@ -62,9 +62,9 @@ class flashCardManager extends CDCMastery
                                             categoryCreatedBy,
                                             categoryComments
                                         FROM flashCardCategories
-                                        WHERE categoryType = ?
-                                        ORDER BY categoryName ASC");
-            $paramValue = "global";
+                                        WHERE categoryType != ?
+                                        ORDER BY categoryType, categoryName ASC");
+            $paramValue = "private";
             $stmt->bind_param("s",$paramValue);
         }
         else{
@@ -235,7 +235,27 @@ class flashCardManager extends CDCMastery
                 $this->log->saveEntry();
                 $stmt->close();
 
-                return true;
+                $stmt = $this->db->prepare("DELETE FROM flashCardData WHERE cardCategory = ?");
+                $stmt->bind_param("s",$categoryUUID);
+
+                if($stmt->execute()){
+                    $this->log->setAction("FLASH_CARD_DATA_DELETE");
+                    $this->log->setDetail("Category UUID", $this->categoryUUID);
+                    $this->log->saveEntry();
+                    $stmt->close();
+
+                    return true;
+                }
+                else{
+                    $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
+                    $this->log->setDetail("MySQL Error", $stmt->error);
+                    $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardCategory()");
+                    $this->log->setDetail("Category UUID", $categoryUUID);
+                    $this->log->saveEntry();
+                    $stmt->close();
+
+                    return false;
+                }
             } else {
                 $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_DELETE");
                 $this->log->setDetail("MySQL Error", $stmt->error);
@@ -259,33 +279,86 @@ class flashCardManager extends CDCMastery
         }
     }
 
-    public function createCategoryFromAFSC($afscUUID,afsc $afsc,$categoryName,$categoryCreatedBy){
-        $this->setCategoryName($categoryName);
+    public function createCategoryFromAFSC($afscUUID,afsc $afsc,$categoryCreatedBy){
         $this->setCategoryCreatedBy($categoryCreatedBy);
 
         if($afsc->loadAFSC($afscUUID)){
-            $this->categoryEncrypted = $afsc->getAFSCFOUO();
+            $this->setCategoryEncrypted($afsc->getAFSCFOUO());
+            $this->setCategoryName($afsc->getAFSCName());
+
+            $this->setCategoryPrivate(false);
+            $this->setCategoryBinding($afscUUID);
+            $this->setCategoryType("afsc");
+
+            $this->setCategoryComments($afsc->getAFSCVersion());
+
+            if($this->saveFlashCardCategory()){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
     }
 
-    public function getCardCount($categoryUUID){
-        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardData WHERE cardCategory = ?");
-        $stmt->bind_param("s",$categoryUUID);
+    public function checkCategoryBinding($categoryBinding){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardCategories WHERE categoryBinding = ?");
+        $stmt->bind_param("s",$categoryBinding);
 
         if($stmt->execute()){
             $stmt->bind_result($count);
             $stmt->fetch();
 
-            return $count;
+            if($count > 0){
+                return false;
+            }
+            else{
+                return true;
+            }
         }
         else{
-            $this->log->setAction("ERROR_FLASH_CARD_COUNT_CARDS");
+            $this->error = "Could not check category binding.";
+            $this->log->setAction("ERROR_FLASH_CARD_CHECK_CATEGORY_BINDING");
+            $this->log->setDetail("Error", $this->error);
             $this->log->setDetail("MySQL Error", $stmt->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->getCardCount()");
-            $this->log->setDetail("Category UUID", $categoryUUID);
+            $this->log->setDetail("Calling Function", "flashCardManager->checkCategoryBinding()");
+            $this->log->setDetail("Category Binding", $categoryBinding);
             $this->log->saveEntry();
 
+            return true;
+        }
+    }
+
+    public function getCardCount($categoryUUID){
+        if(!$this->loadCardCategory($categoryUUID)){
+            $this->error = "That card category does not exist.";
             return false;
+        }
+        else{
+            if($this->categoryType == "afsc"){
+                $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM questionData WHERE afscUUID = ?");
+                $stmt->bind_param("s",$this->categoryBinding);
+            }
+            else{
+                $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardData WHERE cardCategory = ?");
+                $stmt->bind_param("s",$categoryUUID);
+            }
+
+            if($stmt->execute()){
+                $stmt->bind_result($count);
+                $stmt->fetch();
+
+                return $count;
+            }
+            else{
+                $this->log->setAction("ERROR_FLASH_CARD_COUNT_CARDS");
+                $this->log->setDetail("MySQL Error", $stmt->error);
+                $this->log->setDetail("Calling Function", "flashCardManager->getCardCount()");
+                $this->log->setDetail("Category UUID", $categoryUUID);
+                $this->log->saveEntry();
+
+                return false;
+            }
         }
     }
 
@@ -296,6 +369,41 @@ class flashCardManager extends CDCMastery
         $this->cardCategory = NULL;
 
         return true;
+    }
+
+    public function loadAFSCFlashCardData($cardUUID){
+        $afsc = new afsc($this->db,$this->log);
+        $answerManager = new answerManager($this->db,$this->log);
+        $questionManager = new questionManager($this->db,$this->log,$afsc,$answerManager);
+
+        if($this->categoryEncrypted){
+            $answerManager->setFOUO(true);
+            $questionManager->setFOUO(true);
+        }
+
+        if($questionManager->loadQuestion($cardUUID)){
+            $this->setFrontText($questionManager->getQuestionText());
+            $correctAnswerUUID = $answerManager->getCorrectAnswer($cardUUID);
+
+            if($correctAnswerUUID){
+                if($answerManager->loadAnswer($correctAnswerUUID)){
+                    $this->setBackText($answerManager->getAnswerText());
+                    return true;
+                }
+                else{
+                    $this->error = "Could not load the answer.";
+                    return false;
+                }
+            }
+            else{
+                $this->error = "Answer UUID was not defined.";
+                return false;
+            }
+        }
+        else{
+            $this->error = "Could not load the question.";
+            return false;
+        }
     }
 
     public function loadFlashCardData($cardUUID){
@@ -419,36 +527,58 @@ class flashCardManager extends CDCMastery
         }
         else{
             if($uuidOnly) {
-                $stmt = $this->db->prepare("SELECT uuid FROM flashCardData WHERE cardCategory = ?");
-                $stmt->bind_param("s",$this->categoryUUID);
+                if($this->categoryType == "afsc"){
+                    $afsc = new afsc($this->db,$this->log);
+                    $answerManager = new answerManager($this->db,$this->log);
+                    $questionManager = new questionManager($this->db,$this->log,$afsc,$answerManager);
+                    $questionManager->setAFSCUUID($this->categoryBinding);
+                    $questionManager->setFOUO($this->categoryEncrypted);
 
-                if($stmt->execute()){
-                    $stmt->bind_result($uuid);
-                    while($stmt->fetch()){
-                        $this->flashCardArray[] = $uuid;
+                    $questionList = $questionManager->listQuestionsForAFSC();
+                    $i=1;
+                    foreach($questionList as $questionUUID){
+                        $this->flashCardArray[$i] = $questionUUID;
+                        $i++;
                     }
 
-                    $stmt->close();
-
-                    if(is_array($this->flashCardArray) && count($this->flashCardArray) > 0){
+                    if(is_array($this->flashCardArray) && !empty($this->flashCardArray)){
                         return true;
                     }
                     else{
-                        $this->error = "No flash cards found.";
+                        $this->error = "No flash cards for that AFSC found.";
                         return false;
                     }
                 }
-                else{
-                    $this->error = "Could not list flash cards.";
-                    $this->log->setAction("ERROR_FLASH_CARD_LIST");
-                    $this->log->setDetail("MySQL Error", $stmt->error);
-                    $this->log->setDetail("Calling Function", "flashCardManager->listFlashCards()");
-                    $this->log->setDetail("Category UUID", $categoryUUID);
-                    $this->log->setDetail("UUID Only", $uuidOnly);
-                    $this->log->saveEntry();
-                    $stmt->close();
+                else {
+                    $stmt = $this->db->prepare("SELECT uuid FROM flashCardData WHERE cardCategory = ?");
+                    $stmt->bind_param("s", $this->categoryUUID);
 
-                    return false;
+                    if ($stmt->execute()) {
+                        $stmt->bind_result($uuid);
+                        while ($stmt->fetch()) {
+                            $this->flashCardArray[] = $uuid;
+                        }
+
+                        $stmt->close();
+
+                        if (is_array($this->flashCardArray) && count($this->flashCardArray) > 0) {
+                            return true;
+                        } else {
+                            $this->error = "No flash cards found.";
+                            return false;
+                        }
+                    } else {
+                        $this->error = "Could not list flash cards.";
+                        $this->log->setAction("ERROR_FLASH_CARD_LIST");
+                        $this->log->setDetail("MySQL Error", $stmt->error);
+                        $this->log->setDetail("Calling Function", "flashCardManager->listFlashCards()");
+                        $this->log->setDetail("Category UUID", $categoryUUID);
+                        $this->log->setDetail("UUID Only", $uuidOnly);
+                        $this->log->saveEntry();
+                        $stmt->close();
+
+                        return false;
+                    }
                 }
             }
             else{
@@ -462,10 +592,13 @@ class flashCardManager extends CDCMastery
 
                 if($stmt->execute()){
                     $stmt->bind_result($uuid,$frontText,$backText,$cardCategory);
+                    $i=1;
                     while($stmt->fetch()){
-                        $this->flashCardArray[$uuid]['frontText'] = $frontText;
-                        $this->flashCardArray[$uuid]['backText'] = $backText;
-                        $this->flashCardArray[$uuid]['cardCategory'] = $cardCategory;
+                        $this->flashCardArray[$i]['uuid'] = $uuid;
+                        $this->flashCardArray[$i]['frontText'] = $frontText;
+                        $this->flashCardArray[$i]['backText'] = $backText;
+                        $this->flashCardArray[$i]['cardCategory'] = $cardCategory;
+                        $i++;
                     }
 
                     $stmt->close();
@@ -519,6 +652,7 @@ class flashCardManager extends CDCMastery
             $_SESSION['flashCardStorage']['cardArray'] = serialize($this->flashCardArray);
             $_SESSION['flashCardStorage']['currentCard'] = $this->currentCard;
             $_SESSION['flashCardStorage']['totalCards'] = $this->totalCards;
+            $_SESSION['flashCardStorage']['cardCurrentState'] = $this->cardCurrentState;
         }
 
         return true;
@@ -529,6 +663,7 @@ class flashCardManager extends CDCMastery
             $this->flashCardArray = unserialize($_SESSION['flashCardStorage']['cardArray']);
             $this->currentCard = $_SESSION['flashCardStorage']['currentCard'];
             $this->totalCards = count($this->flashCardArray);
+            $this->cardCurrentState = $_SESSION['flashCardStorage']['cardCurrentState'];
             return true;
         }
         else{
@@ -544,11 +679,20 @@ class flashCardManager extends CDCMastery
 
         $this->currentCard = 1;
 
+        if($this->cardCurrentState == "back"){
+            $this->flipCard();
+        }
+
         return true;
     }
 
     public function navigateFirstCard(){
         $this->currentCard = 1;
+
+        if($this->cardCurrentState == "back"){
+            $this->flipCard();
+        }
+
         return true;
     }
 
@@ -559,6 +703,11 @@ class flashCardManager extends CDCMastery
         else{
             $this->currentCard = 1;
         }
+
+        if($this->cardCurrentState == "back"){
+            $this->flipCard();
+        }
+
         return true;
     }
 
@@ -569,12 +718,137 @@ class flashCardManager extends CDCMastery
         else{
             $this->currentCard = $this->totalCards;
         }
+
+        if($this->cardCurrentState == "back"){
+            $this->flipCard();
+        }
+
         return true;
     }
 
     public function navigateLastCard(){
         $this->currentCard = $this->totalCards;
+        $this->cardCurrentState = "front";
         return true;
+    }
+
+    public function setCurrentCard($currentCard){
+        if(is_int($currentCard)){
+            if($currentCard > $this->totalCards){
+                $this->currentCard = $this->totalCards;
+            }
+            elseif($currentCard < 1){
+                $this->currentCard = 1;
+            }
+            else{
+                $this->currentCard = $currentCard;
+            }
+
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function flipCard(){
+        if($this->cardCurrentState == "front"){
+            $this->cardCurrentState = "back";
+            $_SESSION['flashCardStorage']['cardCurrentState'] = "back";
+        }
+        else{
+            $this->cardCurrentState = "front";
+            $_SESSION['flashCardStorage']['cardCurrentState'] = "front";
+        }
+
+        return true;
+    }
+
+    public function renderFlashCard(){
+        if(!isset($this->flashCardArray) || !is_array($this->flashCardArray)){
+            $output = "No flash card data is available.";
+        }
+        elseif(!$this->currentCard){
+            $output = "Cannot determine current card.";
+        }
+        elseif(!$this->totalCards){
+            $output = "Cannot determine total number of cards.";
+        }
+        elseif(!isset($this->flashCardArray[$this->currentCard])){
+            $output = "Current card does not exist in the flash card array.";
+        }
+        else{
+            if($this->categoryType == "afsc") {
+                if (!$this->loadAFSCFlashCardData($this->flashCardArray[$this->currentCard])) {
+                    $output = "We could not load that flash card.";
+                } else {
+                    if ($this->cardCurrentState == "front") {
+                        $output = '<div id="cardFront" class="cardData">';
+                        $output .= '<span class="text-success">card front</span><br>';
+                        $output .= $this->getFrontText();
+                        $output .= '</div>';
+                    } else {
+                        $output = '<div id="cardBack" class="cardData">';
+                        $output .= '<span class="text-caution">card back</span><br>';
+                        $output .= $this->getBackText();
+                        $output .= '</div>';
+                    }
+                }
+            }
+            else{
+                if (!$this->loadFlashCardData($this->flashCardArray[$this->currentCard]['uuid'])) {
+                    $output = "We could not load that flash card.";
+                } else {
+                    if ($this->cardCurrentState == "front") {
+                        $output = '<div id="cardFront" class="cardData">';
+                        $output .= '<span class="text-success">card front</span><br>';
+                        $output .= $this->getFrontText();
+                        $output .= '</div>';
+                    } else {
+                        $output = '<div id="cardBack" class="cardData">';
+                        $output .= '<span class="text-caution">card back</span><br>';
+                        $output .= $this->getBackText();
+                        $output .= '</div>';
+                    }
+                }
+            }
+        }
+
+        /*
+         * Debugging
+         */
+        /*
+        $output .= "Current Card: ".$this->currentCard;
+        $output .= "<br>";
+        $output .= "Total Cards: ".$this->totalCards;
+        $output .= "<br>";
+        $output .= "Current Card State: ".$this->cardCurrentState;
+        $output .= "<br>";
+        */
+
+        return $output;
+    }
+
+    public function getProgress(){
+        if(($this->currentCard > 0) && ($this->totalCards > 0)) {
+            /*
+             * Progress Bar
+             */
+            $output = '<script>
+                    $(function() {
+                        $( "#progressbar" ).progressbar({
+                          value: ' . round(($this->currentCard/$this->totalCards)*100) . ', max: 100
+                        });
+                    });
+                    </script>
+                    <div class="clearfix">&nbsp;</div>
+                    <div id="progressbar" style="height: 0.5em; margin-bottom: 1em;"></div>';
+
+            return $output;
+        }
+        else{
+            return false;
+        }
     }
 
     /**
@@ -788,7 +1062,6 @@ class flashCardManager extends CDCMastery
 
 
     public function __destruct(){
-        $this->saveSession();
         parent::__destruct();
     }
 }

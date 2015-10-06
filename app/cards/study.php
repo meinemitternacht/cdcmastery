@@ -8,6 +8,50 @@
 
 $flashCardManager = new flashCardManager($db,$log);
 $categoryUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
+$sessionAction = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
+
+if($sessionAction){
+    switch($sessionAction){
+        case "new":
+            $flashCardManager->clearSession();
+            $flashCardManager->loadCardCategory($categoryUUID);
+            if($flashCardManager->getCategoryType() == "afsc"){
+                $flashCardManager->listFlashCards(false,true);
+            }
+            else{
+                $flashCardManager->listFlashCards();
+            }
+            $flashCardManager->cardCurrentState = "front";
+            $flashCardManager->saveSession();
+
+            $log->setAction("NEW_FLASH_CARD_SESSION");
+            $log->setDetail("Category UUID",$categoryUUID);
+            $log->saveEntry();
+
+            $cdcMastery->redirect("/cards/study/".$categoryUUID);
+            break;
+        case "reset":
+            $flashCardManager->clearSession();
+            $flashCardManager->loadCardCategory($categoryUUID);
+            if($flashCardManager->getCategoryType() == "afsc"){
+                $flashCardManager->listFlashCards(false,true);
+            }
+            else{
+                $flashCardManager->listFlashCards();
+            }
+            $flashCardManager->saveSession();
+
+            $log->setAction("NEW_FLASH_CARD_SESSION");
+            $log->setDetail("Category UUID",$categoryUUID);
+            $log->saveEntry();
+
+            $cdcMastery->redirect("/cards/study/".$categoryUUID);
+            break;
+        default:
+            $cdcMastery->redirect("/cards/study/".$categoryUUID);
+            break;
+    }
+}
 
 if(!$categoryUUID){
     $sysMsg->addMessage("Category must be specified.");
@@ -22,7 +66,7 @@ elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
 
     $(document).ready(function () {
         function loading_show() {
-            $('#loading').html("<img src='/images/loader.gif'>").fadeIn('fast');
+            $('#cardLoading').html("<img src='/images/loader.gif'>").fadeIn('fast');
         }
 
         function navigateFlashCards(destination) {
@@ -32,14 +76,46 @@ elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
                 action: destination
             }, function (response) {
                 setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
+                getProgress();
             });
 
             return false;
+        }
 
+        function flipCard(){
+            $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
+                action: 'flipCard'
+            }, function (response) {
+                setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
+            });
+
+            return false;
+        }
+
+        function getProgress(){
+            $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
+                action: 'getProgress'
+            }, function (response) {
+                setTimeout("finishAjax('progressBarContainer', '" + escape(response) + "')", 500);
+            });
+
+            return false;
         }
 
         $(window).keydown(function(e) {
             switch (e.keyCode) {
+                case 32:
+                    e.preventDefault();
+                    loading_show();
+
+                    $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
+                        action: 'flipCard'
+                    }, function (response) {
+                        setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
+                    });
+
+                    getProgress();
+                    return;
                 case 35:
                     e.preventDefault();
                     navigateFlashCards("lastCard");
@@ -64,107 +140,106 @@ elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
         });
 
         $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
-            action: 'showCard',
+            action: 'loadCard',
             actionData: '1'
         }, function (response) {
             setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
         });
 
-        $(document).on('click', '#flipCardToBack', function () {
-            $('#cardFront').hide();
-            $('#cardBack').show();
+        getProgress();
+
+        $('#flashCardArea').swipe( {
+            swipeLeft:function() {
+                navigateFlashCards("nextCard");
+            },
+            threshold:0
         });
 
-        $(document).on('click', '#flipCardToFront', function () {
-            $('#cardBack').hide();
-            $('#cardFront').show();
+        $('#flashCardArea').swipe( {
+            swipeRight:function() {
+                navigateFlashCards("previousCard");
+            },
+            threshold:0
+        });
+
+        $('#flashCardArea').click(function () {
+            loading_show();
+            flipCard();
+        });
+
+        $('#flip').click(function () {
+            loading_show();
+            flipCard();
         });
 
         $('#goFirst').click(function () {
-            loading_show();
-
-            $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
-                action: 'firstQuestion'
-            }, function (response) {
-                setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
-            });
-
-            return false;
-
+            navigateFlashCards("firstCard");
         });
 
         $('#goPrevious').click(function () {
             loading_show();
-
-            $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
-                action: 'previousCard'
-            }, function (response) {
-                setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
-            });
-
-            return false;
-
+            navigateFlashCards("previousCard");
         });
 
         $('#goNext').click(function () {
             loading_show();
-
-            $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
-                action: 'nextCard'
-            }, function (response) {
-                setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
-            });
-
-            return false;
-
+            navigateFlashCards("nextCard");
         });
 
         $('#goLast').click(function () {
             loading_show();
+            navigateFlashCards("lastCard");
+        });
+
+        $('#shuffle').click(function () {
+            loading_show();
 
             $.post("/ajax/flashCardPlatform/<?php echo $categoryUUID; ?>", {
-                action: 'lastCard'
+                action: 'shuffleCards'
             }, function (response) {
                 setTimeout("finishAjax('flashCardArea', '" + escape(response) + "')", 500);
             });
 
+            getProgress();
+
             return false;
 
         });
-
     });
 
     function finishAjax(id, response) {
-        $('#loading').fadeOut('fast');
+        $('#cardLoading').fadeOut('fast');
         $('#' + id).html(unescape(response));
-        $('.test-nav').fadeIn('fast');
     }
 
 </script>
-<div id="loading"><img src="/images/loader.gif"/></div>
+<div id="cardLoading"><img src="/images/loader.gif"/></div>
 <div class="container">
     <div class="row">
-        <div class="12u">
+        <div class="8u -2u">
             <section>
-                <h2><?php echo $flashCardManager->getCategoryName(); ?></h2>
-                <br>
+                <header>
+                    <h2 style="text-align:center;"><?php echo $flashCardManager->getCategoryName(); ?></h2>
+                </header>
                 <div id="flashCardArea"></div>
-            </section>
-        </div>
-    </div>
-    <div class="row">
-        <div class="12u">
-            <section>
-                <div class="test-nav" style="display: none;">
+                <div class="clearfix">&nbsp;</div>
+                <div class="4u -4u">
+                    <div class="flip-button">
+                        <a href="#" id="flip">Flip Card</a>
+                    </div>
+                </div>
+                <div id="progressBarContainer" class="8u -2u"></div>
+                <div class="test-nav">
                     <button class="test-nav-button" id="goFirst" title="First Card">&lt;&lt;</button>
                     <button class="test-nav-button" id="goPrevious" title="Previous Card">&lt;</button>
+                    <button class="test-nav-button" id="shuffle" title="Shuffle Cards" style="padding-right:1em;">Shuffle</button>
                     <button class="test-nav-button" id="goNext" title="Next Card">&gt;</button>
                     <button class="test-nav-button" id="goLast" title="Last Card">&gt;&gt;</button>
                 </div>
                 <div class="clearfix">&nbsp;</div>
                 <div class="text-center">
-                    <strong>Tip:</strong> You can use the <strong>Left</strong> and <strong>Right</strong> arrow keys to navigate through the test.  <strong>Home</strong> and <strong>End</strong> will take you to the first and last questions.<br>
-                    To answer a question, click on the answer or press the numbers <strong>1-4</strong> or the letters <strong>a</strong>, <strong>b</strong>, <strong>c</strong>, or <strong>d</strong>.
+                    <strong>Tip:</strong> You can use the <strong>Left</strong> and <strong>Right</strong> arrow keys to navigate through the flash cards.<br>
+                    <strong>Home</strong> and <strong>End</strong> will take you to the first and last cards.<br>
                 </div>
             </section>
         </div>

@@ -22,7 +22,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                         <?php if(!$action): ?>
                         <li><a href="/admin/flash-card-categories/add"><i class="icon-inline icon-20 ic-plus"></i>Add Category</a></li>
                         <?php else: ?>
-                            <li><a href="/admin/flash-card-categories"><i class="icon-inline icon-20 ic-arrow-left"></i>Category Manager Home</a></li>
+                            <li><a href="/admin/flash-card-categories"><i class="icon-inline icon-20 ic-arrow-left"></i>Category Manager</a></li>
                             <?php if($action == "add"): ?>
                             <li><a href="/admin/flash-card-categories/add-afsc"><i class="icon-inline icon-20 ic-plus"></i>Add From AFSC</a></li>
                             <?php elseif($action == "add-afsc"): ?>
@@ -49,6 +49,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                                 <th>Total Cards</th>
                                 <th>Type</th>
                                 <th>Encrypted</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,6 +59,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                                 <td><?php echo $flashCardManager->getCardCount($categoryUUID); ?></td>
                                 <td><?php echo $categoryData['categoryType']; ?></td>
                                 <td><?php echo ($categoryData['categoryEncrypted']) ? "<strong>Yes</strong>" : "No"; ?></td>
+                                <td><a href="/admin/flash-card-categories/delete/<?php echo $categoryUUID; ?>">[delete]</a></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -74,6 +76,9 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
             switch($action){
                 case "add":
                     include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/add.inc.php";
+                    break;
+                case "add-afsc":
+                    include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/add-afsc.inc.php";
                     break;
                 case "edit":
                     include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/edit.inc.php";

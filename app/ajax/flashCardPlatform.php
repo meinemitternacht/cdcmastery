@@ -20,6 +20,7 @@ if(isset($_POST['actionData']))
 
 if(isset($categoryUUID)){
     if($flashCardManager->loadCardCategory($categoryUUID)){
+        $flashCardManager->loadSession();
         if(isset($userAction)){
             switch($userAction){
                 case "firstCard":
@@ -33,6 +34,20 @@ if(isset($categoryUUID)){
                     break;
                 case "lastCard":
                     $flashCardManager->navigateLastCard();
+                    break;
+                case "loadCard":
+                    $flashCardManager->setCurrentCard($actionData);
+                    break;
+                case "flipCard":
+                    $flashCardManager->flipCard();
+                    break;
+                case "shuffleCards":
+                    $flashCardManager->shuffleFlashCards();
+                    $flashCardManager->setCurrentCard(1);
+                    break;
+                case "getProgress":
+                    echo $flashCardManager->getProgress();
+                    $skipData = true;
                     break;
                 default:
                     $log->setAction("AJAX_ACTION_ERROR");
@@ -48,7 +63,10 @@ if(isset($categoryUUID)){
             }
         }
 
-
+        if(!isset($skipData)) {
+            echo $flashCardManager->renderFlashCard();
+        }
+        $flashCardManager->saveSession();
     }
     else{
         echo "That flash card category does not exist.";

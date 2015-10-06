@@ -10,7 +10,8 @@ if(isset($_POST['confirmCategoryAdd'])){
     $categoryName = isset($_POST['categoryName']) ? $_POST['categoryName'] : false;
     $categoryEncrypted = isset($_POST['categoryEncrypted']) ? $_POST['categoryEncrypted'] : false;
     $categoryType = isset($_POST['categoryType']) ? $_POST['categoryType'] : false;
-    $categoryBinding = isset($_POST['categoryBinding']) ? $_POST['categoryBinding'] : false;
+    $categoryBindingUser = isset($_POST['categoryBindingUser']) ? $_POST['categoryBindingUser'] : false;
+    $categoryBindingAFSC = isset($_POST['categoryBindingAFSC']) ? $_POST['categoryBindingAFSC'] : false;
     $categoryComments = isset($_POST['categoryComments']) ? $_POST['categoryComments'] : false;
 
     $addError = false;
@@ -29,7 +30,7 @@ if(isset($_POST['confirmCategoryAdd'])){
         $sysMsg->addMessage("You must choose a category type. (Global/Private)");
         $addError = true;
     }
-    elseif($categoryType == "private" && !$categoryBinding){
+    elseif($categoryType == "private" && !$categoryBindingUser){
         $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.");
         $addError = true;
     }
@@ -41,10 +42,11 @@ if(isset($_POST['confirmCategoryAdd'])){
         $flashCardManager->setCategoryType($categoryType);
 
         if($categoryType == "private"){
-            $flashCardManager->setCategoryBinding($categoryBinding);
+            $flashCardManager->setCategoryBinding($categoryBindingUser);
             $flashCardManager->setCategoryPrivate(true);
         }
         else{
+            $flashCardManager->setCategoryBinding($categoryBindingAFSC);
             $flashCardManager->setCategoryPrivate(false);
         }
 
@@ -52,12 +54,22 @@ if(isset($_POST['confirmCategoryAdd'])){
         $flashCardManager->setCategoryCreatedBy($_SESSION['userUUID']);
 
         if($flashCardManager->saveFlashCardCategory()){
+            $log->setAction("FLASH_CARD_CATEGORY_ADD");
+            $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
+            $log->setDetail("Category Name",$flashCardManager->getCategoryName());
+            $log->setDetail("Category Type",$flashCardManager->getCategoryType());
+            $log->setDetail("Category Encrypted",$flashCardManager->getCategoryEncrypted());
+            $log->setDetail("Category Private",$flashCardManager->getCategoryPrivate());
+            $log->setDetail("Category Binding",$flashCardManager->getCategoryBinding());
+            $log->saveEntry();
+
             $sysMsg->addMessage("Flash card category added successfully.");
 
             unset($categoryName);
             unset($categoryEncrypted);
             unset($categoryType);
-            unset($categoryBinding);
+            unset($categoryBindingAFSC);
+            unset($categoryBindingUser);
             unset($categoryComments);
         }
         else{
@@ -68,14 +80,16 @@ if(isset($_POST['confirmCategoryAdd'])){
 ?>
 <script>
     $(document).ready(function(){
-        $('#categoryBindingBlock').hide();
+        $('#categoryBindingBlockUser').hide();
 
         $('#selectPrivate').click(function(){
-            $('#categoryBindingBlock').show();
+            $('#categoryBindingBlockUser').show();
+            $('#categoryBindingBlockAFSC').hide();
         });
 
         $('#selectGlobal').click(function(){
-            $('#categoryBindingBlock').hide();
+            $('#categoryBindingBlockUser').hide();
+            $('#categoryBindingBlockAFSC').show();
         });
     });
 </script>
@@ -116,21 +130,21 @@ if(isset($_POST['confirmCategoryAdd'])){
                 <input type="radio" name="categoryType" id="selectGlobal" value="global"<?php if(isset($categoryType) && $categoryType == "global"): echo " CHECKED"; elseif(!isset($categoryType)): echo " CHECKED"; endif; ?>> Global<br>
                 <input type="radio" name="categoryType" id="selectPrivate" value="private"<?php if(isset($categoryType) && $categoryType == "private"): echo " CHECKED"; endif; ?>> Private<br>
             </li>
-            <li id="categoryBindingBlock">
-                <label for="categoryBinding">Bind to user</label>
+            <li id="categoryBindingBlockUser">
+                <label for="categoryBindingUser">Bind to user</label>
                 <p>
                     Select the user to bind this category to.  After clicking on the drop-down list, type the first few letters of the user's last name
                     to jump to that user.  This field is required if "<strong>Private</strong>" is selected above.
                 </p>
-                <select id="categoryBinding"
-                        name="categoryBinding"
+                <select id="categoryBindingUser"
+                        name="categoryBindingUser"
                         class="input_full"
                         size="1">
                     <option value="">Select a user...</option>
                     <?php
                     $userList = $user->listUsers();
                     foreach($userList as $userUUID => $userDetails): ?>
-                        <?php if(isset($categoryBinding) && $categoryBinding == $userUUID): ?>
+                        <?php if(isset($categoryBindingUser) && $categoryBindingUser == $userUUID): ?>
                         <option value="<?php echo $userUUID; ?>" SELECTED>
                             <?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?>
                         </option>
@@ -138,6 +152,34 @@ if(isset($_POST['confirmCategoryAdd'])){
                         <option value="<?php echo $userUUID; ?>">
                             <?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?>
                         </option>
+                        <?php endif; ?>
+                        <?php
+                    endforeach;
+                    ?>
+                </select>
+            </li>
+            <li id="categoryBindingBlockAFSC">
+                <label for="categoryBindingAFSC">Bind to AFSC</label>
+                <p>
+                    Select the AFSC to bind this category to.  <span class="text-warning-bold">While this field is not required, if an AFSC is not selected here, FOUO materials may be accessible to
+                    unauthorized users.</span>
+                </p>
+                <select id="categoryBindingAFSC"
+                        name="categoryBindingAFSC"
+                        class="input_full"
+                        size="1">
+                    <option value="">Select an AFSC...</option>
+                    <?php
+                    $afscList = $afsc->listAFSC(false);
+                    foreach($afscList as $afscUUID => $afscData): ?>
+                        <?php if(isset($categoryBindingAFSC) && $categoryBindingAFSC == $afscUUID): ?>
+                            <option value="<?php echo $afscUUID; ?>" SELECTED>
+                                <?php echo $afscData['afscName']; ?>
+                            </option>
+                        <?php else: ?>
+                            <option value="<?php echo $afscUUID; ?>">
+                                <?php echo $afscData['afscName']; ?>
+                            </option>
                         <?php endif; ?>
                         <?php
                     endforeach;
