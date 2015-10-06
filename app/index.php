@@ -203,6 +203,7 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <div class="sub-menu">
                     <ul>
                         <li><a href="/test/take" title="Start Test"><i class="icon-inline icon-20 ic-arrow-right"></i>Start Test</a></li>
+						<li><a href="/cards" title="Study Flashcards"><i class="icon-inline icon-20 ic-chalkboard"></i>Study Flashcards</a></li>
                         <li><a href="/user/history" title="My History"><i class="icon-inline icon-20 ic-book"></i>My History</a></li>
                         <li><a href="/user/profile" title="My Profile"><i class="icon-inline icon-20 ic-user-single"></i>My Profile</a></li>
 						<li><a href="/about/statistics" title="View Site Statistics"><i class="icon-inline icon-20 ic-clipboard"></i>View Site Statistics</a></li>
