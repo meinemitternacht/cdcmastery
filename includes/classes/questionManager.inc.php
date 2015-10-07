@@ -96,6 +96,7 @@ class questionManager extends CDCMastery
 	public function loadQuestion($uuid){
 		if($this->queryQuestionFOUO($uuid)){
 			$stmt = $this->db->prepare("SELECT uuid, afscUUID, AES_DECRYPT(questionText,'".$this->getEncryptionKey()."') AS questionText, volumeUUID, setUUID FROM questionData WHERE uuid = ?");
+            $this->fouo = true;
 		}
 		else{
 			$stmt = $this->db->prepare("SELECT uuid, afscUUID, questionText, volumeUUID, setUUID FROM questionData WHERE uuid = ?");
@@ -160,7 +161,7 @@ class questionManager extends CDCMastery
 			$stmt = $this->db->prepare("INSERT INTO questionData (uuid, afscUUID, questionText, volumeUUID, setUUID) VALUES (?,?,AES_ENCRYPT(?,'".$this->getEncryptionKey()."'),?,?)
 											ON DUPLICATE KEY UPDATE uuid=VALUES(uuid),
 																	afscUUID=VALUES(afscUUID),
-																	questionText=AES_ENCRYPT(VALUES(questionText),'".$this->getEncryptionKey()."'),
+																	questionText=VALUES(questionText),
 																	volumeUUID=VALUES(volumeUUID),
 																	setUUID=VALUES(setUUID)");
 		}

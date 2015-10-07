@@ -14,6 +14,11 @@ if(!$questionManager->loadQuestion($workingChild)){
     $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
 }
 
+if($questionManager->queryQuestionFOUO($workingChild)){
+    $answerManager->setFOUO(true);
+    $questionManager->setFOUO(true);
+}
+
 if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
     $questionText = !empty($_POST['questionText']) ? $_POST['questionText'] : false;
 

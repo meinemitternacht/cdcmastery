@@ -162,7 +162,7 @@ class answerManager extends CDCMastery
 		if($this->fouo){
 			$stmt = $this->db->prepare("INSERT INTO answerData (uuid, answerText, answerCorrect, questionUUID) VALUES (?,AES_ENCRYPT(?,'".$this->getEncryptionKey()."'),?,?)
 											ON DUPLICATE KEY UPDATE uuid=VALUES(uuid),
-																	answerText=AES_ENCRYPT(VALUES(answerText),'".$this->getEncryptionKey()."'),
+																	answerText=VALUES(answerText),
 																	answerCorrect=VALUES(answerCorrect),
 																	questionUUID=VALUES(questionUUID)");
 		}

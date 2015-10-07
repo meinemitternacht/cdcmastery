@@ -24,6 +24,11 @@ if ($workingAFSC):
 
     $aManager = new answerManager($db, $log);
     $qManager = new questionManager($db, $log, $afsc, $aManager);
+
+    if($afsc->getAFSCFOUO()){
+        $aManager->setFOUO(true);
+        $qManager->setFOUO(true);
+    }
     ?>
     <div class="container">
         <div class="row">
