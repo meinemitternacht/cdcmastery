@@ -67,7 +67,7 @@
 				<ul class="style">
                     <li>
                         <p class="posted">October 6, 2015</p>
-                        <p class="text">Add Flash Cards utility to the site. This enables users to create their own flash cards, or study the testing data already in the database.</p>
+                        <p class="text">Added the Flash Cards utility to the site. This enables users to create their own flash cards or study the testing data already in the database.</p>
                     </li>
 					<li>
 						<p class="posted">September 27, 2015</p>
