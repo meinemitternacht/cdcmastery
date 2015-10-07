@@ -1115,6 +1115,9 @@ class testManager extends CDCMastery
 								AFSC: <strong>".$this->afsc->getAFSCName($this->question->getAFSCUUID())."</strong>
 							</div>";
 				$output .= "<br style=\"clear:both;\">";
+				if($questionFOUO){
+					$output .= "<div class=\"text-center\" style=\"font-weight: 900\">FOR OFFICIAL USE ONLY</div>";
+				}
 			}
 			else{
 				$output = "Sorry, we could not load the answers from the database.";
