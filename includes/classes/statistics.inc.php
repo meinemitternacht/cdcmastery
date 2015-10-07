@@ -68,6 +68,10 @@ class statistics extends CDCMastery {
     public $totalAnswerOccurrences;
     public $totalQuestionAnswerPairOccurrences;
 
+    public $totalAFSCFlashCardCategories;
+    public $totalGlobalFlashCardCategories;
+    public $totalPrivateFlashCardCategories;
+
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
         $this->db = $db;
         $this->log = $log;
@@ -1623,6 +1627,117 @@ class statistics extends CDCMastery {
             $stmt->close();
 
             return false;
+        }
+    }
+
+    public function getTotalAFSCFlashCardCategories(){
+        if($this->queryTotalAFSCFlashCardCategories()){
+            return $this->totalAFSCFlashCardCategories;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalAFSCFlashCardCategories(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardCategories WHERE categoryType = 'afsc'");
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalAFSCFlashCardCategories = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalAFSCFlashCardCategories()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalGlobalFlashCardCategories(){
+        if($this->queryTotalGlobalFlashCardCategories()){
+            return $this->totalGlobalFlashCardCategories;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalGlobalFlashCardCategories(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardCategories WHERE categoryType = 'global'");
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalGlobalFlashCardCategories = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalGlobalFlashCardCategories()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalPrivateFlashCardCategories(){
+        if($this->queryTotalPrivateFlashCardCategories()){
+            return $this->totalPrivateFlashCardCategories;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function queryTotalPrivateFlashCardCategories(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM flashCardCategories WHERE categoryType = 'private'");
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->totalPrivateFlashCardCategories = $count;
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalPrivateFlashCardCategories()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalFlashCardCategories(){
+        if(!$this->queryTotalAFSCCategories()){
+            return false;
+        }
+        elseif(!$this->queryTotalGlobalFlashCardCategories()){
+            return false;
+        }
+        elseif(!$this->queryTotalPrivateFlashCardCategories()){
+            return false;
+        }
+        else{
+            return ($this->totalAFSCCategories + $this->totalGlobalFlashCardCategories + $this->totalPrivateFlashCardCategories);
         }
     }
 

@@ -53,9 +53,25 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/INCOMPLETE_TEST_DELETE"><strong>Tests Deleted</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_DELETE") + $statisticsObj->getLogCountByAction("INCOMPLETE_TEST_DELETE")); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Flash Card Sessions</strong></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("NEW_FLASH_CARD_SESSION")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>AFSC Flash Card Categories</strong></td>
+                        <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Global Flash Card Categories</strong></td>
+                        <td><?php echo number_format($statisticsObj->getTotalGlobalFlashCardCategories()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Private Flash Card Categories</strong></td>
+                        <td><?php echo number_format($statisticsObj->getTotalPrivateFlashCardCategories()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Flash Card Categories</strong></td>
+                        <td><?php echo number_format($statisticsObj->getTotalFlashCardCategories()); ?></td>
                     </tr>
                 </table>
             </section>
