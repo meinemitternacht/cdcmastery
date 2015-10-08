@@ -187,6 +187,48 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         </div>
     </div>
 <?php else: ?>
+    <style>
+
+        .ui-autocomplete {
+            max-height: 8em;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+
+        /* IE 6 doesn't support max-height
+         * we use height instead, but this forces the menu to always be this tall
+         */
+
+        * html .ui-autocomplete {
+            height: 120px;
+        }
+
+    </style>
+
+
+    <script>
+
+        $(function() {
+            $( "#userFirstName" ).autocomplete({
+                source: "/ajax/autocomplete/userFirstName",
+                minLength: 3
+            });
+            $( "#userLastName" ).autocomplete({
+                source: "/ajax/autocomplete/userLastName",
+                minLength: 3
+            });
+            $( "#userHandle" ).autocomplete({
+                source: "/ajax/autocomplete/userHandle",
+                minLength: 3
+            });
+            $( "#userEmail" ).autocomplete({
+                source: "/ajax/autocomplete/userEmail",
+                minLength: 3
+            });
+        });
+
+    </script>
     <div class="row">
         <div class="3u">
             <section>
