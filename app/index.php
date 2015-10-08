@@ -125,21 +125,8 @@ only screen and (max-width: 760px),
 	table#index-table-2 td:nth-of-type(2):before { content: "Progress"; }
 	table#index-table-2 td:nth-of-type(3):before { content: "AFSC"; }
 	table#index-table-2 td:nth-of-type(4):before { content: "Actions"; }
-}
 
-@media only screen
-and (min-device-width : 320px)
-and (max-device-width : 480px) {
-	body {
-		padding: 0;
-		margin: 0;
-		width: 320px; }
-	}
-
-@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-	body {
-		width: 495px;
-	}
+	table#index-table-stats td { padding-left: 5%; }
 }
 
 </style>
@@ -203,7 +190,7 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <div class="sub-menu">
                     <ul>
                         <li><a href="/test/take" title="Start Test"><i class="icon-inline icon-20 ic-arrow-right"></i>Start Test</a></li>
-						<li><a href="/cards" title="Study Flashcards"><i class="icon-inline icon-20 ic-chalkboard"></i>Study Flashcards</a></li>
+						<li><a href="/cards" title="Study Flashcards"><i class="icon-inline icon-20 ic-chalkboard"></i>Study Flash Cards</a></li>
                         <li><a href="/user/history" title="My History"><i class="icon-inline icon-20 ic-book"></i>My History</a></li>
                         <li><a href="/user/profile" title="My Profile"><i class="icon-inline icon-20 ic-user-single"></i>My Profile</a></li>
 						<li><a href="/about/statistics" title="View Site Statistics"><i class="icon-inline icon-20 ic-clipboard"></i>View Site Statistics</a></li>
@@ -215,9 +202,9 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 				<header>
                     <h2>Statistics</h2>
                 </header>
-                <table>
+                <table id="index-table-stats">
                     <tr>
-                        <td style="width: 50%"><strong>Completed Tests</strong></td>
+                        <td style="width: 50%"><strong>Finished Tests</strong></td>
                         <td><?php echo !empty($userStatistics->getCompletedTests()) ? number_format($userStatistics->getCompletedTests()) : "None"; ?></td>
                     </tr>
                     <tr>
@@ -229,8 +216,8 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                         <td><?php echo !empty($userStatistics->getQuestionsAnswered()) ? number_format($userStatistics->getQuestionsAnswered()) : "None"; ?></td>
                     </tr>
                     <tr>
-                        <td><strong>Log Entries</strong></td>
-                        <td><?php echo !empty($userStatistics->getLogEntries()) ? number_format($userStatistics->getLogEntries()) : "None"; ?></td>
+                        <td><strong>Average Score</strong></td>
+                        <td><?php echo !empty($userStatistics->getLogEntries()) ? number_format($userStatistics->getAverageScore()) . "%" : "None"; ?></td>
                     </tr>
                 </table>
 			</section>
@@ -254,7 +241,7 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 </p>
                 <blockquote>
                     <ul style="list-style: circle">
-                        <li>Custom Tests (where you create the questions you want to see)</li>
+                        <li>Custom Tests</li>
                         <li>Printed tests</li>
                     </ul>
                 </blockquote>
