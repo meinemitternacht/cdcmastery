@@ -72,10 +72,21 @@ class router extends CDCMastery
                 $this->request = $tmpRequest[0];
 
                 if(strpos($tmpRequest[1],"&") !== false){
-                    $_SESSION['vars']['get'] = explode("&",$tmpRequest[1]);
+                    $getVarsArray = explode("&",$tmpRequest[1]);
+                    foreach($getVarsArray as $getVar){
+                        $getVarArray = explode("=",$getVar);
+                        $getVarKey = $getVarArray[0];
+                        $getVarVal = $getVarArray[1];
+
+                        $_SESSION['vars']['get'][$getVarKey] = $getVarVal;
+                    }
                 }
                 else {
-                    $_SESSION['vars']['get'] = $tmpRequest[1];
+                    $getVarArray = explode("=",$tmpRequest[1]);
+                    $getVarKey = $getVarArray[0];
+                    $getVarVal = $getVarArray[1];
+
+                    $_SESSION['vars']['get'][$getVarKey] = $getVarVal;
                 }
             }
 			
