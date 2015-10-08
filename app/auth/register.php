@@ -261,56 +261,60 @@ if($accountType):
                             <em>An asterisk (*) denotes a FOUO AFSC</em>
                         </section>
                     </div>
-                    <?php if($supervisorList): ?>
-                    <div class="3u">
-                        <section class="registration-panel-2">
-                            <header>
-                                <h3>Select Supervisor</h3>
-                            </header>
-                            <p>Choose the individual who is either your direct supervisor or someone that will be
-                                tracking your progress.  This information is optional.  If your supervisor is not listed,
-                                encourage them to create a supervisor account with us.</p>
-                                <label for="userSupervisor">Supervisor</label>
-                                <br>
-                                <select id="userSupervisor"
-                                        name="userSupervisor"
-                                        size="1"
-                                        class="input_full">
-                                    <option value="">None Selected</option>
-                                    <?php foreach($supervisorList as $supervisorUUID): ?>
-                                        <option value="<?php echo $supervisorUUID; ?>">
-                                            <?php echo $user->getUserNameByUUID($supervisorUUID); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                        </section>
-                    </div>
+                    <?php if($accountType == "user"): ?>
+                        <?php if($supervisorList): ?>
+                        <div class="3u">
+                            <section class="registration-panel-2">
+                                <header>
+                                    <h3>Select Supervisor</h3>
+                                </header>
+                                <p>Choose the individual who is either your direct supervisor or someone that will be
+                                    tracking your progress.  This information is optional.  If your supervisor is not listed,
+                                    encourage them to create a supervisor account with us.</p>
+                                    <label for="userSupervisor">Supervisor</label>
+                                    <br>
+                                    <select id="userSupervisor"
+                                            name="userSupervisor"
+                                            size="1"
+                                            class="input_full">
+                                        <option value="">None Selected</option>
+                                        <?php foreach($supervisorList as $supervisorUUID): ?>
+                                            <option value="<?php echo $supervisorUUID; ?>">
+                                                <?php echo $user->getUserNameByUUID($supervisorUUID); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                            </section>
+                        </div>
+                        <?php endif; ?>
                     <?php endif; ?>
-                    <?php if($trainingManagerList): ?>
-                    <div class="3u">
-                        <section class="registration-panel-3">
-                            <header>
-                                <h3>Select Training Manager</h3>
-                            </header>
-                            <p>Choose the individual who is either your direct training manager or someone that will be
-                                tracking your shop's progress.  This information is optional and can be added at a later date.
-                                If your training manager is not listed, encourage them to create a Training Manager account with
-                                us.</p>
-                                <label for="userTrainingManager">Training Manager</label>
-                                <br>
-                                <select id="userTrainingManager"
-                                        name="userTrainingManager"
-                                        size="1"
-                                        class="input_full">
-                                    <option value="">None Selected</option>
-                                    <?php foreach($trainingManagerList as $trainingManagerUUID): ?>
-                                        <option value="<?php echo $trainingManagerUUID; ?>">
-                                            <?php echo $user->getUserNameByUUID($trainingManagerUUID); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                        </section>
-                    </div>
+                    <?php if($accountType == "user" || $accountType == "supervisor"): ?>
+                        <?php if($trainingManagerList): ?>
+                        <div class="3u">
+                            <section class="registration-panel-3">
+                                <header>
+                                    <h3>Select Training Manager</h3>
+                                </header>
+                                <p>Choose the individual who is either your direct training manager or someone that will be
+                                    tracking your shop's progress.  This information is optional and can be added at a later date.
+                                    If your training manager is not listed, encourage them to create a Training Manager account with
+                                    us.</p>
+                                    <label for="userTrainingManager">Training Manager</label>
+                                    <br>
+                                    <select id="userTrainingManager"
+                                            name="userTrainingManager"
+                                            size="1"
+                                            class="input_full">
+                                        <option value="">None Selected</option>
+                                        <?php foreach($trainingManagerList as $trainingManagerUUID): ?>
+                                            <option value="<?php echo $trainingManagerUUID; ?>">
+                                                <?php echo $user->getUserNameByUUID($trainingManagerUUID); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                            </section>
+                        </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <div class="3u">
                         <section class="registration-panel-4">
