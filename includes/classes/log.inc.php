@@ -337,6 +337,12 @@ class log extends CDCMastery
 			'ERROR_EMAIL_QUEUE_REMOVE',
 			'ERROR_EMAIL_SEND',
 			'ERROR_FILE_UPLOAD',
+			'ERROR_FLASH_CARD_COUNT_CARDS',
+			'ERROR_FLASH_CARD_DATA_DELETE',
+			'ERROR_FLASH_CARD_DELETE',
+			'ERROR_FLASH_CARD_LIST',
+			'ERROR_FLASH_CARD_LOAD',
+			'ERROR_FLASH_CARD_SAVE',
 			'ERROR_INCOMPLETE_TEST_DELETE',
 			'ERROR_INCOMPLETE_TEST_SAVE',
 			'ERROR_LOGIN_BAD_PASSWORD',
@@ -466,6 +472,7 @@ class log extends CDCMastery
 			'LOGIN_SUCCESS',
 			'LOGOUT_SUCCESS',
 			'MIGRATED_PASSWORD',
+			'NEW_FLASH_CARD_SESSION',
 			'OFFICE_SYMBOL_ADD',
 			'QUESTION_ADD',
 			'SAVE_TEST',
@@ -484,11 +491,11 @@ class log extends CDCMastery
 		if(in_array($actionName,$warningArray)){
 			$class = "text-warning";
 		}
-		elseif(in_array($actionName,$generalArray)){
-			$class = "text-success";
-		}
 		elseif(in_array($actionName,$cautionArray)){
 			$class = "text-caution";
+		}
+		elseif(in_array($actionName,$generalArray)){
+			$class = "text-success";
 		}
 		else{
 			$class = "text-caution";
