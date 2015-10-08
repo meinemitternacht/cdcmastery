@@ -81,26 +81,26 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                         $userStatisticsObj->setUserUUID($baseUser);
                         $userAverage = round($userStatisticsObj->getAverageScore(),2);
                         $userLatestScore = $userStatisticsObj->getLatestTestScore();
-                        $userTestCount = $userStatisticsObj->getTotalTests();
+                        $userTestCount = $userStatisticsObj->getCompletedTests();
 
-                        if($userTestCount > 0) {
+                        if($userTestCount > 0):
                             $chartData[$i]['userName'] = $baseUserObj->getFullName();
                             $chartData[$i]['userAverage'] = $userAverage;
                             $chartData[$i]['userTestCount'] = $userTestCount;
                             $i++;
-                        }
-                        ?>
-                        <tr>
-                            <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getFullName(); ?></a></td>
-                            <td><?php echo $userTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
-                            <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
-                            <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                            <td>
-                                <abbr class="timeago" title="<?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
-                                    <?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
-                                </abbr>
-                            </td>
-                        </tr>
+                            ?>
+                            <tr>
+                                <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getFullName(); ?></a></td>
+                                <td><?php echo $userTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
+                                <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
+                                <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
+                                <td>
+                                    <abbr class="timeago" title="<?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
+                                        <?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
+                                    </abbr>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     <?php endforeach;?>
                 </table>
                 <?php
