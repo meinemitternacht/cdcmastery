@@ -22,7 +22,6 @@ class testManager extends CDCMastery
 	public $testScore;			//int 5
 	public $testTimeStarted;	//datetime
 	public $testTimeCompleted;	//datetime
-	public $oldTestID;			//varchar 40
 	
 	/*
 	 * testData
@@ -67,8 +66,7 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted,
-												oldTestID
+												testTimeCompleted
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY afscList, testTimeStarted DESC
@@ -82,8 +80,7 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted,
-												oldTestID
+												testTimeCompleted
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY testTimeStarted DESC
@@ -101,8 +98,7 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted,
-												oldTestID
+												testTimeCompleted
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY afscList, testTimeStarted DESC");
@@ -115,8 +111,7 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted,
-												oldTestID
+												testTimeCompleted
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY testTimeStarted DESC");
@@ -133,8 +128,7 @@ class testManager extends CDCMastery
 								$questionsMissed,
 								$testScore,
 								$testTimeStarted,
-								$testTimeCompleted,
-								$oldTestID);
+								$testTimeCompleted);
 			
 			while($stmt->fetch()){
 				$testArray[$uuid]['userUUID'] = $resUserUUID;
@@ -144,7 +138,6 @@ class testManager extends CDCMastery
 				$testArray[$uuid]['testScore'] = $testScore;
 				$testArray[$uuid]['testTimeStarted'] = $testTimeStarted;
 				$testArray[$uuid]['testTimeCompleted'] = $testTimeCompleted;
-				$testArray[$uuid]['oldTestID'] = $oldTestID;
 			}
 			
 			$stmt->close();
@@ -177,8 +170,7 @@ class testManager extends CDCMastery
 										questionsMissed,
 										testScore,
 										testTimeStarted,
-										testTimeCompleted,
-										oldTestID
+										testTimeCompleted
 									FROM testHistory
 									ORDER BY testTimeStarted ASC");
 		
@@ -193,7 +185,6 @@ class testManager extends CDCMastery
 				$testArray[$row['uuid']]['testScore'] = $row['testScore'];
 				$testArray[$row['uuid']]['testTimeStarted'] = $row['testTimeStarted'];
 				$testArray[$row['uuid']]['testTimeCompleted'] = $row['testTimeCompleted'];
-				$testArray[$row['uuid']]['oldTestID'] = $row['oldTestID'];
 			}
 			
 			$noResults = false;
@@ -220,8 +211,7 @@ class testManager extends CDCMastery
 											questionsMissed,
 											testScore,
 											testTimeStarted,
-											testTimeCompleted,
-											oldTestID
+											testTimeCompleted
 									FROM testHistory
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
@@ -234,8 +224,7 @@ class testManager extends CDCMastery
 								$questionsMissed,
 								$testScore,
 								$testTimeStarted,
-								$testTimeCompleted,
-								$oldTestID );
+								$testTimeCompleted);
 			
 			while($stmt->fetch()){
 				$this->uuid = $uuid;
@@ -246,7 +235,6 @@ class testManager extends CDCMastery
 				$this->testScore = $testScore;
 				$this->testTimeStarted = $testTimeStarted;
 				$this->testTimeCompleted = $testTimeCompleted;
-				$this->oldTestID = $oldTestID;
 			}
 			
 			$stmt->close();
@@ -463,10 +451,6 @@ class testManager extends CDCMastery
 	
 	public function getTestTimeCompleted(){
 		return $this->testTimeCompleted;
-	}
-	
-	public function getOldTestID(){
-		return $this->oldTestID;
 	}
 
     public function getTestUUIDList($userUUID){
@@ -1126,16 +1110,6 @@ class testManager extends CDCMastery
 		else{
 			$output = "Sorry, we could not load that question from the database.";
 		}
-
-        /*if(isset($_SESSION['userUUID']) && $_SESSION['userUUID'] == "7bf2aaac-fa5e-4223-9139-cb95b1ecc8ac"){
-            $output .= "<div class=\"clearfix\">&nbsp;</div>";
-            $output .= "<div>Debug data:";
-            $output .= "Questions Answered: ".$this->getIncompleteQuestionsAnswered();
-            $output .= "<br>";
-            $output .= "testData Count: ".count($this->getTestData());
-            $output .= "<br>";
-            $output .= "</div>";
-        }*/
 		
 		return $output;
 	}
@@ -1317,37 +1291,6 @@ class testManager extends CDCMastery
 	public function setIncompleteCombinedTest($combinedTest){
 		$this->incompleteCombinedTest = $combinedTest;
 		return true;
-	}
-	
-	/*
-	 * Miscellaneous
-	 */
-	
-	public function getMigratedTestUUID($oldTestID){
-		$stmt = $this->db->prepare("SELECT uuid FROM testHistory WHERE oldTestID = ?");
-		$stmt->bind_param("s",$oldTestID);
-		
-		if($stmt->execute()){
-			$stmt->bind_result($uuid);
-			
-			while($stmt->fetch()){
-				$ret = $uuid;
-			}
-			
-			if(isset($ret)){
-				return $ret;
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("MySQL Provided Error",$stmt->error);
-			$this->log->setDetail("Calling Function","testManager->getMigratedTestUUID()");
-			$this->log->setDetail("oldTestID",$oldTestID);
-			$this->log->saveEntry();
-		}
 	}
 	
 	public function __destruct(){
