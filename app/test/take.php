@@ -287,10 +287,15 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
 }
 else {
     /*
-     * Entry point for a new test
+     * Entry point for starting a new test
      */
 
-    if (!empty($_POST)) {
+    if (isset($_POST['startNewTest']) && $_POST['startNewTest'] == true) {
+        if(!isset($_POST['userAFSCList']) || empty($_POST['userAFSCList'])){
+            $sysMsg->addMessage("You must select at least one AFSC to test with.");
+            $cdcMastery->redirect("/test/take");
+        }
+
         $testManager->newTest();
 
         foreach ($_POST['userAFSCList'] as $afscUUID) {
@@ -348,6 +353,7 @@ else {
                             <p>Tap or click the AFSC categories you wish to test with.  You may select multiple categories from this list.</p>
 
                             <form id="afscListForm" action="/test/take" method="POST">
+                                <input type="hidden" name="startNewTest" value="1">
                                 <div id="afscList">
                                     <?php
                                     $afscList = $userStatistics->getAFSCAssociations();
