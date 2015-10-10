@@ -84,7 +84,15 @@ class router extends CDCMastery
                 else {
                     $getVarArray = explode("=",$tmpRequest[1]);
                     $getVarKey = $getVarArray[0];
-                    $getVarVal = $getVarArray[1];
+					/*
+					 * Special case for vars that do not set a value
+					 */
+					if(isset($getVarArray[1])) {
+						$getVarVal = $getVarArray[1];
+					}
+					else{
+						$getVarVal = false;
+					}
 
                     $_SESSION['vars']['get'][$getVarKey] = $getVarVal;
                 }
