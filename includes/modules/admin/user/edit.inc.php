@@ -278,6 +278,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                 <?php
                                 $roleList = $roles->listRoles();
                                 foreach($roleList as $roleUUID => $roleDetails): ?>
+                                    <?php if(!$cdcMastery->verifyAdmin() && $roleDetails['roleType'] == "admin") continue; ?>
                                     <?php if($objUser->getUserRole() == $roleUUID): ?>
                                         <option value="<?php echo $roleUUID; ?>" SELECTED><?php echo $roleDetails['roleName']; ?></option>
                                     <?php else: ?>
