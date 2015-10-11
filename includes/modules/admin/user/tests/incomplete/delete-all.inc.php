@@ -1,18 +1,13 @@
 <?php
-if(!$finalChild){
-    $sysMsg->addMessage("You did not specify an incomplete test to delete.");
-    $cdcMastery->redirect("/admin/users/".$userUUID."/tests/incomplete");
-}
-
 $testManager = new testManager($db, $log, $afsc);
 
-if(isset($_POST['confirmIncompleteTestDelete'])){
-	if($testManager->deleteIncompleteTest(false,$finalChild)){
-        $sysMsg->addMessage("Incomplete test deleted successfully.");
+if(isset($_POST['confirmIncompleteTestDeleteAll'])){
+	if($testManager->deleteIncompleteTest(true,false,$userUUID)){
+        $sysMsg->addMessage("Incomplete tests deleted successfully.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 	else{
-        $sysMsg->addMessage("We could not delete that incomplete test. Please contact the support helpdesk.");
+        $sysMsg->addMessage("We could not delete the incomplete tests taken by this user, please contact the support help desk.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }
@@ -26,7 +21,7 @@ else{ ?>
 				</header>
 				<div class="sub-menu">
 					<div class="menu-heading">
-						Delete Incomplete Test
+						Delete All Incomplete Tests
 					</div>
 					<ul>
 						<li><a href="/admin/users/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to user manager</a></li>
@@ -39,9 +34,9 @@ else{ ?>
 				<header>
 					<h2>Confirm Deletion</h2>
 				</header>
-				<form action="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete/<?php echo $finalChild; ?>" method="POST">
-					<input type="hidden" name="confirmIncompleteTestDelete" value="1">
-					If you wish to delete the incomplete test, please press continue.
+				<form action="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete" method="POST">
+					<input type="hidden" name="confirmIncompleteTestDeleteAll" value="1">
+					If you wish to delete all incomplete tests taken by this user, please press continue.
 					Otherwise, <a href="/admin/users/<?php echo $userUUID; ?>">return to the user manager</a>.
 					<br>
 					<br>
