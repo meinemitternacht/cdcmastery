@@ -705,11 +705,16 @@ class testManager extends CDCMastery
 				$this->incompleteUserUUID = $incompleteUserUUID;
 				$this->incompleteCombinedTest = $incompleteCombinedTest;
 			}
-			
-			$this->incompleteQuestionList = unserialize($serializedQuestionList);
-			$this->incompleteAFSCList = unserialize($serializedAFSCList);
 
-			return true;
+            if(!empty($this->incompleteTestUUID)) {
+                $this->incompleteQuestionList = unserialize($serializedQuestionList);
+                $this->incompleteAFSCList = unserialize($serializedAFSCList);
+
+                return true;
+            }
+            else{
+                return false;
+            }
 		}
 		else{
 			return false;
