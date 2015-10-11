@@ -136,7 +136,10 @@ if(!empty($testList)): ?>
                                 <td><?php echo $testAFSCList; ?></td>
                                 <td><?php echo $testDetails['totalQuestions']; ?></td>
                                 <td><strong><?php echo $testProgress; ?>%</strong></td>
-                                <td>&nbsp;</td>
+                                <td>
+                                    <a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete/<?php echo $testUUID; ?>" title="Delete Test"><i class="icon-inline icon-20 ic-delete"></i></a>
+                                    <a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/view/<?php echo $testUUID; ?>" title="View Test"><i class="icon-inline icon-20 ic-arrow-right"></i></a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </table>

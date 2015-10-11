@@ -11,6 +11,7 @@ if(isset($_SESSION['vars'][0])){
 	$action = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : false;
 	$subAction = isset($_SESSION['vars'][2]) ? strtolower($_SESSION['vars'][2]) : false;
 	$finalAction = isset($_SESSION['vars'][3]) ? strtolower($_SESSION['vars'][3]) : false;
+    $finalChild = isset($_SESSION['vars'][4]) ? strtolower($_SESSION['vars'][4]) : false;
 	
 	if($action){
 		switch($action){
@@ -47,10 +48,16 @@ if(isset($_SESSION['vars'][0])){
 						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete-all.inc.php";
 					}
 					elseif($subAction == "incomplete"){
-                        if($finalAction == "delete"){
+                        if($finalAction == "delete-all"){
+                            require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete/delete-all.inc.php";
+                        }
+						elseif($finalAction == "delete") {
                             require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete/delete.inc.php";
                         }
-						else{
+                        elseif($finalAction == "view"){
+                            require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete/view.inc.php";
+                        }
+                        else{
 							require_once BASE_PATH . "/includes/modules/admin/user/tests/incomplete.inc.php";
 						}
 					}
@@ -154,7 +161,7 @@ if(isset($_SESSION['vars'][0])){
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete"><i class="icon-inline icon-20 ic-folder"></i>View Incomplete Tests</a></li>
 								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete Tests</a></li>
 								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete-all"><i class="icon-inline icon-20 ic-delete"></i>Delete All Tests</a></li>
-								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete All Incomplete Tests</a></li>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete-all"><i class="icon-inline icon-20 ic-delete"></i>Delete All Incomplete Tests</a></li>
 							</ul>
 						</div>
 						<div class="sub-menu">
