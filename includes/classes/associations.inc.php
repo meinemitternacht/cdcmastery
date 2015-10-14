@@ -6,6 +6,7 @@ class associations extends CDCMastery
 	protected $log;
 	protected $user;
 	protected $afsc;
+	protected $emailQueue;
 	
 	public $error;
 	
@@ -31,11 +32,12 @@ class associations extends CDCMastery
 	public $trainingManagerUUID;
 	public $utmaUserUUID;	
 	
-	public function __construct(mysqli $db, log $log, user $user, afsc $afsc){
+	public function __construct(mysqli $db, log $log, user $user, afsc $afsc, emailQueue $emailQueue){
 		$this->db = $db;
 		$this->log = $log;
 		$this->user = $user;
 		$this->afsc = $afsc;
+		$this->emailQueue = $emailQueue;
 	}
 
     public function listPendingAFSCAssociations(){
@@ -163,6 +165,7 @@ class associations extends CDCMastery
 				if ($userAuthorized) {
 					$this->log->setAction("USER_ADD_AFSC_ASSOCIATION");
 				} else {
+					$this->notifyPendingAFSCAssociation();
 					$this->log->setAction("USER_ADD_PENDING_AFSC_ASSOCIATION");
 				}
 				$this->log->setDetail("User UUID", $userUUID);
@@ -327,6 +330,56 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->error[] = "We could not remove the pending AFSC association for that user.";
+			return false;
+		}
+	}
+
+	/**
+	 * Notifies administrator of a pending AFSC association
+	 * @param $userUUID
+	 * @return bool
+	 */
+	public function notifyPendingAFSCAssociation(){
+		$this->user->loadUser("7bf2aaac-fa5e-4223-9139-cb95b1ecc8ac");
+
+		$emailSender = "support@cdcmastery.com";
+		$emailRecipient = $this->user->getUserEmail();
+		$emailSubject = "Pending AFSC Association";
+
+		$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
+		$emailBodyHTML .= $this->user->getFullName().",";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "There is a pending AFSC association awaiting your approval.";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "https://cdcmastery.com/admin/afsc-pending";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "Regards,";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "CDCMastery.com";
+		$emailBodyHTML .= "</body></html>";
+
+		$emailBodyText = $this->user->getFullName().",";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "There is a pending AFSC association awaiting your approval.";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "https://cdcmastery.com/admin/afsc-pending";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Regards,";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "CDCMastery.com";
+
+		$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
+
+		if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
+			$this->log->setAction("NOTIFY_PENDING_AFSC_ASSOCIATION");
+			$this->log->setUserUUID("SYSTEM");
+			$this->log->saveEntry();
+			return true;
+		}
+		else{
+			$this->log->setAction("ERROR_NOTIFY_PENDING_AFSC_ASSOCIATION");
+			$this->log->setUserUUID("SYSTEM");
+			$this->log->saveEntry();
 			return false;
 		}
 	}
