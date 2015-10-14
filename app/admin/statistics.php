@@ -81,42 +81,64 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                 <header>
                     <h2>User Statistics</h2>
                 </header>
+                <?php
+                $totalAccounts = $statisticsObj->getTotalUsers();
+                $totalUsers = $statisticsObj->getTotalRoleUser();
+                $totalSupervisors = $statisticsObj->getTotalRoleSupervisor();
+                $totalTrainingManagers = $statisticsObj->getTotalRoleTrainingManager();
+                $totalAdministrators = $statisticsObj->getTotalRoleAdministrator();
+                $totalSuperAdministrators = $statisticsObj->getTotalRoleSuperAdministrator();
+                $totalQuestionEditors = $statisticsObj->getTotalRoleEditor();
+
+                $percentUserClass['user'] = round((($totalUsers/$totalAccounts) * 100),2) . "%";
+                $percentUserClass['supervisors'] = round((($totalSupervisors/$totalAccounts) * 100),2) . "%";
+                $percentUserClass['trainingManagers'] = round((($totalTrainingManagers/$totalAccounts) * 100),2) . "%";
+                $percentUserClass['administrators'] = round((($totalAdministrators/$totalAccounts) * 100),2) . "%";
+                $percentUserClass['superAdministrators'] = round((($totalSuperAdministrators/$totalAccounts) * 100),2) . "%";
+                $percentUserClass['questionEditors'] = round((($totalQuestionEditors/$totalAccounts) * 100),2) . "%";
+                ?>
                 <table>
                     <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Users</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalUsers()); ?></td>
+                        <td colspan="2"><?php echo number_format($totalAccounts); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Normal Users</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleUser()); ?></td>
+                        <td><?php echo number_format($totalUsers); ?></td>
+                        <td><?php echo $percentUserClass['user']; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Supervisors</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleSupervisor()); ?></td>
+                        <td><?php echo number_format($totalSupervisors); ?></td>
+                        <td><?php echo $percentUserClass['supervisors']; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Training Managers</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleTrainingManager()); ?></td>
+                        <td><?php echo number_format($totalTrainingManagers); ?></td>
+                        <td><?php echo $percentUserClass['trainingManagers']; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Administrators</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleAdministrator()); ?></td>
+                        <td><?php echo number_format($totalAdministrators); ?></td>
+                        <td><?php echo $percentUserClass['administrators']; ?></td>
                     </tr>
                     <tr>
                         <td><strong>Super Administrators</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleSuperAdministrator()); ?></td>
+                        <td><?php echo number_format($totalSuperAdministrators); ?></td>
+                        <td><?php echo $percentUserClass['superAdministrators']; ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td><strong>Question Editors</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalRoleEditor()); ?></td>
+                        <td><?php echo number_format($totalQuestionEditors); ?></td>
+                        <td><?php echo $percentUserClass['questionEditors']; ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Office Symbols</strong></td>
-                        <td><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
+                        <td colspan="2"><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
                     </tr>
                     <tr>
                         <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/USER_DELETE"><strong>Users Deleted</strong></a></span></td>
-                        <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_DELETE")); ?></td>
+                        <td colspan="2"><?php echo number_format($statisticsObj->getLogCountByAction("USER_DELETE")); ?></td>
                     </tr>
                 </table>
             </section>
@@ -158,6 +180,14 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     <tr>
                         <td><strong>Migrated Passwords</strong></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("MIGRATED_PASSWORD")); ?></td>
+                    </tr>
+                    <tr style="border-bottom: 2px solid #999">
+                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/USER_PASSWORD_RESET_COMPLETE"><strong>Password Resets</strong></a></span></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_PASSWORD_RESET_COMPLETE")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/EMAIL_SEND"><strong>E-mails Sent</strong></a></span></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("EMAIL_SEND")); ?></td>
                     </tr>
                 </table>
             </section>
@@ -223,9 +253,13 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Active This Month</strong></td>
                         <td><?php echo number_format($statisticsObj->getUsersActiveThisMonth()); ?></td>
                     </tr>
-                    <tr>
+                    <tr style="border-bottom: 2px solid #999">
                         <td><strong>Active This Year</strong></td>
                         <td><?php echo number_format($statisticsObj->getUsersActiveThisYear()); ?></td>
+                    </tr>
+                    <tr style="border-bottom: 2px solid #999">
+                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/USER_REGISTER"><strong>Registrations</strong></a></span></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_REGISTER")); ?></td>
                     </tr>
                 </table>
             </section>
@@ -280,15 +314,15 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                 $averageLastMonth = $statisticsObj->getTestAverageByTimespan($lastMonthStart,$lastMonthEnd);
                 $averageLastYear = $statisticsObj->getTestAverageByTimespan($lastYearStart,$lastYearEnd);
 
-                $percentIncreaseTests['today'] = round(((($testsToday - $testsYesterday) / $testsYesterday) * 100),2) . "%";
-                $percentIncreaseTests['week'] = round(((($testsThisWeek - $testsLastWeek) / $testsLastWeek) * 100),2) . "%";
-                $percentIncreaseTests['month'] = round(((($testsThisMonth - $testsLastMonth) / $testsLastMonth) * 100),2) . "%";
-                $percentIncreaseTests['year'] = round(((($testsThisYear - $testsLastYear) / $testsLastYear) * 100),2) . "%";
+                $percentIncreaseTests['today'] = number_format(((($testsToday - $testsYesterday) / $testsYesterday) * 100),2) . "%";
+                $percentIncreaseTests['week'] = number_format(((($testsThisWeek - $testsLastWeek) / $testsLastWeek) * 100),2) . "%";
+                $percentIncreaseTests['month'] = number_format(((($testsThisMonth - $testsLastMonth) / $testsLastMonth) * 100),2) . "%";
+                $percentIncreaseTests['year'] = number_format(((($testsThisYear - $testsLastYear) / $testsLastYear) * 100),2) . "%";
 
-                $percentIncreaseAverage['today'] = round(((($averageToday - $averageYesterday) / $averageYesterday) * 100),2) . "%";
-                $percentIncreaseAverage['week'] = round(((($averageThisWeek - $averageLastWeek) / $averageLastWeek) * 100),2) . "%";
-                $percentIncreaseAverage['month'] = round(((($averageThisMonth - $averageLastMonth) / $averageLastMonth) * 100),2) . "%";
-                $percentIncreaseAverage['year'] = round(((($averageThisYear - $averageLastYear) / $averageLastYear) * 100),2) . "%";
+                $percentIncreaseAverage['today'] = number_format(((($averageToday - $averageYesterday) / $averageYesterday) * 100),2) . "%";
+                $percentIncreaseAverage['week'] = number_format(((($averageThisWeek - $averageLastWeek) / $averageLastWeek) * 100),2) . "%";
+                $percentIncreaseAverage['month'] = number_format(((($averageThisMonth - $averageLastMonth) / $averageLastMonth) * 100),2) . "%";
+                $percentIncreaseAverage['year'] = number_format(((($averageThisYear - $averageLastYear) / $averageLastYear) * 100),2) . "%";
                 ?>
                 <table>
                     <tr>
