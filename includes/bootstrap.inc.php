@@ -63,7 +63,7 @@ $afsc = new afsc($db, $log);
 $user = new user($db, $log, $emailQueue);
 $officeSymbol = new officeSymbol($db, $log);
 $userStatistics = new userStatistics($db, $log, $roles);
-$assoc = new associations($db, $log, $user, $afsc);
+$assoc = new associations($db, $log, $user, $afsc, $emailQueue);
 
 if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
 	if(!$user->loadUser($_SESSION['userUUID'])){
