@@ -471,6 +471,7 @@ class log extends CDCMastery
 			'BASE_EDIT',
 			'EMAIL_QUEUE_ADD',
 			'EMAIL_SEND',
+			'FLASH_CARD_ADD',
 			'LOGIN_SUCCESS',
 			'LOGOUT_SUCCESS',
 			'MIGRATED_PASSWORD',
