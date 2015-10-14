@@ -51,6 +51,10 @@ class auth extends user
 			}
 		}
 		elseif(password_verify($password,$this->userPassword)){
+			if(!empty($this->userLegacyPassword)){
+				$this->userLegacyPassword = NULL;
+				$this->saveUser();
+			}
 			return true;
 		}
 		else{
