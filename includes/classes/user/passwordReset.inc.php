@@ -161,7 +161,7 @@ class passwordReset extends user {
 
 			$emailSender = "support@cdcmastery.com";
 			$emailRecipient = $this->getUserEmail();
-			$emailSubject = "Your password has been reset";
+			$emailSubject = "Your password has been changed";
 
 			$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
 			$emailBodyHTML .= $this->getFullName().",";
