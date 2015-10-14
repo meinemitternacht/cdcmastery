@@ -154,6 +154,66 @@ class passwordReset extends user {
 			return false;
 		}
 	}
+
+	public function sendPasswordResetCompleteNotification($userUUID){
+		if($this->verifyUser($userUUID)){
+			$this->loadUser($userUUID);
+
+			$emailSender = "support@cdcmastery.com";
+			$emailRecipient = $this->getUserEmail();
+			$emailSubject = "Your password has been reset";
+
+			$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
+			$emailBodyHTML .= $this->getFullName().",";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "We wanted to let you know that the password for your account has been changed.  If you did not make this change, please open a ticket with our help desk: ";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "http://helpdesk.cdcmastery.com/";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "Regards,";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "CDCMastery.com";
+			$emailBodyHTML .= "</body></html>";
+
+			$emailBodyText = $this->getFullName().",";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "We wanted to let you know that the password for your account has been changed.  If you did not make this change, please open a ticket with our help desk: ";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "http://helpdesk.cdcmastery.com/";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "Regards,";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "CDCMastery.com";
+
+			$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
+
+			if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
+				$this->log->setAction("NOTIFY_PASSWORD_CHANGED");
+				$this->log->setUserUUID($userUUID);
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->saveEntry();
+				return true;
+			}
+			else{
+				$this->log->setAction("ERROR_NOTIFY_PASSWORD_CHANGED");
+				$this->log->setUserUUID($userUUID);
+				$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordResetCompleteNotification()");
+				$this->log->setDetail("Child function","emailQueue->queueEmail()");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->saveEntry();
+				return false;
+			}
+		}
+		else{
+			$this->error = "That user does not exist.";
+			$this->log->setAction("ERROR_NOTIFY_PASSWORD_CHANGED");
+			$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordResetCompleteNotification()");
+			$this->log->setDetail("System Error",$this->error);
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->saveEntry();
+			return false;
+		}
+	}
 	
 	public function verifyPasswordResetToken($passwordToken){
 		$dtObj = new DateTime();

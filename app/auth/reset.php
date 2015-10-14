@@ -7,45 +7,40 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 	$userPassword = $_POST['newPassword'];
 	$userPasswordConfirm = $_POST['confirmNewPassword'];
 
-    $passwordComplexityCheck = $pwReset->checkPasswordComplexity($userPassword);
+	$userUUID = $pwReset->getPasswordResetUser($passwordToken);
 
-    if(is_array($passwordComplexityCheck)){
-        foreach($passwordComplexityCheck as $passwordComplexityCheckError){
-            $sysMsg->addMessage($passwordComplexityCheckError);
-        }
+	if($pwReset->loadUser($userUUID)) {
+		$passwordComplexityCheck = $pwReset->checkPasswordComplexity($userPassword,$pwReset->getUserHandle(),$pwReset->getUserEmail());
 
-        $cdcMastery->redirect("/auth/reset/".$_SESSION['vars'][0]);
-    }
-	elseif($userPassword != $userPasswordConfirm){
-		$sysMsg->addMessage("Your passwords do not match.");
-	}
-	else{
-		if($pwReset->verifyPasswordResetToken($passwordToken)){
-			$userUUID = $pwReset->getPasswordResetUser($passwordToken);
-			
-			if($pwReset->verifyUser($userUUID)){
-				$pwReset->loadUser($userUUID);
+		if (is_array($passwordComplexityCheck)) {
+			foreach ($passwordComplexityCheck as $passwordComplexityCheckError) {
+				$sysMsg->addMessage($passwordComplexityCheckError);
+			}
+			$cdcMastery->redirect("/auth/reset/" . $_SESSION['vars'][0]);
+		} elseif ($userPassword != $userPasswordConfirm) {
+			$sysMsg->addMessage("Your passwords do not match.");
+		} else {
+			if ($pwReset->verifyPasswordResetToken($passwordToken)) {
 				$pwReset->setUserPassword($userPassword);
 				$pwReset->setUserLegacyPassword(false);
-				if($pwReset->saveUser()){
+				if ($pwReset->saveUser()) {
 					$log->setAction("USER_PASSWORD_RESET_COMPLETE");
+					$log->setUserUUID($userUUID);
 					$log->saveEntry();
-                    $pwReset->deletePasswordResetToken($passwordToken);
+					$pwReset->deletePasswordResetToken($passwordToken);
 
-                    $sysMsg->addMessage("Your password has been reset. You may now log in with your new password.");
+					$sysMsg->addMessage("Your password has been reset. You may now log in with your new password.");
+					$pwReset->sendPasswordResetCompleteNotification($userUUID);
 					$cdcMastery->redirect("/auth/login");
-				}
-				else{
+				} else {
 					$sysMsg->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
 				}
-			}
-			else{
-				$sysMsg->addMessage("That user does not exist.");
+			} else {
+				$sysMsg->addMessage("That password reset token is invalid.");
 			}
 		}
-		else{
-			$sysMsg->addMessage("That password reset token is invalid.");
-		}
+	} else {
+		$sysMsg->addMessage("That user does not exist.");
 	}
 }
 
