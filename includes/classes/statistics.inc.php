@@ -80,7 +80,7 @@ class statistics extends CDCMastery {
 
     public function getAFSCPassRates($afscUUIDList){
         if(!$this->queryAFSCPassRates($afscUUIDList)){
-            return false;
+            return 0;
         }
         else{
             return $this->afscPassRateArray;
@@ -132,7 +132,7 @@ class statistics extends CDCMastery {
 
     public function getTestAFSCCount($afscUUIDList){
         if(!$this->queryTestAFSCCount($afscUUIDList)){
-            return false;
+            return 0;
         }
         else{
             return $this->testAFSCCount;
@@ -181,7 +181,7 @@ class statistics extends CDCMastery {
 
     public function getTestAverageLastSeven(){
         if(!$this->queryTestAverageLastSeven()){
-            return false;
+            return 0;
         }
         else{
             return $this->testsAverageScoreArrayLastSeven;
@@ -237,7 +237,7 @@ class statistics extends CDCMastery {
 
     public function getTestAverageByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
         if(!$this->queryTestAverageByTimespan($dateTimeStart, $dateTimeEnd)){
-            return false;
+            return 0;
         }
         else{
             return $this->testsAverageScoreByTimespan;
@@ -285,7 +285,7 @@ class statistics extends CDCMastery {
 
     public function getTestsByHourOfDay(){
         if(!$this->queryTestsByHourOfDay()){
-            return false;
+            return 0;
         }
         else{
             return $this->testsByHourOfDay;
@@ -327,7 +327,7 @@ class statistics extends CDCMastery {
 
     public function getTestsByDayOfMonth(){
         if(!$this->queryTestsByDayOfMonth()){
-            return false;
+            return 0;
         }
         else{
             return $this->testsByDayOfMonth;
@@ -369,7 +369,7 @@ class statistics extends CDCMastery {
 
     public function getTestCountByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
         if(!$this->queryTestCountByTimespan($dateTimeStart, $dateTimeEnd)){
-            return false;
+            return 0;
         }
         else{
             return $this->testCountByTimespan;
@@ -417,7 +417,7 @@ class statistics extends CDCMastery {
 
     public function getTotalTestsByBase($baseUUID){
         if(!$this->queryTotalTestsByBase($baseUUID)){
-            return false;
+            return 0;
         }
         else{
             return $this->totalTestsByBase;
@@ -455,7 +455,7 @@ class statistics extends CDCMastery {
 
     public function getAverageScoreByBase($baseUUID){
         if(!$this->queryAverageScoreByBase($baseUUID)){
-            return false;
+            return 0;
         }
         else{
             return round($this->averageScoreByBase,2);
@@ -493,10 +493,10 @@ class statistics extends CDCMastery {
 
     public function getTotalTests(){
         if(!$this->queryTotalCompletedTests()){
-            return false;
+            return 0;
         }
         elseif(!$this->queryTotalIncompleteTests()){
-            return false;
+            return 0;
         }
         else{
             $this->totalTests = $this->totalCompletedTests + $this->totalIncompleteTests;
@@ -506,7 +506,7 @@ class statistics extends CDCMastery {
 
     public function getTotalIncompleteTests(){
         if(!$this->queryTotalIncompleteTests()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalIncompleteTests;
@@ -540,7 +540,7 @@ class statistics extends CDCMastery {
 
     public function getTotalCompletedTests(){
         if(!$this->queryTotalCompletedTests()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalCompletedTests;
@@ -574,7 +574,7 @@ class statistics extends CDCMastery {
 
     public function getTotalQuestionsAnswered(){
         if(!$this->queryTotalQuestionsAnswered()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalQuestionsAnswered;
@@ -608,7 +608,7 @@ class statistics extends CDCMastery {
 
     public function getTotalAFSCCategories(){
         if(!$this->queryTotalAFSCCategories()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalAFSCCategories;
@@ -642,7 +642,7 @@ class statistics extends CDCMastery {
 
     public function getTotalFOUOAFSCCategories(){
         if(!$this->queryTotalFOUOAFSCCategories()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalFOUOAFSCCategories;
@@ -676,7 +676,7 @@ class statistics extends CDCMastery {
 
     public function getTotalQuestions(){
         if(!$this->queryTotalQuestions()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalQuestions;
@@ -710,7 +710,7 @@ class statistics extends CDCMastery {
 
     public function getTotalQuestionsArchived(){
         if(!$this->queryTotalQuestionsArchived()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalQuestionsArchived;
@@ -744,7 +744,7 @@ class statistics extends CDCMastery {
 
     public function getTotalQuestionsFOUO(){
         if(!$this->queryTotalQuestionsFOUO()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalQuestionsFOUO;
@@ -778,7 +778,7 @@ class statistics extends CDCMastery {
 
     public function getTotalAnswers(){
         if(!$this->queryTotalAnswers()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalAnswers;
@@ -812,7 +812,7 @@ class statistics extends CDCMastery {
 
     public function getTotalAnswersArchived(){
         if(!$this->queryTotalAnswersArchived()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalAnswersArchived;
@@ -846,7 +846,7 @@ class statistics extends CDCMastery {
 
     public function getTotalAnswersFOUO(){
         if(!$this->queryTotalAnswersFOUO()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalAnswersFOUO;
@@ -880,7 +880,7 @@ class statistics extends CDCMastery {
 
     public function getTotalUsers(){
         if(!$this->queryTotalUsers()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalUsers;
@@ -914,7 +914,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleUser(){
         if(!$this->queryTotalRoleUser()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleUser;
@@ -953,7 +953,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleTrainingManager(){
         if(!$this->queryTotalRoleTrainingManager()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleTrainingManager;
@@ -992,7 +992,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleSupervisor(){
         if(!$this->queryTotalRoleSupervisor()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleSupervisor;
@@ -1031,7 +1031,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleAdministrator(){
         if(!$this->queryTotalRoleAdministrator()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleAdministrator;
@@ -1070,7 +1070,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleSuperAdministrator(){
         if(!$this->queryTotalRoleSuperAdministrator()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleSuperAdministrator;
@@ -1109,7 +1109,7 @@ class statistics extends CDCMastery {
 
     public function getTotalRoleEditor(){
         if(!$this->queryTotalRoleEditor()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalRoleEditor;
@@ -1148,7 +1148,7 @@ class statistics extends CDCMastery {
 
     public function getTotalLogEntries(){
         if(!$this->queryTotalLogEntries()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalLogEntries;
@@ -1182,7 +1182,7 @@ class statistics extends CDCMastery {
 
     public function getTotalLogDetails(){
     if(!$this->queryTotalLogDetails()){
-        return false;
+        return 0;
     }
     else{
         return $this->totalLogDetails;
@@ -1216,7 +1216,7 @@ class statistics extends CDCMastery {
 
     public function getTotalLoginErrors(){
         if(!$this->queryTotalLoginErrors()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalLoginErrors;
@@ -1250,7 +1250,7 @@ class statistics extends CDCMastery {
 
     public function getLogCountByAction($logAction){
         if(!$this->queryLogCountByAction($logAction)){
-            return false;
+            return 0;
         }
         else{
             return $this->logActionCount[$logAction];
@@ -1285,7 +1285,7 @@ class statistics extends CDCMastery {
 
     public function getLogActionCountByHourOfDay($logAction){
         if(!$this->queryLogActionCountByHourOfDay($logAction)){
-            return false;
+            return 0;
         }
         else{
             return $this->logActionCountByHourOfDay;
@@ -1327,7 +1327,7 @@ class statistics extends CDCMastery {
 
     public function getTotalOfficeSymbols(){
         if(!$this->queryTotalOfficeSymbols()){
-            return false;
+            return 0;
         }
         else{
             return $this->totalOfficeSymbols;
@@ -1364,7 +1364,7 @@ class statistics extends CDCMastery {
             return $this->usersActiveToday;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1405,7 +1405,7 @@ class statistics extends CDCMastery {
             return $this->usersActiveThisWeek;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1449,7 +1449,7 @@ class statistics extends CDCMastery {
             return $this->usersActiveThisMonth;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1492,7 +1492,7 @@ class statistics extends CDCMastery {
             return $this->usersActiveThisYear;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1533,7 +1533,7 @@ class statistics extends CDCMastery {
             return $this->totalQuestionOccurrences;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1567,7 +1567,7 @@ class statistics extends CDCMastery {
             return $this->totalAnswerOccurrences;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1601,7 +1601,7 @@ class statistics extends CDCMastery {
             return $this->totalQuestionAnswerPairOccurrences;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1635,7 +1635,7 @@ class statistics extends CDCMastery {
             return $this->totalAFSCFlashCardCategories;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1667,7 +1667,7 @@ class statistics extends CDCMastery {
             return $this->totalGlobalFlashCardCategories;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1699,7 +1699,7 @@ class statistics extends CDCMastery {
             return $this->totalPrivateFlashCardCategories;
         }
         else{
-            return false;
+            return 0;
         }
     }
 
@@ -1728,13 +1728,13 @@ class statistics extends CDCMastery {
 
     public function getTotalFlashCardCategories(){
         if(!$this->queryTotalAFSCCategories()){
-            return false;
+            return 0;
         }
         elseif(!$this->queryTotalGlobalFlashCardCategories()){
-            return false;
+            return 0;
         }
         elseif(!$this->queryTotalPrivateFlashCardCategories()){
-            return false;
+            return 0;
         }
         else{
             return ($this->totalAFSCCategories + $this->totalGlobalFlashCardCategories + $this->totalPrivateFlashCardCategories);
