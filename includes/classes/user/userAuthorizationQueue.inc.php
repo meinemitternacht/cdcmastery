@@ -17,7 +17,7 @@ class userAuthorizationQueue extends user
      */
     protected $log;
 
-    public $uuid;
+    public $queueUUID;
     public $dateRequested;
 
     /**
@@ -27,7 +27,7 @@ class userAuthorizationQueue extends user
      */
     public function __construct(mysqli $db, log $log, emailQueue $emailQueue)
     {
-        $this->uuid = parent::genUUID();
+        $this->queueUUID = parent::genUUID();
         $this->db = $db;
         $this->log = $log;
 
@@ -57,11 +57,10 @@ class userAuthorizationQueue extends user
                                           userUUID=values(userUUID),
                                           roleUUID=values(roleUUID)");
 
-        $stmt->bind_param("sss", $this->uuid, $userUUID, $roleUUID);
+        $stmt->bind_param("sss", $this->queueUUID, $userUUID, $roleUUID);
 
         if ($stmt->execute()) {
             $this->log->setAction("QUEUE_ROLE_AUTHORIZATION");
-            $this->log->setDetail("UUID", $this->uuid);
             $this->log->setDetail("User UUID", $userUUID);
             $this->log->setDetail("Role UUID", $roleUUID);
             $this->log->saveEntry();
@@ -70,7 +69,6 @@ class userAuthorizationQueue extends user
             return true;
         } else {
             $this->log->setAction("ERROR_QUEUE_ROLE_AUTHORIZATION");
-            $this->log->setDetail("UUID", $this->uuid);
             $this->log->setDetail("User UUID", $userUUID);
             $this->log->setDetail("Role UUID", $roleUUID);
             $this->log->saveEntry();
@@ -86,12 +84,12 @@ class userAuthorizationQueue extends user
                                     ORDER BY dateRequested DESC");
 
         if($stmt->execute()){
-            $stmt->bind_result($uuid,$userUUID,$roleUUID,$dateRequested);
+            $stmt->bind_result($queueUUID,$userUUID,$roleUUID,$dateRequested);
 
             while($stmt->fetch()){
-                $roleAuthorizationArray[$uuid]['userUUID'] = $userUUID;
-                $roleAuthorizationArray[$uuid]['roleUUID'] = $roleUUID;
-                $roleAuthorizationArray[$uuid]['dateRequested'] = $dateRequested;
+                $roleAuthorizationArray[$queueUUID]['userUUID'] = $userUUID;
+                $roleAuthorizationArray[$queueUUID]['roleUUID'] = $roleUUID;
+                $roleAuthorizationArray[$queueUUID]['dateRequested'] = $dateRequested;
             }
 
             $stmt->close();
