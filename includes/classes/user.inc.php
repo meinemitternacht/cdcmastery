@@ -617,10 +617,10 @@ class user extends CDCMastery {
 	}
 
 	public function getUserByUUID($uuid){
-        if($uuid == "ANONYMOUS"){
+        if(preg_match("/ANONYMOUS/",$uuid)){
             return "ANONYMOUS";
         }
-        elseif($uuid == "SYSTEM"){
+        elseif(preg_match("/SYSTEM/",$uuid)){
             return "SYSTEM";
         }
 

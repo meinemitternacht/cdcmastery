@@ -39,7 +39,11 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>User</th>
+								<?php if($logData->getUserUUID() == "ANONYMOUS" || $logData->getUserUUID() == "SYSTEM"): ?>
+								<td><?php echo $logData->getUserUUID(); ?></td>
+								<?php else: ?>
 								<td><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="View Profile"><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></a></td>
+								<?php endif; ?>
 							</tr>
 							<tr>
 								<th>Action</th>

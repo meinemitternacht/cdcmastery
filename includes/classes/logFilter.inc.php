@@ -10,6 +10,7 @@ class logFilter extends log {
 	public $sortDirection;
 	
 	public $filterAction;
+	public $filterBase;
 	public $filterIP;
 	public $filterTimestampStart;
 	public $filterTimestampEnd;
@@ -17,7 +18,7 @@ class logFilter extends log {
 	
 	function __construct(mysqli $db, user $user){
 		$this->user = $user;
-		
+
 		parent::__construct($db);
 	}
 	
@@ -156,7 +157,17 @@ class logFilter extends log {
 			while($stmt->fetch()){
 				$returnArray[$uuid]['timestamp'] = $timestamp;
 				$returnArray[$uuid]['action'] = $action;
-				$returnArray[$uuid]['userUUID'] = $userUUID;
+
+				if(preg_match("/ANONYMOUS/",$userUUID)){
+					$returnArray[$uuid]['userUUID'] = "ANONYMOUS";
+				}
+				elseif(preg_match("/SYSTEM/",$userUUID)){
+					$returnArray[$uuid]['userUUID'] = "SYSTEM";
+				}
+				else{
+					$returnArray[$uuid]['userUUID'] = $userUUID;
+				}
+
 				$returnArray[$uuid]['ip'] = $ip;
 			}
 				

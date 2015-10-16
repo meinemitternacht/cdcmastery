@@ -282,7 +282,7 @@ class log extends CDCMastery
 	}
 
 	function setUserUUID($userUUID) {
-		$this->userUUID = htmlspecialchars_decode($userUUID);
+		$this->userUUID = $userUUID;
 		return true;
 	}
 
@@ -518,7 +518,15 @@ class log extends CDCMastery
 	}
 
 	function getUserUUID() {
-		return $this->userUUID;
+		if(preg_match("/ANONYMOUS/",$this->userUUID)){
+			return "ANONYMOUS";
+		}
+		elseif(preg_match("/SYSTEM/",$this->userUUID)){
+			return "SYSTEM";
+		}
+		else{
+			return $this->userUUID;
+		}
 	}
 
 	function __destruct() {
