@@ -40,7 +40,12 @@ class answerManager extends CDCMastery
 			}
 			
 			$res->close();
-			return $answerArray;
+			if(isset($answerArray) && is_array($answerArray) && !empty($answerArray)){
+				return $answerArray;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
 			$this->error[] = "There are no answers in the database.";
@@ -52,7 +57,7 @@ class answerManager extends CDCMastery
 	public function listAnswersByQuestion(){
 		if($this->questionUUID){
 			if($this->fouo){
-				$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect FROM answerData WHERE questionUUID = ?");
+				$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect FROM answerData WHERE questionUUID = ? ORDER BY Rand()");
 			}
 			else{
 				$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect FROM answerData WHERE questionUUID = ?");
