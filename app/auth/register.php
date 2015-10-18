@@ -119,7 +119,7 @@ if(isset($_POST['registrationFormStep'])):
         $registerUser->setUserTimeZone($_SESSION['registrationArray']['userTimeZone']['data']);
         $registerUser->setUserBase($_SESSION['registrationArray']['userBase']['data']);
         $registerUser->setUserOfficeSymbol($_SESSION['registrationArray']['userOfficeSymbol']['data']);
-        $registerUser->setUserDateRegistered(date("Y-m-d H:i:s"),time());
+        $registerUser->setUserDateRegistered(date(("Y-m-d H:i:s"),time()));
         $registerUser->setUserRole($roles->getRoleUUIDByName("Users"));
         $registerUser->setUserDisabled(false);
 
@@ -174,6 +174,10 @@ if(isset($_POST['registrationFormStep'])):
                 $log->setDetail("User Handle",$registerUser->getUserHandle());
                 $log->saveEntry();
 
+                if(isset($_SESSION['registrationArray'])){
+                    unset($_SESSION['registrationArray']);
+                }
+
                 $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.");
                 $_SESSION['queueActivation'] = true;
                 $cdcMastery->redirect("/");
@@ -220,7 +224,14 @@ if($accountType):
 
         if($bases->loadBase($_SESSION['registrationArray']['userBase']['data'])):
             $supervisorList = $roles->listSupervisorsByBase($bases->getUUID());
-            $trainingManagerList = $roles->listTrainingManagersByBase($bases->getUUID()); ?>
+            $trainingManagerList = $roles->listTrainingManagersByBase($bases->getUUID());
+
+            if($accountType == "supervisor" || $accountType == "training-manager"){
+                $accountTypeMessage = "<strong>Note:</strong> Because you selected a supervisor or training manager account type, administrator
+approval is required before the system will grant extended permissions to your account.  Until that time, your account will function as a normal user.";
+                $sysMsg->addMessage($accountTypeMessage);
+            }
+            ?>
             <form id="registrationFormPartTwo" action="/auth/register/<?php echo $accountType; ?>/2" method="POST">
             <input type="hidden" name="registrationFormStep" value="2">
             <div class="container">
@@ -517,6 +528,7 @@ if($accountType):
                                         <?php endforeach; ?>
                                     <?php endforeach; ?>
                                 </select>
+                                <p><em>The list is lengthy, but as a reference America/New_York is Eastern Standard/Daylight Time</em></p>
                             </li>
                         </ul>
                     </section>
