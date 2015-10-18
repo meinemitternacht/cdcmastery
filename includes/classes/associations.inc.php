@@ -406,7 +406,14 @@ class associations extends CDCMastery
 			$this->log->saveEntry();
 			
 			$stmt->close();
-			return true;
+
+			if($this->notifyPendingAFSCApproval($userUUID,$afscUUID)){
+				return true;
+			}
+			else{
+				$this->error = "Could not send notification e-mail.";
+				return false;
+			}
 		}
 		else{
 			$this->log->setAction("ERROR_USER_APPROVE_PENDING_AFSC_ASSOCIATION");
@@ -421,7 +428,96 @@ class associations extends CDCMastery
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Notifies the user when their pending AFSC association was approved
+	 * @param $userUUID
+	 * @param $afscUUID
+	 * @return bool
+	 */
+	public function notifyPendingAFSCApproval($userUUID,$afscUUID){
+		if(!$this->afsc->verifyAFSC($afscUUID)){
+			$this->error = "Not sure why, but that AFSC does not exist.";
+			$this->log->setAction("ERROR_NOTIFY_AFSC_ASSOCIATION_APPROVAL");
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("AFSC UUID",$afscUUID);
+			$this->log->setDetail("Error","AFSC does not exist.");
+			$this->log->saveEntry();
+
+			return false;
+		}
+
+		if($this->user->verifyUser($userUUID)){
+			$this->user->loadUser($userUUID);
+
+			$emailSender = "support@cdcmastery.com";
+			$emailRecipient = $this->user->getUserEmail();
+			$emailSubject = "AFSC Association Approved";
+
+			$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
+			$emailBodyHTML .= $this->user->getFullName().",";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "An administrator or training manager at CDCMastery has approved your pending AFSC association. ";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "AFSC: ".$this->afsc->getAFSCName($afscUUID);
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "If you have any questions about this process, please contact the CDCMastery Help Desk: http://helpdesk.cdcmastery.com/ ";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "Regards,";
+			$emailBodyHTML .= "<br /><br />";
+			$emailBodyHTML .= "CDCMastery.com";
+			$emailBodyHTML .= "</body></html>";
+
+			$emailBodyText = $this->user->getFullName().",";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "An administrator or training manager at CDCMastery has approved your pending AFSC association. ";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "AFSC: ".$this->afsc->getAFSCName($afscUUID);
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "If you have any questions about this process, please contact the CDCMastery Help Desk: http://helpdesk.cdcmastery.com/ ";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "Regards,";
+			$emailBodyText .= "\r\n\r\n";
+			$emailBodyText .= "CDCMastery.com";
+
+			$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
+
+			if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
+				$this->log->setAction("NOTIFY_AFSC_ASSOCIATION_APPROVAL");
+				$this->log->setUserUUID($userUUID);
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->setDetail("AFSC UUID",$afscUUID);
+				$this->log->saveEntry();
+				return true;
+			}
+			else{
+				$this->log->setAction("ERROR_NOTIFY_AFSC_ASSOCIATION_APPROVAL");
+				$this->log->setUserUUID($userUUID);
+				$this->log->setDetail("Calling Function","associations->notifyPendingAFSCApproval()");
+				$this->log->setDetail("Child function","emailQueue->queueEmail()");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->setDetail("AFSC UUID",$afscUUID);
+				$this->log->saveEntry();
+				return false;
+			}
+		}
+		else{
+			$this->error = "That user does not exist.";
+			$this->log->setAction("ERROR_NOTIFY_AFSC_ASSOCIATION_APPROVAL");
+			$this->log->setDetail("Calling Function","associations->notifyPendingAFSCApproval()");
+			$this->log->setDetail("System Error",$this->error);
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("AFSC UUID",$afscUUID);
+			$this->log->saveEntry();
+			return false;
+		}
+	}
+
+	/**
+	 * @param $supervisorUUID
+	 * @param $userUUID
+	 * @return bool
+	 */
 	public function addSupervisorAssociation($supervisorUUID, $userUUID){
 		if(!$this->user->verifyUser($supervisorUUID)){
 			$this->error[] = "That supervisor does not exist.";
