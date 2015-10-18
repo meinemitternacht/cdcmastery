@@ -44,6 +44,9 @@ if($router->parseURI()){
 		}
         if(isset($_SESSION) && count($_SESSION) > 0){
             foreach($_SESSION as $sessionKey => $sessionVal){
+				if(is_array($sessionVal)){
+					$sessionVal = implode(",",$sessionVal);
+				}
                 $log->setDetail($sessionKey,$sessionVal);
             }
         }
