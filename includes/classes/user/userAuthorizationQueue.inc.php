@@ -146,7 +146,12 @@ class userAuthorizationQueue extends user
 
                     return false;
                 } else {
-                    return true;
+                    if($this->notifyRoleApproval($userUUID,$roleUUID)){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
                 }
             } else {
                 $this->log->setAction("ERROR_APPROVE_ROLE_AUTHORIZATION");
@@ -159,6 +164,92 @@ class userAuthorizationQueue extends user
                 return false;
             }
         } else {
+            return false;
+        }
+    }
+
+    /**
+     * Notifies the user when their pending AFSC association was approved
+     * @param $userUUID
+     * @param $roleUUID
+     * @return bool
+     */
+    public function notifyRoleApproval($userUUID,$roleUUID){
+        $_roles = new roles($this->db,$this->log,$this->emailQueue);
+
+        if(!$_roles->verifyRole($roleUUID)){
+            $this->error = "For some reason, that role does not exist.  This is not good!";
+
+            $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
+            $this->log->setUserUUID($userUUID);
+            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+            $this->log->setDetail("Child function","_roles->verifyRole()");
+            $this->log->setDetail("Error",$this->error);
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->setDetail("Role UUID",$roleUUID);
+            $this->log->saveEntry();
+
+            return false;
+        }
+
+        if($this->verifyUser($userUUID)){
+            $this->loadUser($userUUID);
+
+            $emailSender = "support@cdcmastery.com";
+            $emailRecipient = $this->getUserEmail();
+            $emailSubject = $_roles->getRoleName($roleUUID) . " Account Approved";
+
+            $emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
+            $emailBodyHTML .= $this->getFullName().",";
+            $emailBodyHTML .= "<br /><br />";
+            $emailBodyHTML .= "An administrator at CDCMastery has approved your pending account authorization. Your account now contains permissions for the ".$_roles->getRoleName($roleUUID)." role.";
+            $emailBodyHTML .= "<br /><br />";
+            $emailBodyHTML .= "If you have any questions about this process, please contact the CDCMastery Help Desk: http://helpdesk.cdcmastery.com/ ";
+            $emailBodyHTML .= "<br /><br />";
+            $emailBodyHTML .= "Regards,";
+            $emailBodyHTML .= "<br /><br />";
+            $emailBodyHTML .= "CDCMastery.com";
+            $emailBodyHTML .= "</body></html>";
+
+            $emailBodyText = $this->getFullName().",";
+            $emailBodyText .= "\r\n\r\n";
+            $emailBodyText .= "An administrator at CDCMastery has approved your pending account authorization. Your account now contains permissions for the ".$_roles->getRoleName($roleUUID)." role.";
+            $emailBodyText .= "\r\n\r\n";
+            $emailBodyText .= "If you have any questions about this process, please contact the CDCMastery Help Desk: http://helpdesk.cdcmastery.com/ ";
+            $emailBodyText .= "\r\n\r\n";
+            $emailBodyText .= "Regards,";
+            $emailBodyText .= "\r\n\r\n";
+            $emailBodyText .= "CDCMastery.com";
+
+            $queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
+
+            if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
+                $this->log->setAction("NOTIFY_ROLE_APPROVAL");
+                $this->log->setUserUUID($userUUID);
+                $this->log->setDetail("User UUID",$userUUID);
+                $this->log->setDetail("Role UUID",$roleUUID);
+                $this->log->saveEntry();
+                return true;
+            }
+            else{
+                $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
+                $this->log->setUserUUID($userUUID);
+                $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+                $this->log->setDetail("Child function","emailQueue->queueEmail()");
+                $this->log->setDetail("User UUID",$userUUID);
+                $this->log->setDetail("Role UUID",$roleUUID);
+                $this->log->saveEntry();
+                return false;
+            }
+        }
+        else{
+            $this->error = "That user does not exist.";
+            $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
+            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+            $this->log->setDetail("System Error",$this->error);
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->setDetail("Role UUID",$roleUUID);
+            $this->log->saveEntry();
             return false;
         }
     }
