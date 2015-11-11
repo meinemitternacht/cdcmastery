@@ -582,13 +582,13 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalQuestionsAnswered(){
-        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testData`");
+        $stmt = $this->db->prepare("SELECT SUM(totalQuestions) AS sumQuestions FROM `testHistory`");
 
         if($stmt->execute()){
-            $stmt->bind_result($count);
+            $stmt->bind_result($sumQuestions);
 
             while($stmt->fetch()){
-                $this->totalQuestionsAnswered = $count;
+                $this->totalQuestionsAnswered = $sumQuestions;
             }
 
             $stmt->close();
