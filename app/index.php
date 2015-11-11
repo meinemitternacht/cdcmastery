@@ -171,10 +171,10 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 						<?php if(!empty($pendingAssociationsCount)): ?>
 							<li><a href="/admin/afsc-pending">There <?php echo ($pendingAssociationsCount > 1) ? "are" : "is"; ?> <?php echo $pendingAssociationsCount; ?> FOUO AFSC association<?php echo ($pendingAssociationsCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
-						<?php if(!empty($unactivatedUsersCount)): ?>
+						<?php if(!empty($unactivatedUsersCount) && $cdcMastery->verifyAdmin()): ?>
 							<li><a href="/admin/activate-users">There <?php echo ($unactivatedUsersCount > 1) ? "are" : "is"; ?> <?php echo $unactivatedUsersCount; ?> user activation<?php echo ($unactivatedUsersCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
-						<?php if(!empty($authorizationQueueCount)): ?>
+						<?php if(!empty($authorizationQueueCount) && $cdcMastery->verifyAdmin()): ?>
 							<li><a href="/admin/authorize-users">There <?php echo ($authorizationQueueCount > 1) ? "are" : "is"; ?> <?php echo $authorizationQueueCount; ?> user role authorization<?php echo ($authorizationQueueCount > 1) ? "s" : ""; ?> pending.</a></li>
 						<?php endif; ?>
 						</ul>
