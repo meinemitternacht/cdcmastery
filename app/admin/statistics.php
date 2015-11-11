@@ -9,7 +9,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
 ?>
 <div class="container">
     <div class="row">
-        <div class="4u">
+        <div class="3u">
             <section>
                 <header>
                     <h2>Statistics</h2>
@@ -19,6 +19,16 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <li><a href="/admin"><i class="icon-inline icon-20 ic-arrow-left"></i>Return to Admin Panel</a></li>
                     </ul>
                 </div>
+            </section>
+        </div>
+        <div class="6u">
+            <section>
+                <br>
+                <p>
+                    <em>Please note that statistics relating to time spans are not adjusted for time zones.</em>
+                    <br>
+                    <strong>The current system time is <?php echo date("F j, Y h:i A",time()); ?></strong>
+                </p>
             </section>
         </div>
     </div>
