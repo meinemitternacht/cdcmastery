@@ -19,7 +19,7 @@ if(!empty($_POST)){
         }
         else{
             $sysMsg->addMessage("There was a problem adding the set.  The error has been logged.");
-            $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-set");
+            $cdcMastery->redirect("/admin/cdc-data" . $workingAFSC . "/add-set");
         }
     }
 }
@@ -36,7 +36,7 @@ if(!empty($_POST)){
                 with them.
             </p>
             <label for="setName">Set Name</label>
-            <input type="text" class="input_full" name="setName" id="setName" maxlength="255">
+            <input type="text" class="input_full" name="setName" maxlength="255">
             <br>
             <br>
             <input type="submit" value="Add Set">
