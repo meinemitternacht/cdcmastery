@@ -57,7 +57,7 @@ if($formAction){
         break;
         case "afsc-edit":
             $afscData['afscName'] = isset($_POST['afscName']) ? $_POST['afscName'] : false;
-            $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscName'] : false;
+            $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscFOUO'] : false;
             $afscData['afscHidden'] = isset($_POST['afscHidden']) ? $_POST['afscHidden'] : false;
             $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscVersion'] : false;
             $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscDescription'] : false;
@@ -81,6 +81,14 @@ if($formAction){
             }
             else{
                 $afsc->setAFSCName($afscData['afscName']);
+
+                if($afsc->getAFSCFOUO() != $afscData['afscFOUO']){
+                    if(!$afsc->toggleFOUO($afscData['afscFOUO'])){
+                        $sysMsg->addMessage("There was a problem toggling the FOUO status for that AFSC.  Refer to the site log for details.");
+                        $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
+                    }
+                }
+
                 $afsc->setAFSCFOUO($afscData['afscFOUO']);
                 $afsc->setAFSCHidden($afscData['afscHidden']);
                 $afsc->setAFSCVersion($afscData['afscVersion']);
@@ -153,8 +161,7 @@ if($formAction){
 }
 
 if(!$subAction):
-    $afscList = $afsc->listAFSC(false);
-    $fullAFSCList = $afsc->listAFSC(true); ?>
+    $afscList = $afsc->listAFSC(true);?>
     <div class="container">
         <div class="row">
             <div class="3u">
@@ -234,7 +241,7 @@ if(!$subAction):
                                 <label for="afsc-migrate-from">Migrate from</label>
                                 <select class="input_full" name="afsc-migrate-from" id="afsc-migrate-from" size="1">
                                     <option value="">Select AFSC...</option>
-                                <?php foreach($fullAFSCList as $afscUUID => $afscDetails): ?>
+                                <?php foreach($afscList as $afscUUID => $afscDetails): ?>
                                     <?php if($afscDetails['afscFOUO'] == true): ?>
                                     <option value="<?php echo $afscUUID; ?>" class="text-warning"><?php echo $afscDetails['afscName']; ?></option>
                                     <?php else: ?>
@@ -248,7 +255,7 @@ if(!$subAction):
                                 <label for="afsc-migrate-to">Migrate to</label>
                                 <select class="input_full" name="afsc-migrate-to" id="afsc-migrate-to" size="1">
                                     <option value="">Select AFSC...</option>
-                                <?php foreach($fullAFSCList as $afscUUID => $afscDetails): ?>
+                                <?php foreach($afscList as $afscUUID => $afscDetails): ?>
                                     <?php if($afscDetails['afscFOUO'] == true): ?>
                                     <option value="<?php echo $afscUUID; ?>" class="text-warning"><?php echo $afscDetails['afscName']; ?></option>
                                     <?php else: ?>
@@ -283,6 +290,7 @@ if(!$subAction):
                             <tr>
                                 <th>AFSC</th>
                                 <th>FOUO</th>
+                                <th>Hidden</th>
                                 <th>Version</th>
                                 <th>Users</th>
                                 <th>Actions</th>
@@ -292,7 +300,8 @@ if(!$subAction):
                         <?php foreach($afscList as $afscUUID => $afscDetails): ?>
                             <tr>
                                 <td><?php echo $afscDetails['afscName']; ?></td>
-                                <td><?php echo $afscDetails['afscFOUO'] ? "Yes" : "No"; ?></td>
+                                <td><?php echo $afscDetails['afscFOUO'] ? "<span style=\"color:red\">Y</span>" : "N"; ?></td>
+                                <td><?php echo $afscDetails['afscHidden'] ? "<span style=\"color:red\">Y</span>" : "N"; ?></td>
                                 <td><?php echo $afscDetails['afscVersion']; ?></td>
                                 <td><?php echo $assoc->listUserCountByAFSC($afscUUID); ?></td>
                                 <td>
@@ -348,20 +357,20 @@ if(!$subAction):
                                 <input type="text" class="input_full" name="afscName" id="afscName" value="<?php echo $afsc->getAFSCName(); ?>">
                             </li>
                             <?php if($afsc->getTotalQuestions() > 0): ?>
-                            <li>
+                            <?php else: ?>
+                            <?php endif; ?>
+                            <?php /*<li>
                                 <label for="afscFOUO">For Official Use Only?</label>
                                 <br>
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="1" <?php if($afsc->getAFSCFOUO()) echo "CHECKED"; ?> DISABLED="true"> Yes
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="0" <?php if(!$afsc->getAFSCFOUO()) echo "CHECKED"; ?> DISABLED="true"> No
-                            </li>
-                            <?php else: ?>
+                            </li> */ ?>
                             <li>
-                                <label for="afscFOUO">For Official Use Only?</label>
+                                <label for="afscFOUO">Materials marked For Official Use Only?</label>
                                 <br>
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="1" <?php if($afsc->getAFSCFOUO()) echo "CHECKED"; ?>> Yes
                                 <input type="radio" name="afscFOUO" id="afscFOUO" value="0" <?php if(!$afsc->getAFSCFOUO()) echo "CHECKED"; ?>> No
                             </li>
-                            <?php endif; ?>
                             <li>
                                 <label for="afscHidden">Hide on registration view?</label>
                                 <br>
