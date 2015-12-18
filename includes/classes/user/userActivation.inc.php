@@ -102,8 +102,12 @@ class userActivation extends user {
 				$emailBodyHTML .= "If you cannot click on the link, copy and paste the address into your browser.";
 				$emailBodyHTML .= "This link will be valid for 7 days, and expires on ".$timeExpires." UTC.";
 				$emailBodyHTML .= "<br /><br />";
-				$emailBodyHTML .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
+				$emailBodyHTML .= "https://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				$emailBodyHTML .= "<br /><br />";
+                $emailBodyHTML .= "If you encounter issues, go to https://".$_SERVER['HTTP_HOST']."/auth/activate and enter the following code:";
+                $emailBodyHTML .= "<br /><br />";
+                $emailBodyHTML .= $activationCode;
+                $emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "Regards,";
 				$emailBodyHTML .= "<br /><br />";
 				$emailBodyHTML .= "CDCMastery.com";
@@ -119,6 +123,10 @@ class userActivation extends user {
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "http://".$_SERVER['HTTP_HOST']."/auth/activate/".$activationCode;
 				$emailBodyText .= "\r\n\r\n";
+                $emailBodyText .= "If you encounter issues, go to https://".$_SERVER['HTTP_HOST']."/auth/activate and enter the following code:";
+                $emailBodyText .= "\r\n\r\n";
+                $emailBodyText .= $activationCode;
+                $emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "Regards,";
 				$emailBodyText .= "\r\n\r\n";
 				$emailBodyText .= "CDCMastery.com";
