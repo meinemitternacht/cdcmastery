@@ -19,7 +19,7 @@
                         <input type="submit" value="Log in">
                         <br>
                         <br>
-                        <a href="/auth/reset">Forgot Password</a>
+						<a href="/auth/register">Register</a> &mdash; <a href="/auth/reset">Forgot Password?</a>
                     </form>
                 </section>
             </div>
@@ -55,7 +55,7 @@
                         <input type="submit" value="Log in">
                         <br>
                         <br>
-                        <a href="/auth/reset">Forgot Password</a>
+						<a href="/auth/register">Register</a> &mdash; <a href="/auth/reset">Forgot Password?</a>
                     </form>
                 </section>
             </div>
