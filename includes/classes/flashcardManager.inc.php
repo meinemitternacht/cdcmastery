@@ -412,6 +412,45 @@ class flashCardManager extends CDCMastery
         }
     }
 
+    public function getTimesViewed($categoryUUID=false){
+        if($categoryUUID){
+            $queryCategoryUUID = $categoryUUID;
+        }
+        else{
+            $queryCategoryUUID = $this->categoryUUID;
+        }
+
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count
+                                      FROM `systemLogData`
+                                      LEFT JOIN `systemLog`
+                                        ON `systemLogData`.`logUUID`=`systemLog`.`uuid`
+                                      WHERE `systemLog`.`action`='NEW_FLASH_CARD_SESSION'
+                                        AND `systemLogData`.`data`= ?");
+
+        $stmt->bind_param("s",$queryCategoryUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($viewCount);
+            $stmt->fetch();
+
+            if(isset($viewCount) && !empty($viewCount)){
+                return $viewCount;
+            }
+            else{
+                return 0;
+            }
+        }
+        else{
+            $this->log->setAction("ERROR_FLASH_CARD_COUNT_VIEWS");
+            $this->log->setDetail("MySQL Error", $stmt->error);
+            $this->log->setDetail("Calling Function", "flashCardManager->getTimesViewed()");
+            $this->log->setDetail("Category UUID", $queryCategoryUUID);
+            $this->log->saveEntry();
+
+            return false;
+        }
+    }
+
     public function newFlashCard(){
         $this->cardUUID = $this->genUUID();
         $this->frontText = NULL;

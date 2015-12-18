@@ -51,6 +51,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                             <tr>
                                 <th>Category Name</th>
                                 <th>Total Cards</th>
+                                <th>Times Viewed</th>
                                 <th>Type</th>
                                 <th>Encrypted</th>
                                 <th>Actions</th>
@@ -82,6 +83,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                             <tr>
                                 <td><a href="/admin/card-data/<?php echo $categoryUUID; ?>" title="Manage Flash Card Data"><?php echo $categoryData['categoryName']; ?></a></td>
                                 <td><?php echo $flashCardManager->getCardCount($categoryUUID); ?></td>
+                                <td><?php echo $flashCardManager->getTimesViewed($categoryUUID); ?></td>
                                 <td title="<?php echo $titleText; ?>"><?php echo $categoryData['categoryType']; ?></td>
                                 <td><?php echo ($categoryData['categoryEncrypted']) ? "<strong>Yes</strong>" : "No"; ?></td>
                                 <td>
