@@ -91,7 +91,7 @@ class associations extends CDCMastery
 			}
 			else{
 				$this->error[] = "No associations.";
-				return false;
+				return 0;
 			}
 		}
 		else{
