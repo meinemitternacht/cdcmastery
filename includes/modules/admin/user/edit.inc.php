@@ -71,6 +71,87 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserLastName($_POST['userLastName']);
     $objUser->setUserRank($_POST['userRank']);
     $objUser->setUserTimeZone($_POST['timeZone']);
+
+    $objUserStatistics = new userStatistics($db,$log,$roles);
+    $objUserStatistics->setUserUUID($objUser->getUUID());
+
+    /*
+     * Migrate Supervisor Subordinates to Training Manager
+     */
+    if($roles->getRoleType($objUser->getUserRole()) == "supervisor" && $roles->getRoleType($_POST['userRole']) == "trainingManager"){
+        if($objUserStatistics->getSupervisorSubordinateCount() > 0){
+            $subordinateList = $objUserStatistics->getSupervisorAssociations();
+
+            if(sizeof($subordinateList) > 1){
+                foreach($subordinateList as $subordinateUUID){
+                    $assoc->addTrainingManagerAssociation($objUser->getUUID(),$subordinateUUID);
+                    $assoc->deleteSupervisorAssociation($objUser->getUUID(),$subordinateUUID);
+                }
+            }
+            else{
+                $assoc->addTrainingManagerAssociation($objUser->getUUID(),$subordinateList[0]);
+                $assoc->deleteSupervisorAssociation($objUser->getUUID(),$subordinateList[0]);
+            }
+
+            if($objUserStatistics->getSupervisorSubordinateCount() > 0){
+                $log->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
+                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
+                $log->setDetail("User UUID",$objUser->getUUID());
+                $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
+                $log->saveEntry();
+
+                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.");
+                $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
+            }
+            else{
+                $log->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $log->setDetail("User UUID",$objUser->getUUID());
+                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
+                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
+                $log->saveEntry();
+            }
+        }
+    }
+    /*
+     * Migrate Training Manager Subordinates to Supervisor
+     */
+    elseif($roles->getRoleType($objUser->getUserRole()) == "trainingManager" && $roles->getRoleType($_POST['userRole']) == "supervisor"){
+        if($objUserStatistics->getTrainingManagerSubordinateCount() > 0){
+            $subordinateList = $objUserStatistics->getTrainingManagerAssociations();
+
+            if(sizeof($subordinateList) > 1){
+                foreach($subordinateList as $subordinateUUID){
+                    $assoc->addSupervisorAssociation($objUser->getUUID(),$subordinateUUID);
+                    $assoc->deleteTrainingManagerAssociation($objUser->getUUID(),$subordinateUUID);
+                }
+            }
+            else{
+                $assoc->addSupervisorAssociation($objUser->getUUID(),$subordinateList[0]);
+                $assoc->deleteTrainingManagerAssociation($objUser->getUUID(),$subordinateList[0]);
+            }
+
+            if($objUserStatistics->getTrainingManagerSubordinateCount() > 0){
+                $log->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
+                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
+                $log->setDetail("User UUID",$objUser->getUUID());
+                $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
+                $log->saveEntry();
+
+                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.");
+                $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
+            }
+            else{
+                $log->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $log->setDetail("User UUID",$objUser->getUUID());
+                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
+                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
+                $log->saveEntry();
+            }
+        }
+    }
+
     $objUser->setUserRole($_POST['userRole']);
 
     if($objUser->saveUser()){
