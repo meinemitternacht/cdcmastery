@@ -249,7 +249,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                 <header>
                     <h3>Users</h3>
                 </header>
-                <form action="/admin/search/results" method="POST">
+                <form action="/admin/search/results" method="POST" autocomplete="false" autocomplete="off">
                     <input type="hidden" name="doSearch" value="1">
                     <input type="hidden" name="searchType" value="user">
                     <ul>
