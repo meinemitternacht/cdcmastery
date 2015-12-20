@@ -214,6 +214,14 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>AFSC Categories</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
                     </tr>
+                    <tr>
+                        <td>AFSC Associations</td>
+                        <td><?php echo number_format($statisticsObj->getTotalAFSCAssociations()); ?></td>
+                    </tr>
+                    <tr style="border-bottom: 2px solid #999">
+                        <td>Associations Per User</td>
+                        <td><?php echo number_format($statisticsObj->getTotalAFSCAssociations()/$statisticsObj->getTotalUsers(),2); ?></td>
+                    </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td>FOUO AFSC Categories</td>
                         <td><?php echo number_format($statisticsObj->getTotalFOUOAFSCCategories()); ?></td>

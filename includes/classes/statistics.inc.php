@@ -33,6 +33,7 @@ class statistics extends CDCMastery {
 
     public $totalAFSCCategories;
     public $totalFOUOAFSCCategories;
+    public $totalAFSCAssociations;
 
     public $totalQuestions;
     public $totalQuestionsArchived;
@@ -623,6 +624,40 @@ class statistics extends CDCMastery {
 
             while($stmt->fetch()){
                 $this->totalAFSCCategories = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalAFSCCategories()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalAFSCAssociations(){
+        if(!$this->queryTotalAFSCAssociations()){
+            return 0;
+        }
+        else{
+            return $this->totalAFSCAssociations;
+        }
+    }
+
+    public function queryTotalAFSCAssociations(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `userAFSCAssociations`");
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->totalAFSCAssociations = $count;
             }
 
             $stmt->close();
