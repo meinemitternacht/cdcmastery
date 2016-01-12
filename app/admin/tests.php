@@ -25,7 +25,7 @@ $workingChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                 </header>
                 <div class="sub-menu">
                     <ul>
-                        <li><a href="/admin/tests/completed" title="Completed Tests">Completed Tests</a></li>
+                        <li><a href="/admin/tests/complete" title="Completed Tests">Completed Tests</a></li>
                         <li><a href="/admin/tests/incomplete" title="Incomplete Tests">Incomplete Tests</a></li>
                     </ul>
                 </div>
@@ -34,22 +34,22 @@ $workingChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
         <?php
         if($section) {
             switch ($section) {
-                case "completed":
+                case "complete":
                     if (!empty($action)) {
                         switch ($action) {
                             case "view":
-                                require_once BASE_PATH . "/includes/modules/admin/tests/completed/view.inc.php";
+                                require_once BASE_PATH . "/includes/modules/admin/tests/complete/view.inc.php";
                                 break;
                             case "edit":
-                                require_once BASE_PATH . "/includes/modules/admin/tests/completed/edit.inc.php";
+                                require_once BASE_PATH . "/includes/modules/admin/tests/complete/edit.inc.php";
                                 break;
                             case "delete":
-                                require_once BASE_PATH . "/includes/modules/admin/tests/completed/delete-all.inc.php";
+                                require_once BASE_PATH . "/includes/modules/admin/tests/complete/delete-all.inc.php";
                                 break;
                         }
                     }
                     else {
-                        require_once BASE_PATH . "/includes/modules/admin/tests/completed/list.inc.php";
+                        require_once BASE_PATH . "/includes/modules/admin/tests/complete/list.inc.php";
                     }
                     break;
                 case "incomplete":
