@@ -14,9 +14,9 @@ $x=0;
  */
 for($i=2012;$i<=date("Y",time());$i++){
     /*
-     * 52 weeks in a year!
+     * 52 weeks in a year, but we start at 0!
      */
-    for($j=1;$j<=52;$j++) {
+    for($j=0;$j<=52;$j++) {
         if($i==date("Y",time()) && $j > date("W",time())){
             continue;
         }
@@ -101,7 +101,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Year</th>
+                        <th>Week</th>
                         <th>Tests Taken</th>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>

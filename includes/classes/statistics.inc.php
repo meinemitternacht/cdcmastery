@@ -24,12 +24,15 @@ class statistics extends CDCMastery {
 
     public $baseActionsCount;
     public $totalTestsByBase;
+    public $totalUsersByBase;
     public $averageScoreByBase;
 
     public $totalTests;
     public $totalCompletedTests;
     public $totalIncompleteTests;
+    public $totalArchivedTests;
     public $totalQuestionsAnswered;
+    public $totalDatabaseQuestionsAnswered;
 
     public $totalAFSCCategories;
     public $totalFOUOAFSCCategories;
@@ -64,6 +67,7 @@ class statistics extends CDCMastery {
     public $usersActiveThisWeek;
     public $usersActiveThisMonth;
     public $usersActiveThisYear;
+    public $usersActiveFifteenMinutes;
 
     public $totalQuestionOccurrences;
     public $totalAnswerOccurrences;
@@ -454,6 +458,43 @@ class statistics extends CDCMastery {
         }
     }
 
+    public function getTotalUsersByBase($baseUUID){
+        if(!$this->queryTotalUsersByBase($baseUUID)){
+            return 0;
+        }
+        else{
+            return $this->totalUsersByBase;
+        }
+    }
+
+    public function queryTotalUsersByBase($baseUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `userData`
+                                        WHERE `userData`.`userBase` = ?");
+
+        $stmt->bind_param("s",$baseUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->totalUsersByBase = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalUsersByBase()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
     public function getAverageScoreByBase($baseUUID){
         if(!$this->queryAverageScoreByBase($baseUUID)){
             return 0;
@@ -539,6 +580,40 @@ class statistics extends CDCMastery {
         }
     }
 
+    public function getTotalArchivedTests(){
+        if(!$this->queryTotalArchivedTests()){
+            return 0;
+        }
+        else{
+            return $this->totalArchivedTests;
+        }
+    }
+
+    public function queryTotalArchivedTests(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testArchived IS NOT NULL");
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->totalArchivedTests = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalArchivedTests()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
     public function getTotalCompletedTests(){
         if(!$this->queryTotalCompletedTests()){
             return 0;
@@ -599,6 +674,40 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalQuestionsAnswered()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getTotalDatabaseQuestionsAnswered(){
+        if(!$this->queryTotalDatabaseQuestionsAnswered()){
+            return 0;
+        }
+        else{
+            return $this->totalDatabaseQuestionsAnswered;
+        }
+    }
+
+    public function queryTotalDatabaseQuestionsAnswered(){
+        $stmt = $this->db->prepare("SELECT SUM(totalQuestions) AS sumQuestions FROM `testHistory` WHERE testArchived IS NULL");
+
+        if($stmt->execute()){
+            $stmt->bind_result($sumQuestions);
+
+            while($stmt->fetch()){
+                $this->totalDatabaseQuestionsAnswered = $sumQuestions;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalDatabaseQuestionsAnswered()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -1555,6 +1664,49 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveThisYear()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getUsersActiveFifteenMinutes(){
+        if($this->queryUsersActiveFifteenMinutes()){
+            return $this->usersActiveFifteenMinutes;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public function queryUsersActiveFifteenMinutes(){
+        $dateTimeStartObj = new DateTime("now");
+        $dateTimeEndObj = new DateTime("now");
+
+        $dateTimeStartObj->modify("-15 minutes");
+
+        $dateTimeStart = $dateTimeStartObj->format("Y-m-d H:i:s");
+        $dateTimeEnd = $dateTimeEndObj->format("Y-m-d H:i:s");
+
+        $stmt = $this->db->prepare("SELECT uuid FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?) ORDER BY userLastActive DESC");
+        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+
+        if($stmt->execute()){
+            $stmt->bind_result($uuid);
+
+            while($stmt->fetch()){
+                $this->usersActiveFifteenMinutes[] = $uuid;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryUsersActiveFifteenMinutes()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();

@@ -10,7 +10,7 @@ $statsObj = new statistics($db,$log,$emailQueue);
 
 $x=0;
 for($i=2012;$i<=date("Y",time());$i++){
-    for($j=1;$j<=52;$j++) {
+    for($j=0;$j<=51;$j++) {
         if($i==date("Y",time()) && $j > date("W",time())){
             continue;
         }

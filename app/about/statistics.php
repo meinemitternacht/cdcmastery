@@ -25,6 +25,7 @@ $statValueList = Array( 'active',
                         'average-year',
                         'category',
                         'count-hour',
+                        'count-day-of-month',
                         'count-day',
                         'count-month',
                         'count-week',
@@ -32,7 +33,8 @@ $statValueList = Array( 'active',
                         'groups',
                         'pass-rate',
                         'rank',
-                        'tests');
+                        'tests',
+                        'users');
 
 if(!$statSection && !$statValue){
     $cdcMastery->redirect("/about/statistics/tests/average-seven-days");
