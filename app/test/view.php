@@ -132,7 +132,10 @@ else{
 				$testManager->loadTestData($testUUID);
 				$testData = $testManager->getTestData();
 
-                if(!empty($testData) && is_array($testData)): ?>
+                if($testManager->getTestArchived()): ?>
+                    <p>This test has been archived.  Please contact us using the "Support" link at the top of the page to request a copy.  In the future, you will be able to download a copy of your archived tests for personal use.</p>
+                <?php
+                elseif(!empty($testData) && is_array($testData)): ?>
                     <p>The results of your test are shown below.  By hovering over an answer, you can view how often you have selected that particular answer across all of your tests. Clicking the
                     "Show all answers" link below the test details will present all of the answers for each question.</p>
                     <?php
@@ -246,7 +249,7 @@ else{
                                 <ul style="border-left: 0.5em solid #aaa;background-color:<?php $color = ($c == 0) ? "#eee" : "#ddd";
                                 echo $color; ?>">
                                     <li style="padding:0.3em;font-size:1.1em;">
-                                        <strong><?php echo $i; ?>. <?php echo $archivedText ?></strong>
+                                        <strong><?php echo $i; ?>. <?php echo $archivedText; ?></strong>
                                     </li>
                                     <li style="padding:0.3em">
                                         <?php if ($answerManager->getAnswerCorrect()): ?>

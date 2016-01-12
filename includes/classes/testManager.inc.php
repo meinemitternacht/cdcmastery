@@ -22,6 +22,7 @@ class testManager extends CDCMastery
 	public $testScore;			//int 5
 	public $testTimeStarted;	//datetime
 	public $testTimeCompleted;	//datetime
+	public $testArchived;		//int 1
 	
 	/*
 	 * testData
@@ -66,7 +67,8 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted
+												testTimeCompleted,
+												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY afscList, testTimeStarted DESC
@@ -80,7 +82,8 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted
+												testTimeCompleted,
+												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY testTimeStarted DESC
@@ -98,7 +101,8 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted
+												testTimeCompleted,
+												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY afscList, testTimeStarted DESC");
@@ -111,7 +115,8 @@ class testManager extends CDCMastery
 												questionsMissed,
 												testScore,
 												testTimeStarted,
-												testTimeCompleted
+												testTimeCompleted,
+												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
 										ORDER BY testTimeStarted DESC");
@@ -128,7 +133,8 @@ class testManager extends CDCMastery
 								$questionsMissed,
 								$testScore,
 								$testTimeStarted,
-								$testTimeCompleted);
+								$testTimeCompleted,
+								$testArchived);
 			
 			while($stmt->fetch()){
 				$testArray[$uuid]['userUUID'] = $resUserUUID;
@@ -138,6 +144,7 @@ class testManager extends CDCMastery
 				$testArray[$uuid]['testScore'] = $testScore;
 				$testArray[$uuid]['testTimeStarted'] = $testTimeStarted;
 				$testArray[$uuid]['testTimeCompleted'] = $testTimeCompleted;
+				$testArray[$uuid]['testArchived'] = $testArchived;
 			}
 			
 			$stmt->close();
@@ -161,6 +168,43 @@ class testManager extends CDCMastery
 			return false;
 		}
 	}
+
+	public function listArchivableTests(){
+		$res = $this->db->query("SELECT uuid FROM afscList WHERE afscHidden = '1'");
+
+		$afscArray = Array();
+
+		if($res->num_rows > 0){
+			while($row = $res->fetch_assoc()){
+				$afscArray[] = $row['uuid'];
+			}
+		}
+		$res->close();
+
+		if(isset($afscArray) && sizeof($afscArray) > 0) {
+			$testArray = Array();
+			foreach($afscArray as $afscUUID) {
+				$query = "SELECT uuid
+									FROM testHistory
+									WHERE afscList LIKE '%" . $afscUUID . "%'
+										AND testArchived IS NULL";
+				$res = $this->db->query($query);
+
+				if ($res->num_rows > 0) {
+					while ($row = $res->fetch_assoc()) {
+						$testArray[] = $row['uuid'];
+					}
+				}
+
+				$res->close();
+			}
+
+			return $testArray;
+		}
+		else{
+			return false;
+		}
+	}
 	
 	public function listTests(){
 		$res = $this->db->query("SELECT uuid,
@@ -170,7 +214,8 @@ class testManager extends CDCMastery
 										questionsMissed,
 										testScore,
 										testTimeStarted,
-										testTimeCompleted
+										testTimeCompleted,
+										testArchived
 									FROM testHistory
 									ORDER BY testTimeStarted ASC");
 		
@@ -185,6 +230,7 @@ class testManager extends CDCMastery
 				$testArray[$row['uuid']]['testScore'] = $row['testScore'];
 				$testArray[$row['uuid']]['testTimeStarted'] = $row['testTimeStarted'];
 				$testArray[$row['uuid']]['testTimeCompleted'] = $row['testTimeCompleted'];
+				$testArray[$row['uuid']]['testArchived'] = $row['testArchived'];
 			}
 			
 			$noResults = false;
@@ -211,7 +257,8 @@ class testManager extends CDCMastery
 											questionsMissed,
 											testScore,
 											testTimeStarted,
-											testTimeCompleted
+											testTimeCompleted,
+											testArchived
 									FROM testHistory
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
@@ -224,7 +271,8 @@ class testManager extends CDCMastery
 								$questionsMissed,
 								$testScore,
 								$testTimeStarted,
-								$testTimeCompleted);
+								$testTimeCompleted,
+								$testArchived);
 			
 			while($stmt->fetch()){
 				$this->uuid = $uuid;
@@ -235,6 +283,7 @@ class testManager extends CDCMastery
 				$this->testScore = $testScore;
 				$this->testTimeStarted = $testTimeStarted;
 				$this->testTimeCompleted = $testTimeCompleted;
+				$this->testArchived = $testArchived;
 			}
 			
 			$stmt->close();
@@ -262,8 +311,9 @@ class testManager extends CDCMastery
                                                               questionsMissed,
                                                               testScore,
                                                               testTimeStarted,
-                                                              testTimeCompleted)
-                                    VALUES (?,?,?,?,?,?,?,?)
+                                                              testTimeCompleted,
+															  testArchived)
+                                    VALUES (?,?,?,?,?,?,?,?,?)
                                     ON DUPLICATE KEY UPDATE uuid=VALUES(uuid),
                                                             userUUID=VALUES(userUUID),
                                                             afscList=VALUES(afscList),
@@ -271,16 +321,18 @@ class testManager extends CDCMastery
                                                             questionsMissed=VALUES(questionsMissed),
                                                             testScore=VALUES(testScore),
                                                             testTimeStarted=VALUES(testTimeStarted),
-                                                            testTimeCompleted=VALUES(testTimeCompleted)");
+                                                            testTimeCompleted=VALUES(testTimeCompleted),
+                                                            testArchived=VALUES(testArchived)");
 
-        $stmt->bind_param("sssiiiss",   $this->uuid,
+        $stmt->bind_param("sssiiissi",   $this->uuid,
                                         $this->userUUID,
                                         $serializedAFSCList,
                                         $this->totalQuestions,
                                         $this->questionsMissed,
                                         $this->testScore,
                                         $this->testTimeStarted,
-                                        $this->testTimeCompleted);
+                                        $this->testTimeCompleted,
+										$this->testArchived);
 
         if($stmt->execute()){
             if($logSuccess) {
@@ -303,6 +355,7 @@ class testManager extends CDCMastery
             $this->log->setDetail("Test Score",$this->testScore);
             $this->log->setDetail("Test Time Started",$this->testTimeStarted);
             $this->log->setDetail("Test Time Completed",$this->testTimeCompleted);
+			$this->log->setDetail("Test Archived",$this->testArchived);
             $this->log->saveEntry();
 
             $stmt->close();
@@ -484,6 +537,10 @@ class testManager extends CDCMastery
             return false;
         }
     }
+
+	public function getTestArchived(){
+		return $this->testArchived;
+	}
 	
 	public function setUUID($uuid){
 		$this->uuid = $uuid;
@@ -524,6 +581,11 @@ class testManager extends CDCMastery
         $this->testTimeCompleted = $testTimeCompleted;
         return true;
     }
+
+	public function setTestArchived($testArchived){
+		$this->testArchived = $testArchived;
+		return true;
+	}
 	
 	/*
 	 * testManager Table Related Functions
