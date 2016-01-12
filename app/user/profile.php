@@ -126,11 +126,15 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Date Registered</th>
-							<td><?php echo $userProfile->getUserDateRegistered(); ?></td>
+							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserDateRegistered(),$_SESSION['timeZone']); ?></td>
 						</tr>
 						<tr>
 							<th class="th-child">Last Login</th>
-							<td><?php echo $userProfile->getUserLastLogin(); ?></td>
+							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserLastLogin(),$_SESSION['timeZone']); ?></td>
+						</tr>
+						<tr>
+							<th class="th-child">Last Active</th>
+							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserLastActive(),$_SESSION['timeZone']); ?></td>
 						</tr>
 						<tr>
 							<th class="th-child">Role</th>
@@ -375,7 +379,7 @@ else{
 								<tbody>
 								<?php foreach($userTestArray as $testUUID => $testData): ?>
 									<tr>
-										<td><?php echo $testData['testTimeCompleted']; ?></td>
+										<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
 										<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 										<td><?php echo $testData['testScore']; ?></td>
 										<td>
@@ -407,7 +411,7 @@ else{
 								<tbody>
 								<?php foreach($userIncompleteTestArray as $testUUID => $testData): ?>
 									<tr>
-										<td><?php echo $testData['timeStarted']; ?></td>
+										<td><?php echo $cdcMastery->outputDateTime($testData['timeStarted'],$_SESSION['timeZone']); ?></td>
 										<td><?php echo $testData['questionsAnswered']; ?></td>
 										<td><?php echo $testData['totalQuestions']; ?></td>
 										<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
