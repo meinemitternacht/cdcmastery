@@ -27,6 +27,7 @@ class user extends CDCMastery {
 	public $userBase;			//varchar 40
 	public $userSupervisor;		//varchar 40
 	public $userDisabled;		//bool
+	public $userLastActive;		//datetime
 
 	public function __construct(mysqli $db, log $log, emailQueue $emailQueue) {
 		$this->db = $db;
@@ -197,7 +198,8 @@ class user extends CDCMastery {
 											userOfficeSymbol,
 											userBase,
 											userSupervisor,
-											userDisabled
+											userDisabled,
+											userLastActive
 									FROM userData
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
@@ -217,7 +219,8 @@ class user extends CDCMastery {
 							$userOfficeSymbol,
 							$userBase,
 							$userSupervisor,
-							$userDisabled );
+							$userDisabled,
+							$userLastActive);
 
 		while($stmt->fetch()){
 			$this->uuid = $uuid;
@@ -236,6 +239,7 @@ class user extends CDCMastery {
 			$this->userBase = $userBase;
 			$this->userSupervisor = $userSupervisor;
 			$this->userDisabled = $userDisabled;
+			$this->userLastActive = $userLastActive;
 		}
 
 		$stmt->close();
@@ -400,6 +404,15 @@ class user extends CDCMastery {
 		}
 		else{
 			return $this->userLastLogin;
+		}
+	}
+
+	public function getUserLastActive(){
+		if($this->isTimeEmpty($this->userLastActive)){
+			return "Never";
+		}
+		else{
+			return $this->userLastActive;
 		}
 	}
 	
