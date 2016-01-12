@@ -123,13 +123,13 @@ and (max-device-width : 480px) {
 						<li><a href="/user/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>First</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber > 0): ?>
-						<li><a href="/user/log/<?php echo ($pageNumber - 1); ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left"></i>Previous</a></li>
+						<li><a href="/user/log/<?php echo ($pageNumber - 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left"></i>Previous</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber < $totalPages): ?>
-						<li><a href="/user/log/<?php echo ($pageNumber + 1); ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right"></i>Next</a></li>
+						<li><a href="/user/log/<?php echo ($pageNumber + 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right"></i>Next</a></li>
 						<?php endif; ?>
 						<?php if($pageNumber < $totalPages): ?>
-						<li><a href="/user/log/<?php echo $totalPages; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Last</a></li>
+						<li><a href="/user/log/<?php echo $totalPages; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Last</a></li>
 						<?php endif; ?>
 					</ul>
 				</div>
