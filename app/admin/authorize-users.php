@@ -9,13 +9,20 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 
 			foreach($_POST['authorizeList'] as $authUUID){
-				if(!$userAuthorization->approveRoleAuthorization($authorizationQueue[$authUUID]['userUUID'],$authorizationQueue[$authUUID]['roleUUID'])){
-					$error = true;
+				if($_POST['authReject'] == "authorize"){
+					if(!$userAuthorization->approveRoleAuthorization($authorizationQueue[$authUUID]['userUUID'],$authorizationQueue[$authUUID]['roleUUID'])){
+						$error = true;
+					}
+				}
+				else{
+					if(!$userAuthorization->rejectRoleAuthorization($authorizationQueue[$authUUID]['userUUID'],$authorizationQueue[$authUUID]['roleUUID'])){
+						$error = true;
+					}
 				}
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while authorizing roles for those user(s).  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.");
 			}
 			else{
 				$sysMsg->addMessage("User(s) authorized successfully.");
@@ -48,7 +55,7 @@ if($authorizationQueue): ?>
 			<div class="5u">
 				<section>
 					<header>
-						<h2>Activate Users</h2>
+						<h2>Authorize Roles for Users</h2>
 					</header>
 				</section>
 			</div>
@@ -75,6 +82,10 @@ if($authorizationQueue): ?>
 							</tr>
 							<?php endforeach; ?>
 						</table>
+						<div class="clearfix">&nbsp;</div>
+						<label for="authReject">Choose whether to authorize or reject the selected users.</label>
+						<input type="radio" name="authReject" value="authorize" checked="CHECKED"> Authorize<br>
+						<input type="radio" name="authReject" value="reject"> Reject
 						<div class="clearfix">&nbsp;</div>
 						<input type="submit" value="Authorize Users">
 					</form>
