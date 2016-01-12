@@ -5,7 +5,7 @@ if(isset($_SESSION['vars'][0])){
 	$testManager = new testManager($db, $log, $afsc);
 	
 	if(!$testManager->resumeTest($testUUID)){
-		$log->setAction("RESUME_TEST_ERROR");
+		$log->setAction("ERROR_TEST_RESUME");
 		$log->setDetail("TEST UUID",$testUUID);
 		$log->setDetail("SCRIPT LOCATION","test/resume -- testManager->resumeTest(testUUID)");
 		$log->setDetail("MYSQL_ERROR",$testManager->error);
