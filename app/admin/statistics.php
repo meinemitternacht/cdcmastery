@@ -51,13 +51,25 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><strong>Total Tests</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalTests()); ?></td>
                     </tr>
+                    <tr>
+                        <td>Question Responses in Database</td>
+                        <td><?php echo number_format($statisticsObj->getTotalDatabaseQuestionsAnswered()); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Archived Responses on Filesystem</td>
+                        <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered() - $statisticsObj->getTotalDatabaseQuestionsAnswered()); ?></td>
+                    </tr>
                     <tr style="border-bottom: 2px solid #999">
-                        <td><strong>Total Questions Answered</strong></td>
+                        <td><strong>Total Question Responses</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered()); ?></td>
                     </tr>
                     <tr>
                         <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_START">Tests Started</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_START")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_ARCHIVE">Tests Archived</a></span></td>
+                        <td><?php echo number_format($statisticsObj->getTotalArchivedTests()); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/INCOMPLETE_TEST_DELETE">Tests Deleted</a></span></td>
@@ -279,6 +291,27 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/USER_REGISTER"><strong>Registrations</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_REGISTER")); ?></td>
                     </tr>
+                    <tr>
+                        <td colspan="2"><strong>Users Active Last 15 Minutes</strong></td>
+                    </tr>
+                    <?php
+                    $usersRecentlyActive = $statisticsObj->getUsersActiveFifteenMinutes();
+
+                    if(count($usersRecentlyActive) > 1): ?>
+                        <?php foreach($usersRecentlyActive as $recentUser): ?>
+                            <?php
+                            $userObj = new user($db,$log,$emailQueue);
+                            $userObj->loadUser($recentUser);
+                            ?>
+                            <tr>
+                                <td colspan="2"><a href="/admin/users/<?php echo $recentUser; ?>"><?php echo $userObj->getFullName(); ?></a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="2">No users active in the last fifteen minutes.</td>
+                        </tr>
+                    <?php endif; ?>
                 </table>
             </section>
         </div>
