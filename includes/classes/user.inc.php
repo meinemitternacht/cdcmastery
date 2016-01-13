@@ -409,7 +409,10 @@ class user extends CDCMastery {
 
 	public function getUserLastActive(){
 		if($this->isTimeEmpty($this->userLastActive)){
-			return "Never";
+			return "N/A";
+		}
+		elseif(empty($this->userLastActive)){
+			return "N/A";
 		}
 		else{
 			return $this->userLastActive;

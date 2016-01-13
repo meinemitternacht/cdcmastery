@@ -92,13 +92,21 @@ class CDCMastery
 	}
 	
 	public function outputDateTime($timestamp, $userTimeZone, $format="F j, Y, g:i a"){
-		$sourceTimeZone = new DateTimeZone("UTC");
-		$destinationTimeZone = new DateTimeZone($userTimeZone);
-		
-		$dateTimeObject = new DateTime($timestamp, $sourceTimeZone);
-		$dateTimeObject->setTimezone($destinationTimeZone);
-		
-		return $dateTimeObject->format($format);
+		if(strtolower($timestamp) == "never"){
+			return "Never";
+		}
+		elseif(strtolower($timestamp) == "n/a"){
+			return "N/A";
+		}
+		else{
+			$sourceTimeZone = new DateTimeZone("UTC");
+			$destinationTimeZone = new DateTimeZone($userTimeZone);
+
+			$dateTimeObject = new DateTime($timestamp, $sourceTimeZone);
+			$dateTimeObject->setTimezone($destinationTimeZone);
+
+			return $dateTimeObject->format($format);
+		}
 	}
 	
 	public function formatDateTime($dateTime, $format="F j, Y, g:i a"){
