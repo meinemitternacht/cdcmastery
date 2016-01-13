@@ -20,6 +20,8 @@ class statistics extends CDCMastery {
     public $testsAverageScoreByTimespan;
     public $testsByHourOfDay;
     public $testsByDayOfMonth;
+    public $testCountByDay;
+    public $testCountByMonth;
     public $testCountByTimespan;
 
     public $baseActionsCount;
@@ -366,6 +368,80 @@ class statistics extends CDCMastery {
 
         if(!empty($this->testsByDayOfMonth)){
             return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestCountByDay(){
+        if(!$this->queryTestCountByDay()){
+            return false;
+        }
+        else{
+            return $this->testCountByDay;
+        }
+    }
+
+    public function queryTestCountByDay(){
+        $res = $this->db->query("SELECT DATE(testHistory.testTimeStarted) AS testDate,
+                                    COUNT(*) AS testCount
+                                    FROM testHistory
+                                      GROUP BY DATE(testHistory.testTimeStarted)
+                                      ORDER BY testDate");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testCountByDay[$row['testDate']] = $row['testCount'];
+            }
+
+            if(isset($this->testCountByDay) && !empty($this->testCountByDay)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestCountByMonth(){
+        if(!$this->queryTestCountByMonth()){
+            return false;
+        }
+        else{
+            return $this->testCountByMonth;
+        }
+    }
+
+    public function queryTestCountByMonth(){
+        $res = $this->db->query("SELECT DATE_FORMAT(testHistory.testTimeStarted, '%Y-%m') AS testDate, COUNT(*) AS testCount
+                                    FROM testHistory
+                                      GROUP BY testDate
+                                      ORDER BY testDate");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testCountByMonth[$row['testDate']] = $row['testCount'];
+            }
+
+            if(isset($this->testCountByMonth) && !empty($this->testCountByMonth)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("CALLING FUNCTION","statistics->queryTestCountByMonth()");
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
         }
         else{
             return false;

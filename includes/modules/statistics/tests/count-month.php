@@ -7,29 +7,19 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue);
+$testCountByMonth = $statsObj->getTestCountByMonth();
 
-$x=0;
-for($i=2012;$i<=date("Y",time());$i++){
-    for($j=1;$j<=12;$j++) {
-        if($i==date("Y",time()) && $j > date("m",time())){
-            continue;
-        }
-        else {
-            $dateObj = DateTime::createFromFormat('!m', $j);
-            $monthName = $dateObj->format('F');
-
-            $dateTimeStartObj = new DateTime("first day of " . $monthName . " " . $i);
-            $dateTimeEndObj = new DateTime("last day of " . $monthName . " " . $i);
-
-            $countData = $statsObj->getTestCountByTimespan($dateTimeStartObj, $dateTimeEndObj);
-
-            if($countData > 0) {
-                $testCountByTimespanData[$x]['label'] = $monthName . " " . $i;
-                $testCountByTimespanData[$x]['data'] = $countData;
-                $x++;
-            }
-        }
+if($testCountByMonth){
+    $x=0;
+    foreach($testCountByMonth as $testDate => $testCount){
+        $testCountByTimespanData[$x]['label'] = $testDate;
+        $testCountByTimespanData[$x]['data'] = $testCount;
+        $x++;
     }
+}
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testCountData = "";

@@ -7,44 +7,19 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue);
+$testCountByDay = $statsObj->getTestCountByDay();
 
-function isLeapYear($year)
-{
-    return ((($year % 4) == 0) && ((($year % 100) != 0) || (($year %400) == 0)));
-}
-
-$x=0;
-for($i=2012;$i<=date("Y",time());$i++){
-    $startDate = new DateTime("$i-01-01 00:00:00");
-    $totalDays = isLeapYear($i) ? 366 : 365;
-    for($j=1;$j<=$totalDays;$j++) {
-        if ($i == date("Y", time()) && $j > date("z", time())) {
-            continue;
-        } else {
-            $startDate->modify("+1 day");
-
-            $dateTimeStartObj = new DateTime($startDate->format("Y-m-d 00:00:00"));
-            $dateTimeEndObj = new DateTime($startDate->format("Y-m-d 23:59:59"));
-
-            $countData = $statsObj->getTestCountByTimespan($dateTimeStartObj, $dateTimeEndObj);
-
-            if($j < 10){
-                $julian = "00" . $j;
-            }
-            elseif($j < 100){
-                $julian = "0" . $j;
-            }
-            else{
-                $julian = $j;
-            }
-
-            if($countData > 0){
-                $testCountByTimespanData[$x]['label'] = $dateTimeStartObj->format("Y/m/d");
-                $testCountByTimespanData[$x]['data'] = $countData;
-                $x++;
-            }
-        }
+if($testCountByDay){
+    $x=0;
+    foreach($testCountByDay as $testDate => $testCount){
+        $testCountByTimespanData[$x]['label'] = $testDate;
+        $testCountByTimespanData[$x]['data'] = $testCount;
+        $x++;
     }
+}
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testCountData = "";
