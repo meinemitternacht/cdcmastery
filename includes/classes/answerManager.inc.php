@@ -57,16 +57,16 @@ class answerManager extends CDCMastery
 	public function listAnswersByQuestion(){
 		if($this->questionUUID){
 			if($this->fouo){
-				$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect FROM answerData WHERE questionUUID = ? ORDER BY Rand()");
+				$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd");
 			}
 			else{
-				$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect FROM answerData WHERE questionUUID = ?");
+				$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd");
 			}
 			
 			$stmt->bind_param("s",$this->questionUUID);
 			
 			if($stmt->execute()){
-				$stmt->bind_result($uuid, $answerText, $answerCorrect);
+				$stmt->bind_result($uuid, $answerText, $answerCorrect, $randomNumber);
 				while($stmt->fetch()){
 					$answerArray[$uuid]['answerText'] = $answerText;
 					$answerArray[$uuid]['answerCorrect'] = $answerCorrect;

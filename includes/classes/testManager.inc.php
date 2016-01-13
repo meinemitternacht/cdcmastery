@@ -979,13 +979,19 @@ class testManager extends CDCMastery
 				FROM 
 				    questionData
 				WHERE
-				    afscUUID IN (".$afscString.") ORDER BY Rand() LIMIT 0, ".$this->maxQuestions;
+				    afscUUID IN (".$afscString.") LIMIT 0, ".$this->maxQuestions;
 								
 				$res = $this->db->query($sqlQuery);
 				
 				if($res->num_rows > 0){
 					while($row = $res->fetch_assoc()){
-						$this->addQuestion($row['uuid']);
+						$randomQuestionArray[] = $row['uuid'];
+					}
+
+					shuffle($randomQuestionArray);
+
+					foreach($randomQuestionArray as $randomQuestion){
+						$this->addQuestion($randomQuestion);
 					}
 					
 					return true;
@@ -1008,7 +1014,7 @@ class testManager extends CDCMastery
 				FROM
 					questionData
 				WHERE
-					afscUUID = ? ORDER BY Rand() LIMIT 0, ?;";
+					afscUUID = ? LIMIT 0, ?;";
 				
 				$stmt = $this->db->prepare($query);
 				$stmt->bind_param("si",$this->incompleteAFSCList[0],$this->maxQuestions);
@@ -1017,9 +1023,15 @@ class testManager extends CDCMastery
 					$stmt->bind_result($questionUUID);
 						
 					while($stmt->fetch()){
-						$this->addQuestion($questionUUID);
+						$randomQuestionArray[] = $questionUUID;
 					}
-					
+
+					shuffle($randomQuestionArray);
+
+					foreach($randomQuestionArray as $randomQuestion){
+						$this->addQuestion($randomQuestion);
+					}
+
 					return true;
 				}
 				else{
