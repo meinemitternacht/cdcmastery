@@ -528,7 +528,7 @@ approval is required before the system will grant extended permissions to your a
                                         <?php endforeach; ?>
                                     <?php endforeach; ?>
                                 </select>
-                                <p><em>The list is lengthy, but as a reference America/New_York is Eastern Standard/Daylight Time</em></p>
+                                <p><em>The list is lengthy, but as a reference America/New_York is Eastern Time</em></p>
                             </li>
                         </ul>
                     </section>
@@ -648,6 +648,7 @@ approval is required before the system will grant extended permissions to your a
                                         size="1"
                                         class="input_full">
                                     <option value="">Select office symbol...</option>
+                                    <option value="">Not Listed</option>
                                     <?php
                                     $officeSymbolList = $officeSymbol->listOfficeSymbols();
 
