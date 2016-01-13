@@ -812,10 +812,28 @@ class flashCardManager extends CDCMastery
 
     public function loadSession(){
         if(isset($_SESSION['flashCardStorage']) && !empty($_SESSION['flashCardStorage'])){
-            $this->flashCardArray = unserialize($_SESSION['flashCardStorage']['cardArray']);
-            $this->currentCard = $_SESSION['flashCardStorage']['currentCard'];
-            $this->totalCards = count($this->flashCardArray);
-            $this->cardCurrentState = $_SESSION['flashCardStorage']['cardCurrentState'];
+            if(isset($_SESSION['flashCardStorage']['cardArray']) && !empty($_SESSION['flashCardStorage']['cardArray'])) {
+                $this->flashCardArray = unserialize($_SESSION['flashCardStorage']['cardArray']);
+                $this->totalCards = count($this->flashCardArray);
+            }
+            else{
+                return false;
+            }
+
+            if(isset($_SESSION['flashCardStorage']['currentCard']) && !empty($_SESSION['flashCardStorage']['currentCard'])){
+                $this->currentCard = $_SESSION['flashCardStorage']['currentCard'];
+            }
+            else{
+                return false;
+            }
+
+            if(isset($_SESSION['flashCardStorage']['cardCurrentState']) && !empty($_SESSION['flashCardStorage']['cardCurrentState'])){
+                $this->cardCurrentState = $_SESSION['flashCardStorage']['cardCurrentState'];
+            }
+            else{
+                return false;
+            }
+
             return true;
         }
         else{
