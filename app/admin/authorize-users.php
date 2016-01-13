@@ -83,7 +83,7 @@ if($authorizationQueue): ?>
 							<?php endforeach; ?>
 						</table>
 						<div class="clearfix">&nbsp;</div>
-						<label for="authReject">Choose whether to authorize or reject the selected users.</label>
+						<label for="authReject">Choose whether to authorize or reject the selected users.</label><br>
 						<input type="radio" name="authReject" value="authorize" checked="CHECKED"> Authorize<br>
 						<input type="radio" name="authReject" value="reject"> Reject
 						<div class="clearfix">&nbsp;</div>
