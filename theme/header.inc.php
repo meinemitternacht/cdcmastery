@@ -1,11 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<?php if($router->getRoute() == "about/afsc"): ?>
+		<title>CDCMastery - <?php $afsc->loadAFSC($_SESSION['vars'][0]); echo $afsc->getAFSCName(); ?> Practice Test</title>
+		<?php else: ?>
 		<title>CDCMastery<?php if(isset($pageTitleArray[$router->getRoute()])) { echo " - ".$pageTitleArray[$router->getRoute()]; } ?></title>
+		<?php endif; ?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="description" content="CDCMastery is a tool to help you succeed on the Air Force CDC EOC tests, Promotion Tests and other assessments of your career knowledge." />
-		<meta name="keywords" content="air force cdc, cdc pretest, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide" />
-		<meta name="revisit-after" content="30 days" />
+		<meta name="description" content="CDCMastery is a tool to help you succeed on the Air Force CDC EOC tests, Promotion Tests and other assessments of your career knowledge by answering questions and studying flash cards." />
+		<?php
+		$metaAFSCList = $afsc->listAFSC(true);
+		foreach($metaAFSCList as $metaAFSCData){
+			$afscNameArray[] = $metaAFSCData['afscName'];
+		}
+
+		$metaAFSCKeywords = implode(", ",$afscNameArray);
+		?>
+		<meta name="keywords" content="weapons cdc pretest, air force cdc, cdc pretest, cdc flash cards, flashcards, flash cards, career development course, career development course pretests, cdc tests, skt study guide, cdc study guide, air force cdc study guide, <?php echo $metaAFSCKeywords; ?>" />
 		<!--[if lte IE 8]><script src="/js/html5shiv.js"></script><![endif]-->
         <?php
         /*

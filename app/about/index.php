@@ -16,6 +16,19 @@ $afscList = $afsc->listAFSC(false);
                 </ul>
             </div>
         </div>
+        <div class="6u">
+            <section>
+                <header>
+                    <h2>A message from the creator</h2>
+                </header>
+                <p>
+                    <em>Welcome!  Thank you for expressing interest in advancing your career knowledge by visiting this site.  My goal is
+                    to ensure people have the tools they need to succeed on tests of their knowledge.  I strive to keep the questions
+                    and answers in the database current, but if you find anything out of date, please open a support ticket and let m
+                    e know.</em>
+                </p>
+            </section>
+        </div>
     </div>
     <div class="row">
         <div class="12u">
@@ -91,10 +104,14 @@ $afscList = $afsc->listAFSC(false);
                         <th>Questions</th>
                         <th>FOUO</th>
                     </tr>
-                    <?php foreach($afscList as $dataRow): ?>
+                    <?php foreach($afscList as $afscUUID => $dataRow): ?>
                         <?php if($dataRow['totalQuestions'] > 0): ?>
                         <tr>
+                            <?php if(!$dataRow['afscFOUO']): ?>
+                            <td><a href="/about/afsc/<?php echo $afscUUID; ?>" title="View Sample Questions"><?php echo $dataRow['afscName']; ?></a></td>
+                            <?php else: ?>
                             <td><?php echo $dataRow['afscName']; ?></td>
+                            <?php endif; ?>
                             <td><?php echo $cdcMastery->formatOutputString($dataRow['afscVersion']); ?></td>
                             <td><?php echo $cdcMastery->formatOutputString($dataRow['totalQuestions']); ?></td>
                             <td><?php echo $dataRow['afscFOUO'] ? "<strong>Yes</strong>" : "No"; ?></td>

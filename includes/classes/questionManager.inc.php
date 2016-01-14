@@ -50,7 +50,7 @@ class questionManager extends CDCMastery
 		}
 	}
 
-    public function listQuestionsForAFSC(){
+    public function listQuestionsForAFSC($limitRows=false,$randomOrder=false){
         if(!$this->afscUUID){
             if($this->afsc->getUUID()){
                 $this->afscUUID = $this->afsc->getUUID();
@@ -60,11 +60,33 @@ class questionManager extends CDCMastery
             }
         }
 
-        $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ? ORDER BY questionText ASC");
-        $stmt->bind_param("s",$this->afscUUID);
+        if($limitRows && is_int($limitRows)){
+            if($randomOrder){
+                $stmt = $this->db->prepare("SELECT uuid, RAND() AS rnd FROM questionData WHERE afscUUID = ? ORDER BY rnd ASC LIMIT 0, ?");
+            }
+            else{
+                $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ? ORDER BY questionText ASC LIMIT 0, ?");
+            }
+            $stmt->bind_param("si",$this->afscUUID, $limitRows);
+        }
+        else{
+            if($randomOrder){
+                $stmt = $this->db->prepare("SELECT uuid, RAND() AS rnd FROM questionData WHERE afscUUID = ? ORDER BY rnd ASC");
+            }
+            else{
+                $stmt = $this->db->prepare("SELECT uuid FROM questionData WHERE afscUUID = ? ORDER BY questionText ASC");
+            }
+
+            $stmt->bind_param("s",$this->afscUUID);
+        }
 
         if($stmt->execute()){
-            $stmt->bind_result($uuid);
+            if($randomOrder){
+                $stmt->bind_result($uuid,$randomValue);
+            }
+            else{
+                $stmt->bind_result($uuid);
+            }
 
             $uuidList = Array();
 
