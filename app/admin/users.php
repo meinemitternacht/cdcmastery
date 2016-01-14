@@ -41,10 +41,13 @@ if(isset($_SESSION['vars'][0])){
 			 */
 			case "tests":
 				if($subAction){
-					if($subAction == "delete"){
+					if($subAction == "top-missed"){
+						require_once BASE_PATH . "/includes/modules/admin/user/tests/top-missed.inc.php";
+					}
+					elseif($subAction == "delete"){
 						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete.inc.php";
 					}
-                    if($subAction == "delete-all"){
+                    elseif($subAction == "delete-all"){
 						require_once BASE_PATH . "/includes/modules/admin/user/tests/delete-all.inc.php";
 					}
 					elseif($subAction == "incomplete"){
@@ -157,6 +160,7 @@ if(isset($_SESSION['vars'][0])){
 								Testing
 							</div>
 							<ul>
+								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/top-missed"><i class="icon-inline icon-20 ic-clipboard"></i>View Top Missed Questions</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests"><i class="icon-inline icon-20 ic-folder"></i>View Tests</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/tests/incomplete"><i class="icon-inline icon-20 ic-folder"></i>View Incomplete Tests</a></li>
 								<li class="menu-item-warning"><a href="/admin/users/<?php echo $userUUID; ?>/tests/delete"><i class="icon-inline icon-20 ic-delete"></i>Delete Tests</a></li>

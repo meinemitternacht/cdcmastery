@@ -134,8 +134,9 @@ $questionShownList = $tmOverview->getQuestionsShownCountByAFSC($workingAFSC,$mas
                         </thead>
                         <tbody>
                         <?php foreach($questionList as $questionUUID => $questionTimesMissed): ?>
-                            <?php $questionManager->loadQuestion($questionUUID); ?>
                             <?php
+                            $questionManager->loadQuestion($questionUUID);
+
                             if(isset($questionShownList[$questionUUID])){
                                 if(($questionShownList[$questionUUID] > 0)){
                                     $percentMissed = round((($questionTimesMissed / $questionShownList[$questionUUID]) * 100),2);

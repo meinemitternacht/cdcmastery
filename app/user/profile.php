@@ -106,6 +106,7 @@ else{
                     </header>
                     <a href="/user/edit" class="button">Edit Profile</a>
 					<a href="/user/afsc-associations" class="button">Manage AFSC's</a>
+					<a href="/user/top-missed" class="button">Top Missed Questions</a>
                 </section>
             </div>
         </div>
@@ -199,7 +200,7 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Log Entries</th>
-							<td><?php echo $userProfileStatistics->getLogEntries(); ?></td>
+							<td><?php echo number_format($userProfileStatistics->getLogEntries()); ?></td>
 						</tr>
 						<tr>
 							<th colspan="2">Testing Statistics</th>
