@@ -66,5 +66,6 @@ $pageTitleArray = Array(
     'user/history-split' => 'Split Test History',
     'user/log' => 'User Log',
     'user/log-detail' => 'User Log Detail',
-    'user/profile' => 'My Profile'
+    'user/profile' => 'My Profile',
+    'user/top-missed' => 'Top 20 Missed Questions'
 );
