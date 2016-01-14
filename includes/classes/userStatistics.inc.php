@@ -26,6 +26,7 @@ class userStatistics extends CDCMastery
 	public $questionsAnswered;
 	public $questionsMissed;
     public $latestTestScore;
+	public $questionsMissedAcrossTests;
 	
 	/*
 	 * Subordinate Users
@@ -178,6 +179,20 @@ class userStatistics extends CDCMastery
 			}
 			else{
 				return $this->questionsMissed;
+			}
+		}
+	}
+
+	public function getQuestionsMissedAcrossTests(){
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if(!$this->queryQuestionsMissedAcrossTests()){
+				return false;
+			}
+			else{
+				return $this->questionsMissedAcrossTests;
 			}
 		}
 	}
@@ -602,6 +617,47 @@ class userStatistics extends CDCMastery
 			$this->log->saveEntry();
 			$stmt->close();
 	
+			return false;
+		}
+	}
+
+	public function queryQuestionsMissedAcrossTests(){
+		$query = "SELECT
+						testData.questionUUID,
+						COUNT(testData.answerUUID) AS wrongAnswerCount
+					FROM testData
+						LEFT JOIN answerData ON answerData.uuid=testData.answerUUID
+						LEFT JOIN testHistory ON testHistory.uuid=testData.testUUID
+					WHERE testHistory.userUUID = ?
+						AND answerData.answerCorrect=0
+					GROUP BY testData.questionUUID
+					HAVING COUNT(testData.answerUUID) > 0
+					ORDER BY wrongAnswerCount DESC
+					LIMIT 0, 20";
+
+		$stmt = $this->db->prepare($query);
+
+		$stmt->bind_param("s",$this->userUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($questionUUID,$wrongAnswerCount);
+
+			while($stmt->fetch()){
+				$this->questionsMissedAcrossTests[$questionUUID] = $wrongAnswerCount;
+			}
+
+			$stmt->close();
+
+			return true;
+		}
+		else{
+			$this->error = $stmt->error;
+			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryQuestionsMissedAcrossTests()");
+			$this->log->setDetail("MYSQL ERROR",$this->error);
+			$this->log->saveEntry();
+			$stmt->close();
+
 			return false;
 		}
 	}
