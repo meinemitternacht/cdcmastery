@@ -105,6 +105,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                 </header>
                 <?php
                 $totalAccounts = $statisticsObj->getTotalUsers();
+                $inactiveAccounts = $statisticsObj->getInactiveUsers();
                 $totalUsers = $statisticsObj->getTotalRoleUser();
                 $totalSupervisors = $statisticsObj->getTotalRoleSupervisor();
                 $totalTrainingManagers = $statisticsObj->getTotalRoleTrainingManager();
@@ -112,6 +113,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                 $totalSuperAdministrators = $statisticsObj->getTotalRoleSuperAdministrator();
                 $totalQuestionEditors = $statisticsObj->getTotalRoleEditor();
 
+                $percentUserClass['inactive'] = round((($inactiveAccounts/$totalAccounts) * 100),2) . "%";
                 $percentUserClass['user'] = round((($totalUsers/$totalAccounts) * 100),2) . "%";
                 $percentUserClass['supervisors'] = round((($totalSupervisors/$totalAccounts) * 100),2) . "%";
                 $percentUserClass['trainingManagers'] = round((($totalTrainingManagers/$totalAccounts) * 100),2) . "%";
@@ -123,6 +125,11 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Users</strong></td>
                         <td colspan="2"><?php echo number_format($totalAccounts); ?></td>
+                    </tr>
+                    <tr style="border-bottom: 2px solid #999">
+                        <td>Inactive Users</td>
+                        <td><?php echo number_format($inactiveAccounts); ?></td>
+                        <td><?php echo $percentUserClass['inactive']; ?></td>
                     </tr>
                     <tr>
                         <td>Normal Users</td>

@@ -65,6 +65,8 @@ class statistics extends CDCMastery {
 
     public $totalOfficeSymbols;
 
+    public $inactiveUsers;
+
     public $usersActiveToday;
     public $usersActiveThisWeek;
     public $usersActiveThisMonth;
@@ -1571,6 +1573,39 @@ class statistics extends CDCMastery {
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("CALLING FUNCTION","statistics->queryTotalOfficeSymbols()");
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
+    public function getInactiveUsers(){
+        if(!$this->queryInactiveUsers()){
+            return 0;
+        }
+        else{
+            return $this->inactiveUsers;
+        }
+    }
+
+    public function queryInactiveUsers(){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count  FROM `userData` WHERE `userLastLogin` IS NULL OR `userLastLogin` < DATE_SUB(NOW(), INTERVAL 12 MONTH);");
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->inactiveUsers = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("CALLING FUNCTION","statistics->queryInactiveUsers()");
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
