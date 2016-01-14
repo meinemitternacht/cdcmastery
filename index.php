@@ -6,9 +6,7 @@ ob_start();
 
 $time_start = microtime(true);
 
-error_reporting(E_ALL);
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors',1);
+ini_set('session.cookie_lifetime', 60 * 60 * 24 * 7);
 header('Access-Control-Allow-Origin: *');
 
 define('BASE_PATH', realpath(__DIR__));
