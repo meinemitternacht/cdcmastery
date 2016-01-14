@@ -229,22 +229,9 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 </header>
                 <div class="informationMessages">
                     <ul>
-                        <li>Flash cards are live!  Click the "Study Flashcards" link in the Tasks menu to get started.  You can create your own flash cards or use the ones provided!</li>
+                        <li>You can now view your top 20 missed questions here:  <a href="https://cdcmastery.com/user/top-missed">https://cdcmastery.com/user/top-missed</a></li>
                     </ul>
                 </div>
-                <p>
-                    We want your feedback!  If you have suggestions on how we can improve this service, or if you want to tell us your success story, drop us a line
-                    by clicking "Support" at the top and creating a ticket under the category "Feedback".<br>
-                    <br>
-                    Also, there are a few features we are actively
-                    working on:
-                </p>
-                <blockquote>
-                    <ul style="list-style: circle">
-                        <li>Custom Tests</li>
-                        <li>Printed tests</li>
-                    </ul>
-                </blockquote>
             </section>
             <div class="clearfix">&nbsp;</div>
 			<section>
@@ -253,10 +240,10 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 				</header>
 				<?php
 				$testManager = new testManager($db, $log, $afsc);
-				$userTestArray = $testManager->listUserTests($_SESSION['userUUID'],5);
+				$userTestArray = $testManager->listUserTests($_SESSION['userUUID'],10);
 				
 				if($userTestArray): ?>
-					<h4>Last Five Tests</h4>
+					<h4>Last Ten Tests</h4>
 					<table id="index-table-1">
 						<tr>
 							<th>Time Completed</th>
