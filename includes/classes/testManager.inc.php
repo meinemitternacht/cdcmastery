@@ -71,7 +71,7 @@ class testManager extends CDCMastery
 												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY afscList, testTimeStarted DESC
+										ORDER BY afscList, testTimeCompleted DESC
 										LIMIT 0, ?");
 			}
 			else{
@@ -86,7 +86,7 @@ class testManager extends CDCMastery
 												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY testTimeStarted DESC
+										ORDER BY testTimeCompleted DESC
 										LIMIT 0, ?");
 			}
 			
@@ -105,7 +105,7 @@ class testManager extends CDCMastery
 												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY afscList, testTimeStarted DESC");
+										ORDER BY afscList, testTimeCompleted DESC");
 			}
 			else{
 				$stmt = $this->db->prepare("SELECT 	uuid,
@@ -119,7 +119,7 @@ class testManager extends CDCMastery
 												testArchived
 										FROM testHistory
 										WHERE userUUID = ?
-										ORDER BY testTimeStarted DESC");
+										ORDER BY testTimeCompleted DESC");
 			}
 				
 			$stmt->bind_param("s",$userUUID);
