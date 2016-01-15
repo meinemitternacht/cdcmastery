@@ -168,7 +168,7 @@ class router extends CDCMastery
             elseif(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
                 $this->outputPage = APP_BASE . "/auth/login.php";
                 $this->errorNumber = 404;
-				$this->errorMessage = "We're sorry, but your session has expired.  Please log in to continue.";
+				$this->errorMessage = "We're sorry, but either you have not logged in or your session has expired.  Please log in to continue.";
                 return false;
             }
 			elseif(strpos($this->filePath, "/ajax/") !== false){
