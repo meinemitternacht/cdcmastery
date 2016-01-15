@@ -38,15 +38,22 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
         if(!$action):
             $cardCategoryList = $flashCardManager->listCardCategories();
             if($cardCategoryList): ?>
+                <script>
+                    $(document).ready(function()
+                        {
+                            $("#flashCardCategoryTable").tablesorter();
+                        }
+                    );
+                </script>
                 <section>
                     <header>
                         <h2>Category List</h2>
                     </header>
                     <p>
-                        Click on the category name to manage flash card data for that particular category.  To edit or delete the category, click on the appropriate icons
-                        show in the last column.
+                        Click on the category name to manage flash card data for that particular category, and click column headers to sort the table by that column.  To edit or delete the
+                        category, click on the appropriate icons shown in the last column.
                     </p>
-                    <table>
+                    <table id="flashCardCategoryTable">
                         <thead>
                             <tr>
                                 <th>Category Name</th>
