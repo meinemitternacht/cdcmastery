@@ -80,15 +80,15 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("NEW_FLASH_CARD_SESSION")); ?></td>
                     </tr>
                     <tr>
-                        <td>AFSC Flash Card Categories</td>
+                        <td><a href="/admin/flash-card-categories">AFSC Flash Card Categories</a></td>
                         <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
                     </tr>
                     <tr>
-                        <td>Global Flash Card Categories</td>
+                        <td><a href="/admin/flash-card-categories">Global Flash Card Categories</a></td>
                         <td><?php echo number_format($statisticsObj->getTotalGlobalFlashCardCategories()); ?></td>
                     </tr>
                     <tr>
-                        <td>Private Flash Card Categories</td>
+                        <td><a href="/admin/flash-card-categories">Private Flash Card Categories</a></td>
                         <td><?php echo number_format($statisticsObj->getTotalPrivateFlashCardCategories()); ?></td>
                     </tr>
                     <tr>
