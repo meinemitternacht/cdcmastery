@@ -276,7 +276,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
                         <li>
                             <label for="userRank">Rank</label>
                             <select id="userRank"
-                                    name="userRank"
+                                    name="userRank[]"
                                     class="input_full"
                                     style="height:8em;"
                                     MULTIPLE>
