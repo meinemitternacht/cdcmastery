@@ -59,6 +59,7 @@ else{
 						<li><a href="/admin/profile" title="User Profiles"><i class="icon-inline icon-20 ic-user-single"></i>User Profiles</a></li>
                         <li><a href="/admin/activate-users" title="Activate Users"><i class="icon-inline icon-20 ic-relationship"></i>Unactivated Users (<?php echo ($unactivatedUsersCount > 0) ? '<span style="color:red;">'.$unactivatedUsersCount.'</span>' : $unactivatedUsersCount ; ?>)</a></li>
                         <li><a href="/admin/authorize-users" title="Authorize Group for Users"><i class="icon-inline icon-20 ic-relationship"></i>Users Pending Authorization (<?php echo ($authorizationQueueCount > 0) ? '<span style="color:red;">'.$authorizationQueueCount.'</span>' : $authorizationQueueCount ; ?>)</a></li>
+						<li><a href="/admin/users-duplicate" title="View Duplicate Users"><i class="icon-inline icon-20 ic-user-multiple"></i>View Duplicate Users</a></li>
 					</ul>
 				</div>
 			</section>
