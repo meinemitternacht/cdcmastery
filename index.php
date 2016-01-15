@@ -24,6 +24,7 @@ $router = new router();
 
 if($router->parseURI()){
 	if(!$router->verifyFilePath()){
+		/*
 		$log->setAction("ROUTING_ERROR");
 		$log->setDetail("ERROR NUMBER", $router->errorNumber);
 		$log->setDetail("REQUEST", $router->request);
@@ -50,6 +51,7 @@ if($router->parseURI()){
         }
 
 		$log->saveEntry();
+		*/
 
 		if(isset($router->errorMessage) && !empty($router->errorMessage)){
 			$sysMsg->addMessage($router->errorMessage);
