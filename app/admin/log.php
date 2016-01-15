@@ -137,14 +137,16 @@ if($logEntries): ?>
                     </header>
                     <div class="sub-menu">
                         <ul>
+                            <?php if($pageNumber > 0): ?>
                             <li><a href="/admin/log/0/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="First"><i class="icon-inline icon-20 ic-arrow-left"></i>First</a></li>
+                            <?php endif; ?>
                             <?php if($pageNumber > 0): ?>
                             <li><a href="/admin/log/<?php echo ($pageNumber - 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Previous"><i class="icon-inline icon-20 ic-arrow-left-silver"></i>Previous</a></li>
                             <?php endif; ?>
                             <?php if($pageNumber < $totalPages): ?>
                             <li><a href="/admin/log/<?php echo ($pageNumber + 1); ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Next"><i class="icon-inline icon-20 ic-arrow-right-silver"></i>Next</a></li>
-                            <?php endif; ?>
                             <li><a href="/admin/log/<?php echo $totalPages; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Last"><i class="icon-inline icon-20 ic-arrow-right"></i>Last</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                     <div class="clearfix">&nbsp;</div>
