@@ -11,21 +11,20 @@ class user extends CDCMastery {
 
 	public $error;
 
-	public $uuid;				//varchar 40
+	public $uuid;				//binary  36
 	public $userFirstName;		//varchar 64
 	public $userLastName;		//varchar 64
 	public $userHandle;			//varchar 64
-	public $userPassword;	//varchar 255 (SHA512)
+	public $userPassword;	    //varchar 255 (SHA512)
 	public $userLegacyPassword;	//varchar 255 (SHA1)
 	public $userEmail;			//varchar 255
 	public $userRank;			//varchar 255
 	public $userDateRegistered;	//datetime
 	public $userLastLogin;		//datetime
 	public $userTimeZone;		//varchar 255
-	public $userRole;			//varchar 40
-	public $userOfficeSymbol;	//varchar 40
-	public $userBase;			//varchar 40
-	public $userSupervisor;		//varchar 40
+	public $userRole;			//binary  36
+	public $userOfficeSymbol;	//binary  36
+	public $userBase;			//binary  36
 	public $userDisabled;		//bool
 	public $userLastActive;		//datetime
 
@@ -197,7 +196,6 @@ class user extends CDCMastery {
 											userRole,
 											userOfficeSymbol,
 											userBase,
-											userSupervisor,
 											userDisabled,
 											userLastActive
 									FROM userData
@@ -218,7 +216,6 @@ class user extends CDCMastery {
 							$userRole,
 							$userOfficeSymbol,
 							$userBase,
-							$userSupervisor,
 							$userDisabled,
 							$userLastActive);
 
@@ -237,7 +234,6 @@ class user extends CDCMastery {
 			$this->userRole = $userRole;
 			$this->userOfficeSymbol = $userOfficeSymbol;
 			$this->userBase = $userBase;
-			$this->userSupervisor = $userSupervisor;
 			$this->userDisabled = $userDisabled;
 			$this->userLastActive = $userLastActive;
 		}
@@ -267,9 +263,8 @@ class user extends CDCMastery {
 															userRole,
 															userOfficeSymbol,
 															userBase,
-															userSupervisor,
 															userDisabled )
-									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 									ON DUPLICATE KEY UPDATE
 															uuid=VALUES(uuid),
 															userFirstName=VALUES(userFirstName),
@@ -285,10 +280,9 @@ class user extends CDCMastery {
 															userRole=VALUES(userRole),
 															userOfficeSymbol=VALUES(userOfficeSymbol),
 															userBase=VALUES(userBase),
-															userSupervisor=VALUES(userSupervisor),
 															userDisabled=VALUES(userDisabled)");
 
-		$stmt->bind_param("ssssssssssssssss", 	$this->uuid,
+		$stmt->bind_param("sssssssssssssss", 	$this->uuid,
 												$this->userFirstName,
 												$this->userLastName,
 												$this->userHandle,
@@ -302,7 +296,6 @@ class user extends CDCMastery {
 												$this->userRole,
 												$this->userOfficeSymbol,
 												$this->userBase,
-												$this->userSupervisor,
 												$this->userDisabled);
 		
 		if(!$stmt->execute()){
@@ -435,10 +428,6 @@ class user extends CDCMastery {
 		return $this->userBase;
 	}
 	
-	public function getUserSupervisor(){
-		return $this->userSupervisor;
-	}
-	
 	public function getUserDisabled(){
 		return $this->userDisabled;
 	}
@@ -513,11 +502,6 @@ class user extends CDCMastery {
 	
 	public function setUserBase($userBase){
 		$this->userBase = $userBase;
-		return true;
-	}
-	
-	public function setUserSupervisor($userSupervisor){
-		$this->userSupervisor = $userSupervisor;
 		return true;
 	}
 	
