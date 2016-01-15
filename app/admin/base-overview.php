@@ -6,7 +6,6 @@
  * Time: 1:54 AM
  */
 $baseUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
-$sortBy = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
 if(!$baseUUID){
     $baseUUID = $user->getUserBase();
@@ -29,12 +28,8 @@ $statistics = new statistics($db,$log,$emailQueue);
 $baseUserObj = new user($db,$log,$emailQueue);
 $userStatisticsObj = new userStatistics($db,$log,$roles);
 $baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
-if(!$sortBy || $sortBy == "user") {
-    $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastName");
-}
-elseif($sortBy == "last-login"){
-    $baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastLogin", "DESC");
-}
+
+$baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastName");
 $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 ?>
 <div class="container">
@@ -51,6 +46,13 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 <div class="container">
     <div class="row">
         <?php if(!empty($baseUsers)): ?>
+        <script>
+            $(document).ready(function()
+                {
+                    $("#baseOverviewTable").tablesorter();
+                }
+            );
+        </script>
         <style type="text/css">
             table.overview-table tr td {
                 display:table-cell;
@@ -66,14 +68,18 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                     &nbsp;
                 </div>
                 <?php endif; ?>
-                <table class="overview-table">
-                    <tr>
-                        <th><a href="/admin/base-overview/<?php echo $baseUUID; ?>/user" class="text-white">User Name</a></th>
-                        <th>Total Tests</th>
-                        <th>Average Score</th>
-                        <th>Last Score</th>
-                        <th><a href="/admin/base-overview/<?php echo $baseUUID; ?>/last-login" class="text-white">Last Login</a></th>
-                    </tr>
+                <em>Click on column headers to sort the table</em>
+                <table class="overview-table" id="baseOverviewTable">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Total Tests</th>
+                            <th>Average Score</th>
+                            <th>Last Score</th>
+                            <th>Last Login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <?php
                     $i=0;
                     foreach($baseUsers as $baseUser):
@@ -102,6 +108,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                             </tr>
                         <?php endif; ?>
                     <?php endforeach;?>
+                    </tbody>
                 </table>
                 <?php
                 if(isset($chartData)):
@@ -182,7 +189,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
             <div class="clearfix">&nbsp;</div>
             <section>
                 <h2>Statistics</h2>
-                <table>
+                <table id="baseStatsTable">
                     <tr>
                         <th>Statistic</th>
                         <th>Value</th>
