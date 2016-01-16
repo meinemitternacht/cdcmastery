@@ -24,8 +24,7 @@ $afscList = $afsc->listAFSC(false);
                 <p>
                     <em>Welcome!  Thank you for expressing interest in advancing your career knowledge by visiting this site.  My goal is
                     to ensure people have the tools they need to succeed on tests of their knowledge.  I strive to keep the questions
-                    and answers in the database current, but if you find anything out of date, please open a support ticket and let m
-                    e know.</em>
+                    and answers in the database current, but if you find anything out of date, please open a support ticket and let me know.</em>
                 </p>
             </section>
         </div>
@@ -74,7 +73,7 @@ $afscList = $afsc->listAFSC(false);
                             white-space: nowrap;
                         }
 
-                        table#afsc-list-table-1 td:nth-of-type(1):before { content: "AFSC Name"; }
+                        table#afsc-list-table-1 td:nth-of-type(1):before { content: "AFSC"; }
                         table#afsc-list-table-1 td:nth-of-type(2):before { content: "Version"; }
                         table#afsc-list-table-1 td:nth-of-type(3):before { content: "Questions"; }
                         table#afsc-list-table-1 td:nth-of-type(4):before { content: "FOUO"; }
@@ -99,7 +98,7 @@ $afscList = $afsc->listAFSC(false);
                 <!--<![endif]-->
                 <table id="afsc-list-table-1">
                     <tr>
-                        <th>AFSC Name</th>
+                        <th>AFSC</th>
                         <th>Version</th>
                         <th>Questions</th>
                         <th>FOUO</th>
@@ -148,7 +147,7 @@ $afscList = $afsc->listAFSC(false);
                 <header>
                     <h2 id="about-version-history">Git Project Commits</h2>
                 </header>
-                <p>Git commits for this project will be the standard versionn log, and the version history list to the right will no longer be used.</p>
+                <p>Git commits for this project will be the standard version log, and the version history list to the right will no longer be used.</p>
                 <div class="sub-menu">
                     <ul>
                         <li><a href="/about/git"><i class="icon-inline icon-20 icon-clipboard"></i>View Git Commit History</a></li>
