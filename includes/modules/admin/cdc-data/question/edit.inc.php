@@ -41,6 +41,7 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
      * Edit question data in database
      */
     $questionManager->setQuestionText($questionText);
+    $logQuestionText = $questionText;
 
     if(!$questionManager->saveQuestion()){
         $sysMsg->addMessage($questionManager->error);
@@ -50,6 +51,7 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
         /*
          * Edit answer data in database
          */
+
         foreach($_POST['answerData'] as $answerUUID => $answerText){
             $answerManager->loadAnswer($answerUUID);
             $answerManager->setAnswerText($answerText);
@@ -71,14 +73,15 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
 
         $log->setAction("QUESTION_EDIT");
         $log->setDetail("Question UUID",$questionManager->getUUID());
-        $log->setDetail("AFSC UUID",$afsc->getUUID());
         $log->setDetail("Question Text",$questionText);
-        foreach($_POST['answerData'] as $answerUUID => $answerText){
-            if($_POST['correctAnswer'] == $answerUUID) {
-                $log->setDetail("Answer", "[" . $answerUUID . "] " . $answerText . " (correct)");
-            }
-            else{
-                $log->setDetail("Answer", "[" . $answerUUID . "] " . $answerText);
+
+        foreach($_POST['answerData'] as $answerUUID => $answerText) {
+            $providedCorrectAnswer = $_POST['correctAnswer'];
+
+            if ($providedCorrectAnswer == $answerUUID) {
+                $log->setDetail("Answer Text",$answerText . " [" . $answerUUID . "] (correct)");
+            } else {
+                $log->setDetail("Answer Text",$answerText . " [" . $answerUUID . "]");
             }
         }
 
