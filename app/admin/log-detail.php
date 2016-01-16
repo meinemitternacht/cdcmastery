@@ -88,6 +88,17 @@ if($logUUID):
 											$userName = $user->getUserNameByUUID($detailData['data']);
 										}
 									}
+									elseif($dataTypeSearch == "afsc array"){
+										$afscArray = unserialize($detailData['data']);
+
+										foreach($afscArray as $dataAFSCUUID){
+											$afscList[] = '<a href="/admin/cdc-data/'.$dataAFSCUUID.'">'.$afsc->getAFSCName($dataAFSCUUID).'</a>';
+										}
+
+										if(count($afscList) > 0){
+											$afscList = implode(",",$afscList);
+										}
+									}
 									elseif($dataTypeSearch == "afsc uuid") {
 										$afscUUID = true;
 									}
@@ -107,6 +118,10 @@ if($logUUID):
 									<td>
 										<?php echo $afsc->getAFSCName($detailData['data']); ?>
 									</td>
+								<?php elseif(isset($afscList) && !empty($afscList)): ?>
+									<td>
+										<?php echo $afscList; ?>
+									</td>
                                 <?php elseif(isset($testUUID) && $testUUID == true): ?>
                                     <td>
                                         <a href="/test/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
@@ -115,6 +130,13 @@ if($logUUID):
 									<td><?php echo $detailData['data']; ?></td>
 								<?php endif; ?>
 							</tr>
+								<?php
+								$afscUUID = false;
+								$afscList = false;
+								$testUUID = false;
+								$userName = false;
+								$dataTypeSearch = "";
+								?>
 							<?php endforeach; ?>
 						</table>
 					</section>
