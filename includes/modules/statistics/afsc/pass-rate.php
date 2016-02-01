@@ -8,7 +8,7 @@
 
 $statsObj = new statistics($db,$log,$emailQueue);
 
-$afscList = $afsc->listAFSCUUID();
+$afscList = $afsc->listAFSCUUID(false);
 
 $chartData = "";
 $firstRow = true;
