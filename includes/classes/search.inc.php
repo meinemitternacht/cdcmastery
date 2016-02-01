@@ -48,7 +48,7 @@ class search extends CDCMastery
     public $returnColumn;
     public $searchQuery;
     public $orderBy;
-    public $oderDirection;
+    public $orderDirection;
 
     public function __construct(mysqli $db, log $log){
         $this->db = $db;
@@ -73,6 +73,12 @@ class search extends CDCMastery
                 $this->orderBy[] = "userFirstName";
                 $this->orderBy[] = "userRank";
                 $this->orderDirection = "ASC";
+                break;
+            case "log":
+                $this->returnColumn = "`systemLog`.`uuid`";
+                $this->searchTable = "logData";
+                $this->orderBy[] = "timestamp";
+                $this->orderDirection = "DESC";
                 break;
             case "AFSCassociations":
                 $this->returnColumn = "userUUID";
@@ -102,7 +108,12 @@ class search extends CDCMastery
         }
 
         if(isset($queryAppend) && !empty($queryAppend)) {
-            $this->searchQuery = "SELECT " . $this->returnColumn . " AS searchResult FROM " . $this->searchTable . " WHERE ";
+            if($this->searchType == "log"){
+                $this->searchQuery = "SELECT DISTINCT(" . $this->returnColumn . ") AS searchResult FROM `systemLogData` LEFT JOIN `systemLog` ON `systemLog`.`uuid` = `systemLogData`.`logUUID` WHERE ";
+            }
+            else{
+                $this->searchQuery = "SELECT " . $this->returnColumn . " AS searchResult FROM " . $this->searchTable . " WHERE ";
+            }
 
             if(count($queryAppend) > 1){
                 $this->searchQuery .= implode(" " . $this->searchParameterJoinMethod . " ",$queryAppend);
