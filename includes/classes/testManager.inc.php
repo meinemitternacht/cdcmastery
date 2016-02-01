@@ -979,7 +979,7 @@ class testManager extends CDCMastery
 				FROM 
 				    questionData
 				WHERE
-				    afscUUID IN (".$afscString.") LIMIT 0, ".$this->maxQuestions;
+				    afscUUID IN (".$afscString.")";
 								
 				$res = $this->db->query($sqlQuery);
 				
@@ -989,6 +989,8 @@ class testManager extends CDCMastery
 					}
 
 					shuffle($randomQuestionArray);
+
+					$randomQuestionArray = array_slice($randomQuestionArray,0,$this->maxQuestions);
 
 					foreach($randomQuestionArray as $randomQuestion){
 						$this->addQuestion($randomQuestion);
@@ -1014,10 +1016,10 @@ class testManager extends CDCMastery
 				FROM
 					questionData
 				WHERE
-					afscUUID = ? LIMIT 0, ?;";
+					afscUUID = ?";
 				
 				$stmt = $this->db->prepare($query);
-				$stmt->bind_param("si",$this->incompleteAFSCList[0],$this->maxQuestions);
+				$stmt->bind_param("s",$this->incompleteAFSCList[0]);
 				
 				if($stmt->execute()){
 					$stmt->bind_result($questionUUID);
@@ -1027,6 +1029,8 @@ class testManager extends CDCMastery
 					}
 
 					shuffle($randomQuestionArray);
+
+					$randomQuestionArray = array_slice($randomQuestionArray,0,$this->maxQuestions);
 
 					foreach($randomQuestionArray as $randomQuestion){
 						$this->addQuestion($randomQuestion);
@@ -1181,6 +1185,7 @@ class testManager extends CDCMastery
 				if($questionFOUO){
 					$output .= "<div class=\"text-center\" style=\"font-weight: 900\">FOR OFFICIAL USE ONLY</div>";
 				}
+				$output .= "<br style=\"clear:both;\"><div class=\"text-center\"><a href=\"/report/question/".$questionUUID."\">Report This Question</a></div>";
 			}
 			else{
 				$output = "Sorry, we could not load the answers from the database.";

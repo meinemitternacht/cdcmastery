@@ -656,6 +656,57 @@ class user extends CDCMastery {
 			}
 		}
 	}
+
+	public function reportQuestion($questionUUID,$questionText,$userComments){
+		$emailSender = "support@cdcmastery.com";
+		$emailRecipient = "support@cdcmastery.com";
+		$emailSubject = "Question Flagged for Review";
+
+		$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
+		$emailBodyHTML .= "CDCMastery Support,";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "Question UUID: ".$questionUUID;
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "Question Text: ".$questionText;
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "User Comments: ".nl2br($userComments);
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "Regards,";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "CDCMastery.com";
+		$emailBodyHTML .= "</body></html>";
+
+		$emailBodyText = "CDCMastery Support,";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Question UUID: ".$questionUUID;
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Question Text: ".$questionText;
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "User Comments: ".nl2br($userComments);
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Regards,";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "CDCMastery.com";
+
+		$queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
+
+		if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
+			$this->log->setAction("NOTIFY_REPORTED_QUESTION");
+			$this->log->setUserUUID("SYSTEM");
+			$this->log->saveEntry();
+			return true;
+		}
+		else{
+			$this->log->setAction("ERROR_NOTIFY_REPORTED_QUESTION");
+			$this->log->setUserUUID("SYSTEM");
+			$this->log->saveEntry();
+			return false;
+		}
+	}
 	
 	public function resolveUserNames($uuidArray){
 		if(!is_array($uuidArray)){
