@@ -75,7 +75,7 @@ if($userList): ?>
 						$firstColComplete = true;
 					}
 
-					if($letter == "q" && $secondColComplete == false){ ?>
+					if($letter == "p" && $secondColComplete == false){ ?>
 						</section>
 						</div>
 						<div class="4u">
