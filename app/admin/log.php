@@ -164,7 +164,7 @@ if($logEntries): ?>
     <!--<![endif]-->
     <div class="container">
         <div class="row">
-            <div class="2u">
+            <div class="3u">
                 <section>
                     <header>
                         <h2>Navigation</h2>
@@ -187,44 +187,6 @@ if($logEntries): ?>
                     <a href="/admin/log">Reset log view</a><br>
                     <strong>Log Entries:</strong> <?php echo number_format($totalLogEntries); ?>
                 </section>
-            </div>
-            <div class="8u">
-                <section>
-                    <header>
-                        <h2>Log Data</h2>
-                    </header>
-                    <?php if(!isset($_GET['norefresh'])): ?>
-                    <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
-                    <?php else: ?>
-                    <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
-                    <?php endif; ?>
-                    <br>
-                    <strong>The current system time is <?php echo date("F j, Y h:i A",time()); ?></strong>
-                    <div class="tableSmallText">
-                        <table id="log-table-1">
-                            <tr>
-                                <th>Timestamp</th>
-                                <th>Action</th>
-                                <th>User</th>
-                                <th>Details</th>
-                            </tr>
-                            <?php foreach($logEntries as $logUUID => $logData): ?>
-                            <tr>
-                                <td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
-                                <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $cdcMastery->formatOutputString($logData['action'],25); ?>"><?php echo $logData['action']; ?></a></span></td>
-                                <?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
-                                    <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
-                                <?php else: ?>
-                                    <td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
-                                <?php endif; ?>
-                                <td><a href="/admin/log-detail/<?php echo $logUUID; ?>/log"><i class="icon-inline icon-10 ic-log"></i>details</a></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </table>
-                    </div>
-                </section>
-            </div>
-            <div class="2u">
                 <section>
                     <header>
                         <h2>Sort By</h2>
@@ -292,6 +254,42 @@ if($logEntries): ?>
                             </form>
                         </li>
                     </ul>
+                </section>
+            </div>
+            <div class="9u">
+                <section>
+                    <header>
+                        <h2>Log Data</h2>
+                    </header>
+                    <?php if(!isset($_GET['norefresh'])): ?>
+                    <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
+                    <?php else: ?>
+                    <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
+                    <?php endif; ?>
+                    <br>
+                    <strong>The current system time is <?php echo date("F j, Y h:i A",time()); ?></strong>
+                    <div class="tableSmallText">
+                        <table id="log-table-1">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>User</th>
+                                <th>Details</th>
+                            </tr>
+                            <?php foreach($logEntries as $logUUID => $logData): ?>
+                            <tr>
+                                <td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
+                                <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $cdcMastery->formatOutputString($logData['action'],25); ?>"><?php echo $logData['action']; ?></a></span></td>
+                                <?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
+                                    <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
+                                <?php else: ?>
+                                    <td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
+                                <?php endif; ?>
+                                <td><a href="/admin/log-detail/<?php echo $logUUID; ?>/log"><i class="icon-inline icon-10 ic-log"></i>details</a></td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 </section>
             </div>
         </div>
