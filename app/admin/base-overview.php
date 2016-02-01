@@ -42,8 +42,60 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
             </section>
         </div>
     </div>
-</div>
-<div class="container">
+    <div class="row">
+        <div class="3u">
+            <section>
+                <h2>Actions</h2>
+                <ul>
+                    <li>
+                        <form action="/admin/base-overview" method="POST">
+                            <label for="baseUUID">Base</label>
+                            <select id="baseUUID"
+                                    name="baseUUID"
+                                    class="input_full"
+                                    size="1">
+                                <?php
+                                $baseList = $bases->listUserBases();
+                                foreach($baseList as $baseListUUID => $baseName): ?>
+                                    <?php if($baseUUID == $baseListUUID): ?>
+                                        <option value="<?php echo $baseListUUID; ?>" SELECTED><?php echo $baseName; ?></option>
+                                    <?php else: ?>
+                                        <option value="<?php echo $baseListUUID; ?>"><?php echo $baseName; ?></option>
+                                    <?php endif;
+                                endforeach;
+                                ?>
+                            </select>
+                            <div class="clearfix">&nbsp;</div>
+                            <input type="submit" value="Change Base">
+                        </form>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        <div class="3u">
+            <section>
+                <h2>Statistics</h2>
+                <table id="baseStatsTable">
+                    <tr>
+                        <th>Statistic</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Base Users</td>
+                        <td><?php echo count($baseUsers); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Total Tests</td>
+                        <td><?php echo $statistics->getTotalTestsByBase($baseUUID); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Average Test Score</td>
+                        <td><?php echo $statistics->getAverageScoreByBase($baseUUID); ?></td>
+                    </tr>
+                </table>
+            </section>
+        </div>
+    </div>
     <div class="row">
         <?php if(!empty($baseUsers)): ?>
         <script>
@@ -60,7 +112,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                 height: 2.3em;
             }
         </style>
-        <div class="9u">
+        <div class="12u">
             <section>
                 <h2>Testing Data</h2>
                 <?php if($baseTestCount > 0): ?>
@@ -75,7 +127,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                             <th>User Name</th>
                             <th>Total Tests</th>
                             <th>Average Score</th>
-                            <th>Last Score</th>
+                            <th>Latest Score</th>
                             <th>Last Login</th>
                         </tr>
                     </thead>
@@ -90,13 +142,13 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                         $userTestCount = $userStatisticsObj->getCompletedTests();
 
                         if($userTestCount > 0):
-                            $chartData[$i]['userName'] = $baseUserObj->getFullName();
+                            $chartData[$i]['userName'] = $baseUserObj->getUserLastName() . ", " . $baseUserObj->getUserFirstName() . " " . $baseUserObj->getUserRank();
                             $chartData[$i]['userAverage'] = $userAverage;
                             $chartData[$i]['userTestCount'] = $userTestCount;
                             $i++;
                             ?>
                             <tr>
-                                <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getFullName(); ?></a></td>
+                                <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getUserLastName() . ", " . $baseUserObj->getUserFirstName() . " " . $baseUserObj->getUserRank(); ?></a></td>
                                 <td><?php echo $userTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
                                 <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                                 <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
@@ -152,63 +204,12 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
             </section>
         </div>
         <?php else: ?>
-        <div class="9u">
+        <div class="12u">
             <section>
                 <p>There are no users with test data at this base.</p>
             </section>
         </div>
         <?php endif; ?>
-        <div class="3u">
-            <section>
-                <h2>Actions</h2>
-                <ul>
-                    <li>
-                        <form action="/admin/base-overview" method="POST">
-                            <label for="baseUUID">Base</label>
-                            <select id="baseUUID"
-                                    name="baseUUID"
-                                    class="input_full"
-                                    size="1">
-                                <?php
-                                $baseList = $bases->listUserBases();
-                                foreach($baseList as $baseListUUID => $baseName): ?>
-                                    <?php if($baseUUID == $baseListUUID): ?>
-                                    <option value="<?php echo $baseListUUID; ?>" SELECTED><?php echo $baseName; ?></option>
-                                    <?php else: ?>
-                                    <option value="<?php echo $baseListUUID; ?>"><?php echo $baseName; ?></option>
-                                    <?php endif;
-                                endforeach;
-                                ?>
-                            </select>
-                            <div class="clearfix">&nbsp;</div>
-                            <input type="submit" value="Change Base">
-                        </form>
-                    </li>
-                </ul>
-            </section>
-            <div class="clearfix">&nbsp;</div>
-            <section>
-                <h2>Statistics</h2>
-                <table id="baseStatsTable">
-                    <tr>
-                        <th>Statistic</th>
-                        <th>Value</th>
-                    </tr>
-                    <tr>
-                        <td>Base Users</td>
-                        <td><?php echo count($baseUsers); ?></td>
-                    </tr>
-                    <tr>
-                        <td>Total Tests</td>
-                        <td><?php echo $statistics->getTotalTestsByBase($baseUUID); ?></td>
-                    </tr>
-                    <tr>
-                        <td>Average Test Score</td>
-                        <td><?php echo $statistics->getAverageScoreByBase($baseUUID); ?></td>
-                    </tr>
-                </table>
-            </section>
-        </div>
     </div>
 </div>
 <div class="clearfix"><br></div>
