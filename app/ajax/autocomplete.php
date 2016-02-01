@@ -21,4 +21,7 @@ if($ajaxRoute){
     elseif($ajaxRoute == "userLastName"){
         include BASE_PATH . "/app/ajax/autocomplete/userLastName.php";
     }
+    elseif($ajaxRoute == "userFullName"){
+        include BASE_PATH . "/app/ajax/autocomplete/userFullName.php";
+    }
 }

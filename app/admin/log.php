@@ -72,6 +72,40 @@ if($logEntries): ?>
         });
     </script>
     <?php endif; ?>
+    <style>
+        .ui-autocomplete {
+            max-height: 8em;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        * html .ui-autocomplete {
+            height: 120px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#userUUID').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/ajax/autocomplete/userFullName',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: request,
+                        success: function (data) {
+                            response($.map(data, function (value, key) {
+                                return {
+                                    label: value,
+                                    value: key
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 2
+            });
+        });
+    </script>
     <!--[if !IE]><!-->
     <style type="text/css">
     @media
@@ -225,6 +259,7 @@ if($logEntries): ?>
                         <h2>Filter By</h2>
                     </header>
                     <ul>
+                        <li><strong>Action</strong></li>
                         <li>
                             <form action="/admin/log" method="POST" id="filterAction">
                                 <input type="hidden" name="filterBy" value="action">
@@ -243,21 +278,17 @@ if($logEntries): ?>
                                 </select>
                             </form>
                         </li>
+                    </ul>
+                    <ul>
+                        <li><strong>User</strong></li>
                         <li>
+                            <em>Choose a user by typing the first few letters of their name.</em>
                             <form action="/admin/log" method="POST" id="filterUser">
                                 <input type="hidden" name="filterBy" value="user">
-                                <select name="filterValue" class="input_full" size="1" onChange="javascript:document.forms['filterUser'].submit()">
-                                    <option value="">Choose User...</option>
-                                    <?php
-                                    $userList = $user->listUsers();
-                                    foreach($userList as $userUUID => $userDetails): ?>
-                                        <?php if($filterValue == $userUUID): ?>
-                                        <option value="<?php echo $userUUID; ?>" SELECTED><?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?></option>
-                                        <?php else: ?>
-                                        <option value="<?php echo $userUUID; ?>"><?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?></option>
-                                        <?php endif; ?>
-                                    <?php endforeach; ?>
-                                </select>
+                                <input type="text" id="userUUID" name="filterValue" class="input_full">
+                                <br>
+                                <br>
+                                <input type="submit" value="Go">
                             </form>
                         </li>
                     </ul>
