@@ -250,12 +250,6 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
                 <div class="12u">
                     <section>
                         <div id="questionAnswer"></div>
-                    </section>
-                </div>
-            </div>
-            <div class="row">
-                <div class="12u">
-                    <section>
                         <div class="test-nav" style="display: none;">
                             <button class="test-nav-button" id="goFirst" title="First Question">&lt;&lt;</button>
                             <button class="test-nav-button" id="goPrevious" title="Previous Question">&lt;</button>
