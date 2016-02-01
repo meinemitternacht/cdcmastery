@@ -5,7 +5,6 @@
 ob_start();
 
 $time_start = microtime(true);
-
 ini_set('session.cookie_lifetime', 60 * 60 * 24 * 7);
 header('Access-Control-Allow-Origin: *');
 
