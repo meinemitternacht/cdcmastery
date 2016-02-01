@@ -53,6 +53,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
             <table>
                 <thead>
                 <tr>
+                    <th>AFSC</th>
                     <th>Question</th>
                     <th>Answer</th>
                 </tr>
@@ -68,6 +69,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         }
                         $answerManager->loadAnswer($testData[$questionUUID]); ?>
                         <tr>
+                            <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td><span class="<?php if ($answerManager->getAnswerCorrect()) {
                                     echo "text-success";
@@ -77,6 +79,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         </tr>
                     <?php else: ?>
                         <tr>
+                            <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td>Not answered.</td>
                         </tr>
