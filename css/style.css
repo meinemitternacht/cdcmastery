@@ -653,6 +653,40 @@ tr:nth-child(odd) td {
     background-color: #f8fbfc;
 }
 
+/* logSearchTable */
+table.logSearchTable {
+    width: 100%;
+    font: 100% Arial, Helvetica, sans-serif;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+table.logSearchTable th, table.logSearchTable td {
+    text-align: left;
+}
+
+table.logSearchTable th {
+    background: #222;
+    color: #fff;
+    font-weight: 900;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+table.logSearchTable th.th-child {
+    background: #bbb;
+    color: #000;
+}
+
+table.logSearchTable td {
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+
+table.logSearchTable tr.white-bg td {
+    background-color: #fff;
+}
+
 /*
  *	Miscellaneous
  */
