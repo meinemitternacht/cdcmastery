@@ -106,6 +106,9 @@ if($logUUID):
 										if ($testManager->loadTest($detailData['data'])) {
 											$testUUID = true;
 										}
+										elseif ($testManager->loadIncompleteTest($detailData['data'])){
+											$incompleteTestUUID = true;
+										}
 									}
 							?>
 							<tr>
@@ -114,7 +117,7 @@ if($logUUID):
 									<td>
 										<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
 									</td>
-								<?php elseif(isset($afscUUID) && $afscUUID == true): ?>
+								<?php elseif(isset($afscUUID) && ($afscUUID == true)): ?>
 									<td>
 										<?php echo $afsc->getAFSCName($detailData['data']); ?>
 									</td>
@@ -122,10 +125,14 @@ if($logUUID):
 									<td>
 										<?php echo $afscList; ?>
 									</td>
-                                <?php elseif(isset($testUUID) && $testUUID == true): ?>
+                                <?php elseif(isset($testUUID) && ($testUUID == true)): ?>
                                     <td>
                                         <a href="/test/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
                                     </td>
+								<?php elseif(isset($incompleteTestUUID) && ($incompleteTestUUID == true)): ?>
+									<td>
+										<a href="/admin/users/<?php echo $testManager->getIncompleteUserUUID(); ?>/tests/incomplete/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
+									</td>
 								<?php else: ?>
 									<td><?php echo $detailData['data']; ?></td>
 								<?php endif; ?>
@@ -135,6 +142,7 @@ if($logUUID):
 								$afscList = false;
 								$testUUID = false;
 								$userName = false;
+								$incompleteTestUUID = false;
 								$dataTypeSearch = "";
 								?>
 							<?php endforeach; ?>
