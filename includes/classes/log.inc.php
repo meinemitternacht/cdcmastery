@@ -95,6 +95,8 @@ class log extends CDCMastery
     }
 
 	function fetchDetails($uuid){
+		$this->detailArray = Array();
+
 		$stmt = $this->db->prepare('SELECT uuid, dataType, data FROM systemLogData WHERE logUUID = ? ORDER BY dataType ASC');
 		$stmt->bind_param("s",$uuid);
 		$stmt->execute();
@@ -115,7 +117,12 @@ class log extends CDCMastery
 			$i++;
 		}
 
-		return $this->detailArray;
+		if(!empty($this->detailArray)){
+			return $this->detailArray;
+		}
+		else{
+			return false;
+		}
 	}
 
 	function loadEntry($uuid) {
