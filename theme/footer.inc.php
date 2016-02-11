@@ -94,10 +94,12 @@
 			_gaq.push(['_setAccount', 'UA-30696456-1']);
 			_gaq.push(['_setSiteSpeedSampleRate', 100]);
 			_gaq.push(['_trackPageview']);
+			<?php if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])): ?>ga('set', 'userId', '<?php echo $_SESSION['userUUID']; ?>');<?php endif; ?>
 
 			(function() {
 				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				<?php if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])): ?>ga('set', 'userId', '<?php echo $_SESSION['userUUID']; ?>');<?php endif; ?>
 				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 			})();
 
