@@ -85,17 +85,18 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         <?php endforeach; ?>
                     </table>
                 <?php elseif($searchType == "log"): ?>
+                    <?php $bgColor = "#ffffff;"; ?>
                     <?php foreach($paginatedResults as $searchResult): ?>
                         <?php $log->loadEntry($searchResult); ?>
                         <?php $logDetails = $log->fetchDetails($searchResult); ?>
                         <table class="logSearchTable">
-                            <tr class="white-bg">
+                            <tr style="background-color:<?php echo $bgColor; ?>">
                                 <td><strong>Log Action</strong></td>
                                 <td><strong>Date</strong></td>
                                 <td><strong>Action Performed By</strong></td>
                                 <td>&nbsp;</td>
                             </tr>
-                            <tr class="white-bg">
+                            <tr style="background-color:<?php echo $bgColor; ?>">
                                 <td><span class="<?php echo $log->getRowStyle($log->getAction()); ?>"><?php echo $log->getAction(); ?></span></td>
                                 <td><?php echo $cdcMastery->outputDateTime($log->getTimestamp(),$_SESSION['timeZone']); ?></td>
                                 <?php if(!in_array($log->getUserUUID(),$cdcMastery->getStaticUserArray())): ?>
@@ -109,7 +110,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         <?php if($logDetails): ?>
                             <?php $testManager = new testManager($db,$log,$afsc); ?>
                             <table class="logSearchTable" style="width:auto;">
-                                <tr class="white-bg">
+                                <tr style="background-color:<?php echo $bgColor; ?>">
                                     <td style="min-width: 8em;"><strong>Key</strong></td>
                                     <td><strong>Data</strong></td>
                                 </tr>
@@ -143,7 +144,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                         }
                                     }
                                     ?>
-                                    <tr class="white-bg">
+                                    <tr style="background-color:<?php echo $bgColor; ?>">
                                         <td><?php echo $detailData['dataType']; ?></td>
                                         <?php if(isset($userName) && !empty($userName)): ?>
                                             <td>
@@ -176,6 +177,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                             </table>
                         <?php endif; ?>
                         <div style="width:100%;border-bottom: 1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+                        <?php $bgColor = ($bgColor == "#ffffff;") ? "#ccccc;" : "#fffff;"; ?>
                     <?php endforeach; ?>
                 <?php elseif($searchType == "AFSCassociations"): ?>
                     <table>
