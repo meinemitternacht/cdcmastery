@@ -23,7 +23,7 @@ if($afscUUID && $afsc->loadAFSC($afscUUID)):
                     </header>
                     <p>
                         Listed below are sample questions for <?php echo $afsc->getAFSCName(); ?> from our database.  <a href="/auth/register">Register now</a> to start taking tests for this AFSC!  We have <?php echo $afsc->getTotalQuestions(); ?>
-                        questions currently in the database for this AFSC.  <?php if(!empty($afsc->getAFSCVersion())): ?><br><br>The version of this CDC we have in the database is <strong><?php echo $afsc->getAFSCVersion(); ?></strong><?php endif; ?>
+                        questions currently in the database for this category.  <?php if(!empty($afsc->getAFSCVersion())): ?><br><br>The version of this CDC we have in the database is <strong><?php echo $afsc->getAFSCVersion(); ?></strong><?php endif; ?>
                     </p>
                     <a href="/about">&laquo; Return to AFSC List</a>
                 </section>
