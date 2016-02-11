@@ -20,10 +20,12 @@ else{
 		if($target == "all"){
 			if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 				if($testManager->deleteIncompleteTest(true,false,$_SESSION['userUUID'])){
+					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
                     $sysMsg->addMessage("Incomplete tests deleted successfully.");
 					$cdcMastery->redirect("/");
 				}
 				else{
+					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
 					$sysMsg->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.");
 					$cdcMastery->redirect("/errors/500");
 				}
@@ -76,6 +78,7 @@ else{
 			else{
 				if(isset($_POST['confirmIncompleteTestDelete'])){
 					if($testManager->deleteIncompleteTest(false,$target)){
+						$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
                         $sysMsg->addMessage("Test deleted successfully.");
 						$cdcMastery->redirect("/");
 					}
