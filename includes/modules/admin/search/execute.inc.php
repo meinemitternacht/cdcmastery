@@ -39,6 +39,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
             $searchParameterList['userRank'] = isset($_POST['userRank']) ? $_POST['userRank'] : false;
             $searchParameterList['userRole'] = isset($_POST['userRole']) ? $_POST['userRole'] : false;
             $searchParameterList['userBase'] = isset($_POST['userBase']) ? $_POST['userBase'] : false;
+            $searchParameterList['userOfficeSymbol'] = isset($_POST['userOfficeSymbol']) ? $_POST['userOfficeSymbol'] : false;
             break;
     }
 
