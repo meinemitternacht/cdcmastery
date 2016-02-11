@@ -6,9 +6,9 @@
  * Time: 8:13 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue);
+$statsObj = new statistics($db,$log,$emailQueue,$memcache);
 
-$afscList = $afsc->listAFSCUUID();
+$afscList = $afsc->listAFSCUUID(false);
 
 $chartData = "";
 $firstRow = true;

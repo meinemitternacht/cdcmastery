@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue);
+$statsObj = new statistics($db,$log,$emailQueue,$memcache);
 
 $x=0;
 for($i=2012;$i<=date("Y",time());$i++){
@@ -19,7 +19,9 @@ for($i=2012;$i<=date("Y",time());$i++){
             $dateTimeEndObj = new DateTime();
 
             $dateTimeStartObj->setISODate($i,$j);
+            $dateTimeStartObj->setTime(0,0,0);
             $dateTimeEndObj->setISODate($i,$j,7);
+            $dateTimeEndObj->setTime(23,59,59);
 
             $averageData = $statsObj->getTestAverageByTimespan($dateTimeStartObj, $dateTimeEndObj);
 
