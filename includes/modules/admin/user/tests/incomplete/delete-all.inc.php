@@ -3,6 +3,8 @@ $testManager = new testManager($db, $log, $afsc);
 
 if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 	if($testManager->deleteIncompleteTest(true,false,$userUUID)){
+		$userStatistics->setUserUUID($userUUID);
+		$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
         $sysMsg->addMessage("Incomplete tests deleted successfully.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
@@ -34,7 +36,7 @@ else{ ?>
 				<header>
 					<h2>Confirm Deletion</h2>
 				</header>
-				<form action="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete" method="POST">
+				<form action="/admin/users/<?php echo $userUUID; ?>/tests/incomplete/delete-all" method="POST">
 					<input type="hidden" name="confirmIncompleteTestDeleteAll" value="1">
 					If you wish to delete all incomplete tests taken by this user, please press continue.
 					Otherwise, <a href="/admin/users/<?php echo $userUUID; ?>">return to the user manager</a>.
