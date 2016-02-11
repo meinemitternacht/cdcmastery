@@ -110,6 +110,17 @@ if($logUUID):
 											$incompleteTestUUID = true;
 										}
 									}
+									elseif($dataTypeSearch == "category uuid"){
+										$flashCardManager = new flashCardManager($db,$log);
+										if($flashCardManager->loadCardCategory($detailData['data'])){
+											$flashCardCategory = true;
+										}
+									}
+									elseif($dataTypeSearch == "role uuid"){
+										if($roles->loadRole($detailData['data'])){
+											$roleUUID = true;
+										}
+									}
 							?>
 							<tr>
 								<td><?php echo $detailData['dataType']; ?></td>
@@ -133,6 +144,14 @@ if($logUUID):
 									<td>
 										<a href="/admin/users/<?php echo $testManager->getIncompleteUserUUID(); ?>/tests/incomplete/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
 									</td>
+								<?php elseif(isset($flashCardCategory) && ($flashCardCategory == true)): ?>
+									<td>
+										<a href="/admin/card-data/<?php echo $detailData['data']; ?>"><?php echo $flashCardManager->getCategoryName(); ?></a>
+									</td>
+								<?php elseif(isset($roleUUID) && ($roleUUID == true)): ?>
+									<td>
+										<a href="/admin/roles/edit/<?php echo $detailData['data']; ?>"><?php echo $roles->getRoleName(); ?></a>
+									</td>
 								<?php else: ?>
 									<td><?php echo $detailData['data']; ?></td>
 								<?php endif; ?>
@@ -143,6 +162,8 @@ if($logUUID):
 								$testUUID = false;
 								$userName = false;
 								$incompleteTestUUID = false;
+								$flashCardCategory = false;
+								$roleUUID = false;
 								$dataTypeSearch = "";
 								?>
 							<?php endforeach; ?>
