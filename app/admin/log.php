@@ -3,7 +3,7 @@ $logFilter = new logFilter($db, $user);
 
 $pageNumber = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : 0;
 $pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 25;
-$sortBy = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : "timestamp";
+$sortBy = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : "microtime";
 $sortDirection = isset($_SESSION['vars'][3]) ? $_SESSION['vars'][3] : "DESC";
 $filterBy = isset($_SESSION['vars'][4]) ? $_SESSION['vars'][4] : false;
 $filterValue = isset($_SESSION['vars'][5]) ? $_SESSION['vars'][5] : false;
