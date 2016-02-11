@@ -49,6 +49,9 @@ if($db->connect_errno){
 	exit();
 }
 
+$memcache = new Memcache();
+$memcache->connect($cfg['memcache']['host'],$cfg['memcache']['port']);
+
 $cdcMastery = new CDCMastery();
 $session = new Zebra_Session($db,"92304j8j8fjsdsn923enkc");
 $sysMsg = new systemMessages();
@@ -64,7 +67,7 @@ $bases = new bases($db, $log);
 $afsc = new afsc($db, $log);
 $user = new user($db, $log, $emailQueue);
 $officeSymbol = new officeSymbol($db, $log);
-$userStatistics = new userStatistics($db, $log, $roles);
+$userStatistics = new userStatistics($db, $log, $roles, $memcache);
 $assoc = new associations($db, $log, $user, $afsc, $emailQueue);
 
 if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
