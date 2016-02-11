@@ -104,7 +104,7 @@ class userAuthorizationQueue extends user
         else{
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
-            $this->log->setDetail("CALLING FUNCTION","userAuthorizationQueue->listUserAuthorizeQueue()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -139,7 +139,7 @@ class userAuthorizationQueue extends user
                     $this->log->setAction("ERROR_APPROVE_ROLE_AUTHORIZATION");
                     $this->log->setDetail("User UUID", $userUUID);
                     $this->log->setDetail("Role UUID", $roleUUID);
-                    $this->log->setDetail("Calling Function", "userAuthorizationQueue->approveRoleAuthorization()");
+                    $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                     $this->log->setDetail("MySQL Error", $stmt->error);
                     $this->log->setDetail("Sub Function", "DELETE FROM queueRoleAuthorization TABLE");
                     $this->log->saveEntry();
@@ -157,7 +157,7 @@ class userAuthorizationQueue extends user
                 $this->log->setAction("ERROR_APPROVE_ROLE_AUTHORIZATION");
                 $this->log->setDetail("User UUID", $userUUID);
                 $this->log->setDetail("Role UUID", $roleUUID);
-                $this->log->setDetail("Calling Function", "userAuthorizationQueue->approveRoleAuthorization()");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Sub Function", "Save User");
                 $this->log->saveEntry();
 
@@ -191,7 +191,7 @@ class userAuthorizationQueue extends user
                     $this->log->setAction("ERROR_REJECT_ROLE_AUTHORIZATION");
                     $this->log->setDetail("User UUID", $userUUID);
                     $this->log->setDetail("Role UUID", $roleUUID);
-                    $this->log->setDetail("Calling Function", "userAuthorizationQueue->rejectRoleAuthorization()");
+                    $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                     $this->log->setDetail("MySQL Error", $stmt->error);
                     $this->log->setDetail("Sub Function", "DELETE FROM queueRoleAuthorization TABLE");
                     $this->log->saveEntry();
@@ -224,7 +224,7 @@ class userAuthorizationQueue extends user
 
             $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
             $this->log->setUserUUID($userUUID);
-            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Child function","_roles->verifyRole()");
             $this->log->setDetail("Error",$this->error);
             $this->log->setDetail("User UUID",$userUUID);
@@ -276,7 +276,7 @@ class userAuthorizationQueue extends user
             else{
                 $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
                 $this->log->setUserUUID($userUUID);
-                $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Child function","emailQueue->queueEmail()");
                 $this->log->setDetail("User UUID",$userUUID);
                 $this->log->setDetail("Role UUID",$roleUUID);
@@ -287,7 +287,7 @@ class userAuthorizationQueue extends user
         else{
             $this->error = "That user does not exist.";
             $this->log->setAction("ERROR_NOTIFY_ROLE_APPROVAL");
-            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleApproval()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("System Error",$this->error);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->setDetail("Role UUID",$roleUUID);
@@ -310,7 +310,7 @@ class userAuthorizationQueue extends user
 
             $this->log->setAction("ERROR_NOTIFY_ROLE_REJECTION");
             $this->log->setUserUUID($userUUID);
-            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleRejection()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Child function","_roles->verifyRole()");
             $this->log->setDetail("Error",$this->error);
             $this->log->setDetail("User UUID",$userUUID);
@@ -360,7 +360,7 @@ class userAuthorizationQueue extends user
             else{
                 $this->log->setAction("ERROR_NOTIFY_ROLE_REJECTION");
                 $this->log->setUserUUID($userUUID);
-                $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleRejection()");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Child function","emailQueue->queueEmail()");
                 $this->log->setDetail("User UUID",$userUUID);
                 $this->log->setDetail("Role UUID",$roleUUID);
@@ -371,7 +371,7 @@ class userAuthorizationQueue extends user
         else{
             $this->error = "That user does not exist.";
             $this->log->setAction("ERROR_NOTIFY_ROLE_REJECTION");
-            $this->log->setDetail("Calling Function","userAuthorizationQueue->notifyRoleRejection()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("System Error",$this->error);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->setDetail("Role UUID",$roleUUID);

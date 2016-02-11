@@ -74,7 +74,7 @@ class log extends CDCMastery
         if(!$stmt->execute()){
             $this->setAction("ERROR_USER_LOG_CLEAR");
             $this->setDetail("MySQL Error",$stmt->error);
-            $this->setDetail("Calling Function","log->clearLogEntries()");
+            $this->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->setDetail("User UUID",$userUUID);
             $this->saveEntry();
 

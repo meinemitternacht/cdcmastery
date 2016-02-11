@@ -83,7 +83,7 @@ class answerManager extends CDCMastery
 			}
 			else{
 				$this->log->setAction("ERROR_ANSWERS_LIST");
-				$this->log->setDetail("CALLING FUNCTION","answer->listAnswersByQuestion()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("ERROR",$stmt->error);
 				$this->log->setDetail("Question UUID",$this->questionUUID);
 				$this->log->saveEntry();
@@ -122,7 +122,7 @@ class answerManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_ANSWERS_LOAD");
-			$this->log->setDetail("CALLING FUNCTION","answer->loadAnswer()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("UUID",$answerUUID);
 			$this->log->saveEntry();
@@ -152,7 +152,7 @@ class answerManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_ANSWERS_LOAD");
-			$this->log->setDetail("CALLING FUNCTION","answer->loadArchivedAnswer()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("UUID",$answerUUID);
 			$this->log->saveEntry();
@@ -190,7 +190,7 @@ class answerManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_ANSWERS_SAVE");
-			$this->log->setDetail("CALLING FUNCTION","answer->saveAnswer()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
 		

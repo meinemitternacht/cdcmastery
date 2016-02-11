@@ -69,7 +69,7 @@ class associations extends CDCMastery
         else{
             $this->error = $stmt->error;
             $this->log->setAction("ERROR_ASSOCIATIONS_AFSC_LIST_PENDING");
-            $this->log->setDetail("CALLING FUNCTION","associations->listPendingAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -97,7 +97,7 @@ class associations extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("ERROR_ASSOCIATIONS_LIST_USERS_BY_AFSC");
-			$this->log->setDetail("CALLING FUNCTION","associations->listUserCountByAFSC()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL ERROR",$this->error);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->saveEntry();
@@ -129,7 +129,7 @@ class associations extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("ERROR_ASSOCIATIONS_LIST_USERS_BY_AFSC");
-			$this->log->setDetail("CALLING FUNCTION","associations->listUsersByAFSC()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL ERROR",$this->error);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->saveEntry();
@@ -178,7 +178,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_ASSOCIATIONS_AFSC_ADD");
-			$this->log->setDetail("Calling Function","associations->addUserAFSCAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("userAuthorized",$userAuthorized);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
@@ -219,7 +219,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_ASSOCIATIONS_AFSC_DELETE");
-			$this->log->setDetail("Calling Function","associations->deleteAFSCAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -251,7 +251,7 @@ class associations extends CDCMastery
         }
         else{
             $this->log->setAction("ERROR_USER_DELETE_AFSC_ASSOCIATIONS_ALL");
-            $this->log->setDetail("Calling Function","associations->deleteUserAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->setDetail("MySQL Error",$stmt->error);
             $this->log->saveEntry();
@@ -267,7 +267,7 @@ class associations extends CDCMastery
 			$this->error[] = "Could not verify source and destination AFSC's";
 
 			$this->log->setAction("ERROR_MIGRATE_AFSC_ASSOCIATIONS");
-			$this->log->setDetail("Calling Function","associations->migrateAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Source AFSC",$sourceAFSC);
 			$this->log->setDetail("Destination AFSC",$destinationAFSC);
 			$this->log->setDetail("Remove Previous Associations",$removeOld);
@@ -303,7 +303,7 @@ class associations extends CDCMastery
 			$this->error[] = "There are no user associations for that AFSC";
 
 			$this->log->setAction("ERROR_MIGRATE_AFSC_ASSOCIATIONS");
-			$this->log->setDetail("Calling Function","associations->migrateAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Source AFSC",$sourceAFSC);
 			$this->log->setDetail("Destination AFSC",$destinationAFSC);
 			$this->log->setDetail("Remove Previous Associations",$removeOld);
@@ -417,7 +417,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_APPROVE_PENDING_AFSC_ASSOCIATION");
-			$this->log->setDetail("Calling Function","associations->approvePendingAFSCAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -493,7 +493,7 @@ class associations extends CDCMastery
 			else{
 				$this->log->setAction("ERROR_NOTIFY_AFSC_ASSOCIATION_APPROVAL");
 				$this->log->setUserUUID($userUUID);
-				$this->log->setDetail("Calling Function","associations->notifyPendingAFSCApproval()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("Child function","emailQueue->queueEmail()");
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->setDetail("AFSC UUID",$afscUUID);
@@ -504,7 +504,7 @@ class associations extends CDCMastery
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_NOTIFY_AFSC_ASSOCIATION_APPROVAL");
-			$this->log->setDetail("Calling Function","associations->notifyPendingAFSCApproval()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
@@ -549,7 +549,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_ADD_SUPERVISOR_ASSOCIATION");
-			$this->log->setDetail("Calling Function","associations->addSupervisorAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -587,7 +587,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_REMOVE_SUPERVISOR_ASSOCIATION");
-			$this->log->setDetail("Calling Function","associations->deleteSupervisorAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -619,7 +619,7 @@ class associations extends CDCMastery
         }
         else{
             $this->log->setAction("ERROR_USER_REMOVE_SUPERVISOR_ASSOCIATIONS_ALL");
-            $this->log->setDetail("Calling Function","associations->deleteUserSupervisorAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->setDetail("MySQL Error",$stmt->error);
             $this->log->saveEntry();
@@ -661,7 +661,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_ADD_TRAINING_MANAGER_ASSOCIATION");
-			$this->log->setDetail("Calling Function","associations->addTrainingManagerAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -699,7 +699,7 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_REMOVE_TRAINING_MANAGER_ASSOCIATION");
-			$this->log->setDetail("Calling Function","associations->deleteTrainingManagerAssociation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
 			$this->log->setDetail("MySQL Error",$stmt->error);
@@ -731,7 +731,7 @@ class associations extends CDCMastery
         }
         else{
             $this->log->setAction("ERROR_USER_REMOVE_TRAINING_MANAGER_ASSOCIATIONS_ALL");
-            $this->log->setDetail("Calling Function","associations->deleteUserTrainingManagerAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->setDetail("MySQL Error",$stmt->error);
             $this->log->saveEntry();

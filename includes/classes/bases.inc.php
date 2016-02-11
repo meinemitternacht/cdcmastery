@@ -29,7 +29,7 @@ class bases extends CDCMastery
 			return true;
 		} else{
 			$this->log->setAction("ERROR_BASE_ADD");
-			$this->log->setDetail("CALLING FUNCTION", "bases->addBase()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Base UUID", $this->uuid);
 			$this->log->setDetail("Base Name",$this->baseName);
 			$this->log->setDetail("ERROR",$this->error);
@@ -52,7 +52,7 @@ class bases extends CDCMastery
 				return true;
 			} else {
 				$this->log->setAction("ERROR_BASE_EDIT");
-				$this->log->setDetail("CALLING FUNCTION", "bases->editBase()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("Base UUID", $this->uuid);
 				$this->log->setDetail("Base Name", $this->baseName);
 				$this->log->setDetail("ERROR", $this->error);
@@ -81,7 +81,7 @@ class bases extends CDCMastery
             }
             else{
                 $this->log->setAction("ERROR_BASE_DELETE");
-                $this->log->setDetail("CALLING FUNCTION", "bases->deleteBase()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Base UUID", $this->uuid);
                 $this->log->setDetail("Base Name", $this->baseName);
                 $this->log->setDetail("MYSQL_ERROR", $stmt->error);
@@ -94,7 +94,7 @@ class bases extends CDCMastery
         else{
             $this->error = "That base does not exist.";
             $this->log->setAction("ERROR_BASE_DELETE");
-            $this->log->setDetail("CALLING FUNCTION", "bases->deleteBase()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Base UUID", $this->uuid);
             $this->log->setDetail("Base Name", $this->baseName);
             $this->log->setDetail("ERROR", $this->error);
@@ -187,7 +187,7 @@ class bases extends CDCMastery
 			$stmt->close();
 			
 			$this->log->setAction("ERROR_BASE_LOAD");
-			$this->log->setDetail("CALLING FUNCTION", "bases->loadBase()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->setDetail("UUID",$uuid);
 			$this->log->saveEntry();
@@ -214,7 +214,7 @@ class bases extends CDCMastery
 			$stmt->close();
 			
 			$this->log->setAction("ERROR_BASE_SAVE");
-			$this->log->setDetail("CALLING FUNCTION", "bases->saveBase()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
 			

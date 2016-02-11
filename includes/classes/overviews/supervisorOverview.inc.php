@@ -59,7 +59,7 @@ class supervisorOverview extends CDCMastery
         else{
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("Error",$stmt->error);
-            $this->log->setDetail("Calling Function","supervisorOverview->loadSubordinateUsers()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->saveEntry();
 
             return false;

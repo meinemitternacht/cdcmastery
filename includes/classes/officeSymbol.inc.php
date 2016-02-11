@@ -52,7 +52,7 @@ class officeSymbol extends CDCMastery
             $stmt->close();
 
             $this->log->setAction("ERROR_OFFICE_SYMBOL_SAVE");
-            $this->log->setDetail("CALLING FUNCTION", "officeSymbol->saveOfficeSymbol()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("ERROR", $this->error);
             $this->log->saveEntry();
 
@@ -145,7 +145,7 @@ class officeSymbol extends CDCMastery
             $stmt->close();
 
             $this->log->setAction("ERROR_OFFICE_SYMBOL_LOAD");
-            $this->log->setDetail("CALLING FUNCTION", "officeSymbol->loadOfficeSymbol()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Office Symbol UUID", $uuid);
             $this->log->setDetail("ERROR", $this->error);
             $this->log->saveEntry();

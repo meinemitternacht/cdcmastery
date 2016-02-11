@@ -105,7 +105,7 @@ class questionManager extends CDCMastery
         }
         else{
             $this->log->setAction("ERROR_QUESTION_LIST");
-            $this->log->setDetail("CALLING FUNCTION","question->listQuestionsForAFSC()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("ERROR",$stmt->error);
             $this->log->saveEntry();
 
@@ -147,7 +147,7 @@ class questionManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_QUESTION_LOAD");
-			$this->log->setDetail("CALLING FUNCTION","question->loadQuestion()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
 		
@@ -208,7 +208,7 @@ class questionManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_QUESTION_SAVE");
-			$this->log->setDetail("CALLING FUNCTION","question->saveQuestion()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->saveEntry();
 		
@@ -412,7 +412,7 @@ class questionManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_QUESTION_QUERY_FOUO");
-			$this->log->setDetail("CALLING FUNCTION", "questionManager->queryQuestionFOUO");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("QUESTION UUID",$questionUUID);
 			$this->log->saveEntry();

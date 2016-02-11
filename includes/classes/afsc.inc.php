@@ -92,7 +92,7 @@ class afsc extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_AFSC_VERIFY");
-			$this->log->setDetail("Calling Function","afsc->verifyAFSC()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
 				
@@ -226,7 +226,7 @@ class afsc extends CDCMastery
 			$stmt->close();
 				
 			$this->log->setAction("ERROR_AFSC_LOAD");
-			$this->log->setDetail("CALLING FUNCTION", "afsc->loadAFSC()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->setDetail("UUID",$uuid);
 			$this->log->saveEntry();
@@ -267,7 +267,7 @@ class afsc extends CDCMastery
 			$stmt->close();
 			
 			$this->log->setAction("ERROR_AFSC_SAVE");
-			$this->log->setDetail("CALLING FUNCTION", "afsc->saveAFSC()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
 			

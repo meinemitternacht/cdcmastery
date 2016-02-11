@@ -25,7 +25,7 @@ class passwordReset extends user {
 		}
 		else{
 			$this->log->setAction("ERROR_USER_DELETE_PASSWORD_RESET_TOKEN");
-			$this->log->setDetail("Calling Function","user->passwordReset->deletePasswordResetToken()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Password Token",$passwordToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
@@ -53,7 +53,7 @@ class passwordReset extends user {
 		}
 		else{
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("Calling Function","user->passwordReset->getPasswordResetUser()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Password Token",$passwordToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
@@ -119,13 +119,15 @@ class passwordReset extends user {
 	
 				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
 					$this->log->setAction("USER_PASSWORD_RESET");
+					$this->log->setUserUUID($userUUID);
 					$this->log->setDetail("User UUID",$userUUID);
 					$this->log->saveEntry();
 					return true;
 				}
 				else{
 					$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-					$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
+					$this->log->setUserUUID($userUUID);
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("Child function","emailQueue->queueEmail()");
 					$this->log->setDetail("User UUID",$userUUID);
 					$this->log->saveEntry();
@@ -134,7 +136,8 @@ class passwordReset extends user {
 			}
 			else{
 				$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-				$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
+				$this->log->setUserUUID($userUUID);
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("MySQL Error",$stmt->error);
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->saveEntry();
@@ -147,7 +150,7 @@ class passwordReset extends user {
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-			$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordReset()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->saveEntry();
@@ -197,7 +200,7 @@ class passwordReset extends user {
 			else{
 				$this->log->setAction("ERROR_NOTIFY_PASSWORD_CHANGED");
 				$this->log->setUserUUID($userUUID);
-				$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordResetCompleteNotification()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("Child function","emailQueue->queueEmail()");
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->saveEntry();
@@ -207,7 +210,7 @@ class passwordReset extends user {
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_NOTIFY_PASSWORD_CHANGED");
-			$this->log->setDetail("Calling Function","user->passwordReset->sendPasswordResetCompleteNotification()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->saveEntry();
@@ -236,7 +239,7 @@ class passwordReset extends user {
 		else{
 			$this->error = "There was an issue resetting your password.  Contact the helpdesk for assistance.";
 			$this->log->setAction("ERROR_USER_PASSWORD_RESET");
-			$this->log->setDetail("Calling Function","user->passwordReset->verifyPasswordResetToken()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("Password Reset Token",$passwordToken);
 			$this->log->saveEntry();

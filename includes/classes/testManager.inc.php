@@ -159,7 +159,7 @@ class testManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_LIST_TESTS");
-			$this->log->setDetail("CALLING FUNCTION","testManager->listUserTests()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("USER UUID",$userUUID);
 			$this->log->saveEntry();
@@ -530,7 +530,7 @@ class testManager extends CDCMastery
         else{
             $this->log->setAction("MYSQL_ERROR");
             $this->log->setDetail("MySQL Error",$stmt->error);
-            $this->log->setDetail("Calling Function","testManager->getTestUUIDList()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->saveEntry();
 
@@ -651,7 +651,7 @@ class testManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_USER_LIST_INCOMPLETE_TESTS");
-			$this->log->setDetail("CALLING FUNCTION","testManager->listUserIncompleteTests()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$stmt->error);
 			$this->log->setDetail("USER UUID",$userUUID);
 			$this->log->saveEntry();
@@ -820,7 +820,7 @@ class testManager extends CDCMastery
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
 			$this->log->setAction("ERROR_INCOMPLETE_TEST_SAVE");
-			$this->log->setDetail("CALLING FUNCTION","testManager->saveIncompleteTest()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->setDetail("INCOMPLETE TEST UUID",$this->incompleteTestUUID);
 			$this->log->saveEntry();
@@ -839,7 +839,7 @@ class testManager extends CDCMastery
 		if(!$stmt->execute()){
 			$this->log->setAction("ERROR_TEST_DATA_DELETE");
 			$this->log->setDetail("Test UUID",$testUUID);
-			$this->log->setDetail("Calling Function","testManager->deleteTestData()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
 			
@@ -874,7 +874,7 @@ class testManager extends CDCMastery
 			if(!$stmt->execute()){
 				$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
 				$this->log->setDetail("ERROR",$stmt->error);
-				$this->log->setDetail("CALLING FUNCTION","testManager->deleteIncompleteTest()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("allIncompleteTests","true");
 				$this->log->saveEntry();
 				$error = true;
@@ -908,7 +908,7 @@ class testManager extends CDCMastery
 				if(!$stmt->execute()){
 					$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
 					$this->log->setDetail("ERROR",$stmt->error);
-					$this->log->setDetail("CALLING FUNCTION","testManager->deleteIncompleteTest()");
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("allIncompleteTests","false");
 					$this->log->setDetail("Test UUID",$testUUID);
 					$this->log->saveEntry();
@@ -927,11 +927,11 @@ class testManager extends CDCMastery
 					$stmt->close();
 
                     if($deleteData) {
-                        if (!$this->deleteTestData($testUUID)) {
-                            return false;
-                        } else {
-                            return true;
-                        }
+						if (!$this->deleteTestData($testUUID,$logSuccess)) {
+							return false;
+						} else {
+							return true;
+						}
                     }
                     else{
                         return true;
@@ -1000,7 +1000,7 @@ class testManager extends CDCMastery
 				}
 				else{
 					$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
-					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("COMBINED TEST", "TRUE");
 					$this->log->setDetail("ERROR",$this->db->error);
 					$this->log->saveEntry();
@@ -1040,7 +1040,7 @@ class testManager extends CDCMastery
 				}
 				else{
 					$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
-					$this->log->setDetail("CALLING FUNCTION", "testManager->populateQuestions()");
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("COMBINED TEST", "FALSE");
 					$this->log->setDetail("ERROR",$stmt->error);
 					$this->log->saveEntry();
@@ -1070,7 +1070,7 @@ class testManager extends CDCMastery
 
 			if (!$stmt->execute()) {
 				$this->log->setAction("ERROR_TEST_STORE_ANSWER");
-				$this->log->setDetail("CALLING FUNCTION", "testManager->answerQuestion()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("ERROR", $stmt->error);
 				$this->log->setDetail("QUESTION UUID", $questionUUID);
 				$this->log->setDetail("ANSWER UUID", $answerUUID);
@@ -1220,7 +1220,7 @@ class testManager extends CDCMastery
 		}
 		else{
 			$this->log->setAction("ERROR_TEST_RETRIEVE_PREVIOUS_ANSWER");
-			$this->log->setDetail("CALLING FUNCTION","testManager->queryQuestionPreviousAnswer()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("TEST UUID",$this->incompleteTestUUID);
 			$this->log->setDetail("QUESTION UUID",$questionUUID);
 			$this->log->saveEntry();

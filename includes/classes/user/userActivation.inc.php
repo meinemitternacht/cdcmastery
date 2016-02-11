@@ -26,7 +26,7 @@ class userActivation extends user {
         else{
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
-            $this->log->setDetail("CALLING FUNCTION","userActivation->deleteUserActivationToken()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -60,7 +60,7 @@ class userActivation extends user {
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userActivation->listUnactivatedUsers()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -141,7 +141,7 @@ class userActivation extends user {
 				else{
 					$this->error = "Unable to queue activation e-mail.";
 					$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-					$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("System Error",$this->error);
 					$this->log->setDetail("User UUID",$userUUID);
                     $this->log->setDetail("Email Queue Error",$this->emailQueue->error);
@@ -153,7 +153,7 @@ class userActivation extends user {
 			else{
 				$this->error = $stmt->error;
 				$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-				$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
+				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("MySQL Error",$stmt->error);
 				$this->log->setDetail("User UUID",$userUUID);
 				$this->log->saveEntry();
@@ -164,7 +164,7 @@ class userActivation extends user {
 		else{
 			$this->error = "That user does not exist.";
 			$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
-			$this->log->setDetail("Calling Function","user->userActivation->queueActivation()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->saveEntry();
@@ -216,7 +216,7 @@ class userActivation extends user {
 		}
 		else{
 			$this->log->setAction("ERROR_USER_ACTIVATE");
-			$this->log->setDetail("Calling Function","user->activateUser()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Activation Token",$activationToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
