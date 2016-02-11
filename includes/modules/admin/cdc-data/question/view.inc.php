@@ -1,5 +1,5 @@
 <?php
-$statistics = new statistics($db,$log,$emailQueue);
+$statistics = new statistics($db,$log,$emailQueue,$memcache);
 $answerManager = new answerManager($db,$log);
 $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 

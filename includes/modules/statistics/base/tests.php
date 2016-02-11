@@ -5,7 +5,7 @@
  * Date: 9/26/2015
  * Time: 7:28 PM
  */
-$statsObj = new statistics($db,$log,$emailQueue);
+$statsObj = new statistics($db,$log,$emailQueue,$memcache);
 
 $baseList = $bases->listBases();
 

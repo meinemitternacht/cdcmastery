@@ -25,7 +25,7 @@ if(isset($_SESSION['vars'][0])):
     }
 
 	$userProfile = new user($db, $log, $emailQueue);
-	$userProfileStatistics = new userStatistics($db, $log, $roles);
+	$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
 	if(!$userProfile->loadUser($targetUUID)){
 		$sysMsg->addMessage("That user does not exist.");
 	}

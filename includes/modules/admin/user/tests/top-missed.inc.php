@@ -1,7 +1,7 @@
 <?php
 $answerManager = new answerManager($db,$log);
 $questionManager = new questionManager($db,$log,$afsc,$answerManager);
-$userStatsObj = new userStatistics($db,$log,$roles);
+$userStatsObj = new userStatistics($db, $log, $roles, $memcache);
 
 $userStatsObj->setUserUUID($userUUID);
 $topMissedQuestionArray = $userStatsObj->getQuestionsMissedAcrossTests();

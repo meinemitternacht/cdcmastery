@@ -5,6 +5,7 @@ class userStatistics extends CDCMastery
 	protected $db;
 	protected $log;
 	protected $roles;
+	protected $memcache;
 	
 	public $error;
 	
@@ -55,11 +56,112 @@ class userStatistics extends CDCMastery
 	public $countTrainingManagerSubordinates;
 	public $countUserSupervisors;
 	public $countUserTrainingManagers;
-	
-	public function __construct(mysqli $db, log $log, roles $roles){
+
+	public function __construct(mysqli $db, log $log, roles $roles, Memcache $memcache){
 		$this->db = $db;
 		$this->log = $log;
 		$this->roles = $roles;
+		$this->memcache = $memcache;
+	}
+
+	/*
+	 * Cache Functions
+	 */
+	public function deleteUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
+		if($var1 !== false){
+			if($var2 !== false){
+				if($var3 !== false){
+					$hashVal = $functionName . $var1 . $var2 . $var3;
+				}
+				else{
+					$hashVal = $functionName . $var1 . $var2;
+				}
+			}
+			else{
+				$hashVal = $functionName . $var1;
+			}
+		}
+		else{
+			$hashVal = $functionName;
+		}
+
+		if(!$ignoreCurrentUser){
+			if(!empty($this->userUUID)){
+				$hashVal = $hashVal . $this->userUUID;
+			}
+		}
+
+		$cacheHash = md5($hashVal);
+
+		if($this->memcache->delete($cacheHash)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function setUserStatsCacheVal($functionName,$cacheValue,$cacheTTL,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
+		if($var1 !== false){
+			if($var2 !== false){
+				if($var3 !== false){
+					$hashVal = $functionName . $var1 . $var2 . $var3;
+				}
+				else{
+					$hashVal = $functionName . $var1 . $var2;
+				}
+			}
+			else{
+				$hashVal = $functionName . $var1;
+			}
+		}
+		else{
+			$hashVal = $functionName;
+		}
+
+		if(!$ignoreCurrentUser){
+			if(!empty($this->userUUID)){
+				$hashVal = $hashVal . $this->userUUID;
+			}
+		}
+
+		$cacheHash = md5($hashVal);
+		$this->memcache->delete($cacheHash);
+		if($this->memcache->add($cacheHash,$cacheValue,NULL,$cacheTTL)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
+		if($var1 !== false){
+			if($var2 !== false){
+				if($var3 !== false){
+					$hashVal = $functionName . $var1 . $var2 . $var3;
+				}
+				else{
+					$hashVal = $functionName . $var1 . $var2;
+				}
+			}
+			else{
+				$hashVal = $functionName . $var1;
+			}
+		}
+		else{
+			$hashVal = $functionName;
+		}
+
+		if(!$ignoreCurrentUser){
+			if(!empty($this->userUUID)){
+				$hashVal = $hashVal . $this->userUUID;
+			}
+		}
+
+		$cacheHash = md5($hashVal);
+
+		return $this->memcache->get($cacheHash);
 	}
 	
 	/*
@@ -71,11 +173,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryLogEntries()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->logEntries;
+				if(!$this->queryLogEntries()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->logEntries,$this->getCacheTTL(4));
+					return $this->logEntries;
+				}
 			}
 		}
 	}
@@ -85,11 +193,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryAverageScore()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->averageScore;
+				if(!$this->queryAverageScore()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->averageScore,$this->getCacheTTL(4));
+					return $this->averageScore;
+				}
 			}
 		}
 	}
@@ -99,11 +213,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCompletedTests()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->completedTests;
+				if(!$this->queryCompletedTests()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->completedTests,$this->getCacheTTL(4));
+					return $this->completedTests;
+				}
 			}
 		}
 	}
@@ -113,42 +233,60 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryIncompleteTests()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->incompleteTests;
+				if(!$this->queryIncompleteTests()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->incompleteTests,$this->getCacheTTL(1));
+					return $this->incompleteTests;
+				}
 			}
 		}
 	}
 
     public function getIPAddresses(){
-        if(!$this->userUUID){
-            return false;
-        }
-        else{
-            if(!$this->queryIPAddresses()){
-                return false;
-            }
-            else{
-                return $this->ipAddressList;
-            }
-        }
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
+			}
+			else{
+				if(!$this->queryIPAddresses()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->ipAddressList,$this->getCacheTTL(4));
+					return $this->ipAddressList;
+				}
+			}
+		}
     }
 
     public function getLatestTestScore(){
         $this->latestTestScore = 0;
-        if(!$this->userUUID){
-            return false;
-        }
-        else{
-            if(!$this->queryLatestTestScore()){
-                return false;
-            }
-            else{
-                return $this->latestTestScore;
-            }
-        }
+		if(!$this->userUUID){
+			return false;
+		}
+		else{
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
+			}
+			else{
+				if(!$this->queryLatestTestScore()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->latestTestScore,$this->getCacheTTL(4));
+					return $this->latestTestScore;
+				}
+			}
+		}
     }
 	
 	public function getTotalTests(){
@@ -160,11 +298,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryQuestionsAnswered()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->questionsAnswered;
+				if(!$this->queryQuestionsAnswered()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->questionsAnswered,$this->getCacheTTL(4));
+					return $this->questionsAnswered;
+				}
 			}
 		}
 	}
@@ -174,11 +318,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryQuestionsMissed()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->questionsMissed;
+				if(!$this->queryQuestionsMissed()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->questionsMissed,$this->getCacheTTL(4));
+					return $this->questionsMissed;
+				}
 			}
 		}
 	}
@@ -188,11 +338,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryQuestionsMissedAcrossTests()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->questionsMissedAcrossTests;
+				if(!$this->queryQuestionsMissedAcrossTests()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->questionsMissedAcrossTests,$this->getCacheTTL(4));
+					return $this->questionsMissedAcrossTests;
+				}
 			}
 		}
 	}
@@ -202,16 +358,21 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if($this->roles->verifyUserRole($this->userUUID) == "supervisor"){
-				if(!$this->querySupervisorAssociations()){
-					return false;
-				}
-				else{
-					return $this->supervisorAssociations;
-				}
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return false;
+				if($this->roles->verifyUserRole($this->userUUID) == "supervisor") {
+					if (!$this->querySupervisorAssociations()) {
+						return false;
+					} else {
+						$this->setUserStatsCacheVal(__FUNCTION__, $this->supervisorAssociations, $this->getCacheTTL(4));
+						return $this->supervisorAssociations;
+					}
+				}
+				else{
+					return false;
+				}
 			}
 		}
 	}
@@ -221,16 +382,21 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if($this->roles->verifyUserRole($this->userUUID) == "trainingManager"){
-				if(!$this->queryTrainingManagerAssociations()){
-					return false;
-				}
-				else{
-					return $this->trainingManagerAssociations;
-				}
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return false;
+				if($this->roles->verifyUserRole($this->userUUID) == "trainingManager") {
+					if (!$this->queryTrainingManagerAssociations()) {
+						return false;
+					} else {
+						$this->setUserStatsCacheVal(__FUNCTION__, $this->trainingManagerAssociations, $this->getCacheTTL(4));
+						return $this->trainingManagerAssociations;
+					}
+				}
+				else{
+					return false;
+				}
 			}
 		}
 	}
@@ -240,11 +406,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryUserSupervisors()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->userSupervisors;
+				if(!$this->queryUserSupervisors()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->userSupervisors,$this->getCacheTTL(4));
+					return $this->userSupervisors;
+				}
 			}
 		}
 	}
@@ -254,11 +426,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryUserTrainingManagers()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->userTrainingManagers;
+				if(!$this->queryUserTrainingManagers()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->userTrainingManagers,$this->getCacheTTL(4));
+					return $this->userTrainingManagers;
+				}
 			}
 		}
 	}
@@ -268,11 +446,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryAFSCAssociations()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->afscAssociations;
+				if(!$this->queryAFSCAssociations()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->afscAssociations,$this->getCacheTTL(1));
+					return $this->afscAssociations;
+				}
 			}
 		}
 	}
@@ -282,11 +466,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryPendingAFSCAssociations()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->pendingAFSCAssociations;
+				if(!$this->queryPendingAFSCAssociations()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->pendingAFSCAssociations,$this->getCacheTTL(1));
+					return $this->pendingAFSCAssociations;
+				}
 			}
 		}
 	}
@@ -296,11 +486,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountAFSCAssociations()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countAFSCAssociations;
+				if(!$this->queryCountAFSCAssociations()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countAFSCAssociations,$this->getCacheTTL(1));
+					return $this->countAFSCAssociations;
+				}
 			}
 		}
 	}
@@ -310,11 +506,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountPendingAFSCAssociations()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countPendingAFSCAssociations;
+				if(!$this->queryCountPendingAFSCAssociations()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countPendingAFSCAssociations,$this->getCacheTTL(1));
+					return $this->countPendingAFSCAssociations;
+				}
 			}
 		}
 	}
@@ -324,11 +526,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountSupervisorSubordinates()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countSupervisorSubordinates;
+				if(!$this->queryCountSupervisorSubordinates()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countSupervisorSubordinates,$this->getCacheTTL(4));
+					return $this->countSupervisorSubordinates;
+				}
 			}
 		}
 	}
@@ -338,11 +546,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountTrainingManagerSubordinates()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countTrainingManagerSubordinates;
+				if(!$this->queryCountTrainingManagerSubordinates()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countTrainingManagerSubordinates,$this->getCacheTTL(4));
+					return $this->countTrainingManagerSubordinates;
+				}
 			}
 		}
 	}
@@ -352,11 +566,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountUserSupervisors()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countUserSupervisors;
+				if(!$this->queryCountUserSupervisors()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserSupervisors,$this->getCacheTTL(4));
+					return $this->countUserSupervisors;
+				}
 			}
 		}
 	}
@@ -366,11 +586,17 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if(!$this->queryCountUserTrainingManagers()){
-				return false;
+			if($this->getUserStatsCacheVal(__FUNCTION__)){
+				return $this->getUserStatsCacheVal(__FUNCTION__);
 			}
 			else{
-				return $this->countUserTrainingManagers;
+				if(!$this->queryCountUserTrainingManagers()){
+					return false;
+				}
+				else{
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserTrainingManagers,$this->getCacheTTL(4));
+					return $this->countUserTrainingManagers;
+				}
 			}
 		}
 	}
@@ -380,36 +606,48 @@ class userStatistics extends CDCMastery
 	 */
 
 	public function queryQuestionOccurrences($userUUID,$questionUUID){
-		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND questionUUID = ?");
-
-		$stmt->bind_param("ss",$userUUID, $questionUUID);
-
-		if($stmt->execute()){
-			$stmt->bind_result($count);
-			$stmt->fetch();
-			$stmt->close();
-
-			return $count;
+		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID,false,true)){
+			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID,false,true);
 		}
 		else{
-			return false;
+			$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND questionUUID = ?");
+
+			$stmt->bind_param("ss",$userUUID, $questionUUID);
+
+			if($stmt->execute()){
+				$stmt->bind_result($count);
+				$stmt->fetch();
+				$stmt->close();
+				$this->setUserStatsCacheVal(__FUNCTION__,$count,$this->getCacheTTL(3),$userUUID,$questionUUID,false,true);
+
+				return $count;
+			}
+			else{
+				return false;
+			}
 		}
 	}
 
 	public function queryAnswerOccurrences($userUUID,$answerUUID){
-		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND answerUUID = ?");
-
-		$stmt->bind_param("ss",$userUUID, $answerUUID);
-
-		if($stmt->execute()){
-			$stmt->bind_result($count);
-			$stmt->fetch();
-			$stmt->close();
-
-			return $count;
+		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID,false,true)){
+			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID,false,true);
 		}
 		else{
-			return false;
+			$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND answerUUID = ?");
+
+			$stmt->bind_param("ss",$userUUID, $answerUUID);
+
+			if($stmt->execute()){
+				$stmt->bind_result($count);
+				$stmt->fetch();
+				$stmt->close();
+				$this->setUserStatsCacheVal(__FUNCTION__,$count,$this->getCacheTTL(3),$userUUID,$answerUUID,false,true);
+
+				return $count;
+			}
+			else{
+				return false;
+			}
 		}
 	}
 
@@ -430,7 +668,7 @@ class userStatistics extends CDCMastery
         else{
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
-            $this->log->setDetail("CALLING FUNCTION","userStatistics->queryIPAddresses()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -456,7 +694,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryLogEntries()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -482,7 +720,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryAverageScore()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -508,7 +746,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCompletedTests()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -534,7 +772,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryIncompleteTests()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -560,7 +798,7 @@ class userStatistics extends CDCMastery
         else{
             $this->error = $stmt->error;
             $this->log->setAction("MYSQL_ERROR");
-            $this->log->setDetail("CALLING FUNCTION","userStatistics->queryLatestTestScore()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
             $stmt->close();
@@ -586,7 +824,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryQuestionsAnswered()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -612,7 +850,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryQuestionsMissed()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -653,7 +891,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryQuestionsMissedAcrossTests()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -679,7 +917,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->querySupervisorAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -705,7 +943,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryTrainingManagerAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -731,7 +969,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryUserSupervisors()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -757,7 +995,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryUserTrainingManagers()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -789,7 +1027,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -821,7 +1059,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryPendingAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -847,7 +1085,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -873,7 +1111,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountPendingAFSCAssociations()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -899,7 +1137,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountSupervisorSubordinates()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -925,7 +1163,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountTrainingManagerSubordinates()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -951,7 +1189,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountUserSupervisors()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();
@@ -977,7 +1215,7 @@ class userStatistics extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$this->log->setAction("MYSQL_ERROR");
-			$this->log->setDetail("CALLING FUNCTION","userStatistics->queryCountUserTrainingManagers()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
 			$stmt->close();

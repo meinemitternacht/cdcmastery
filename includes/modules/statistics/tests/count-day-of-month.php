@@ -6,7 +6,7 @@
  * Time: 8:59 AM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue);
+$statsObj = new statistics($db,$log,$emailQueue,$memcache);
 $testsByDayOfMonth = $statsObj->getTestsByDayOfMonth();
 
 $chartData = "";

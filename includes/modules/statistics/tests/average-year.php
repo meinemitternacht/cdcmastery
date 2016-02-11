@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue);
+$statsObj = new statistics($db,$log,$emailQueue,$memcache);
 
 for($i=2012;$i<=date("Y",time());$i++){
     $dateTimeStartObj = new DateTime("January 1st ".$i);

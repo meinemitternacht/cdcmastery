@@ -1,7 +1,7 @@
 <?php
 $targetUUID = $_SESSION['userUUID'];
 $userProfile = new user($db, $log, $emailQueue);
-$userProfileStatistics = new userStatistics($db, $log, $roles);
+$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
 
 if(!$userProfile->loadUser($targetUUID)){
 	echo "That user does not exist.";

@@ -72,7 +72,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserRank($_POST['userRank']);
     $objUser->setUserTimeZone($_POST['timeZone']);
 
-    $objUserStatistics = new userStatistics($db,$log,$roles);
+    $objUserStatistics = new userStatistics($db, $log, $roles, $memcache);
     $objUserStatistics->setUserUUID($objUser->getUUID());
 
     /*

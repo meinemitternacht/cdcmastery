@@ -5,6 +5,8 @@ class CDCMastery
 	public $maxQuestions = 100;
     public $passingScore = 80;
 	public $staticUserArray = Array('SYSTEM','ANONYMOUS');
+	public $publicCacheTTL = 10800; /* Cache objects for three hours if not logged in */
+	public $privateCacheTTL = 300; /* Cache objects for five minutes if logged in */
 	
 	public function __construct(){
 		
@@ -145,6 +147,50 @@ class CDCMastery
 	
 	public function getStaticUserArray(){
 		return $this->staticUserArray;
+	}
+
+	public function getPublicCacheTTL(){
+		return $this->publicCacheTTL;
+	}
+
+	public function getPrivateCacheTTL(){
+		return $this->privateCacheTTL;
+	}
+
+	public function getCacheTTL($storageLevel=false){
+		if(!$storageLevel){
+			if($this->loggedIn()){
+				return $this->getPrivateCacheTTL();
+			}
+			else{
+				return $this->getPublicCacheTTL();
+			}
+		}
+		else{
+			switch($storageLevel){
+				case 1:
+					return 30; /* 30 seconds */
+					break;
+				case 2:
+					return 120; /* 2 minutes */
+					break;
+				case 3:
+					return 300; /* 5 minutes */
+					break;
+				case 4:
+					return 3600; /* 1 hour */
+					break;
+				case 5:
+					return 10800; /* 3 hours */
+					break;
+				case 6:
+					return 21600; /* 6 hours */
+					break;
+				default:
+					return 300;
+					break;
+			}
+		}
 	}
 	
 	public function hashUserPassword($userPassword){
