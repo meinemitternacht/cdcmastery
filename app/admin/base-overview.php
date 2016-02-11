@@ -24,12 +24,15 @@ if(isset($_POST['baseUUID']) && !empty($_POST['baseUUID'])){
     }
 }
 
-$statistics = new statistics($db,$log,$emailQueue);
-$baseUserObj = new user($db,$log,$emailQueue);
-$userStatisticsObj = new userStatistics($db,$log,$roles);
-$baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
+$filterDateObj = new DateTime();
+$filterDateObj->modify("-6 month");
 
-$baseUsers = $user->sortUserUUIDList($baseUsersUUIDList, "userLastName");
+$statistics = new statistics($db,$log,$emailQueue,$memcache);
+$baseUserObj = new user($db,$log,$emailQueue);
+$userStatisticsObj = new userStatistics($db, $log, $roles, $memcache);
+$baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
+$filteredBaseUsersUUIDList = $user->filterUserUUIDList($baseUsersUUIDList,"userLastActive",">",$filterDateObj->format("Y-m-d H:i:s"));
+$baseUsers = $user->sortUserUUIDList($filteredBaseUsersUUIDList, "userLastName");
 $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 ?>
 <div class="container">
@@ -39,6 +42,9 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                 <header>
                     <h2>Base Overview for <?php echo $bases->getBaseName($baseUUID); ?></h2>
                 </header>
+                <p>
+                    <em>Note: This base overview will only display data for individuals who have been active during the previous six months.</em>
+                </p>
             </section>
         </div>
     </div>
@@ -82,15 +88,15 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                     </tr>
                     <tr>
                         <td>Base Users</td>
-                        <td><?php echo count($baseUsers); ?></td>
+                        <td><?php echo number_format(count($baseUsers)); ?></td>
                     </tr>
                     <tr>
                         <td>Total Tests</td>
-                        <td><?php echo $statistics->getTotalTestsByBase($baseUUID); ?></td>
+                        <td><?php echo number_format($statistics->getTotalTestsByBase($baseUUID)); ?>*</td>
                     </tr>
                     <tr>
                         <td>Average Test Score</td>
-                        <td><?php echo $statistics->getAverageScoreByBase($baseUUID); ?></td>
+                        <td><?php echo $statistics->getAverageScoreByBase($baseUUID); ?>*</td>
                     </tr>
                 </table>
             </section>
@@ -129,6 +135,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                             <th>Average Score</th>
                             <th>Latest Score</th>
                             <th>Last Login</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,7 +156,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                             ?>
                             <tr>
                                 <td><a href="/admin/profile/<?php echo $baseUserObj->getUUID(); ?>"><?php echo $baseUserObj->getUserLastName() . ", " . $baseUserObj->getUserFirstName() . " " . $baseUserObj->getUserRank(); ?></a></td>
-                                <td><?php echo $userTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[view]</a></span></td>
+                                <td><?php echo $userTestCount; ?></td>
                                 <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
                                 <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
                                 <td>
@@ -157,6 +164,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                                         <?php echo ($baseUserObj->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($baseUserObj->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
                                     </abbr>
                                 </td>
+                                <td><a href="/admin/users/<?php echo $baseUserObj->getUUID(); ?>/tests">[View Tests]</a></td>
                             </tr>
                         <?php endif; ?>
                     <?php endforeach;?>
@@ -164,6 +172,12 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                 </table>
                 <?php
                 if(isset($chartData)):
+                    function compareArrayValues($a, $b) {
+                        return ($b["userAverage"]*100) - ($a["userAverage"]*100);
+                    }
+
+                    usort($chartData, "compareArrayValues");
+
                     $chartOutputData = "";
                     $firstRow = true;
                     $i=0;
@@ -182,7 +196,6 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                             var chart = new CanvasJS.Chart("chart-container", {
 
                                 title:{
-                                    text: "Base Testing Overview"
                                 },
                                 axisX:{
                                     valueFormatString: " ",
@@ -190,7 +203,6 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                                 },
                                 data: [
                                     {
-                                        /*** Change type "column" to "bar", "area", "line" or "pie"***/
                                         type: "column",
                                         dataPoints: [<?php echo $chartOutputData; ?>]
                                     }
@@ -210,6 +222,13 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
             </section>
         </div>
         <?php endif; ?>
+        <div class="12u">
+            <section>
+                <p>
+                    <em>* denotes these statistics are for all users at this base, regardless of when they were last active</em>
+                </p>
+            </section>
+        </div>
     </div>
 </div>
 <div class="clearfix"><br></div>

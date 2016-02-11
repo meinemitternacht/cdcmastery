@@ -303,7 +303,7 @@ class user extends CDCMastery {
 			$stmt->close();
 			
 			$this->log->setAction("ERROR_USER_SAVE");
-			$this->log->setDetail("CALLING FUNCTION", "user->saveUser()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("ERROR",$this->error);
 			$this->log->saveEntry();
 
@@ -726,7 +726,7 @@ class user extends CDCMastery {
 				else{
 					$this->error = $stmt->error;
 					$this->log->setAction("ERROR_USER_RESOLVE_NAMES");
-					$this->log->setDetail("CALLING FUNCTION", "user->resolveUserNames()");
+					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("userUUID", $userUUID);
 					$this->log->setDetail("MYSQL ERROR", $this->error);
 					$this->log->saveEntry();
@@ -851,6 +851,53 @@ class user extends CDCMastery {
         }
     }
 
+	public function filterUserUUIDList($userArray,$filterColumn,$filterOperand,$filterValue){
+		/*
+         * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
+         * a completely new array.  Makes life easier, and let's the database do the work!
+         */
+
+		if(is_array($userArray) && !empty($userArray)){
+			$implodeArray = Array();
+			foreach($userArray as $userUUID){
+				if($this->verifyUser($userUUID)){
+					$implodeArray[] = $userUUID;
+				}
+			}
+
+			$userList = implode("','",$implodeArray);
+			$query = "SELECT uuid
+										FROM userData
+										WHERE uuid IN ('".$userList."')
+											AND
+												`".$filterColumn."` ".$filterOperand." '".$filterValue."'
+										ORDER BY userLastName DESC";
+			$res = $this->db->query($query);
+
+			if($res->num_rows > 0){
+				while($row = $res->fetch_assoc()){
+					$returnArray[] = $row['uuid'];
+				}
+
+				if(isset($returnArray) && !empty($returnArray)){
+					return $returnArray;
+				}
+				else{
+					$this->error = "returnArray was empty.";
+					return false;
+				}
+			}
+			else{
+				$this->error = $this->db->error;
+				return false;
+			}
+		}
+		else{
+			$this->error = "User list must be an array of values.";
+			return false;
+		}
+	}
+
 	public function verifyUser($userUUID){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userData WHERE uuid = ?");
 		$stmt->bind_param("s",$userUUID);
@@ -868,7 +915,7 @@ class user extends CDCMastery {
 		}
 		else{
 			$this->log->setAction("ERROR_USER_VERIFY");
-			$this->log->setDetail("Calling Function","user->verifyUser()");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->saveEntry();
 			
