@@ -36,7 +36,9 @@ if(isset($categoryUUID)){
                     $flashCardManager->navigateLastCard();
                     break;
                 case "loadCard":
-                    $flashCardManager->setCurrentCard($actionData);
+                    if(isset($actionData)){
+                        $flashCardManager->setCurrentCard($actionData);
+                    }
                     break;
                 case "flipCard":
                     $flashCardManager->flipCard();
