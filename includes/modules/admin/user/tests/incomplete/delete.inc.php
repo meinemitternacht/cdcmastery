@@ -8,6 +8,8 @@ $testManager = new testManager($db, $log, $afsc);
 
 if(isset($_POST['confirmIncompleteTestDelete'])){
 	if($testManager->deleteIncompleteTest(false,$finalChild)){
+		$userStatistics->setUserUUID($userUUID);
+		$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
         $sysMsg->addMessage("Incomplete test deleted successfully.");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
