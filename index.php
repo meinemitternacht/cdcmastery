@@ -23,35 +23,6 @@ $router = new router();
 
 if($router->parseURI()){
 	if(!$router->verifyFilePath()){
-		/*
-		$log->setAction("ROUTING_ERROR");
-		$log->setDetail("ERROR NUMBER", $router->errorNumber);
-		$log->setDetail("REQUEST", $router->request);
-		$log->setDetail("PATH", $router->filePath);
-		$log->setDetail("OUTPUT PAGE", $router->outputPage);
-		$log->setDetail("ROUTE", $router->route);
-
-		if(isset($_SERVER['HTTP_REFERER'])){
-			$log->setDetail("REFERER",$_SERVER{'HTTP_REFERER'});
-		}
-		if(isset($_SERVER['SERVER_ADDR'])){
-			$log->setDetail("HOST IP",$_SERVER{'SERVER_ADDR'});
-		}
-		if(isset($_SERVER['SERVER_PORT'])){
-			$log->setDetail("PORT",$_SERVER{'SERVER_PORT'});
-		}
-        if(isset($_SESSION) && count($_SESSION) > 0){
-            foreach($_SESSION as $sessionKey => $sessionVal){
-				if(is_array($sessionVal)){
-					$sessionVal = implode(",",$sessionVal);
-				}
-                $log->setDetail($sessionKey,$sessionVal);
-            }
-        }
-
-		$log->saveEntry();
-		*/
-
 		if(isset($router->errorMessage) && !empty($router->errorMessage)){
 			$sysMsg->addMessage($router->errorMessage);
 		}
