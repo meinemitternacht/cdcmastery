@@ -5,8 +5,15 @@
  * Date: 9/23/2015
  * Time: 8:01 PM
  */
-$statisticsObj = new statistics($db,$log,$emailQueue);
+$statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
 ?>
+<script>
+    $(document).ready(function()
+        {
+            $("#logActionCountTable").tablesorter();
+        }
+    );
+</script>
 <div class="container">
     <div class="row">
         <div class="3u">
@@ -81,7 +88,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
                     </tr>
                     <tr>
                         <td><a href="/admin/flash-card-categories">AFSC Flash Card Categories</a></td>
-                        <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
+                        <td><?php echo number_format($statisticsObj->getTotalAFSCFlashCardCategories()); ?></td>
                     </tr>
                     <tr>
                         <td><a href="/admin/flash-card-categories">Global Flash Card Categories</a></td>
@@ -467,4 +474,35 @@ $statisticsObj = new statistics($db,$log,$emailQueue);
             </section>
         </div>
     </div>
+    <?php
+    $groupedLogActionCountArray = $statisticsObj->getGroupedLogActionCount();
+
+    if($groupedLogActionCountArray):
+    ?>
+    <div class="row">
+        <div class="4u">
+            <section style="height:30em;overflow-y:scroll;overflow-x:hidden;">
+                <header>
+                    <h2>Log Action Totals</h2>
+                </header>
+                <table id="logActionCountTable">
+                    <thead>
+                        <tr>
+                            <td><strong>Action</strong></td>
+                            <td><strong>Count</strong></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($groupedLogActionCountArray as $groupedLogActionCountRow): ?>
+                        <tr>
+                            <td title="<?php echo $groupedLogActionCountRow[0]; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountRow[0]); ?>"><?php echo $cdcMastery->formatOutputString($groupedLogActionCountRow[0],20); ?></span></td>
+                            <td><?php echo number_format($groupedLogActionCountRow[1]); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
