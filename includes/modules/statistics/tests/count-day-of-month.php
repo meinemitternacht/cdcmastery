@@ -63,7 +63,7 @@ foreach($testsByDayOfMonth as $dayString => $testCount){
                     <?php foreach($testsByDayOfMonth as $dayString => $testCount): ?>
                         <tr>
                             <td><?php echo $cdcMastery->getOrdinal($dayString); ?></td>
-                            <td><?php echo $testCount; ?></td>
+                            <td><?php echo number_format($testCount); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

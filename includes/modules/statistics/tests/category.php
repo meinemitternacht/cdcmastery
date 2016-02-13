@@ -76,7 +76,7 @@ foreach($testAFSCArray as $afscUUID => $testCount){
                     <?php foreach($testAFSCArray as $afscUUID => $testCount): ?>
                         <tr>
                             <td><?php echo $afsc->getAFSCName($afscUUID); ?></td>
-                            <td><?php echo $testCount; ?></td>
+                            <td><?php echo number_format($testCount); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

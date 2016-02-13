@@ -75,7 +75,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
                         <tr>
                             <td><?php echo $rowData['label']; ?></td>
-                            <td><?php echo $rowData['data']; ?></td>
+                            <td><?php echo number_format($rowData['data']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

@@ -65,7 +65,7 @@ foreach($testCountByTimespanData as $testYear => $testCount){
                     <?php foreach($testCountByTimespanData as $testYear => $testCount): ?>
                         <tr>
                             <td><?php echo $testYear; ?></td>
-                            <td><?php echo $testCount; ?></td>
+                            <td><?php echo number_format($testCount); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

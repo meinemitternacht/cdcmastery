@@ -65,7 +65,7 @@ foreach($testCountByHour as $hourString => $testCount){
                     <?php foreach($testCountByHour as $hourString => $testCount): ?>
                         <tr>
                             <td><?php echo $hourString . ":00 - " . $hourString . ":59"; ?></td>
-                            <td><?php echo $testCount; ?></td>
+                            <td><?php echo number_format($testCount); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
