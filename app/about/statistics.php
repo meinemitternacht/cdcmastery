@@ -33,6 +33,7 @@ $statValueList = Array( 'active',
                         'groups',
                         'pass-rate',
                         'rank',
+                        'registrations-day',
                         'tests',
                         'users');
 

@@ -34,5 +34,6 @@
     <ul>
         <li><strong>Users</strong></li>
         <li><a href="/about/statistics/user/groups">User Count by Group</a></li>
+        <li><a href="/about/statistics/user/registrations-day">Registrations by Day</a></li>
     </ul>
 </section>

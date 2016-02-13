@@ -2009,7 +2009,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryRegistrationsByDay(){
-        $res = $this->db->query("SELECT DATE(userDateRegistered) AS registerDate, COUNT(*) AS count FROM `userData` GROUP BY DATE(userDateRegistered) ORDER BY userDateRegistered DESC");
+        $res = $this->db->query("SELECT DATE(userDateRegistered) AS registerDate, COUNT(*) AS count FROM `userData` GROUP BY DATE(userDateRegistered) ORDER BY userDateRegistered ASC");
 
         if($res->num_rows > 0){
             $this->userRegistrationsCountDay = $res->fetch_all();
