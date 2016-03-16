@@ -132,6 +132,8 @@ class userActivation extends user {
 				$emailBodyText .= "CDCMastery.com";
 				
 				if($this->emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, "SYSTEM")){
+					if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+						$this->log->setUserUUID($userUUID);
 					$this->log->setAction("USER_QUEUE_ACTIVATION");
 					$this->log->setDetail("User UUID",$userUUID);
 					$this->log->saveEntry();
@@ -140,6 +142,8 @@ class userActivation extends user {
 				}
 				else{
 					$this->error = "Unable to queue activation e-mail.";
+					if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+						$this->log->setUserUUID($userUUID);
 					$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
 					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("System Error",$this->error);
@@ -152,6 +156,8 @@ class userActivation extends user {
 			}
 			else{
 				$this->error = $stmt->error;
+				if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+					$this->log->setUserUUID($userUUID);
 				$this->log->setAction("ERROR_USER_QUEUE_ACTIVATION");
 				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("MySQL Error",$stmt->error);
