@@ -5,42 +5,6 @@
  * Date: 2/2/2016
  * Time: 6:30 PM
  */
-
-function printDetails($status){
-
-    echo "<table border='1'>";
-
-    echo "<tr><td>Memcache Server version:</td><td> ".$status ["version"]."</td></tr>";
-    echo "<tr><td>Process id of this server process </td><td>".$status ["pid"]."</td></tr>";
-    echo "<tr><td>Number of seconds this server has been running </td><td>".$status ["uptime"]."</td></tr>";
-    echo "<tr><td>Accumulated user time for this process </td><td>".$status ["rusage_user"]." seconds</td></tr>";
-    echo "<tr><td>Accumulated system time for this process </td><td>".$status ["rusage_system"]." seconds</td></tr>";
-    echo "<tr><td>Total number of items stored by this server ever since it started </td><td>".$status ["total_items"]."</td></tr>";
-    echo "<tr><td>Number of open connections </td><td>".$status ["curr_connections"]."</td></tr>";
-    echo "<tr><td>Total number of connections opened since the server started running </td><td>".$status ["total_connections"]."</td></tr>";
-    echo "<tr><td>Number of connection structures allocated by the server </td><td>".$status ["connection_structures"]."</td></tr>";
-    echo "<tr><td>Cumulative number of retrieval requests </td><td>".$status ["cmd_get"]."</td></tr>";
-    echo "<tr><td> Cumulative number of storage requests </td><td>".$status ["cmd_set"]."</td></tr>";
-
-    $percCacheHit=((real)$status ["get_hits"]/ (real)$status ["cmd_get"] *100);
-    $percCacheHit=round($percCacheHit,3);
-    $percCacheMiss=100-$percCacheHit;
-
-    echo "<tr><td>Number of keys that have been requested and found present </td><td>".$status ["get_hits"]." ($percCacheHit%)</td></tr>";
-    echo "<tr><td>Number of items that have been requested and not found </td><td>".$status ["get_misses"]."($percCacheMiss%)</td></tr>";
-
-    $MBRead= (real)$status["bytes_read"]/(1024*1024);
-
-    echo "<tr><td>Total number of bytes read by this server from network </td><td>".$MBRead." MB</td></tr>";
-    $MBWrite=(real) $status["bytes_written"]/(1024*1024) ;
-    echo "<tr><td>Total number of bytes sent by this server to network </td><td>".$MBWrite." MB</td></tr>";
-    $MBSize=(real) $status["limit_maxbytes"]/(1024*1024) ;
-    echo "<tr><td>Number of bytes this server is allowed to use for storage.</td><td>".$MBSize." MB</td></tr>";
-    echo "<tr><td>Number of valid items removed from cache to free memory for new items.</td><td>".$status ["evictions"]."</td></tr>";
-
-    echo "</table>";
-
-}
 ?>
 <div class="container">
     <div class="row">
@@ -58,9 +22,97 @@ function printDetails($status){
         </div>
     </div>
     <div class="row">
-        <div class="8u">
+        <div class="6u">
             <section>
-                <?php printDetails($memcache->getStats()); ?>
+                <?php $memcacheStatus = $memcache->getStats(); ?>
+                <?php
+                function secondsToTime($seconds) {
+                    $dtF = new DateTime("@0");
+                    $dtT = new DateTime("@$seconds");
+                    return $dtF->diff($dtT)->format('%ad %hh %im %ss');
+                }
+
+                $memcacheUptime = secondsToTime($memcacheStatus['uptime']);
+                ?>
+                <table>
+                    <tr>
+                        <td>Server version</td>
+                        <td> <?php echo $memcacheStatus["version"]; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Process ID</td><td><?php echo $memcacheStatus["pid"]; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Process uptime</td>
+                        <td><?php echo $memcacheUptime; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Process time (user)</td>
+                        <td><?php echo number_format(intval($memcacheStatus["rusage_user"])); ?>s</td>
+                    </tr>
+                    <tr>
+                        <td>Process time (system)</td>
+                        <td><?php echo number_format(intval($memcacheStatus["rusage_system"])); ?>s</td>
+                    </tr>
+                    <tr>
+                        <td>Items stored (total)</td>
+                        <td><?php echo number_format($memcacheStatus["total_items"]); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Current connections</td>
+                        <td><?php echo number_format($memcacheStatus["curr_connections"]); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Connections opened</td>
+                        <td><?php echo number_format($memcacheStatus["total_connections"]); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Connection structures allocated</td>
+                        <td><?php echo number_format($memcacheStatus["connection_structures"]); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Retrieval requests </td>
+                        <td><?php echo number_format($memcacheStatus["cmd_get"]); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Storage requests </td>
+                        <td><?php echo number_format($memcacheStatus["cmd_set"]); ?></td>
+                    </tr>
+                    <?php
+                    $pctCacheHit = round(((real)$memcacheStatus["get_hits"]/(real)$memcacheStatus["cmd_get"] *100),2);
+                    $pctCacheHit = round($pctCacheHit,2);
+                    $pctCacheMiss = (100 - $pctCacheHit);
+                    ?>
+                    <tr>
+                        <td>Objects found</td>
+                        <td><?php echo number_format($memcacheStatus["get_hits"]); ?> (<?php echo $pctCacheHit; ?>%)</td>
+                    </tr>
+                    <tr>
+                        <td>Objects not found</td>
+                        <td><?php echo number_format($memcacheStatus["get_misses"]); ?> (<?php echo $pctCacheMiss; ?>%)</td>
+                    </tr>
+                    <?php
+                    $MBRead = round((real)$memcacheStatus["bytes_read"]/(1024*1024),2);
+                    $MBWrite = round((real)$memcacheStatus["bytes_written"]/(1024*1024),2);
+                    $MBSize = round((real)$memcacheStatus["limit_maxbytes"]/(1024*1024),2);
+                    ?>
+                    <tr>
+                        <td>Rx Bytes</td>
+                        <td><?php echo $MBRead; ?> MB</td>
+                    </tr>
+                    <tr>
+                        <td>Tx Bytes</td>
+                        <td><?php echo $MBWrite; ?> MB</td>
+                    </tr>
+                    <tr>
+                        <td>Storage pool size</td>
+                        <td><?php echo $MBSize; ?> MB</td>
+                    </tr>
+                    <tr>
+                        <td>Items removed</td>
+                        <td><?php echo $memcacheStatus["evictions"]; ?></td>
+                    </tr>
+                </table>
             </section>
         </div>
     </div>
