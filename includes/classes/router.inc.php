@@ -181,6 +181,11 @@ class router extends CDCMastery
 				$this->showTheme = false;
 				return true;
 			}
+			elseif($_SESSION['vars'][0] == "print"){
+				$this->outputPage = $this->filePath;
+				$this->showTheme = false;
+				return true;
+			}
 			else{
 				if(!file_exists($this->filePath) && preg_match("/\/$/",$this->filePath)){
 					if(file_exists($this->filePath . "/index.php")) {
