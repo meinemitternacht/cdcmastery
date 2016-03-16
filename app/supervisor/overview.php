@@ -151,6 +151,7 @@ $totalUserTestCount = $supOverview->getTotalUserTests();
                 <div class="sub-menu">
                     <ul>
                         <li><a href="/supervisor/subordinates" title="Modify Subordinates">Modify Subordinates</a></li>
+                        <li><a href="/supervisor/generate-test" title="Generate Test">Create Paper Tests</a></li>
                     </ul>
                 </div>
             </section>

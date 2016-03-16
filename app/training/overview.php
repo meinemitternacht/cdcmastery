@@ -114,6 +114,7 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
                 <div class="sub-menu">
                     <ul>
                         <li><a href="/admin/users/<?php echo $_SESSION['userUUID']; ?>/associations/subordinate" title="Modify Subordinates">Modify Subordinates</a></li>
+                        <li><a href="/training/generate-test" title="Generate Test">Create Paper Tests</a></li>
                     </ul>
                 </div>
             </section>
