@@ -1118,7 +1118,6 @@ class testManager extends CDCMastery
 	
 	public function addQuestion($questionUUID){
 		$this->incompleteQuestionList[] = $questionUUID;
-		echo $questionUUID;
 		$this->incompleteTotalQuestions++;
 		return true;
 	}
