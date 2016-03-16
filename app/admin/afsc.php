@@ -14,15 +14,15 @@ if($formAction){
     switch($formAction){
         case "afsc-add":
             $afscData['afscName'] = isset($_POST['afscName']) ? $_POST['afscName'] : false;
-            $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscName'] : false;
-            $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscName'] : false;
-            $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscName'] : false;
+            $afscData['afscFOUO'] = isset($_POST['afscFOUO']) ? $_POST['afscFOUO'] : false;
+            $afscData['afscVersion'] = isset($_POST['afscVersion']) ? $_POST['afscVersion'] : false;
+            $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscDescription'] : false;
 
             if(!$afscData['afscName']) {
                 $sysMsg->addMessage("AFSC Name cannot be blank.");
                 $cdcMastery->redirect("/admin/afsc");
             }
-            elseif(!$afscData['afscFOUO']) {
+            elseif(!isset($_POST['afscFOUO'])) {
                 $sysMsg->addMessage("FOUO status must be provided.");
                 $cdcMastery->redirect("/admin/afsc");
             }
