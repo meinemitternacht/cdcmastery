@@ -103,7 +103,14 @@ class search extends CDCMastery
         if(!empty($this->searchParametersMultipleValues)) {
             foreach ($this->searchParametersMultipleValues as $searchParameterKey => $searchParameterList){
                 array_map(array($this->db, 'real_escape_string'),$searchParameterList);
-                $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " IN ('".implode("','",$searchParameterList)."')";
+                if($this->searchType == "testHistory" && $searchParameterKey == "afscList"){
+                    foreach($searchParameterList as $searchParameter){
+                        $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " LIKE '%".$searchParameter."%'";
+                    }
+                }
+                else{
+                    $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " IN ('".implode("','",$searchParameterList)."')";
+                }
             }
         }
 
