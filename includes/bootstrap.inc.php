@@ -31,6 +31,7 @@ require BASE_PATH . '/includes/classes/overviews/supervisorOverview.inc.php';
 require BASE_PATH . '/includes/classes/search.inc.php';
 require BASE_PATH . '/includes/classes/statistics.inc.php';
 require BASE_PATH . '/includes/classes/flashCardManager.inc.php';
+require BASE_PATH . '/includes/classes/testGenerator.inc.php';
 
 require BASE_PATH . '/includes/pageTitles.inc.php';
 
@@ -41,7 +42,8 @@ $db = new mysqli(   $cfg['db']['host'],
                     $cfg['db']['user'],
                     $cfg['db']['pass'],
                     $cfg['db']['name'],
-                    $cfg['db']['port']);
+                    $cfg['db']['port'],
+                    $cfg['db']['socket']);
 
 if($db->connect_errno){
     http_response_code(500);
