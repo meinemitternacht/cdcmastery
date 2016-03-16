@@ -107,6 +107,8 @@ class emailQueue extends CDCMastery {
 
 		if(!$stmt->execute()){
             $this->error = $stmt->error;
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($queueUser);
 			$this->log->setAction("ERROR_EMAIL_QUEUE_ADD");
 			$this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->setDetail("UUID",$this->uuid);
@@ -120,6 +122,8 @@ class emailQueue extends CDCMastery {
 			return false;
 		}
 		else{
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($queueUser);
             $this->log->setAction("EMAIL_QUEUE_ADD");
             $this->log->setDetail("UUID",$this->uuid);
             $this->log->setDetail("Sender",$this->emailSender);

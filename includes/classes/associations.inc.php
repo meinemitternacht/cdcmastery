@@ -168,6 +168,10 @@ class associations extends CDCMastery
 					$this->notifyPendingAFSCAssociation();
 					$this->log->setAction("USER_ADD_PENDING_AFSC_ASSOCIATION");
 				}
+
+				if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+					$this->log->setUserUUID($userUUID);
+
 				$this->log->setDetail("User UUID", $userUUID);
 				$this->log->setDetail("AFSC UUID", $afscUUID);
 				$this->log->saveEntry();
@@ -539,6 +543,8 @@ class associations extends CDCMastery
 		$stmt->bind_param("sss",$rowUUID,$supervisorUUID,$userUUID);
 		
 		if($stmt->execute()){
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($userUUID);
 			$this->log->setAction("USER_ADD_SUPERVISOR_ASSOCIATION");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
@@ -548,6 +554,8 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($userUUID);
 			$this->log->setAction("ERROR_USER_ADD_SUPERVISOR_ASSOCIATION");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
@@ -651,6 +659,8 @@ class associations extends CDCMastery
 		$stmt->bind_param("sss",$rowUUID,$trainingManagerUUID,$userUUID);
 	
 		if($stmt->execute()){
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($userUUID);
 			$this->log->setAction("USER_ADD_TRAINING_MANAGER_ASSOCIATION");
 			$this->log->setDetail("User UUID",$userUUID);
 			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
@@ -660,6 +670,8 @@ class associations extends CDCMastery
 			return true;
 		}
 		else{
+			if(!isset($_SESSION['userUUID']) || empty($_SESSION['userUUID']))
+				$this->log->setUserUUID($userUUID);
 			$this->log->setAction("ERROR_USER_ADD_TRAINING_MANAGER_ASSOCIATION");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("User UUID",$userUUID);
