@@ -2,7 +2,7 @@
 $logFilter = new logFilter($db, $user);
 
 $pageNumber = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : 0;
-$pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 25;
+$pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 32;
 $sortBy = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : "microtime";
 $sortDirection = isset($_SESSION['vars'][3]) ? $_SESSION['vars'][3] : "DESC";
 $filterBy = isset($_SESSION['vars'][4]) ? $_SESSION['vars'][4] : false;
@@ -184,8 +184,18 @@ if($logEntries): ?>
                         </ul>
                     </div>
                     <div class="clearfix">&nbsp;</div>
+                    <strong>The current system time is <br><?php echo date("F j, Y h:i A",time()); ?></strong><br>
+                    <br>
                     <a href="/admin/log">Reset log view</a><br>
                     <strong>Log Entries:</strong> <?php echo number_format($totalLogEntries); ?>
+                    <br>
+                    <br>
+                    <?php if(!isset($_GET['norefresh'])): ?>
+                        <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
+                    <?php else: ?>
+                        <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
+                    <?php endif; ?>
+                    <br>
                 </section>
                 <section>
                     <header>
@@ -261,13 +271,6 @@ if($logEntries): ?>
                     <header>
                         <h2>Log Data</h2>
                     </header>
-                    <?php if(!isset($_GET['norefresh'])): ?>
-                    <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
-                    <?php else: ?>
-                    <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
-                    <?php endif; ?>
-                    <br>
-                    <strong>The current system time is <?php echo date("F j, Y h:i A",time()); ?></strong>
                     <div class="tableSmallText">
                         <table id="log-table-1">
                             <tr>
