@@ -186,6 +186,9 @@ class CDCMastery
 				case 6:
 					return 21600; /* 6 hours */
 					break;
+				case 99:
+					return 1;
+					break;
 				default:
 					return 300;
 					break;
