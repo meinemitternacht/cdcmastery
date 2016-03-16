@@ -1884,10 +1884,12 @@ class statistics extends CDCMastery {
     }
 
     public function queryGroupedLogActionCount(){
-        $res = $this->db->query("SELECT `systemLog`.`action`, COUNT(uuid) AS count FROM `systemLog` GROUP BY `systemLog`.`action` ORDER BY `systemLog`.`action` ASC");
+        $res = $this->db->query("SELECT `systemLog`.`action` AS action, COUNT(uuid) AS count FROM `systemLog` GROUP BY `systemLog`.`action` ORDER BY `systemLog`.`action` ASC");
 
         if($res->num_rows > 0){
-            $this->groupedLogActionCount = $res->fetch_all();
+            while($row = $res->fetch_assoc()){
+                $this->groupedLogActionCount[$row['action']] = $row['count'];
+            }
 
             if(!empty($this->groupedLogActionCount)){
                 $res->close();
@@ -2012,7 +2014,9 @@ class statistics extends CDCMastery {
         $res = $this->db->query("SELECT DATE(userDateRegistered) AS registerDate, COUNT(*) AS count FROM `userData` GROUP BY DATE(userDateRegistered) ORDER BY userDateRegistered ASC");
 
         if($res->num_rows > 0){
-            $this->userRegistrationsCountDay = $res->fetch_all();
+            while($row = $res->fetch_assoc()){
+                $this->userRegistrationsCountDay[$row['registerDate']] = $row['count'];
+            }
 
             $res->close();
             return true;

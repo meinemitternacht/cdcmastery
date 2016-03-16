@@ -11,9 +11,9 @@ $registrationsByDay = $statsObj->getRegistrationsByDay();
 
 if($registrationsByDay){
     $x=0;
-    foreach($registrationsByDay as $registrationArray){
-        $registrationData[$x]['label'] = $registrationArray[0];
-        $registrationData[$x]['data'] = $registrationArray[1];
+    foreach($registrationsByDay as $registrationDate => $registrationValue){
+        $registrationData[$x]['label'] = $registrationDate;
+        $registrationData[$x]['data'] = $registrationValue;
         $x++;
     }
 }

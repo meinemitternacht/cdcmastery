@@ -17,7 +17,9 @@ $testManager = new testManager($db,$log,$afsc);
 $res = $db->query("SELECT testUUID FROM `testManager` WHERE timeStarted <= (NOW() - INTERVAL 30 DAY)");
 
 if($res->num_rows > 0){
-    $eligibleTestUUIDList = $res->fetch_all();
+    while($row = $res->fetch_assoc()){
+        $eligibleTestUUIDList[] = $row['testUUID'];
+    }
 
     $errorUUIDList = Array();
     $successUUIDList = Array();

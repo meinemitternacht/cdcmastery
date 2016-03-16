@@ -493,10 +493,10 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($groupedLogActionCountArray as $groupedLogActionCountRow): ?>
+                        <?php foreach($groupedLogActionCountArray as $groupedLogActionCountKey => $groupedLogActionCountValue): ?>
                         <tr>
-                            <td title="<?php echo $groupedLogActionCountRow[0]; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountRow[0]); ?>"><?php echo $cdcMastery->formatOutputString($groupedLogActionCountRow[0],20); ?></span></td>
-                            <td><?php echo number_format($groupedLogActionCountRow[1]); ?></td>
+                            <td title="<?php echo $groupedLogActionCountKey; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountKey); ?>"><?php echo $cdcMastery->formatOutputString($groupedLogActionCountKey,20); ?></span></td>
+                            <td><?php echo number_format($groupedLogActionCountValue); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
