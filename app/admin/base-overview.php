@@ -96,7 +96,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                     </tr>
                     <tr>
                         <td>Average Test Score</td>
-                        <td><?php echo $statistics->getAverageScoreByBase($baseUUID); ?>*</td>
+                        <td><?php echo number_format($statistics->getAverageScoreByBase($baseUUID),2); ?>*</td>
                     </tr>
                 </table>
             </section>
