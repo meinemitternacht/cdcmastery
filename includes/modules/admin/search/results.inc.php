@@ -55,7 +55,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
         <div class="9u">
             <section>
                 <div class="text-right">
-                    <strong>Showing results <?php echo ($rowOffset + 1); ?> - <?php if(($rowOffset + $pageRows) > $numSearchResults){ echo $numSearchResults; } else { echo ($rowOffset + $pageRows); } ?> out of <?php echo $numSearchResults; ?> search result<?php echo ($numSearchResults > 1) ? "s" : ""; ?></strong>
+                    <strong>Showing results <?php echo ($rowOffset + 1); ?> - <?php if(($rowOffset + $pageRows) > $numSearchResults){ echo $numSearchResults; } else { echo ($rowOffset + $pageRows); } ?> out of <?php echo number_format($numSearchResults); ?> search result<?php echo ($numSearchResults > 1) ? "s" : ""; ?></strong>
                 </div>
                 <?php if($searchType == "user"): ?>
                     <table>

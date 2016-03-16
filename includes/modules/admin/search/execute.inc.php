@@ -43,14 +43,15 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
             break;
     }
 
+
     if(!isset($searchParameterList)){
         $sysMsg->addMessage("Incorrect search parameters.");
         $cdcMastery->redirect("/admin/search");
     }
     else {
         $searchObj = new search($db, $log);
-        $searchObj->setSearchType($_POST['searchType']);
-        $searchObj->setSearchParameterJoinMethod($_POST['searchParameterJoinMethod']);
+        $searchObj->setSearchType($searchType);
+        $searchObj->setSearchParameterJoinMethod($searchParameterJoinMethod);
 
         foreach ($searchParameterList as $searchParameterKey => $searchParameter) {
             if (!empty($searchParameter)) {
