@@ -213,17 +213,12 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if($this->getUserStatsCacheVal(__FUNCTION__)){
-				return $this->getUserStatsCacheVal(__FUNCTION__);
+			if(!$this->queryCompletedTests()){
+				return false;
 			}
 			else{
-				if(!$this->queryCompletedTests()){
-					return false;
-				}
-				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->completedTests,$this->getCacheTTL(4));
-					return $this->completedTests;
-				}
+				$this->setUserStatsCacheVal(__FUNCTION__,$this->completedTests,$this->getCacheTTL(4));
+				return $this->completedTests;
 			}
 		}
 	}
@@ -233,17 +228,11 @@ class userStatistics extends CDCMastery
 			return false;
 		}
 		else{
-			if($this->getUserStatsCacheVal(__FUNCTION__)){
-				return $this->getUserStatsCacheVal(__FUNCTION__);
+			if(!$this->queryIncompleteTests()){
+				return false;
 			}
 			else{
-				if(!$this->queryIncompleteTests()){
-					return false;
-				}
-				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->incompleteTests,$this->getCacheTTL(1));
-					return $this->incompleteTests;
-				}
+				return $this->incompleteTests;
 			}
 		}
 	}
@@ -306,7 +295,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->questionsAnswered,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->questionsAnswered,$this->getCacheTTL(2));
 					return $this->questionsAnswered;
 				}
 			}
@@ -366,7 +355,7 @@ class userStatistics extends CDCMastery
 					if (!$this->querySupervisorAssociations()) {
 						return false;
 					} else {
-						$this->setUserStatsCacheVal(__FUNCTION__, $this->supervisorAssociations, $this->getCacheTTL(4));
+						$this->setUserStatsCacheVal(__FUNCTION__, $this->supervisorAssociations, $this->getCacheTTL(99));
 						return $this->supervisorAssociations;
 					}
 				}
@@ -390,7 +379,7 @@ class userStatistics extends CDCMastery
 					if (!$this->queryTrainingManagerAssociations()) {
 						return false;
 					} else {
-						$this->setUserStatsCacheVal(__FUNCTION__, $this->trainingManagerAssociations, $this->getCacheTTL(4));
+						$this->setUserStatsCacheVal(__FUNCTION__, $this->trainingManagerAssociations, $this->getCacheTTL(99));
 						return $this->trainingManagerAssociations;
 					}
 				}
@@ -414,7 +403,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->userSupervisors,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->userSupervisors,$this->getCacheTTL(99));
 					return $this->userSupervisors;
 				}
 			}
@@ -434,7 +423,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->userTrainingManagers,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->userTrainingManagers,$this->getCacheTTL(99));
 					return $this->userTrainingManagers;
 				}
 			}
@@ -454,7 +443,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->afscAssociations,$this->getCacheTTL(1));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->afscAssociations,$this->getCacheTTL(99));
 					return $this->afscAssociations;
 				}
 			}
@@ -474,7 +463,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->pendingAFSCAssociations,$this->getCacheTTL(1));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->pendingAFSCAssociations,$this->getCacheTTL(99));
 					return $this->pendingAFSCAssociations;
 				}
 			}
@@ -494,7 +483,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countAFSCAssociations,$this->getCacheTTL(1));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countAFSCAssociations,$this->getCacheTTL(99));
 					return $this->countAFSCAssociations;
 				}
 			}
@@ -514,7 +503,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countPendingAFSCAssociations,$this->getCacheTTL(1));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countPendingAFSCAssociations,$this->getCacheTTL(99));
 					return $this->countPendingAFSCAssociations;
 				}
 			}
@@ -534,7 +523,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countSupervisorSubordinates,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countSupervisorSubordinates,$this->getCacheTTL(99));
 					return $this->countSupervisorSubordinates;
 				}
 			}
@@ -554,7 +543,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countTrainingManagerSubordinates,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countTrainingManagerSubordinates,$this->getCacheTTL(99));
 					return $this->countTrainingManagerSubordinates;
 				}
 			}
@@ -574,7 +563,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserSupervisors,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserSupervisors,$this->getCacheTTL(99));
 					return $this->countUserSupervisors;
 				}
 			}
@@ -594,7 +583,7 @@ class userStatistics extends CDCMastery
 					return false;
 				}
 				else{
-					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserTrainingManagers,$this->getCacheTTL(4));
+					$this->setUserStatsCacheVal(__FUNCTION__,$this->countUserTrainingManagers,$this->getCacheTTL(99));
 					return $this->countUserTrainingManagers;
 				}
 			}
