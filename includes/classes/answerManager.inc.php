@@ -12,6 +12,8 @@ class answerManager extends CDCMastery
 	public $answerText;
 	public $answerCorrect;
 	public $questionUUID;
+
+	public $sortAnswers;
 	
 	public function __construct(mysqli $db, log $log){
 		$this->uuid = parent::genUUID();
@@ -56,13 +58,24 @@ class answerManager extends CDCMastery
 	
 	public function listAnswersByQuestion(){
 		if($this->questionUUID){
-			if($this->fouo){
-				$stmt = $this->db->prepare("SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd");
+			if($this->sortAnswers){
+				if($this->fouo){
+					$query = "SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY answerText ASC";
+				}
+				else{
+					$query = "SELECT uuid, answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY answerText ASC";
+				}
 			}
 			else{
-				$stmt = $this->db->prepare("SELECT uuid, answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd");
+				if($this->fouo){
+					$query = "SELECT uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd";
+				}
+				else{
+					$query = "SELECT uuid, answerText, answerCorrect, RAND() AS rnd FROM answerData WHERE questionUUID = ? ORDER BY rnd";
+				}
 			}
-			
+
+			$stmt = $this->db->prepare($query);
 			$stmt->bind_param("s",$this->questionUUID);
 			
 			if($stmt->execute()){

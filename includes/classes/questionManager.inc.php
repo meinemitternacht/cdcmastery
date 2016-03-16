@@ -60,7 +60,7 @@ class questionManager extends CDCMastery
             }
         }
 
-        if($limitRows && is_int($limitRows)){
+        if($limitRows){
             if($randomOrder){
                 $stmt = $this->db->prepare("SELECT uuid, RAND() AS rnd FROM questionData WHERE afscUUID = ? ORDER BY rnd ASC LIMIT 0, ?");
             }
@@ -373,11 +373,15 @@ class questionManager extends CDCMastery
         }
     }
 	
-	public function loadAssociatedAnswers(){
-		if($this->uuid){
-			$this->answer->setQuestionUUID($this->uuid);
-			
-			$answerArray = $this->answer->listAnswersByQuestion();
+	public function loadAssociatedAnswers($questionUUID=false,$sortAnswers=false){
+		if($questionUUID){
+			$this->answer->setQuestionUUID($questionUUID);
+
+            if($sortAnswers) {
+                $this->answer->sortAnswers = true;
+            }
+
+            $answerArray = $this->answer->listAnswersByQuestion();
 			
 			if($answerArray){
 				return $answerArray;
@@ -386,6 +390,22 @@ class questionManager extends CDCMastery
 				return false;
 			}
 		}
+        elseif($this->uuid){
+            $this->answer->setQuestionUUID($this->uuid);
+
+            if($sortAnswers) {
+                $this->answer->sortAnswers = true;
+            }
+
+            $answerArray = $this->answer->listAnswersByQuestion();
+
+            if($answerArray){
+                return $answerArray;
+            }
+            else{
+                return false;
+            }
+        }
 		else{
 			return false;
 		}
