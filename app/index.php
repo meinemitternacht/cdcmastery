@@ -71,18 +71,14 @@
 					<h2>Recent Updates</h2>
 				</header>
 				<ul class="style">
+					<li>
+						<p class="posted">February 26, 2016</p>
+						<p class="text">Updated 2A751 CDC information.</p>
+					</li>
                     <li>
                         <p class="posted">October 6, 2015</p>
                         <p class="text">Added the Flash Cards utility to the site. This enables users to create their own flash cards or study the testing data already in the database.</p>
                     </li>
-					<li>
-						<p class="posted">September 27, 2015</p>
-						<p class="text">Site completely redesigned.  Please report any issues that you may come across to <a href="mailto:support@cdcmastery.com">support@cdcmastery.com</a>.</p>
-					</li>
-					<li>
-						<p class="posted">September 24, 2015</p>
-						<p class="text">Add ability for administrators to manually authorize roles, approve FOUO AFSC associations, and activate users.</p>
-					</li>
 				</ul>
 			</section>
 		</div>
