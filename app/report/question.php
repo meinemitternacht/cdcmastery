@@ -22,22 +22,24 @@ else{
     }
     else {
         if(isset($_POST['userReportComments']) && !empty($_POST['userReportComments'])){
-            if($user->reportQuestion($questionUUID,$questionManager->getQuestionText(),$_POST['userReportComments'])){
+            if($user->reportQuestion($user->getUserEmail(),$questionManager->getAFSCUUID(),$questionUUID,$questionManager->getQuestionText(),$_POST['userReportComments'])){
                 $log->setAction("REPORT_QUESTION");
                 $log->setDetail("Question UUID",$questionUUID);
+                $log->setDetail("AFSC UUID",$questionManager->getAFSCUUID());
                 $log->setDetail("Report Reason",$_POST['userReportComments']);
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Your report has been sent to the CDCMastery Helpdesk successfully.  If we need further information, we will contact you within the next few days.");
+                $sysMsg->addMessage("Your report has been sent to the CDCMastery help desk successfully.  If we need further information, we will contact you within the next few days.");
                 $cdcMastery->redirect("/");
             }
             else{
                 $log->setAction("ERROR_REPORT_QUESTION");
                 $log->setDetail("Question UUID",$questionUUID);
+                $log->setDetail("AFSC UUID",$questionManager->getAFSCUUID());
                 $log->setDetail("Report Reason",$_POST['userReportComments']);
                 $log->saveEntry();
 
-                $sysMsg->addMessage("There was an issue sending this report to the CDCMastery Helpdesk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket.");
+                $sysMsg->addMessage("There was an issue sending this report to the CDCMastery help desk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket instead.");
                 $cdcMastery->redirect("/report/question/" . $questionUUID);
             }
         }

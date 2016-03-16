@@ -657,8 +657,12 @@ class user extends CDCMastery {
 		}
 	}
 
-	public function reportQuestion($questionUUID,$questionText,$userComments){
-		$emailSender = "support@cdcmastery.com";
+	public function reportQuestion($userEmail,$afscUUID,$questionUUID,$questionText,$userComments){
+		$afscManager = new afsc($this->db,$this->log);
+		$afscManager->loadAFSC($afscUUID);
+		$afscName = $afscManager->getAFSCName();
+
+		$emailSender = $userEmail;
 		$emailRecipient = "support@cdcmastery.com";
 		$emailSubject = "Question Flagged for Review";
 
@@ -667,12 +671,18 @@ class user extends CDCMastery {
 		$emailBodyHTML .= "<br /><br />";
 		$emailBodyHTML .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
 		$emailBodyHTML .= "<br /><br />";
-		$emailBodyHTML .= "Question UUID: ".$questionUUID;
+		$emailBodyHTML .= "<b>AFSC UUID:</b> ".$afscUUID;
+		$emailBodyHTML .= "<br />";
+		$emailBodyHTML .= "<b>AFSC Name:</b> ".$afscName;
+		$emailBodyHTML .= "<br />";
+		$emailBodyHTML .= "<b>Question UUID:</b> ".$questionUUID;
 		$emailBodyHTML .= "<br /><br />";
-		$emailBodyHTML .= "Question Text: ".$questionText;
+		$emailBodyHTML .= "<b>Question Text:</b> ".$questionText;
 		$emailBodyHTML .= "<br /><br />";
-		$emailBodyHTML .= "User Comments: ".nl2br($userComments);
+		$emailBodyHTML .= "<b>User Comments:</b> ".nl2br($userComments);
 		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "<b>Link to question:</b> <a href=\"https://cdcmastery.com/admin/cdc-data/".$afscUUID."/question/".$questionUUID."/view\">Click Here</a>";
+		$emailBodyHTML .= "<br /><br /><br />";
 		$emailBodyHTML .= "Regards,";
 		$emailBodyHTML .= "<br /><br />";
 		$emailBodyHTML .= "CDCMastery.com";
@@ -682,12 +692,18 @@ class user extends CDCMastery {
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
 		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "AFSC UUID: ".$afscUUID;
+		$emailBodyText .= "\r\n";
+		$emailBodyText .= "AFSC Name: ".$afscName;
+		$emailBodyText .= "\r\n";
 		$emailBodyText .= "Question UUID: ".$questionUUID;
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "Question Text: ".$questionText;
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "User Comments: ".nl2br($userComments);
 		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Link to question: https://cdcmastery.com/admin/cdc-data/".$afscUUID."/question/".$questionUUID."/view";
+		$emailBodyText .= "\r\n\r\n\r\n";
 		$emailBodyText .= "Regards,";
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "CDCMastery.com";
