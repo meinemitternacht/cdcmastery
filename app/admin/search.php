@@ -317,9 +317,9 @@ else {
                                                 <input type="hidden" name="searchType" value="testHistory">
                                                 <ul>
                                                     <li>
-                                                        <input type="radio" name="searchParameterJoinMethod" value="AND" CHECKED> Match All
+                                                        <input type="radio" name="searchParameterJoinMethod" value="AND"> Match All
                                                         Criteria<br>
-                                                        <input type="radio" name="searchParameterJoinMethod" value="OR"> Match Any Criteria
+                                                        <input type="radio" name="searchParameterJoinMethod" value="OR" CHECKED> Match Any Criteria
                                                     </li>
                                                     <li>
                                                         <label for="afscList">AFSC</label>
