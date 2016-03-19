@@ -40,9 +40,13 @@ if($genTestUUID){
 }
 
 if($pageSection == "print"){
+    $afsc->loadAFSC($genTestManager->getAfscUUID());
     ?>
     <h1 style="font-size: 1.8em;"><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
-    <em>Test <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
+    <?php if(!empty($afsc->getAFSCVersion())): ?>
+        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+    <?php endif; ?>
+    <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
     <br>
     <br>
     <?php
@@ -95,8 +99,11 @@ if($pageSection == "print"){
     endforeach; ?>
     <div style="page-break-after:always;"></div>
     <a name="answer-key"></a>
-    <h2>Answer Key</h2>
-    <em>Test <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
+    <h2><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
+    <?php if(!empty($afsc->getAFSCVersion())): ?>
+        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+    <?php endif; ?>
+    <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
     <div class="clearfix">&nbsp;</div>
     <div style="float:left;width:13%;">
         <?php
@@ -140,8 +147,12 @@ else {
                     <a href="/supervisor/generate-test/print/<?php echo $genTestUUID; ?>">Print this test</a> | <a href="#answer-key">View Answer Key</a>
                     <br>
                     <br>
+                    <?php $afsc->loadAFSC($genTestManager->getAfscUUID()); ?>
                     <h1 style="font-size: 1.8em;"><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
-                    <em>Test <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
+                    <?php if(!empty($afsc->getAFSCVersion())): ?>
+                        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+                    <?php endif; ?>
+                    <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
                     <br>
                     <br>
                     <?php
@@ -184,8 +195,11 @@ else {
                         $i++;
                     endforeach; ?>
                     <a name="answer-key"></a>
-                    <h2>Answer Key</h2>
-                    <em>Test <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
+                    <h2><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
+                    <?php if(!empty($afsc->getAFSCVersion())): ?>
+                        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+                    <?php endif; ?>
+                    <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
                     <div class="clearfix">&nbsp;</div>
                     <div style="float:left;width:13%;">
                         <?php
@@ -217,8 +231,13 @@ else {
                     <header>
                         <h2>Generate Offline Tests</h2>
                     </header>
-                    <a href="/supervisor/overview"
-                       class="button">&laquo; Back</a>
+                    <a href="/supervisor/overview" class="button">&laquo; Back</a>
+                    <br>
+                    <br>
+                    <p>
+                        After you choose an AFSC to generate a test for, enter the desired number of questions and click "Generate Test".  If the AFSC you chose does not have
+                        enough questions, it will output all questions for that AFSC.  Each test is randomly generated and will contain an answer key on the last page when printed.
+                    </p>
                 </section>
             </div>
         </div>
