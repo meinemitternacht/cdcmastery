@@ -205,7 +205,7 @@ class CDCMastery
 	}
 	
 	public function isTimeEmpty($time){
-		if($time == "0000-00-00 00:00:00" || $time == "0000-00-00"){
+		if(empty($time) || is_null($time) || $time == "0000-00-00 00:00:00" || $time == "0000-00-00"){
 			return true;
 		}
 		else{
