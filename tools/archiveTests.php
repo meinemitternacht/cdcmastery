@@ -81,7 +81,7 @@ if($totalTests > 0) {
                 }
             }
 
-            $path = '/www/cdcmastery.com/xml-archive/' . $testManager->getUserUUID();
+            $path = $cfg['xml']['directory'] . $testManager->getUserUUID();
             $fileName = strtotime($testManager->getTestTimeCompleted()) . '#' . $testUUID . '.xml';
             $fileString = $path . '/' . $fileName;
 
