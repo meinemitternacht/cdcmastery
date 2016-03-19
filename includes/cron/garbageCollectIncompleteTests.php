@@ -27,13 +27,13 @@ if($res->num_rows > 0){
     echo "There are ".$res->num_rows." eligible tests to delete. Processing...\n";
 
     foreach($eligibleTestUUIDList as $eligibleTestUUID){
-        if(!$testManager->deleteIncompleteTest(false,$eligibleTestUUID[0],false,true,false)){
-            $errorUUIDList[] = $eligibleTestUUID[0];
-            echo "Error deleting ".$eligibleTestUUID[0]."\n";
+        if(!$testManager->deleteIncompleteTest(false,$eligibleTestUUID,false,true,false)){
+            $errorUUIDList[] = $eligibleTestUUID;
+            echo "Error deleting ".$eligibleTestUUID."\n";
         }
         else{
-            $successUUIDList[] = $eligibleTestUUID[0];
-            echo "Deleted ".$eligibleTestUUID[0]."\n";
+            $successUUIDList[] = $eligibleTestUUID;
+            echo "Deleted ".$eligibleTestUUID."\n";
         }
     }
 
