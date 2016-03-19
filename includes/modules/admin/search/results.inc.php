@@ -64,7 +64,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                             <th>First Name</th>
                             <th>Rank</th>
                             <th>Base</th>
-                            <th>Username</th>
+                            <th>Last Login</th>
                             <th>Role</th>
                             <th>Action</th>
                         </tr>
@@ -78,9 +78,9 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                 <td><?php echo $userObj->getUserFirstName(); ?></td>
                                 <td><?php echo $userObj->getUserRank(); ?></td>
                                 <td><?php echo $bases->getBaseName($userObj->getUserBase()); ?></td>
-                                <td><?php echo $userObj->getUserHandle(); ?></td>
+                                <td><?php echo $cdcMastery->outputDateTime($userObj->getUserLastLogin(),$_SESSION['timeZone'],"j M Y H:i"); ?></td>
                                 <td><?php echo $roles->getRoleName($userObj->getUserRole()); ?></td>
-                                <td><a href="/admin/profile/<?php echo $result; ?>">View Profile</a></td>
+                                <td><a href="/admin/profile/<?php echo $result; ?>">Profile &raquo;</a></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
