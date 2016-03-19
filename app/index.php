@@ -157,12 +157,27 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 	} else {
 		$authorizationQueueCount = 0;
 	}
+
+	if($cdcMastery->verifyTrainingManager()){
+		if($pendingAssociationsCount > 0){
+			$showNotifications = true;
+		}
+		else{
+			$showNotifications = false;
+		}
+	}
+	else{
+		$showNotifications = true;
+	}
+}
+else{
+	$showNotifications = false;
 }
 ?>
 <div class="container">
 	<div class="row">
         <div class="4u">
-			<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
+			<?php if($showNotifications): ?>
 				<?php if(!empty($pendingAssociationsCount) || !empty($unactivatedUsersCount) || !empty($authorizationQueueCount)): ?>
 				<section>
 					<header>
@@ -229,11 +244,20 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
                 <header>
                     <h2>Welcome, <?php echo $user->getFullName(); ?></h2>
                 </header>
+				<?php if($cdcMastery->verifyTrainingManager() || $cdcMastery->verifyAdmin()): ?>
 				<div class="informationMessages">
 					<ul>
-						<li>Effective immediately, incomplete tests older than 30 days will be deleted.  Please direct any questions to the <a href="http://helpdesk.cdcmastery.com/" title="CDCMastery Support">Help Desk</a></li>
+						<li>Training Managers and Supervisors now have the ability to generate offline paper-based tests. <a href="/training/generate-test" title="Generate Offline Tests">Click here</a> to get started!</li>
 					</ul>
 				</div>
+				<?php endif; ?>
+				<?php if($cdcMastery->verifySupervisor()): ?>
+					<div class="informationMessages">
+						<ul>
+							<li>Training Managers and Supervisors now have the ability to generate offline paper-based tests. <a href="/supervisor/generate-test" title="Generate Offline Tests">Click here</a> to get started!</li>
+						</ul>
+					</div>
+				<?php endif; ?>
             </section>
             <div class="clearfix">&nbsp;</div>
 			<section>
