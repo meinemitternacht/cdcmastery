@@ -19,10 +19,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors encountered while associating subordinates with this user. Check the site log for details.";
+				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.");
 			}
 			else{
-				$messages[] = "Subordinate(s) associated successfully.";
+				$sysMsg->addMessage("Subordinate(s) associated successfully.");
 			}
 		break;
 		case "removeSubordinate":
@@ -41,10 +41,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors while removing subordinate association(s) for this user.  Check the site log for details.";
+				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.");
 			}
 			else{
-				$messages[] = "Subordinate association(s) removed successfully.";
+				$sysMsg->addMessage("Subordinate association(s) removed successfully.");
 			}
 		break;
 	}
@@ -52,7 +52,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 $userStatistics->setUserUUID($userUUID);
 $userInfo = new user($db, $log, $emailQueue);
-$userList = $user->listUsers();
+$userList = $user->listUsersByBase($user->getUserBase());
 
 if($userRole == "trainingManager"):
 	$subordinateList = $user->sortUserList($userStatistics->getTrainingManagerAssociations(),"userLastName");
@@ -80,15 +80,6 @@ $(document).ready(function() {
 });
 </script>
 <div class="container">
-	<?php if(isset($messages)): ?>
-	<div class="systemMessages">
-		<ul>
-		<?php foreach($messages as $message): ?>
-			<li><?php echo $message; ?></li>
-		<?php endforeach; ?>
-		</ul>
-	</div>
-	<?php endif; ?>
 	<div class="row">
 		<div class="4u">
 			<section>
@@ -135,6 +126,7 @@ $(document).ready(function() {
 				<header>
 					<h2>Add Subordinate</h2>
 				</header>
+				<em>Showing users from <br><?php echo $bases->getBaseName($user->getUserBase()); ?></em>
 			</section>
 			<form action="/admin/users/<?php echo $userUUID; ?>/associations/subordinate" method="POST">
 				<input type="hidden" name="formAction" value="addSubordinate">
