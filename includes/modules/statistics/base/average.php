@@ -22,7 +22,7 @@ foreach($baseList as $baseUUID => $baseName){
         $tableData[$i]['baseUUID'] = $baseUUID;
         $tableData[$i]['baseName'] = $baseName;
         $tableData[$i]['averageScore'] = $averageScore;
-        $chartScoreByBaseData .= "{ x: " . $i . ", toolTipContent: \"" . $baseName . ": {y}\", y: " . $averageScore . " }";
+        $chartScoreByBaseData .= "{ x: " . $i . ", toolTipContent: \"" . $baseName . ": {y}\", y: " . round($averageScore,2) . " }";
         $firstRow = false;
         $i++;
     }
@@ -79,7 +79,7 @@ foreach($baseList as $baseUUID => $baseName){
                             <?php else: ?>
                                 <td><?php echo $tableRow['baseName']; ?></td>
                             <?php endif; ?>
-                            <td><?php echo $tableRow['averageScore']; ?></td>
+                            <td><?php echo number_format($tableRow['averageScore'],2); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

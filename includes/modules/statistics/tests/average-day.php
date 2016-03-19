@@ -7,13 +7,13 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
-$testAverageByMonth = $statsObj->getTestAverageByMonth();
+$testAverageByDay = $statsObj->getTestAverageByDay();
 
-if($testAverageByMonth){
+if($testAverageByDay){
     $x=0;
-    foreach($testAverageByMonth as $testDate => $testCount){
-        $testAverageByMonthData[$x]['label'] = $testDate;
-        $testAverageByMonthData[$x]['data'] = $testCount;
+    foreach($testAverageByDay as $testDate => $testCount){
+        $testAverageByDayData[$x]['label'] = $testDate;
+        $testAverageByDayData[$x]['data'] = $testCount;
         $x++;
     }
 }
@@ -25,7 +25,7 @@ else{
 $testAverageData = "";
 $firstRow = true;
 $i=0;
-foreach($testAverageByMonthData as $rowKey => $rowData){
+foreach($testAverageByDayData as $rowKey => $rowData){
     if ($firstRow == false) {
         $testAverageData .= ",";
     }
@@ -40,7 +40,7 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
         var chart = new CanvasJS.Chart("chart-container", {
 
             title:{
-                text: "Tests Average by Month"
+                text: "Tests Average by Day"
             },
             axisX:{
                 valueFormatString: " ",
@@ -48,7 +48,7 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "spline",
+                    type: "line",
                     dataPoints: [<?php echo $testAverageData; ?>]
                 }
             ]
@@ -69,10 +69,10 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Month</th>
+                        <th>Day</th>
                         <th>Average Score</th>
                     </tr>
-                    <?php foreach($testAverageByMonthData as $rowKey => $rowData): ?>
+                    <?php foreach($testAverageByDayData as $rowKey => $rowData): ?>
                         <tr>
                             <td><?php echo $rowData['label']; ?></td>
                             <td><?php echo $rowData['data']; ?></td>

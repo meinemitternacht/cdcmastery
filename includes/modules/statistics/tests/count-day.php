@@ -48,7 +48,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "area",
+                    type: "line",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]

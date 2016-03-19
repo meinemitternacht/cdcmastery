@@ -78,7 +78,7 @@ foreach($baseList as $baseUUID => $baseName){
                             <?php else: ?>
                             <td><?php echo $tableRow['baseName']; ?></td>
                             <?php endif; ?>
-                            <td><?php echo $tableRow['userCount']; ?></td>
+                            <td><?php echo number_format($tableRow['userCount']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

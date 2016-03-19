@@ -15,14 +15,30 @@ class statistics extends CDCMastery {
 
     public $error;
 
+    public $databaseSize;
+
+    public $usersTopTenTestsDay;
+    public $usersTopTenTestsMonth;
+    public $usersTopTenTestsYear;
+
+    public $usersTopTenAverageDay;
+    public $usersTopTenAverageMonth;
+    public $usersTopTenAverageYear;
+
     public $afscPassRateArray;
     public $testAFSCCount;
     public $testsAverageScoreArrayLastSeven;
+    public $testsAverageByDay;
+    public $testsAverageByWeek;
+    public $testsAverageByMonth;
+    public $testsAverageByYear;
     public $testsAverageScoreByTimespan;
     public $testsByHourOfDay;
     public $testsByDayOfMonth;
     public $testCountByDay;
+    public $testCountByWeek;
     public $testCountByMonth;
+    public $testCountByYear;
     public $testCountByTimespan;
 
     public $baseActionsCount;
@@ -69,6 +85,9 @@ class statistics extends CDCMastery {
 
     public $userRegistrationsCount;
     public $userRegistrationsCountDay;
+    public $loginsByDay;
+    public $loginsByMonth;
+    public $loginsByYear;
     public $inactiveUsers;
 
     public $usersActiveToday;
@@ -172,6 +191,334 @@ class statistics extends CDCMastery {
         $cacheHash = md5($hashVal);
 
         return $this->memcache->get($cacheHash);
+    }
+
+    public function getUsersTopTenTestsDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenTestsDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenTestsDay,$this->getCacheTTL(3));
+                return $this->usersTopTenTestsDay;
+            }
+        }
+    }
+
+    public function queryUsersTopTenTestsDay(){
+        $this->usersTopTenTestsDay = Array();
+        $query = "SELECT  userUUID,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y-m-d",time())." 00:00:00'
+                        GROUP BY userUUID
+                        ORDER BY testCount DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenTestsDay[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenTestsDay[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenTestsDay) && is_array($this->usersTopTenTestsDay) && count($this->usersTopTenTestsDay) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getUsersTopTenTestsMonth(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenTestsMonth()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenTestsMonth,$this->getCacheTTL(3));
+                return $this->usersTopTenTestsMonth;
+            }
+        }
+    }
+
+    public function queryUsersTopTenTestsMonth(){
+        $this->usersTopTenTestsMonth = Array();
+        $query = "SELECT  userUUID,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y-m",time())."-01 00:00:00'
+                        GROUP BY userUUID
+                        ORDER BY testCount DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenTestsMonth[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenTestsMonth[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenTestsMonth) && is_array($this->usersTopTenTestsMonth) && count($this->usersTopTenTestsMonth) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getUsersTopTenTestsYear(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenTestsYear()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenTestsYear,$this->getCacheTTL(3));
+                return $this->usersTopTenTestsYear;
+            }
+        }
+    }
+
+    public function queryUsersTopTenTestsYear(){
+        $this->usersTopTenTestsYear = Array();
+        $query = "SELECT  userUUID,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y",time())."-01-01 00:00:00'
+                        GROUP BY userUUID
+                        ORDER BY testCount DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenTestsYear[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenTestsYear[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenTestsYear) && is_array($this->usersTopTenTestsYear) && count($this->usersTopTenTestsYear) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getUsersTopTenAverageDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenAverageDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenAverageDay,$this->getCacheTTL(3));
+                return $this->usersTopTenAverageDay;
+            }
+        }
+    }
+
+    public function queryUsersTopTenAverageDay(){
+        $this->usersTopTenAverageDay = Array();
+        $query = "SELECT  userUUID,
+                          AVG(testHistory.testScore) AS averageScore,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y-m-d",time())." 00:00:00'
+                        GROUP BY userUUID
+                        HAVING testCount > 2
+                        ORDER BY averageScore DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenAverageDay[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenAverageDay[$i]['averageScore'] = $row['averageScore'];
+                $this->usersTopTenAverageDay[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenAverageDay) && is_array($this->usersTopTenAverageDay) && count($this->usersTopTenAverageDay) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getUsersTopTenAverageMonth(){
+        $this->deleteStatsCacheVal(__FUNCTION__);
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenAverageMonth()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenAverageMonth,$this->getCacheTTL(3));
+                return $this->usersTopTenAverageMonth;
+            }
+        }
+    }
+
+    public function queryUsersTopTenAverageMonth(){
+        $this->usersTopTenAverageMonth = Array();
+        $query = "SELECT  userUUID,
+                          AVG(testHistory.testScore) AS averageScore,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y-m",time())."-01 00:00:00'
+                        GROUP BY userUUID
+                        HAVING testCount > 2
+                        ORDER BY averageScore DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenAverageMonth[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenAverageMonth[$i]['averageScore'] = $row['averageScore'];
+                $this->usersTopTenAverageMonth[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenAverageMonth) && is_array($this->usersTopTenAverageMonth) && count($this->usersTopTenAverageMonth) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getUsersTopTenAverageYear(){
+        $this->deleteStatsCacheVal(__FUNCTION__);
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryUsersTopTenAverageYear()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->usersTopTenAverageYear,$this->getCacheTTL(3));
+                return $this->usersTopTenAverageYear;
+            }
+        }
+    }
+
+    public function queryUsersTopTenAverageYear(){
+        $this->usersTopTenAverageYear = Array();
+        $query = "SELECT  userUUID,
+                          AVG(testHistory.testScore) AS averageScore,
+                          COUNT(*) AS testCount
+                      FROM `testHistory`
+                        LEFT JOIN userData ON userData.uuid=testHistory.userUUID
+                      WHERE testHistory.testTimeCompleted > '".date("Y",time())."-01-01 00:00:00'
+                        GROUP BY userUUID
+                        HAVING testCount > 2
+                        ORDER BY averageScore DESC
+                        LIMIT 10";
+
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            $i=1;
+            while($row = $res->fetch_assoc()) {
+                $this->usersTopTenAverageYear[$i]['userUUID'] = $row['userUUID'];
+                $this->usersTopTenAverageYear[$i]['averageScore'] = $row['averageScore'];
+                $this->usersTopTenAverageYear[$i]['testCount'] = $row['testCount'];
+                $i++;
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->usersTopTenAverageYear) && is_array($this->usersTopTenAverageYear) && count($this->usersTopTenAverageYear) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getDatabaseSize(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryDatabaseSize()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->databaseSize,$this->getCacheTTL(4));
+                return $this->databaseSize;
+            }
+        }
+    }
+
+    public function queryDatabaseSize(){
+        $query = "SELECT table_schema, SUM((data_length+index_length)/1024/1024/1024) AS databaseSize FROM information_schema.tables WHERE table_schema = 'cdcmastery_main'";
+        $res = $this->db->query($query);
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()) {
+                $this->databaseSize = $row['databaseSize'];
+            }
+        }
+
+        $res->close();
+
+        if(isset($this->databaseSize)){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public function getAFSCPassRates($afscUUIDList){
@@ -349,6 +696,194 @@ class statistics extends CDCMastery {
         }
     }
 
+    public function getTestAverageByDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestAverageByDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testsAverageByDay,$this->getCacheTTL(6));
+                return $this->testsAverageByDay;
+            }
+        }
+    }
+
+    public function queryTestAverageByDay(){
+        $res = $this->db->query("SELECT DATE(testHistory.testTimeCompleted) AS testDate, AVG(testHistory.testScore) AS testAverage
+                                    FROM testHistory
+                                      GROUP BY testDate
+                                      ORDER BY testDate ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testsAverageByDay[$row['testDate']] = round($row['testAverage'],2);
+            }
+
+            if(isset($this->testsAverageByDay) && !empty($this->testsAverageByDay)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAverageByWeek(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestAverageByWeek()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testsAverageByWeek,$this->getCacheTTL(6));
+                return $this->testsAverageByWeek;
+            }
+        }
+    }
+
+    public function queryTestAverageByWeek(){
+        $res = $this->db->query("SELECT YEARWEEK(testHistory.testTimeCompleted) AS testWeek, AVG(testHistory.testScore) AS testAverage
+                                    FROM testHistory
+                                      GROUP BY YEARWEEK(testHistory.testTimeCompleted)
+                                      ORDER BY YEARWEEK(testHistory.testTimeCompleted) ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testsAverageByWeek[$row['testWeek']] = round($row['testAverage'],2);
+            }
+
+            if(isset($this->testsAverageByWeek) && !empty($this->testsAverageByWeek)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAverageByMonth(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestAverageByMonth()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testsAverageByMonth,$this->getCacheTTL(6));
+                return $this->testsAverageByMonth;
+            }
+        }
+    }
+
+    public function queryTestAverageByMonth(){
+        $res = $this->db->query("SELECT DATE_FORMAT(testHistory.testTimeCompleted, '%Y-%m') AS testDate, AVG(testHistory.testScore) AS testAverage
+                                    FROM testHistory
+                                      GROUP BY testDate
+                                      ORDER BY testDate ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testsAverageByMonth[$row['testDate']] = round($row['testAverage'],2);
+            }
+
+            if(isset($this->testsAverageByMonth) && !empty($this->testsAverageByMonth)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestAverageByYear(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestAverageByYear()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testsAverageByYear,$this->getCacheTTL(6));
+                return $this->testsAverageByYear;
+            }
+        }
+    }
+
+    public function queryTestAverageByYear(){
+        $res = $this->db->query("SELECT DATE_FORMAT(testHistory.testTimeCompleted, '%Y') AS testDate, AVG(testHistory.testScore) AS testAverage
+                                    FROM testHistory
+                                      GROUP BY testDate
+                                      ORDER BY testDate ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testsAverageByYear[$row['testDate']] = round($row['testAverage'],2);
+            }
+
+            if(isset($this->testsAverageByYear) && !empty($this->testsAverageByYear)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
     public function getTestAverageByTimespan(DateTime $dateTimeStart, DateTime $dateTimeEnd){
         if($this->getStatsCacheVal(__FUNCTION__,$dateTimeStart->format("YmdHis"),$dateTimeEnd->format("YmdHis"))){
             return $this->getStatsCacheVal(__FUNCTION__,$dateTimeStart->format("YmdHis"),$dateTimeEnd->format("YmdHis"));
@@ -518,7 +1053,7 @@ class statistics extends CDCMastery {
         $res = $this->db->query("SELECT DATE(testHistory.testTimeStarted) AS testDate,
                                     COUNT(*) AS testCount
                                     FROM testHistory
-                                      GROUP BY DATE(testHistory.testTimeCompleted)
+                                      GROUP BY testDate
                                       ORDER BY testDate");
 
         if($res->num_rows > 0){
@@ -530,6 +1065,53 @@ class statistics extends CDCMastery {
                 return true;
             }
             else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestCountByWeek(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestCountByWeek()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testCountByWeek,$this->getCacheTTL(6));
+                return $this->testCountByWeek;
+            }
+        }
+    }
+
+    public function queryTestCountByWeek(){
+        $res = $this->db->query("SELECT YEARWEEK(testHistory.testTimeCompleted) AS testWeek, COUNT(*) AS testCount
+                                    FROM testHistory
+                                      GROUP BY YEARWEEK(testHistory.testTimeCompleted)
+                                      ORDER BY YEARWEEK(testHistory.testTimeCompleted) ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testCountByWeek[$row['testWeek']] = $row['testCount'];
+            }
+
+            if(isset($this->testCountByWeek) && !empty($this->testCountByWeek)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
                 return false;
             }
         }
@@ -565,6 +1147,53 @@ class statistics extends CDCMastery {
             }
 
             if(isset($this->testCountByMonth) && !empty($this->testCountByMonth)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getTestCountByYear(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryTestCountByYear()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->testCountByYear,$this->getCacheTTL(6));
+                return $this->testCountByYear;
+            }
+        }
+    }
+
+    public function queryTestCountByYear(){
+        $res = $this->db->query("SELECT DATE_FORMAT(testHistory.testTimeCompleted, '%Y') AS testDate, COUNT(*) AS testCount
+                                    FROM testHistory
+                                      GROUP BY testDate
+                                      ORDER BY testDate");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->testCountByYear[$row['testDate']] = $row['testCount'];
+            }
+
+            if(isset($this->testCountByYear) && !empty($this->testCountByYear)){
                 $res->close();
                 return true;
             }
@@ -2029,6 +2658,142 @@ class statistics extends CDCMastery {
             $this->log->saveEntry();
             $res->close();
 
+            return false;
+        }
+    }
+
+    public function getLoginsByDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryLoginsByDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->loginsByDay,$this->getCacheTTL(5));
+                return $this->loginsByDay;
+            }
+        }
+    }
+
+    public function queryLoginsByDay(){
+        $res = $this->db->query("SELECT DATE(systemLog.timestamp) AS loginDate,
+                                    COUNT(*) AS userLogins
+                                    FROM systemLog
+                                    WHERE action='LOGIN_SUCCESS'
+                                      GROUP BY loginDate
+                                      ORDER BY loginDate");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->loginsByDay[$row['loginDate']] = $row['userLogins'];
+            }
+
+            if(isset($this->loginsByDay) && !empty($this->loginsByDay)){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getLoginsByMonth(){
+    if($this->getStatsCacheVal(__FUNCTION__)){
+        return $this->getStatsCacheVal(__FUNCTION__);
+    }
+    else{
+        if(!$this->queryLoginsByMonth()){
+            return 0;
+        }
+        else{
+            $this->setStatsCacheVal(__FUNCTION__,$this->loginsByMonth,$this->getCacheTTL(6));
+            return $this->loginsByMonth;
+        }
+    }
+}
+
+    public function queryLoginsByMonth(){
+        $res = $this->db->query("SELECT DATE_FORMAT(systemLog.timestamp, '%Y-%m') AS loginMonth, COUNT(*) AS loginCount
+                                    FROM systemLog
+                                    WHERE action='LOGIN_SUCCESS'
+                                      GROUP BY loginMonth
+                                      ORDER BY loginMonth");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->loginsByMonth[$row['loginMonth']] = $row['loginCount'];
+            }
+
+            if(isset($this->loginsByMonth) && !empty($this->loginsByMonth)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function getLoginsByYear(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryLoginsByYear()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->loginsByYear,$this->getCacheTTL(6));
+                return $this->loginsByYear;
+            }
+        }
+    }
+
+    public function queryLoginsByYear(){
+        $res = $this->db->query("SELECT DATE_FORMAT(systemLog.timestamp, '%Y') AS loginYear, COUNT(*) AS loginCount
+                                    FROM systemLog
+                                    WHERE action='LOGIN_SUCCESS'
+                                      GROUP BY loginYear
+                                      ORDER BY loginYear");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->loginsByYear[$row['loginYear']] = $row['loginCount'];
+            }
+
+            if(isset($this->loginsByYear) && !empty($this->loginsByYear)){
+                $res->close();
+                return true;
+            }
+            else{
+                $this->error = $this->db->error;
+                $this->log->setAction("MYSQL_ERROR");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+                $this->log->setDetail("MYSQL ERROR",$this->error);
+                $this->log->saveEntry();
+
+                $res->close();
+
+                return false;
+            }
+        }
+        else{
             return false;
         }
     }

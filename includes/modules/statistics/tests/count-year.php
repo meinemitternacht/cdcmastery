@@ -7,23 +7,30 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$testCountByYear = $statsObj->getTestCountByYear();
 
-for($i=2012;$i<=date("Y",time());$i++){
-    $dateTimeStartObj = new DateTime("January 1st ".$i);
-    $dateTimeEndObj = new DateTime("December 31st ".$i);
-
-    $testCountByTimespanData[$i] = $statsObj->getTestCountByTimespan($dateTimeStartObj,$dateTimeEndObj);
+if($testCountByYear){
+    $x=0;
+    foreach($testCountByYear as $testDate => $testCount){
+        $testCountByTimespanData[$x]['label'] = $testDate;
+        $testCountByTimespanData[$x]['data'] = $testCount;
+        $x++;
+    }
+}
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testCountData = "";
 $firstRow = true;
 $i=0;
-foreach($testCountByTimespanData as $testYear => $testCount){
+foreach($testCountByTimespanData as $rowKey => $rowData){
     if ($firstRow == false) {
         $testCountData .= ",";
     }
 
-    $testCountData .= "{ x: " . $i . ", label: \"" . $testYear . "\", toolTipContent: \"".$testYear.":<br><strong>{y} tests</strong>\", y: " . $testCount . " }";
+    $testCountData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>{y} tests</strong>\", y: " . $rowData['data'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -35,9 +42,12 @@ foreach($testCountByTimespanData as $testYear => $testCount){
             title:{
                 text: "Tests Taken by Year"
             },
+            axisX:{
+                valueFormatString: " ",
+                tickLength: 0
+            },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
                     type: "column",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
@@ -62,10 +72,10 @@ foreach($testCountByTimespanData as $testYear => $testCount){
                         <th>Year</th>
                         <th>Tests Taken</th>
                     </tr>
-                    <?php foreach($testCountByTimespanData as $testYear => $testCount): ?>
+                    <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
                         <tr>
-                            <td><?php echo $testYear; ?></td>
-                            <td><?php echo number_format($testCount); ?></td>
+                            <td><?php echo $rowData['label']; ?></td>
+                            <td><?php echo number_format($rowData['data']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

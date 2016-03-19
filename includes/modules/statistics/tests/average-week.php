@@ -7,46 +7,30 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$testAverageByWeek = $statsObj->getTestAverageByWeek();
 
-$x=0;
-for($i=2012;$i<=date("Y",time());$i++){
-    for($j=0;$j<=51;$j++) {
-        if($i==date("Y",time()) && $j > date("W",time())){
-            continue;
-        }
-        else {
-            $dateTimeStartObj = new DateTime();
-            $dateTimeEndObj = new DateTime();
-
-            $dateTimeStartObj->setISODate($i,$j);
-            $dateTimeStartObj->setTime(0,0,0);
-            $dateTimeEndObj->setISODate($i,$j,7);
-            $dateTimeEndObj->setTime(23,59,59);
-
-            $averageData = $statsObj->getTestAverageByTimespan($dateTimeStartObj, $dateTimeEndObj);
-
-            $startLabel = $dateTimeStartObj->format("j M Y");
-            $endLabel = $dateTimeEndObj->format("j M Y");
-            $fullLabel = $startLabel . " - " . $endLabel;
-
-            if($averageData > 0) {
-                $testAverageByTimespanData[$x]['label'] = $fullLabel;
-                $testAverageByTimespanData[$x]['data'] = $averageData;
-                $x++;
-            }
-        }
+if($testAverageByWeek){
+    $x=0;
+    foreach($testAverageByWeek as $testDate => $testCount){
+        $testAverageByWeekData[$x]['label'] = $testDate;
+        $testAverageByWeekData[$x]['data'] = $testCount;
+        $x++;
     }
+}
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testAverageData = "";
 $firstRow = true;
 $i=0;
-foreach($testAverageByTimespanData as $rowKey => $rowData){
+foreach($testAverageByWeekData as $rowKey => $rowData){
     if ($firstRow == false) {
         $testAverageData .= ",";
     }
 
-    $testAverageData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . "<br>Average: <strong>" . $rowData['data'] . "</strong>\", y: " . $rowData['data'] . " }";
+    $testAverageData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>Average Score: {y}</strong>\", y: " . $rowData['data'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -56,7 +40,7 @@ foreach($testAverageByTimespanData as $rowKey => $rowData){
         var chart = new CanvasJS.Chart("chart-container", {
 
             title:{
-                text: "Average Score by Week"
+                text: "Tests Average by Week"
             },
             axisX:{
                 valueFormatString: " ",
@@ -64,8 +48,7 @@ foreach($testAverageByTimespanData as $rowKey => $rowData){
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                    type: "line",
+                    type: "spline",
                     dataPoints: [<?php echo $testAverageData; ?>]
                 }
             ]
@@ -86,10 +69,10 @@ foreach($testAverageByTimespanData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Year</th>
+                        <th>Week</th>
                         <th>Average Score</th>
                     </tr>
-                    <?php foreach($testAverageByTimespanData as $rowKey => $rowData): ?>
+                    <?php foreach($testAverageByWeekData as $rowKey => $rowData): ?>
                         <tr>
                             <td><?php echo $rowData['label']; ?></td>
                             <td><?php echo $rowData['data']; ?></td>

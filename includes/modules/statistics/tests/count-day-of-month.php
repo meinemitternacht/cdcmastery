@@ -34,7 +34,7 @@ foreach($testsByDayOfMonth as $dayString => $testCount){
             },
             data: [
                 {
-                    type: "column",
+                    type: "spline",
                     dataPoints: [
                         <?php echo $chartData; ?>
                     ]

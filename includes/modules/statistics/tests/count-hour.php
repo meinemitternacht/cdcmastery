@@ -35,7 +35,6 @@ foreach($testCountByHour as $hourString => $testCount){
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
                     type: "spline",
                     dataPoints: [
                         <?php echo $chartData; ?>

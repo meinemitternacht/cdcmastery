@@ -6,6 +6,7 @@
  * Time: 8:01 PM
  */
 $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
+$userObj = new user($db,$log,$emailQueue);
 ?>
 <script>
     $(document).ready(function()
@@ -186,6 +187,14 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                 </header>
                 <table>
                     <tr>
+                        <td><strong>Database Size</strong></td>
+                        <td><?php echo round($statisticsObj->getDatabaseSize(),2); ?> GB</td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/MYSQL_ERROR">MySQL Errors</a></span></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("MYSQL_ERROR")); ?></td>
+                    </tr>
+                    <tr>
                         <td><strong>Log Entries</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalLogEntries()); ?></td>
                     </tr>
@@ -210,7 +219,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("AJAX_DIRECT_ACCESS")); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
-                        <td>Errors</td>
+                        <td>All Errors</td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("%ERROR%")); ?></td>
                     </tr>
                     <tr>
@@ -222,8 +231,12 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_PASSWORD_RESET_COMPLETE")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/EMAIL_SEND">E-mails Sent</a></span></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/EMAIL_SEND">E-mail Messages Sent</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("EMAIL_SEND")); ?></td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ERROR_EMAIL">E-mail Errors</a></span></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_EMAIL%")); ?></td>
                     </tr>
                 </table>
             </section>
@@ -314,7 +327,6 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                     if(count($usersRecentlyActive) > 1): ?>
                         <?php foreach($usersRecentlyActive as $recentUser): ?>
                             <?php
-                            $userObj = new user($db,$log,$emailQueue);
                             $userObj->loadUser($recentUser);
                             ?>
                             <tr>
@@ -475,12 +487,215 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
         </div>
     </div>
     <?php
+    $topTenUserTestsToday = $statisticsObj->getUsersTopTenTestsDay();
+    $topTenUserTestsMonth = $statisticsObj->getUsersTopTenTestsMonth();
+    $topTenUserTestsYear = $statisticsObj->getUsersTopTenTestsYear();
+
+    $topTenUserAverageToday = $statisticsObj->getUsersTopTenAverageDay();
+    $topTenUserAverageMonth = $statisticsObj->getUsersTopTenAverageMonth();
+    $topTenUserAverageYear = $statisticsObj->getUsersTopTenAverageYear();
+    ?>
+    <div class="clearfix">&nbsp;</div>
+    <header>
+        <h2>Top 10 Users</h2>
+    </header>
+    <div class="row">
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Tests Taken Today</h2>
+                </header>
+                <?php if($topTenUserTestsToday): ?>
+                <table id="topTenUserTestsToday">
+                    <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($topTenUserTestsToday as $userPlace => $rowData): ?>
+                        <?php $userObj->loadUser($rowData['userUUID']); ?>
+                        <tr>
+                            <td><?php echo $userPlace; ?></td>
+                            <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                            <td><?php echo number_format($rowData['testCount']); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php else: ?>
+                    <p>No users have tested today.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Tests Taken This Month</h2>
+                </header>
+                <?php if($topTenUserTestsMonth): ?>
+                    <table id="topTenUserTestsMonth">
+                        <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($topTenUserTestsMonth as $userPlace => $rowData): ?>
+                            <?php $userObj->loadUser($rowData['userUUID']); ?>
+                            <tr>
+                                <td><?php echo $userPlace; ?></td>
+                                <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                                <td><?php echo number_format($rowData['testCount']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No users have tested this month.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Tests Taken This Year</h2>
+                </header>
+                <?php if($topTenUserTestsYear): ?>
+                    <table id="topTenUserTestsYear">
+                        <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($topTenUserTestsYear as $userPlace => $rowData): ?>
+                            <?php $userObj->loadUser($rowData['userUUID']); ?>
+                            <tr>
+                                <td><?php echo $userPlace; ?></td>
+                                <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                                <td><?php echo number_format($rowData['testCount']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No users have tested this year.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Average Score Today</h2>
+                </header>
+                <?php if($topTenUserAverageToday): ?>
+                    <table id="topTenUserAverageToday">
+                        <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Average</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($topTenUserAverageToday as $userPlace => $rowData): ?>
+                            <?php $userObj->loadUser($rowData['userUUID']); ?>
+                            <tr>
+                                <td><?php echo $userPlace; ?></td>
+                                <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                                <td><?php echo number_format($rowData['averageScore'],2); ?></td>
+                                <td><?php echo number_format($rowData['testCount']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No users have tested today.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Average Score This Month</h2>
+                </header>
+                <?php if($topTenUserAverageMonth): ?>
+                    <table id="topTenUserAverageMonth">
+                        <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Average</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($topTenUserAverageMonth as $userPlace => $rowData): ?>
+                            <?php $userObj->loadUser($rowData['userUUID']); ?>
+                            <tr>
+                                <td><?php echo $userPlace; ?></td>
+                                <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                                <td><?php echo number_format($rowData['averageScore'],2); ?></td>
+                                <td><?php echo number_format($rowData['testCount']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No users have tested this month.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+        <div class="4u">
+            <section>
+                <header>
+                    <h2>Average Score This Year</h2>
+                </header>
+                <?php if($topTenUserAverageYear): ?>
+                    <table id="topTenUserAverageYear">
+                        <thead>
+                        <tr>
+                            <td><strong>#</strong></td>
+                            <td><strong>User</strong></td>
+                            <td><strong>Average</strong></td>
+                            <td><strong>Tests</strong></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($topTenUserAverageYear as $userPlace => $rowData): ?>
+                            <?php $userObj->loadUser($rowData['userUUID']); ?>
+                            <tr>
+                                <td><?php echo $userPlace; ?></td>
+                                <td><a href="/admin/profile/<?php echo $userObj->getUUID(); ?>" title="View Profile"><?php echo $userObj->getFullName(); ?></a></td>
+                                <td><?php echo number_format($rowData['averageScore'],2); ?></td>
+                                <td><?php echo number_format($rowData['testCount']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No users have tested this year.</p>
+                <?php endif; ?>
+            </section>
+        </div>
+    </div>
+    <?php
     $groupedLogActionCountArray = $statisticsObj->getGroupedLogActionCount();
 
     if($groupedLogActionCountArray):
     ?>
     <div class="row">
-        <div class="4u">
+        <div class="6u">
             <section style="height:30em;overflow-y:scroll;overflow-x:hidden;">
                 <header>
                     <h2>Log Action Totals</h2>
@@ -495,7 +710,7 @@ $statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
                     <tbody>
                         <?php foreach($groupedLogActionCountArray as $groupedLogActionCountKey => $groupedLogActionCountValue): ?>
                         <tr>
-                            <td title="<?php echo $groupedLogActionCountKey; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountKey); ?>"><?php echo $cdcMastery->formatOutputString($groupedLogActionCountKey,20); ?></span></td>
+                            <td title="<?php echo $groupedLogActionCountKey; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountKey); ?>"><?php echo $groupedLogActionCountKey; ?></span></td>
                             <td><?php echo number_format($groupedLogActionCountValue); ?></td>
                         </tr>
                         <?php endforeach; ?>

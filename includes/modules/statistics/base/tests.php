@@ -15,7 +15,7 @@ $i=0;
 foreach($baseList as $baseUUID => $baseName){
     $testCount = $statsObj->getTotalTestsByBase($baseUUID);
 
-    if($testCount > 0) {
+    if($testCount > 10) {
         if ($firstRow == false) {
             $chartTestsByBaseData .= ",";
         }
@@ -45,7 +45,6 @@ foreach($baseList as $baseUUID => $baseName){
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
                     type: "column",
                     dataPoints: [
                         <?php echo $chartTestsByBaseData; ?>
@@ -79,7 +78,7 @@ foreach($baseList as $baseUUID => $baseName){
                             <?php else: ?>
                             <td><?php echo $tableRow['baseName']; ?></td>
                             <?php endif; ?>
-                            <td><?php echo $tableRow['testCount']; ?></td>
+                            <td><?php echo number_format($tableRow['testCount']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

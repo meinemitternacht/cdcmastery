@@ -7,23 +7,30 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$testAverageByYear = $statsObj->getTestAverageByYear();
 
-for($i=2012;$i<=date("Y",time());$i++){
-    $dateTimeStartObj = new DateTime("January 1st ".$i);
-    $dateTimeEndObj = new DateTime("December 31st ".$i);
-
-    $testAverageByTimespanData[$i] = $statsObj->getTestAverageByTimespan($dateTimeStartObj,$dateTimeEndObj);
+if($testAverageByYear){
+    $x=0;
+    foreach($testAverageByYear as $testDate => $testCount){
+        $testAverageByYearData[$x]['label'] = $testDate;
+        $testAverageByYearData[$x]['data'] = $testCount;
+        $x++;
+    }
+}
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testAverageData = "";
 $firstRow = true;
 $i=0;
-foreach($testAverageByTimespanData as $testAverageYear => $testAverageScore){
+foreach($testAverageByYearData as $rowKey => $rowData){
     if ($firstRow == false) {
         $testAverageData .= ",";
     }
 
-    $testAverageData .= "{ x: " . $i . ", label: \"" . $testAverageYear . "\", y: " . $testAverageScore . " }";
+    $testAverageData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>Average Score: {y}</strong>\", y: " . $rowData['data'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -33,11 +40,14 @@ foreach($testAverageByTimespanData as $testAverageYear => $testAverageScore){
         var chart = new CanvasJS.Chart("chart-container", {
 
             title:{
-                text: "Average Score by Year"
+                text: "Tests Average by Year"
+            },
+            axisX:{
+                valueFormatString: " ",
+                tickLength: 0
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
                     type: "column",
                     dataPoints: [<?php echo $testAverageData; ?>]
                 }
@@ -62,10 +72,10 @@ foreach($testAverageByTimespanData as $testAverageYear => $testAverageScore){
                         <th>Year</th>
                         <th>Average Score</th>
                     </tr>
-                    <?php foreach($testAverageByTimespanData as $testAverageYear => $testAverageScore): ?>
+                    <?php foreach($testAverageByYearData as $rowKey => $rowData): ?>
                         <tr>
-                            <td><?php echo $testAverageYear; ?></td>
-                            <td><?php echo $testAverageScore; ?></td>
+                            <td><?php echo $rowData['label']; ?></td>
+                            <td><?php echo $rowData['data']; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

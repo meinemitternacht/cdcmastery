@@ -27,6 +27,7 @@
         <li><a href="/about/statistics/tests/count-month">Tests Taken by Month</a></li>
         <li><a href="/about/statistics/tests/count-year">Tests Taken by Year</a></li>
         <li><a href="/about/statistics/tests/average-seven-days">Average Score - Last 7 days</a></li>
+        <li><a href="/about/statistics/tests/average-day">Average Score by Day</a></li>
         <li><a href="/about/statistics/tests/average-week">Average Score by Week</a></li>
         <li><a href="/about/statistics/tests/average-month">Average Score by Month</a></li>
         <li><a href="/about/statistics/tests/average-year">Average Score by Year</a></li>
@@ -34,6 +35,9 @@
     <ul>
         <li><strong>Users</strong></li>
         <li><a href="/about/statistics/user/groups">User Count by Group</a></li>
+        <li><a href="/about/statistics/user/logins-day">Log-ins by Day</a></li>
+        <li><a href="/about/statistics/user/logins-month">Log-ins by Month</a></li>
+        <li><a href="/about/statistics/user/logins-year">Log-ins by Year</a></li>
         <li><a href="/about/statistics/user/registrations-day">Registrations by Day</a></li>
     </ul>
 </section>

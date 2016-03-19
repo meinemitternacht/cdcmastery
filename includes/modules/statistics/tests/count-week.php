@@ -7,52 +7,19 @@
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$testCountByWeek = $statsObj->getTestCountByWeek();
 
-$x=0;
-/*
- * Testing started on February 14th, 2012
- */
-for($i=2012;$i<=date("Y",time());$i++){
-    /*
-     * 52 weeks in a year, but we start at 0!
-     */
-    for($j=0;$j<=52;$j++) {
-        if($i==date("Y",time()) && $j > date("W",time())){
-            continue;
-        }
-        else {
-            $dateTimeStartObj = new DateTime();
-            $dateTimeEndObj = new DateTime();
-
-            $dateTimeStartObj->setISODate($i,$j);
-            $dateTimeStartObj->setTime(0,0,0);
-            $dateTimeEndObj->setISODate($i,$j,7);
-            $dateTimeEndObj->setTime(23,59,59);
-
-            $countData = $statsObj->getTestCountByTimespan($dateTimeStartObj, $dateTimeEndObj);
-
-            /*
-             * Align start of week to Sunday
-             */
-            $dateTimeStartObj->modify("-1 day");
-            $dateTimeEndObj->modify("-1 day");
-
-            $startLabel = $dateTimeStartObj->format("j M Y");
-            $endLabel = $dateTimeEndObj->format("j M Y");
-            $fullLabel = $startLabel . " - " . $endLabel;
-
-            if($countData > 0) {
-                $testCountByTimespanData[$x]['label'] = $fullLabel;
-                $testCountByTimespanData[$x]['data'] = $countData;
-                $x++;
-            }
-        }
+if($testCountByWeek){
+    $x=0;
+    foreach($testCountByWeek as $testDate => $testCount){
+        $testCountByTimespanData[$x]['label'] = $testDate;
+        $testCountByTimespanData[$x]['data'] = $testCount;
+        $x++;
     }
 }
-
-if(empty($testCountByTimespanData)){
-    $sysMsg->addMessage("That statistic has no data.");
-    $cdcMastery->redirect("/errors/500");
+else{
+    $sysMsg->addMessage("That statistic contains no data.");
+    $cdcMastery->redirect("/about/statistics");
 }
 
 $testCountData = "";
@@ -82,7 +49,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             data: [
                 {
                     /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                    type: "scatter",
+                    type: "spline",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]
@@ -103,7 +70,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Week</th>
+                        <th>Year/Week</th>
                         <th>Tests Taken</th>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>

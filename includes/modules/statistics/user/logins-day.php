@@ -1,19 +1,19 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: tehbi
- * Date: 9/26/2015
- * Time: 8:15 PM
+ * User: Claude Bing
+ * Date: 2/6/2016
+ * Time: 9:52 AM
  */
 
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
-$testAverageByMonth = $statsObj->getTestAverageByMonth();
+$loginsByDay = $statsObj->getLoginsByDay();
 
-if($testAverageByMonth){
+if($loginsByDay){
     $x=0;
-    foreach($testAverageByMonth as $testDate => $testCount){
-        $testAverageByMonthData[$x]['label'] = $testDate;
-        $testAverageByMonthData[$x]['data'] = $testCount;
+    foreach($loginsByDay as $loginsDate => $loginsValue){
+        $loginsData[$x]['label'] = $loginsDate;
+        $loginsData[$x]['data'] = $loginsValue;
         $x++;
     }
 }
@@ -22,15 +22,15 @@ else{
     $cdcMastery->redirect("/about/statistics");
 }
 
-$testAverageData = "";
+$loginsDataString = "";
 $firstRow = true;
 $i=0;
-foreach($testAverageByMonthData as $rowKey => $rowData){
+foreach($loginsData as $rowKey => $rowData){
     if ($firstRow == false) {
-        $testAverageData .= ",";
+        $loginsDataString .= ",";
     }
 
-    $testAverageData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>Average Score: {y}</strong>\", y: " . $rowData['data'] . " }";
+    $loginsDataString .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>{y} log-ins</strong>\", y: " . $rowData['data'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -40,7 +40,7 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
         var chart = new CanvasJS.Chart("chart-container", {
 
             title:{
-                text: "Tests Average by Month"
+                text: "User Log-ins by Day"
             },
             axisX:{
                 valueFormatString: " ",
@@ -48,8 +48,8 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "spline",
-                    dataPoints: [<?php echo $testAverageData; ?>]
+                    type: "area",
+                    dataPoints: [<?php echo $loginsDataString; ?>]
                 }
             ]
         });
@@ -69,13 +69,13 @@ foreach($testAverageByMonthData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Month</th>
-                        <th>Average Score</th>
+                        <th>Day</th>
+                        <th>Log-ins</th>
                     </tr>
-                    <?php foreach($testAverageByMonthData as $rowKey => $rowData): ?>
+                    <?php foreach($loginsData as $rowKey => $rowData): ?>
                         <tr>
                             <td><?php echo $rowData['label']; ?></td>
-                            <td><?php echo $rowData['data']; ?></td>
+                            <td><?php echo number_format($rowData['data']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

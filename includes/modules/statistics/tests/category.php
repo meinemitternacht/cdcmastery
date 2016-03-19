@@ -46,7 +46,6 @@ foreach($testAFSCArray as $afscUUID => $testCount){
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
                     type: "column",
                     dataPoints: [
                         <?php echo $testAFSCData; ?>

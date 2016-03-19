@@ -48,8 +48,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             },
             data: [
                 {
-                    /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                    type: "column",
+                    type: "spline",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]
@@ -70,7 +69,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                 </div>
                 <table>
                     <tr>
-                        <th>Year</th>
+                        <th>Month</th>
                         <th>Tests Taken</th>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
