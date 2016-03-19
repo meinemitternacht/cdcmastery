@@ -78,9 +78,9 @@ else{
                                     <ul>
                                     <?php foreach($answerList as $answerUUID => $answerData): ?>
                                         <?php if($answerData['answerCorrect']): ?>
-                                            <li><span class="text-success-bold"><?php echo $answerData['answerText']; ?></span></li>
+                                            <li><?php echo $answerData['answerText']; ?></li>
                                         <?php else: ?>
-                                            <li><span class="text-warning"><?php echo $answerData['answerText']; ?></span></li>
+                                            <li><?php echo $answerData['answerText']; ?></li>
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                     </ul>
