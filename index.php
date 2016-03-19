@@ -23,8 +23,8 @@ $router = new router();
 
 if($router->parseURI()){
 	if(!$router->verifyFilePath()){
-		if(isset($router->errorMessage) && !empty($router->errorMessage)){
-			$sysMsg->addMessage($router->errorMessage);
+		if(isset($router->error) && !empty($router->error)){
+			$sysMsg->addMessage($router->error);
 		}
 
 		if($router->route == "ajax/testPlatform"){
