@@ -160,17 +160,28 @@ class router extends CDCMastery
 	
 	public function verifyFilePath(){
 		if(isset($this->filePath)) {
-			if(strpos($this->filePath, "/admin/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
+
+			if(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
+				$this->outputPage = APP_BASE . "/auth/login.php";
+				$this->errorNumber = 403;
+				$this->error = "We're sorry, but either you have not logged in or your session has expired.  Please log in or register to continue.";
+				return false;
+			}
+			elseif(strpos($this->filePath, "/admin/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
 				$this->outputPage = APP_BASE . "/errors/403.php";
 				$this->errorNumber = 403;
 				return false;
 			}
-            elseif(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
-                $this->outputPage = APP_BASE . "/auth/login.php";
-                $this->errorNumber = 404;
-				$this->errorMessage = "We're sorry, but either you have not logged in or your session has expired.  Please log in to continue.";
-                return false;
-            }
+			elseif(strpos($this->filePath, "/training/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
+				$this->outputPage = APP_BASE . "/errors/403.php";
+				$this->errorNumber = 403;
+				return false;
+			}
+			elseif(strpos($this->filePath, "/supervisor/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager() && !$this->verifySupervisor()){
+				$this->outputPage = APP_BASE . "/errors/403.php";
+				$this->errorNumber = 403;
+				return false;
+			}
 			elseif(strpos($this->filePath, "/ajax/") !== false){
 				$this->outputPage = $this->filePath;
 				$this->showTheme = false;
