@@ -230,6 +230,31 @@ class officeSymbol extends CDCMastery
         }
     }
 
+    public function listUserOfficeSymbols()
+    {
+        $res = $this->db->query("SELECT DISTINCT(userOfficeSymbol), officeSymbol FROM userData LEFT JOIN officeSymbolList ON officeSymbolList.uuid = userData.userOfficeSymbol WHERE userData.userOfficeSymbol IS NOT NULL ORDER BY officeSymbol ASC");
+
+        $osArray = Array();
+
+        if ($res->num_rows > 0) {
+            while ($row = $res->fetch_assoc()) {
+                $osArray[$row['userOfficeSymbol']] = $row['officeSymbol'];
+            }
+
+            $noResults = false;
+        } else {
+            $noResults = true;
+        }
+
+        $res->close();
+
+        if ($noResults) {
+            return false;
+        } else {
+            return $osArray;
+        }
+    }
+
     public function __destruct()
     {
         parent::__destruct();
