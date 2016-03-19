@@ -46,9 +46,9 @@
                                     '/css/style.css',
                                     '/css/style-desktop.css');
 
-        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=51F71816";
-        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=51F71815";
-        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=51F71814";
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=61F71819";
+        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=61F71818";
+        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=61F71817";
         ?>
 		<script src="<?php echo $scriptURL; ?>"></script>
 		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
