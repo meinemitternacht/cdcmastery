@@ -221,7 +221,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $baseList = $bases->listBases();
+                                                            $baseList = $bases->listUserBases();
                                                             foreach ($baseList as $baseUUID => $baseName): ?>
                                                                 <option value="<?php echo $baseUUID; ?>"><?php echo $baseName; ?></option>
                                                                 <?php
@@ -237,7 +237,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $officeSymbolList = $officeSymbol->listOfficeSymbols();
+                                                            $officeSymbolList = $officeSymbol->listUserOfficeSymbols();
                                                             foreach($officeSymbolList as $officeSymbolUUID => $officeSymbolName): ?>
                                                                 <option value="<?php echo $officeSymbolUUID; ?>"><?php echo $officeSymbolName; ?></option>
                                                                 <?php
