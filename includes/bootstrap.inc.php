@@ -54,7 +54,10 @@ if($db->connect_errno){
 $memcache = new Memcache();
 $memcache->connect($cfg['memcache']['host'],$cfg['memcache']['port']);
 
+define('ENCRYPTION_KEY', $cfg['encryption']['key']);
+
 $cdcMastery = new CDCMastery();
+
 $session = new Zebra_Session($db,"92304j8j8fjsdsn923enkc");
 $sysMsg = new systemMessages();
 $log = new log($db);

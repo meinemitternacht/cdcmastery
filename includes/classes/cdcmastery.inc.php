@@ -1,7 +1,7 @@
 <?php
 class CDCMastery 
 {
-	public $aesKey = "***REMOVED***";
+	public $aesKey;
 	public $maxQuestions = 100;
     public $passingScore = 80;
 	public $staticUserArray = Array('SYSTEM','ANONYMOUS');
@@ -9,7 +9,7 @@ class CDCMastery
 	public $privateCacheTTL = 300; /* Cache objects for five minutes if logged in */
 	
 	public function __construct(){
-		
+
 	}
 
     public function checkEmailAddress($emailAddress){
@@ -126,7 +126,7 @@ class CDCMastery
 	}
 	
 	public function getEncryptionKey(){
-		return $this->aesKey;
+		return ENCRYPTION_KEY;
 	}
 	
 	public function getMaxQuestions(){
