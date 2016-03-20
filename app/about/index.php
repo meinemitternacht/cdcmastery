@@ -145,12 +145,12 @@ $afscList = $afsc->listAFSC(false);
         <div class="4u">
             <section>
                 <header>
-                    <h2 id="about-version-history">Git Project Commits</h2>
+                    <h2 id="about-version-history">Git Project</h2>
                 </header>
                 <p>Git commits for this project will be the standard version log, and the version history list to the right will no longer be used.</p>
                 <div class="sub-menu">
                     <ul>
-                        <li><a href="/about/git"><i class="icon-inline icon-20 icon-clipboard"></i>View Git Commit History</a></li>
+                        <li><a href="https://github.com/meinemitternacht/cdcmastery/commits/master"><i class="icon-inline icon-20 icon-clipboard"></i>View Git Commit History</a></li>
                     </ul>
                 </div>
             </section>
