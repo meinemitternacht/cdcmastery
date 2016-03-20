@@ -55,7 +55,7 @@ if($userList): ?>
 			</div>
 		</div>
 		<div class="row">
-			<div class="4u">
+			<div class="3u">
 				<section>
 				<?php
 				$curLetter = "";
@@ -66,22 +66,31 @@ if($userList): ?>
 				foreach($userList as $uuid => $userRow){
 					$letter = strtolower(substr($userRow['userLastName'],0,1));
 
-					if($letter == "h" && $firstColComplete == false){ ?>
+					if($letter == "e" && $firstColComplete == false){ ?>
 						</section>
 						</div>
-						<div class="4u">
+						<div class="3u">
 						<section>
 						<?php
 						$firstColComplete = true;
 					}
 
-					if($letter == "p" && $secondColComplete == false){ ?>
+					if($letter == "l" && $secondColComplete == false){ ?>
 						</section>
 						</div>
-						<div class="4u">
+						<div class="3u">
 						<section>
 						<?php
 						$secondColComplete = true;
+					}
+
+					if($letter == "s" && $thirdColComplete == false){ ?>
+						</section>
+						</div>
+						<div class="3u">
+						<section>
+						<?php
+						$thirdColComplete = true;
 					}
 
 					if($letter != $curLetter){
