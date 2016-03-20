@@ -145,7 +145,7 @@ else{
 
 echo "Building migration array for FOUO questions...\n";
 
-$res = $oldDB->query("SELECT `cdc_questions_fouo`.`uuid`, AES_DECRYPT(`cdc_questions_fouo`.`question`,'***REMOVED***') AS question, `cdc_questions_fouo`.`afsc` FROM cdc_questions_fouo ORDER BY `cdc_questions_fouo`.`afsc` ASC");
+$res = $oldDB->query("SELECT `cdc_questions_fouo`.`uuid`, AES_DECRYPT(`cdc_questions_fouo`.`question`,'".$cdcMastery->getEncryptionKey()."') AS question, `cdc_questions_fouo`.`afsc` FROM cdc_questions_fouo ORDER BY `cdc_questions_fouo`.`afsc` ASC");
 $fouoQuestionCount = $res->num_rows;
 $assocArray = Array();
 
@@ -215,7 +215,7 @@ else{
 
 echo "Building migration array for FOUO answers...\n";
 
-$res = $oldDB->query("SELECT `cdc_answers_fouo`.`uuid`, `cdc_answers_fouo`.`q_uuid`, AES_DECRYPT(`cdc_answers_fouo`.`answer`,'***REMOVED***') AS answer, `cdc_answers_fouo`.`correct` FROM cdc_answers_fouo ORDER BY `cdc_answers_fouo`.`q_uuid` ASC");
+$res = $oldDB->query("SELECT `cdc_answers_fouo`.`uuid`, `cdc_answers_fouo`.`q_uuid`, AES_DECRYPT(`cdc_answers_fouo`.`answer`,'".$cdcMastery->getEncryptionKey()."') AS answer, `cdc_answers_fouo`.`correct` FROM cdc_answers_fouo ORDER BY `cdc_answers_fouo`.`q_uuid` ASC");
 $fouoAnswerCount = $res->num_rows;
 $assocArray = Array();
 
