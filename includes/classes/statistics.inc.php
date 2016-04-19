@@ -1002,7 +1002,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTestsByDayOfMonth(){
-        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testTimeCompleted LIKE CONCAT('____-__-%', ? , '%')");
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE testTimeCompleted LIKE CONCAT('____-__-', ? , '%')");
 
         for($i=1;$i<32;$i++){
             $dayString = ($i < 10) ? "0".$i : $i;
