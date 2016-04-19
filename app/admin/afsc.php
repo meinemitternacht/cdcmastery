@@ -26,6 +26,10 @@ if($formAction){
                 $sysMsg->addMessage("FOUO status must be provided.");
                 $cdcMastery->redirect("/admin/afsc");
             }
+            elseif($afsc->getAFSCUUIDByName($afscData['afscName']) !== false){
+                $sysMsg->addMessage("That AFSC already exists.  You must either change the name of the existing AFSC or choose a different name.");
+                $cdcMastery->redirect("/admin/afsc");
+            }
             else{
                 $afsc->newAFSC();
                 $afsc->setAFSCName($afscData['afscName']);

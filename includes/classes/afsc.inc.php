@@ -278,6 +278,35 @@ class afsc extends CDCMastery
 			return true;
 		}
 	}
+	
+	public function getAFSCUUIDByName($afscName){
+		$stmt = $this->db->prepare("SELECT uuid FROM afscList WHERE afscName = ?");
+		$stmt->bind_param("s",$afscName);
+		
+		if($stmt->execute()){
+			$stmt->bind_result($uuid);
+			$stmt->fetch();
+			
+			if(!empty($uuid)){
+				return $uuid;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_AFSC_GET_UUID_BY_NAME");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("ERROR",$this->error);
+			$this->log->setDetail("AFSC Name",$afscName);
+			$this->log->saveEntry();
+			
+			return false;
+		}
+	}
 
 	public function toggleFOUO($targetStatus){
 		if($this->afscFOUO == true && $targetStatus == true){
