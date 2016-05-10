@@ -19,12 +19,12 @@ $testAFSCArray = $statsObj->getTestAFSCCount($afscList);
 $testAFSCData = "";
 $firstRow = true;
 $i=0;
-foreach($testAFSCArray as $afscUUID => $testCount){
+foreach($testAFSCArray as $afscUUID => $dataRow){
     if ($firstRow == false) {
         $testAFSCData .= ",";
     }
 
-    $testAFSCData .= "{ x: " . $i . ", toolTipContent: \"" . $afsc->getAFSCName($afscUUID) . ": {y}\", y: " . $testCount . " }";
+    $testAFSCData .= "{ x: " . $i . ", toolTipContent: \"" . $afsc->getAFSCName($afscUUID) . ": {y}\", y: " . $dataRow['count'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -71,11 +71,13 @@ foreach($testAFSCArray as $afscUUID => $testCount){
                     <tr>
                         <th>AFSC</th>
                         <th>Tests Taken</th>
+                        <th>Average Score</th>
                     </tr>
-                    <?php foreach($testAFSCArray as $afscUUID => $testCount): ?>
+                    <?php foreach($testAFSCArray as $afscUUID => $afscDataRow): ?>
                         <tr>
                             <td><?php echo $afsc->getAFSCName($afscUUID); ?></td>
-                            <td><?php echo number_format($testCount); ?></td>
+                            <td><?php echo number_format($afscDataRow['count']); ?></td>
+                            <td><?php if($afscDataRow['average'] > 0) { echo number_format($afscDataRow['average'],2) . "%"; } else { echo "&nbsp;"; } ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>

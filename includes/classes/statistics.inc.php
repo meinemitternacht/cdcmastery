@@ -597,15 +597,16 @@ class statistics extends CDCMastery {
     public function queryTestAFSCCount($afscUUIDList){
         if(is_array($afscUUIDList) && count($afscUUIDList) > 0) {
             foreach($afscUUIDList as $afscUUID) {
-                $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `testHistory` WHERE afscList LIKE ?");
+                $stmt = $this->db->prepare("SELECT COUNT(*) AS count, AVG(testScore) AS afscAverageScore FROM `testHistory` WHERE afscList LIKE ?");
                 $afscUUIDParam = "%".$afscUUID."%";
                 $stmt->bind_param("s",$afscUUIDParam);
 
                 if($stmt->execute()){
-                    $stmt->bind_result($count);
+                    $stmt->bind_result($count,$afscAverageScore);
 
                     while($stmt->fetch()){
-                        $this->testAFSCCount[$afscUUID] = $count;
+                        $this->testAFSCCount[$afscUUID]['count'] = $count;
+                        $this->testAFSCCount[$afscUUID]['average'] = $afscAverageScore;
                     }
 
                     $stmt->close();
