@@ -113,8 +113,8 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			</section>
 			<?php if($userPendingAFSCList): ?>
 			<ul>
-				<?php foreach($userPendingAFSCList as $pendingAFSCUUID): ?>
-				<li>&raquo; <?php echo $afsc->getAFSCName($pendingAFSCUUID); ?></li>
+				<?php foreach($userPendingAFSCList as $pendingAFSCUUID => $pendingAFSCName): ?>
+				<li>&raquo; <?php echo $pendingAFSCName; ?></li>
 				<?php endforeach; ?>
 			</ul>
 			<?php else: ?>
