@@ -344,14 +344,14 @@ else {
                             <header>
                                 <h2>Start a new test</h2>
                             </header>
+                            <?php $afscList = $userStatistics->getAFSCAssociations(); ?>
+                            <?php if(!empty($afscList)): ?>
                             <p>Tap or click the AFSC categories you wish to test with.  You may select multiple categories from this list.</p>
 
                             <form id="afscListForm" action="/test/take" method="POST">
                                 <input type="hidden" name="startNewTest" value="1">
                                 <div id="afscList">
                                     <?php
-                                    $afscList = $userStatistics->getAFSCAssociations();
-
                                     $i = 0;
                                     foreach ($afscList as $afscUUID => $afscName): ?>
                                         <input type="checkbox" name="userAFSCList[]" id="checkbox<?php echo $i; ?>"
@@ -371,8 +371,11 @@ else {
                                     </ul>
                                 </div>
                                 <div class="clearfix">&nbsp;</div>
-                                <a href="/user/afsc-associations" title="Manage AFSC Associations">Manage AFSC Associations</a>
                             </form>
+                            <?php else: ?>
+                            <p>You are not associated with any AFSC's.  Click "Manage AFSC Associations" to add and remove them, or view ones that are pending approval.</p>
+                            <?php endif; ?>
+                            <a href="/user/afsc-associations" title="Manage AFSC Associations">Manage AFSC Associations</a>
                         </section>
                     </div>
                 <?php endif;

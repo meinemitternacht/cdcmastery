@@ -128,8 +128,15 @@ class bases extends CDCMastery
 		}
 	}
 
-    public function listUserBases(){
-        $res = $this->db->query("SELECT DISTINCT(userBase), baseName FROM userData LEFT JOIN baseList ON baseList.uuid = userData.userBase ORDER BY baseName ASC");
+    public function listUserBases(DateTime $startDate = NULL,DateTime $endDate = NULL){
+		if($startDate && $endDate){
+			$qryStartTimestamp = $startDate->format("Y-m-d 00:00:00");
+			$qryEndTimestamp = $endDate->format("Y-m-d 23:59:59");
+			$res = $this->db->query("SELECT DISTINCT(userBase), baseName FROM userData LEFT JOIN baseList ON baseList.uuid = userData.userBase WHERE userData.userLastActive BETWEEN '".$qryStartTimestamp."' AND '".$qryEndTimestamp."' ORDER BY baseName ASC");
+		}
+		else{
+			$res = $this->db->query("SELECT DISTINCT(userBase), baseName FROM userData LEFT JOIN baseList ON baseList.uuid = userData.userBase ORDER BY baseName ASC");
+		}
 
         if($res->num_rows > 0){
             while($row = $res->fetch_assoc()){

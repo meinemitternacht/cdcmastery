@@ -45,6 +45,8 @@ class testManager extends CDCMastery
 	
 	public $incompletePercentComplete;
 	
+	public $testArchiveArray;			//Array for holding Test UUID's
+	
 	public function __construct(mysqli $db, log $log, afsc $afsc){
 		$this->db = $db;
 		$this->log = $log;
@@ -168,8 +170,20 @@ class testManager extends CDCMastery
 			return false;
 		}
 	}
-
+	
 	public function listArchivableTests(){
+		$this->listArchivableTestsAFSC();
+		$this->listArchivableTestsDate();
+		
+		if(!empty($this->testArchiveArray)){
+			return $this->testArchiveArray;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function listArchivableTestsAFSC(){
 		$res = $this->db->query("SELECT uuid FROM afscList WHERE afscHidden = '1'");
 
 		$afscArray = Array();
@@ -182,7 +196,6 @@ class testManager extends CDCMastery
 		$res->close();
 
 		if(isset($afscArray) && sizeof($afscArray) > 0) {
-			$testArray = Array();
 			foreach($afscArray as $afscUUID) {
 				$query = "SELECT uuid
 									FROM testHistory
@@ -192,16 +205,44 @@ class testManager extends CDCMastery
 
 				if ($res->num_rows > 0) {
 					while ($row = $res->fetch_assoc()) {
-						$testArray[] = $row['uuid'];
+						$this->testArchiveArray[] = $row['uuid'];
 					}
 				}
 
 				$res->close();
 			}
 
-			return $testArray;
+			return true;
 		}
 		else{
+			$res->close();
+			return false;
+		}
+	}
+
+	public function listArchivableTestsDate(){
+		$testTimeObj = new DateTime();
+		$testTimeObj->modify("-2 years");
+		$testTimeStart = $testTimeObj->format("Y-m-d");
+
+		$query = "SELECT uuid
+					FROM testHistory
+					WHERE DATE(testTimeStarted) < '".$testTimeStart."'
+					AND testArchived IS NULL";
+
+		$res = $this->db->query($query);
+
+		if($res->num_rows > 0){
+			while($row = $res->fetch_assoc()){
+				$this->testArchiveArray[] = $row['uuid'];
+			}
+
+			$res->close();
+
+			return true;
+		}
+		else{
+			$res->close();
 			return false;
 		}
 	}
@@ -1028,9 +1069,10 @@ class testManager extends CDCMastery
 						$randomQuestionArray[] = $questionUUID;
 					}
 
-					shuffle($randomQuestionArray);
-
-					$randomQuestionArray = array_slice($randomQuestionArray,0,$this->maxQuestions);
+					if(is_array($randomQuestionArray) && count($randomQuestionArray) > 1) {
+						shuffle($randomQuestionArray);
+						$randomQuestionArray = array_slice($randomQuestionArray, 0, $this->maxQuestions);
+					}
 
 					foreach($randomQuestionArray as $randomQuestion){
 						$this->addQuestion($randomQuestion);

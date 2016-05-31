@@ -192,7 +192,7 @@ class router extends CDCMastery
 				$this->showTheme = false;
 				return true;
 			}
-			elseif($_SESSION['vars'][0] == "print"){
+			elseif(isset($_SESSION['vars'][0]) && $_SESSION['vars'][0] == "print"){
 				$this->outputPage = $this->filePath;
 				$this->showTheme = false;
 				return true;
