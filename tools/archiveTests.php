@@ -54,11 +54,10 @@ if($totalTests > 0) {
                         $answerManager->setFOUO($questionManager->queryQuestionFOUO($questionUUID));
                         $answerManager->loadAnswer($answerUUID);
                         $question->addChild('questionText', htmlspecialchars($questionManager->getQuestionText()));
+                        $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
                         if ($answerManager->getAnswerCorrect()) {
-                            $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
                             $question->addChild('answerCorrect', 'yes');
                         } else {
-                            $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
                             $question->addChild('answerCorrect', 'no');
                         }
                     } else {
@@ -68,12 +67,11 @@ if($totalTests > 0) {
                             $question->addChild('questionText', htmlspecialchars($archivedText));
 
                             $answerManager->loadArchivedAnswer($answerUUID);
+                            $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
 
                             if ($answerManager->getAnswerCorrect()) {
-                                $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
                                 $question->addChild('answerCorrect', 'yes');
                             } else {
-                                $question->addChild('answerGiven', htmlspecialchars($answerManager->getAnswerText()));
                                 $question->addChild('answerCorrect', 'no');
                             }
                         }
@@ -129,8 +127,8 @@ if($totalTests > 0) {
 
         $percentDone = intval(($testCount / $totalTests) * 100);
 
-        echo "\033[5D";      // Move 5 characters backward
-        echo str_pad($percentDone, 3, ' ', STR_PAD_LEFT) . " %";    // Output is always 5 characters long
+        echo "\033[5D";
+        echo str_pad($percentDone, 3, ' ', STR_PAD_LEFT) . " %";
 
         $testCount++;
     }
