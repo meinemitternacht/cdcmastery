@@ -72,15 +72,15 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getTotalQuestionsAnswered()); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_START">Tests Started</a></span></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/microtime/DESC/action/TEST_START">Tests Started</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_START")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/TEST_ARCHIVE">Tests Archived</a></span></td>
+                        <td><span class="text-caution"><a href="/admin/log/0/25/microtime/DESC/action/TEST_ARCHIVE">Tests Archived</a></span></td>
                         <td><?php echo number_format($statisticsObj->getTotalArchivedTests()); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
-                        <td><span class="text-caution"><a href="/admin/log/0/25/timestamp/DESC/action/INCOMPLETE_TEST_DELETE">Tests Deleted</a></span></td>
+                        <td><span class="text-caution"><a href="/admin/log/0/25/microtime/DESC/action/TEST_DELETE">Tests Deleted</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("TEST_DELETE") + $statisticsObj->getLogCountByAction("INCOMPLETE_TEST_DELETE")); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
@@ -174,7 +174,7 @@ $userObj = new user($db,$log,$emailQueue);
                         <td colspan="2"><?php echo number_format($statisticsObj->getTotalOfficeSymbols()); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/USER_DELETE">Users Deleted</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/USER_DELETE">Users Deleted</a></span></td>
                         <td colspan="2"><?php echo number_format($statisticsObj->getLogCountByAction("USER_DELETE")); ?></td>
                     </tr>
                 </table>
@@ -191,7 +191,7 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo round($statisticsObj->getDatabaseSize(),2); ?> GB</td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/MYSQL_ERROR">MySQL Errors</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/MYSQL_ERROR">MySQL Errors</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("MYSQL_ERROR")); ?></td>
                     </tr>
                     <tr>
@@ -207,35 +207,35 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getTotalLoginErrors()); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ERROR_LOGIN_RATE_LIMIT_REACHED">Login Rate Limit Reached</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/ERROR_LOGIN_RATE_LIMIT_REACHED">Login Rate Limit Reached</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_LOGIN_RATE_LIMIT_REACHED")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ROUTING_ERROR">Route Errors</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/ROUTING_ERROR">Route Errors</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ROUTING_ERROR")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/AJAX_DIRECT_ACCESS">AJAX Direct Access</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/AJAX_DIRECT_ACCESS">AJAX Direct Access</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("AJAX_DIRECT_ACCESS")); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td>All Errors</td>
-                        <td><?php echo number_format($statisticsObj->getLogCountByAction("%ERROR%")); ?></td>
+                        <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_%")); ?></td>
                     </tr>
                     <tr>
-                        <td>Migrated Passwords</td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/microtime/DESC/action/MIGRATED_PASSWORD">Migrated Passwords</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("MIGRATED_PASSWORD")); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
-                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/USER_PASSWORD_RESET_COMPLETE">Password Resets</a></span></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/microtime/DESC/action/USER_PASSWORD_RESET_COMPLETE">Password Resets</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_PASSWORD_RESET_COMPLETE")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/EMAIL_SEND">E-mail Messages Sent</a></span></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/microtime/DESC/action/EMAIL_SEND">E-mail Messages Sent</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("EMAIL_SEND")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/timestamp/DESC/action/ERROR_EMAIL">E-mail Errors</a></span></td>
+                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/ERROR_EMAIL">E-mail Errors</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_EMAIL%")); ?></td>
                     </tr>
                 </table>
@@ -315,7 +315,7 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getUsersActiveThisYear()); ?></td>
                     </tr>
                     <tr style="border-bottom: 2px solid #999">
-                        <td><span class="text-success"><a href="/admin/log/0/25/timestamp/DESC/action/USER_REGISTER"><strong>Registrations</strong></a></span></td>
+                        <td><span class="text-success"><a href="/admin/log/0/25/microtime/DESC/action/USER_REGISTER"><strong>Registrations</strong></a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("USER_REGISTER")); ?></td>
                     </tr>
                     <tr>
