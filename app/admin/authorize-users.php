@@ -25,7 +25,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 				$sysMsg->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.");
 			}
 			else{
-				$sysMsg->addMessage("User(s) authorized successfully.");
+				$sysMsg->addMessage("Processed user authorization(s) successfully.");
 			}
 			break;
 	}
@@ -36,14 +36,14 @@ $authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 if($authorizationQueue): ?>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#selectAll').click(function(event) {  //on click
-				if(this.checked) { // check select status
-					$('.selectUser').each(function() { //loop through each checkbox
-						this.checked = true;  //select all checkboxes with class "checkbox1"
+			$('#selectAll').click(function(event) {
+				if(this.checked) {
+					$('.selectUser').each(function() {
+						this.checked = true;
 					});
 				}else{
-					$('.selectUser').each(function() { //loop through each checkbox
-						this.checked = false; //deselect all checkboxes with class "checkbox1"
+					$('.selectUser').each(function() {
+						this.checked = false;
 					});
 				}
 			});
