@@ -44,6 +44,7 @@ class statistics extends CDCMastery {
     public $baseActionsCount;
     public $totalTestsByBase;
     public $totalUsersByBase;
+    public $activeUsersByBase;
     public $averageScoreByBase;
 
     public $totalTests;
@@ -85,6 +86,9 @@ class statistics extends CDCMastery {
 
     public $userRegistrationsCount;
     public $userRegistrationsCountDay;
+    public $userEmailsCountDay;
+    public $systemErrorsCountDay;
+
     public $loginsByDay;
     public $loginsByMonth;
     public $loginsByYear;
@@ -1313,6 +1317,49 @@ class statistics extends CDCMastery {
         }
     }
 
+    public function getActiveUsersByBase($baseUUID){
+        if($this->getStatsCacheVal(__FUNCTION__,$baseUUID)){
+            return $this->getStatsCacheVal(__FUNCTION__,$baseUUID);
+        }
+        else{
+            if(!$this->queryActiveUsersByBase($baseUUID)){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->activeUsersByBase,$this->getCacheTTL(6),$baseUUID);
+                return $this->activeUsersByBase;
+            }
+        }
+    }
+
+    public function queryActiveUsersByBase($baseUUID){
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `userData`
+                                        WHERE `userData`.`userBase` = ? AND `userData`.`userLastActive` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE()");
+
+        $stmt->bind_param("s",$baseUUID);
+
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+
+            while($stmt->fetch()){
+                $this->activeUsersByBase = $count;
+            }
+
+            $stmt->close();
+            return true;
+        }
+        else{
+            $this->error = $stmt->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $stmt->close();
+
+            return false;
+        }
+    }
+
     public function getTotalUsersByBase($baseUUID){
         if($this->getStatsCacheVal(__FUNCTION__,$baseUUID)){
             return $this->getStatsCacheVal(__FUNCTION__,$baseUUID);
@@ -1365,7 +1412,7 @@ class statistics extends CDCMastery {
                 return 0;
             }
             else{
-                $this->setStatsCacheVal(__FUNCTION__,$this->averageScoreByBase,$this->getCacheTTL(6),$baseUUID);
+                $this->setStatsCacheVal(__FUNCTION__,round($this->averageScoreByBase,2),$this->getCacheTTL(6),$baseUUID);
                 return round($this->averageScoreByBase,2);
             }
         }
@@ -2646,6 +2693,82 @@ class statistics extends CDCMastery {
         if($res->num_rows > 0){
             while($row = $res->fetch_assoc()){
                 $this->userRegistrationsCountDay[$row['registerDate']] = $row['count'];
+            }
+
+            $res->close();
+            return true;
+        }
+        else{
+            $this->error = $this->db->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $res->close();
+
+            return false;
+        }
+    }
+
+    public function getEmailsByDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->queryEmailsByDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->userEmailsCountDay,$this->getCacheTTL(6));
+                return $this->userEmailsCountDay;
+            }
+        }
+    }
+
+    public function queryEmailsByDay(){
+        $res = $this->db->query("SELECT DATE(systemLog.timestamp) AS emailDate, COUNT(*) AS count FROM `systemLog` WHERE systemLog.action = 'EMAIL_SEND' GROUP BY DATE(systemLog.timestamp) ORDER BY systemLog.timestamp ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->userEmailsCountDay[$row['emailDate']] = $row['count'];
+            }
+
+            $res->close();
+            return true;
+        }
+        else{
+            $this->error = $this->db->error;
+            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+            $this->log->setDetail("MYSQL ERROR",$this->error);
+            $this->log->saveEntry();
+            $res->close();
+
+            return false;
+        }
+    }
+
+    public function getSystemErrorsByDay(){
+        if($this->getStatsCacheVal(__FUNCTION__)){
+            return $this->getStatsCacheVal(__FUNCTION__);
+        }
+        else{
+            if(!$this->querySystemErrorsByDay()){
+                return 0;
+            }
+            else{
+                $this->setStatsCacheVal(__FUNCTION__,$this->systemErrorsCountDay,$this->getCacheTTL(6));
+                return $this->systemErrorsCountDay;
+            }
+        }
+    }
+
+    public function querySystemErrorsByDay(){
+        $res = $this->db->query("SELECT DATE(systemLog.timestamp) AS errorDate, COUNT(*) AS count FROM `systemLog` WHERE systemLog.action LIKE 'ERROR_%' GROUP BY DATE(systemLog.timestamp) ORDER BY systemLog.timestamp ASC");
+
+        if($res->num_rows > 0){
+            while($row = $res->fetch_assoc()){
+                $this->systemErrorsCountDay[$row['errorDate']] = $row['count'];
             }
 
             $res->close();

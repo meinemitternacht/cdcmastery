@@ -15,6 +15,7 @@
         <li><a href="/about/statistics/base/average">Average Score by Base</a></li>
         <li><a href="/about/statistics/base/tests">Test Count by Base</a></li>
         <li><a href="/about/statistics/base/users">User Count by Base</a></li>
+        <li><a href="/about/statistics/base/user-composition-30-days">Active User Bases (last 30 Days)</a></li>
     </ul>
     <ul>
         <li><strong>Tests</strong></li>
@@ -39,5 +40,10 @@
         <li><a href="/about/statistics/user/logins-month">Log-ins by Month</a></li>
         <li><a href="/about/statistics/user/logins-year">Log-ins by Year</a></li>
         <li><a href="/about/statistics/user/registrations-day">Registrations by Day</a></li>
+    </ul>
+    <ul>
+        <li><strong>System</strong></li>
+        <li><a href="/about/statistics/system/emails-day">E-mail messages by Day</a></li>
+        <li><a href="/about/statistics/system/errors-day">Errors Logged by Day</a></li>
     </ul>
 </section>
