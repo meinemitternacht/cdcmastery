@@ -71,7 +71,8 @@
 		<!-- Copyright -->
 		<div id="copyright">
 			<div class="container">
-				&copy;<?php echo date("Y",time()); ?> CDCMastery.com
+				&copy;<?php echo date("Y",time()); ?> CDCMastery.com<br>
+				<em>This application is not endorsed by, affiliated with, or an official product of the United States Air Force.</em>
 			</div>
 		</div>
 		<?php
