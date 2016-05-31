@@ -244,20 +244,13 @@ else{
                 <header>
                     <h2>Welcome, <?php echo $user->getFullName(); ?></h2>
                 </header>
-				<?php if($cdcMastery->verifyTrainingManager() || $cdcMastery->verifyAdmin()): ?>
+				<?php /*
 				<div class="informationMessages">
 					<ul>
-						<li>Training Managers and Supervisors now have the ability to generate offline paper-based tests. <a href="/training/generate-test" title="Generate Offline Tests">Click here</a> to get started!</li>
+						<li>The database is currently undergoing maintenance.  While this is occurring, you may encounter slow to load pages, or pages that will not load at all.  Please check back in an hour or so.</li>
 					</ul>
 				</div>
-				<?php endif; ?>
-				<?php if($cdcMastery->verifySupervisor()): ?>
-					<div class="informationMessages">
-						<ul>
-							<li>Training Managers and Supervisors now have the ability to generate offline paper-based tests. <a href="/supervisor/generate-test" title="Generate Offline Tests">Click here</a> to get started!</li>
-						</ul>
-					</div>
-				<?php endif; ?>
+ 				*/ ?>
             </section>
             <div class="clearfix">&nbsp;</div>
 			<section>
