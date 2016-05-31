@@ -11,9 +11,11 @@ $testCountByWeek = $statsObj->getTestCountByWeek();
 
 if($testCountByWeek){
     $x=0;
+    $dataTotal=0;
     foreach($testCountByWeek as $testDate => $testCount){
         $testCountByTimespanData[$x]['label'] = $testDate;
         $testCountByTimespanData[$x]['data'] = $testCount;
+        $dataTotal += $testCount;
         $x++;
     }
 }
@@ -49,7 +51,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             data: [
                 {
                     /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                    type: "spline",
+                    type: "area",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]
@@ -72,6 +74,10 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                     <tr>
                         <th>Year/Week</th>
                         <th>Tests Taken</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong><?php echo number_format($dataTotal); ?></strong></td>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
                         <tr>

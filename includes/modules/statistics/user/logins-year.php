@@ -48,7 +48,7 @@ foreach($loginsData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "column",
+                    type: "spline",
                     dataPoints: [<?php echo $loginsDataString; ?>]
                 }
             ]

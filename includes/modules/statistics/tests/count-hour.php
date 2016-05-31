@@ -13,12 +13,14 @@ $testCountByHour = $statsObj->getTestsByHourOfDay();
 $chartData = "";
 $firstRow = true;
 $i=0;
+$dataTotal=0;
 foreach($testCountByHour as $hourString => $testCount){
     if ($firstRow == false) {
         $chartData .= ",";
     }
 
     $chartData .= "{ x: " . $hourString . ", toolTipContent: \"<strong>" . $hourString . ":00 - " . $hourString . ":59" . "</strong><br>Tests: {y}\", y: " . $testCount . " }";
+    $dataTotal += $testCount;
     $firstRow = false;
     $i++;
 }
@@ -35,7 +37,7 @@ foreach($testCountByHour as $hourString => $testCount){
             },
             data: [
                 {
-                    type: "spline",
+                    type: "area",
                     dataPoints: [
                         <?php echo $chartData; ?>
                     ]
@@ -60,6 +62,10 @@ foreach($testCountByHour as $hourString => $testCount){
                     <tr>
                         <th>Hour of Day</th>
                         <th>Tests Taken</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong><?php echo number_format($dataTotal); ?></strong></td>
                     </tr>
                     <?php foreach($testCountByHour as $hourString => $testCount): ?>
                         <tr>

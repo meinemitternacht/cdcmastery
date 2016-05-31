@@ -25,12 +25,14 @@ else{
 $testCountData = "";
 $firstRow = true;
 $i=0;
+$dataTotal=0;
 foreach($testCountByTimespanData as $rowKey => $rowData){
     if ($firstRow == false) {
         $testCountData .= ",";
     }
 
     $testCountData .= "{ x: " . $i . ", toolTipContent: \"" . $rowData['label'] . ":<br><strong>{y} tests</strong>\", y: " . $rowData['data'] . " }";
+    $dataTotal += $rowData['data'];
     $firstRow = false;
     $i++;
 }
@@ -48,7 +50,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "line",
+                    type: "area",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]
@@ -71,6 +73,10 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                     <tr>
                         <th>Day</th>
                         <th>Tests Taken</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong><?php echo number_format($dataTotal); ?></strong></td>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
                         <tr>

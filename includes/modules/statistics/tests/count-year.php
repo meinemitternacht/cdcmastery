@@ -11,9 +11,11 @@ $testCountByYear = $statsObj->getTestCountByYear();
 
 if($testCountByYear){
     $x=0;
+    $dataTotal=0;
     foreach($testCountByYear as $testDate => $testCount){
         $testCountByTimespanData[$x]['label'] = $testDate;
         $testCountByTimespanData[$x]['data'] = $testCount;
+        $dataTotal += $testCount;
         $x++;
     }
 }
@@ -48,7 +50,7 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
             },
             data: [
                 {
-                    type: "column",
+                    type: "spline",
                     dataPoints: [<?php echo $testCountData; ?>]
                 }
             ]
@@ -71,6 +73,10 @@ foreach($testCountByTimespanData as $rowKey => $rowData){
                     <tr>
                         <th>Year</th>
                         <th>Tests Taken</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong><?php echo number_format($dataTotal); ?></strong></td>
                     </tr>
                     <?php foreach($testCountByTimespanData as $rowKey => $rowData): ?>
                         <tr>

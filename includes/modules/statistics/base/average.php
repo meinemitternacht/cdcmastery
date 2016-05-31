@@ -46,7 +46,7 @@ foreach($baseList as $baseUUID => $baseName){
             data: [
                 {
                     /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                    type: "column",
+                    type: "area",
                     dataPoints: [
                         <?php echo $chartScoreByBaseData; ?>
                     ]
