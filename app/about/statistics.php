@@ -15,7 +15,8 @@ $statValue = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 $statSectionList = Array(   'base',
                             'user',
                             'afsc',
-                            'tests');
+                            'tests',
+                            'system');
 
 $statValueList = Array( 'active',
                         'average',
@@ -31,6 +32,8 @@ $statValueList = Array( 'active',
                         'count-month',
                         'count-week',
                         'count-year',
+                        'emails-day',
+                        'errors-day',
                         'groups',
                         'logins-day',
                         'logins-month',
@@ -39,7 +42,8 @@ $statValueList = Array( 'active',
                         'rank',
                         'registrations-day',
                         'tests',
-                        'users');
+                        'users',
+                        'user-composition-30-days');
 
 if(!$statSection && !$statValue){
     $cdcMastery->redirect("/about/statistics/tests/average-seven-days");
