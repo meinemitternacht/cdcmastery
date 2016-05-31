@@ -198,7 +198,7 @@ class userAuthorizationQueue extends user
 
                     return false;
                 } else {
-                    if($this->notifyRoleApproval($userUUID,$roleUUID)){
+                    if($this->notifyRoleRejection($userUUID,$roleUUID)){
                         return true;
                     }
                     else{
