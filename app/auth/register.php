@@ -156,7 +156,6 @@ if(isset($_POST['registrationFormStep'])):
             }
 
             if (!empty($userSupervisor)) {
-                $registerUser->setUserSupervisor($userSupervisor);
                 $assoc->addSupervisorAssociation($userSupervisor, $registerUser->getUUID());
             }
 
