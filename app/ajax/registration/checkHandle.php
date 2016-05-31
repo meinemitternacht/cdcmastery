@@ -29,7 +29,7 @@ if($userHandleString){
         echo "0";
     }
 }
-else{
+elseif(!isset($_POST['userHandle'])){
     $log->setAction("AJAX_DIRECT_ACCESS");
     $log->setDetail("CALLING SCRIPT","/ajax/registration/checkEmail");
     $log->saveEntry();

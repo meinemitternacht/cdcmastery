@@ -40,7 +40,7 @@ if($emailString){
         echo "0";
     }
 }
-else{
+elseif(!isset($_POST['userEmail'])){
     $log->setAction("AJAX_DIRECT_ACCESS");
     $log->setDetail("CALLING SCRIPT","/ajax/registration/checkEmail");
     $log->saveEntry();
