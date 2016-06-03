@@ -715,6 +715,7 @@ approval is required before the system will grant extended permissions to your a
 					<h2>Before you begin</h2>
 				</header>
 				<ul>
+                    <li><i class="icon-inline icon-20 ic-lightbulb"></i>If you do not log in at least once within 30 days after registration, your account will be deleted.</li>
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You must register with an e-mail address ending with ".mil"</li>
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>Only one account may be registered per e-mail address</li>
 					<li><i class="icon-inline icon-20 ic-lightbulb"></i>You may change your account type at any time by sending a message to our support team</li>
@@ -744,7 +745,7 @@ approval is required before the system will grant extended permissions to your a
 				<header>
 					<h2>Supervisor Account</h2>
 				</header>
-				<p>Select this account if you require an overview of your subordinates.</p>
+				<p>Select this account if you wish to take tests and require an overview of your subordinates.</p>
 				<br>
                 <div class="sub-menu">
                     <ul>
@@ -759,7 +760,7 @@ approval is required before the system will grant extended permissions to your a
 				<header>
 					<h2>Training Manager Account</h2>
 				</header>
-				<p>Choose this account to manage questions and answers, as well as view subordinate progress.</p>
+				<p>Choose this account to take tests, manage questions and answers, as well as view subordinate progress.</p>
 				<br>
 				<div class="sub-menu">
                     <ul>
