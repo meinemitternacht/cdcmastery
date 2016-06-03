@@ -10,7 +10,7 @@ $answerManager = new answerManager($db,$log);
 $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
-    $sysMsg->addMessage($questionManager->error);
+    $sysMsg->addMessage($questionManager->error,"warning");
     $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
 }
 
@@ -23,7 +23,7 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
     $questionText = !empty($_POST['questionText']) ? $_POST['questionText'] : false;
 
     if(!$questionText){
-        $sysMsg->addMessage("You must provide question and answer data.");
+        $sysMsg->addMessage("You must provide question and answer data.","warning");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
     }
 
@@ -44,7 +44,7 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
     $logQuestionText = $questionText;
 
     if(!$questionManager->saveQuestion()){
-        $sysMsg->addMessage($questionManager->error);
+        $sysMsg->addMessage($questionManager->error,"danger");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/question/".$workingChild."/edit");
     }
     else{
@@ -65,8 +65,8 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
             }
 
             if(!$answerManager->saveAnswer()){
-                $sysMsg->addMessage($answerManager->error);
-                $sysMsg->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.");
+                $sysMsg->addMessage($answerManager->error,"danger");
+                $sysMsg->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.","danger");
                 $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/question/".$workingChild."/edit");
             }
         }
@@ -87,7 +87,7 @@ if(!empty($_POST) && $_POST['confirmQuestionEdit'] == true){
 
         $log->saveEntry();
 
-        $sysMsg->addMessage("Question edited successfully.");
+        $sysMsg->addMessage("Question edited successfully.","success");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
     }
 }

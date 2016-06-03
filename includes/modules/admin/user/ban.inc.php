@@ -1,6 +1,6 @@
 <?php
 if($objUser->getUserDisabled()){
-    $sysMsg->addMessage("That user is already banned.");
+    $sysMsg->addMessage("That user is already banned.","info");
     $cdcMastery->redirect("/admin/users/" . $userUUID);
 }
 
@@ -23,7 +23,7 @@ if(isset($_POST['confirmUserBan'])){
                     }
                     $log->saveEntry();
 
-                    $sysMsg->addMessage($banUserObj->getFullName() . " has been banned.");
+                    $sysMsg->addMessage($banUserObj->getFullName() . " has been banned.","success");
                     $cdcMastery->redirect("/admin/users/" . $userUUID);
                 } else {
                     $log->setAction("ERROR_USER_BAN");
@@ -37,7 +37,7 @@ if(isset($_POST['confirmUserBan'])){
                     $log->setDetail("Error", $banUserObj->error);
                     $log->saveEntry();
 
-                    $sysMsg->addMessage($banUserObj->getFullName() . " could not be banned.  The error has been logged.");
+                    $sysMsg->addMessage($banUserObj->getFullName() . " could not be banned.  The error has been logged.","danger");
                     $cdcMastery->redirect("/admin/users/" . $userUUID);
                 }
             }
@@ -51,12 +51,12 @@ if(isset($_POST['confirmUserBan'])){
                 }
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Administrators cannot be banned.");
+                $sysMsg->addMessage("Administrators cannot be banned.","danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.");
+        $sysMsg->addMessage("No User UUID was provided.","warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

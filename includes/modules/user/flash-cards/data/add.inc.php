@@ -13,12 +13,12 @@ if(isset($_POST['confirmFlashCardAdd'])){
     $addError = false;
 
     if(!$cardFrontText){
-        $sysMsg->addMessage("The front text of the card cannot be empty.");
+        $sysMsg->addMessage("The front text of the card cannot be empty.","warning");
         $addError = true;
     }
 
     if(!$cardBackText){
-        $sysMsg->addMessage("The back text of the card cannot be empty.");
+        $sysMsg->addMessage("The back text of the card cannot be empty.","warning");
         $addError = true;
     }
 
@@ -29,7 +29,7 @@ if(isset($_POST['confirmFlashCardAdd'])){
         $flashCardManager->setCardCategory($flashCardManager->getCategoryUUID());
 
         if($flashCardManager->saveFlashCardData()){
-            $sysMsg->addMessage("Flash card added successfully.");
+            $sysMsg->addMessage("Flash card added successfully.","success");
 
             $log->setAction("FLASH_CARD_ADD");
             $log->setDetail("Card UUID",$flashCardManager->getCardUUID());
@@ -43,8 +43,8 @@ if(isset($_POST['confirmFlashCardAdd'])){
             unset($cardBackText);
         }
         else{
-            $sysMsg->addMessage($flashCardManager->error);
-            $sysMsg->addMessage("The flash card could not be added.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage($flashCardManager->error,"danger");
+            $sysMsg->addMessage("The flash card could not be added.  Contact the support help desk for assistance.","danger");
         }
     }
 }

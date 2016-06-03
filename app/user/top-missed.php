@@ -120,6 +120,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-	$sysMsg->addMessage("There is not enough data in the database to build this page.  Check back after you have taken more tests.");
+	$sysMsg->addMessage("There is not enough data in the database to build the Top Missed Questions report.  Check back after you have completed more tests.","info");
 	$cdcMastery->redirect("/user/profile");
 endif;

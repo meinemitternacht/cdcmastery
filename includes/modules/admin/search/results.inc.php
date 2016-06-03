@@ -19,7 +19,7 @@ else{
 }
 
 if(!$searchResults || !$numSearchResults){
-    $sysMsg->addMessage("There are no search results stored in the session.  Try your search again.");
+    $sysMsg->addMessage("There are no search results stored in the session.  Try your search again.","info");
     $cdcMastery->redirect("/admin/search");
 }
 

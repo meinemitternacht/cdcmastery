@@ -6,11 +6,11 @@ if($action){
 	if($action == "add"): 
 		if(isset($_POST['baseName'])):
 			if($bases->addBase($_POST['baseName'])){
-				$sysMsg->addMessage("Base added successfully.");
+				$sysMsg->addMessage("Base added successfully.","success");
 				$cdcMastery->redirect("/admin/bases");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem adding the Base.");
+				$sysMsg->addMessage("There was a problem adding the Base.","danger");
 				$cdcMastery->redirect("/admin/bases/add");
 			}
 		else: ?>
@@ -36,11 +36,11 @@ if($action){
 	elseif($action == "edit"):
 		if(isset($_POST['baseName'])):
 			if($bases->editBase($baseUUID,$_POST['baseName'])){
-				$sysMsg->addMessage("Base edited successfully.");
+				$sysMsg->addMessage("Base edited successfully.","success");
 				$cdcMastery->redirect("/admin/bases");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem editing that base.");
+				$sysMsg->addMessage("There was a problem editing that base.","danger");
 				$cdcMastery->redirect("/admin/bases/edit/" . $baseUUID);
 			}
 		else: 
@@ -64,18 +64,18 @@ if($action){
 				</div>
 			<?php
 			else:
-				$sysMsg->addMessage("That base does not exist.");
+				$sysMsg->addMessage("That base does not exist.","danger");
 				$cdcMastery->redirect("/admin/bases");
 			endif;
 		endif; ?>
 	<?php
 	elseif($action == "delete"):
 		if($bases->deleteBase($baseUUID)){
-			$sysMsg->addMessage("Base deleted successfully.");
+			$sysMsg->addMessage("Base deleted successfully.","success");
 			$cdcMastery->redirect("/admin/bases");
 		}
 		else{
-			$sysMsg->addMessage("There was a problem deleting that base.");
+			$sysMsg->addMessage("There was a problem deleting that base.","danger");
 			$cdcMastery->redirect("/admin/bases");
 		}
 	endif;

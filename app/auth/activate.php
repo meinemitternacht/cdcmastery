@@ -13,16 +13,16 @@ if(!empty($_POST) && isset($_POST['action'])){
             if ($userActivate->verifyUser($userUUID)) {
                 if ($action == "resend") {
                     if ($userActivate->queueActivation($userUUID)) {
-                        $sysMsg->addMessage("An activation link was sent to your e-mail address.");
+                        $sysMsg->addMessage("An activation link was sent to your e-mail address.","success");
                     } else {
-                        $sysMsg->addMessage("We were unable to send an activation link to your e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
+                        $sysMsg->addMessage("We were unable to send an activation link to your e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
                     }
                 }
             } else {
-                $sysMsg->addMessage("That user does not exist.");
+                $sysMsg->addMessage("That user does not exist.","warning");
             }
         } else {
-            $sysMsg->addMessage("Sorry, we could not find your e-mail in the database.  Make sure it is typed correctly and try again.");
+            $sysMsg->addMessage("Sorry, we could not find your e-mail in the database.  Make sure it is typed correctly and try again.","warning");
         }
     }
     elseif($_POST['action'] == "activate"){
@@ -30,7 +30,7 @@ if(!empty($_POST) && isset($_POST['action'])){
             $cdcMastery->redirect("/auth/activate/".$_POST['activationCode']);
         }
         else{
-            $sysMsg->addMessage("You must provide an activation code.");
+            $sysMsg->addMessage("You must provide an activation code.","warning");
             $cdcMastery->redirect("/auth/activate");
         }
     }
@@ -43,10 +43,10 @@ if(isset($activationToken)):
                 unset($_SESSION['queueActivation']);
             }
 
-			$sysMsg->addMessage("Thank you for activating your account.  Please login using the form below.");
+			$sysMsg->addMessage("Thank you for activating your account.  Please login using the form below.","info");
 			$cdcMastery->redirect("/auth/login");
 		else:
-			$sysMsg->addMessage("Sorry, we could not process the activation for your account.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
+			$sysMsg->addMessage("Sorry, we could not process the activation for your account.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
 		endif;
 	else: ?>
 	<div class="container">

@@ -2,7 +2,7 @@
 $userRole = $roles->verifyUserRole($_SESSION['userUUID']);
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-	$sysMsg->addMessage("You are not authorized to use the Supervisor profile page.");
+	$sysMsg->addMessage("You are not authorized to use the Supervisor profile page.","danger");
 	$cdcMastery->redirect("/errors/403");
 }
 
@@ -24,10 +24,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors encountered while associating subordinates with this user. Check the site log for details.";
+				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.","danger");
 			}
 			else{
-				$messages[] = "Subordinate(s) associated successfully.";
+				$sysMsg->addMessage("Subordinate(s) associated successfully.","success");
 			}
 		break;
 		case "removeSubordinate":
@@ -46,10 +46,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$messages[] = "There were errors while removing subordinate association(s) for this user.  Check the site log for details.";
+				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$messages[] = "Subordinate association(s) removed successfully.";
+				$sysMsg->addMessage("Subordinate association(s) removed successfully.","success");
 			}
 		break;
 	}
@@ -85,15 +85,6 @@ $(document).ready(function() {
 });
 </script>
 <div class="container">
-	<?php if(isset($messages)): ?>
-	<div class="systemMessages">
-		<ul>
-		<?php foreach($messages as $message): ?>
-			<li><?php echo $message; ?></li>
-		<?php endforeach; ?>
-		</ul>
-	</div>
-	<?php endif; ?>
 	<div class="row">
 		<div class="4u">
 			<section>

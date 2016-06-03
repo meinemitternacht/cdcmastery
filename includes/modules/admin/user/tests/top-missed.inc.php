@@ -125,6 +125,6 @@ if(!empty($topMissedQuestionArray)): ?>
     </div>
     <?php
 else:
-    $sysMsg->addMessage("There is not enough data in the database to build this page.  Check back after this user has taken more tests.");
+    $sysMsg->addMessage("There is not enough data in the database to build this page.  Check back after this user has taken more tests.","info");
     $cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

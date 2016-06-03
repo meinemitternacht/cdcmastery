@@ -17,21 +17,21 @@ if(isset($_POST['confirmCategoryAdd'])){
     $addError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Category name cannot be empty.");
+        $sysMsg->addMessage("Category name cannot be empty.","warning");
         $addError = true;
     }
 
     if(!isset($_POST['categoryEncrypted'])){
-        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).");
+        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).","warning");
         $addError = true;
     }
 
     if(!$categoryType){
-        $sysMsg->addMessage("You must choose a category type. (Global/Private)");
+        $sysMsg->addMessage("You must choose a category type. (Global/Private)","warning");
         $addError = true;
     }
     elseif($categoryType == "private" && !$categoryBindingUser){
-        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.");
+        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.","warning");
         $addError = true;
     }
 
@@ -63,7 +63,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             $log->setDetail("Category Binding",$flashCardManager->getCategoryBinding());
             $log->saveEntry();
 
-            $sysMsg->addMessage("Flash card category added successfully.");
+            $sysMsg->addMessage("Flash card category added successfully.","success");
 
             unset($categoryName);
             unset($categoryEncrypted);
@@ -73,7 +73,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             unset($categoryComments);
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.","danger");
         }
     }
 }

@@ -18,7 +18,7 @@ if(isset($_POST) && !empty($_POST)){
         }
     }
 
-    $sysMsg->addMessage("Processed ".$i." users with ".$errors." errors. Check the system log for any issues.");
+    $sysMsg->addMessage("Processed ".$i." users with ".$errors." errors. Check the system log for any issues.","info");
 }
 
 $res = $db->query("SELECT CONCAT(`userFirstName`, ' ', `userLastName`) AS concatenatedName

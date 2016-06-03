@@ -9,7 +9,7 @@
 $testManager = new testManager($db,$log,$afsc);
 
 if(!$testManager->loadIncompleteTest($finalChild)){
-    $sysMsg->addMessage("That test does not exist.");
+    $sysMsg->addMessage("That test does not exist.","warning");
     $cdcMastery->redirect("/admin/users/".$userUUID."/tests/incomplete");
 }
 

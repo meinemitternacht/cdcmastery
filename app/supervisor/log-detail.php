@@ -1,7 +1,7 @@
 <?php
 if(isset($_SESSION['vars'][0])):
 	if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-		$sysMsg->addMessage("You are not authorized to use the Supervisor user log page.");
+		$sysMsg->addMessage("You are not authorized to use the Supervisor log page.","danger");
 		$cdcMastery->redirect("/errors/403");
 	}
 
@@ -13,7 +13,7 @@ if(isset($_SESSION['vars'][0])):
 	$subordinateUsers = $supOverview->getSubordinateUserList();
 
 	if(empty($subordinateUsers)):
-		$sysMsg->addMessage("You do not have any subordinate users.");
+		$sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
 		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
@@ -25,7 +25,7 @@ if(isset($_SESSION['vars'][0])):
 			$logData->loadEntry($logUUID);
 
 			if(!in_array($logData->getUserUUID(),$subordinateUsers)){
-				$sysMsg->addMessage("That user is not associated with your account.");
+				$sysMsg->addMessage("That user is not associated with your account.","danger");
 				$cdcMastery->redirect("/supervisor/overview");
 			}
 
@@ -115,15 +115,15 @@ if(isset($_SESSION['vars'][0])):
 			</div>
 		<?php
 		else:
-			$sysMsg->addMessage("That log entry does not exist.");
+			$sysMsg->addMessage("That log entry does not exist.","warning");
 			$cdcMastery->redirect("/supervisor/overview");
 		endif;
 	else:
-		$sysMsg->addMessage("No log entry specified.");
+		$sysMsg->addMessage("No log entry specified.","warning");
 		$cdcMastery->redirect("/supervisor/overview");
 	endif;
 else:
-	$sysMsg->addMessage("You must select a user log to view.");
+	$sysMsg->addMessage("You must select a user log to view.","warning");
 	$cdcMastery->redirect("/supervisor/overview");
 endif;
 ?>

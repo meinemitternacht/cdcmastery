@@ -19,10 +19,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.");
+				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate(s) associated successfully.");
+				$sysMsg->addMessage("Subordinate(s) associated successfully.","success");
 			}
 		break;
 		case "removeSubordinate":
@@ -41,10 +41,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate association(s) removed successfully.");
+				$sysMsg->addMessage("Subordinate association(s) removed successfully.","success");
 			}
 		break;
 	}

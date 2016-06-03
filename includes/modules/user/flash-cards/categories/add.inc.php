@@ -13,7 +13,7 @@ if(isset($_POST['confirmCategoryAdd'])){
     $addError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Flash card category name cannot be empty.");
+        $sysMsg->addMessage("Flash card category name cannot be empty.","warning");
         $addError = true;
     }
 
@@ -37,7 +37,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             $log->setDetail("Category Binding",$flashCardManager->getCategoryBinding());
             $log->saveEntry();
 
-            $sysMsg->addMessage("Flash card category added successfully. Start creating cards below..");
+            $sysMsg->addMessage("Flash card category added successfully. Start creating cards below.","success");
 
             unset($categoryName);
             unset($categoryComments);
@@ -45,7 +45,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             $cdcMastery->redirect("/cards/data/".$flashCardManager->getCategoryUUID());
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.","danger");
         }
     }
 }

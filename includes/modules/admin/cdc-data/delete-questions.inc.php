@@ -11,7 +11,7 @@ $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 
 if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] == true){
     if(!isset($_SESSION['deleteUUIDList'])){
-        $sysMsg->addMessage("You must select questions to delete.");
+        $sysMsg->addMessage("You must select questions to delete.","warning");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
     }
 
@@ -26,11 +26,11 @@ if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] =
     }
 
     if($loopError && !empty($errorArray)){
-        $sysMsg->addMessage("There was a problem deleting the following questions: " . implode(" , ",$errorArray) . "<br>Please contact the helpdesk for assistance.");
+        $sysMsg->addMessage("There was a problem deleting the following questions: <br><em>" . implode(" , ",$errorArray) . "</em><br>Please contact the helpdesk for assistance.","danger");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
     }
     else{
-        $sysMsg->addMessage("Questions deleted successfully.");
+        $sysMsg->addMessage("Questions deleted successfully.","success");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
     }
 } elseif(isset($_POST['showDeleteConfirmMessage']) && $_POST['showDeleteConfirmMessage'] == true){
@@ -39,7 +39,7 @@ if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] =
     foreach($_SESSION['deleteUUIDList'] as $questionUUID){
         if(!$questionManager->verifyQuestion($questionUUID)){
             unset($_SESSION['deleteUUIDList']);
-            $sysMsg->addMessage("There was a problem deleting those questions. Contact the helpdesk for assistance.");
+            $sysMsg->addMessage("There was a problem deleting those questions. Contact the helpdesk for assistance.","danger");
             $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
         }
     }
@@ -154,7 +154,7 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
                 <?php foreach($questionList as $questionUUID): ?>
                     <?php
                     if(!$questionManager->loadQuestion($questionUUID)){
-                        $sysMsg->addMessage($questionManager->error);
+                        $sysMsg->addMessage($questionManager->error,"danger");
                         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
                     }
                     ?>

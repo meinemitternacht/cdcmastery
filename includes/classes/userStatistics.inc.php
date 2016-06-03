@@ -341,6 +341,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
+
+	/**
+	 * @return array|bool
+	 */
 	
 	public function getSupervisorAssociations(){
 		if(!$this->userUUID){

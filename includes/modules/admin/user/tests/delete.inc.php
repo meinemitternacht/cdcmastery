@@ -4,16 +4,16 @@ $testList = $testManager->listUserTests($userUUID);
 
 if(isset($_POST['confirmTestDelete'])){
     if(!isset($_POST['testUUIDList']) || empty($_POST['testUUIDList'])){
-        $sysMsg->addMessage("You must specify at least one test to delete.");
+        $sysMsg->addMessage("You must specify at least one test to delete.","warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else {
         $testList = $_POST['testUUIDList'];
         if ($testManager->deleteTests($testList)) {
-            $sysMsg->addMessage("Selected tests deleted successfully.");
+            $sysMsg->addMessage("Selected tests deleted successfully.","success");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/tests/delete");
         } else {
-            $sysMsg->addMessage("We could not delete the selected tests, please contact the support helpdesk.");
+            $sysMsg->addMessage("We could not delete the selected tests, please contact the support helpdesk.","danger");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/tests/delete");
         }
     }

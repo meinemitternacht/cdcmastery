@@ -233,6 +233,9 @@ class passwordReset extends user {
 				return true;
 			}
 			else{
+				$this->log->setAction("ERROR_USER_PASSWORD_RESET_INVALID_TOKEN");
+				$this->log->setDetail("Token",$passwordToken);
+				$this->log->saveEntry();
 				return false;
 			}
 		}

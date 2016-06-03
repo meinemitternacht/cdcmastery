@@ -12,12 +12,12 @@ if(isset($_POST['confirmCategoryAFSCAdd'])){
     $addError = false;
 
     if(!$afscUUID){
-        $sysMsg->addMessage("You must select an AFSC.");
+        $sysMsg->addMessage("You must select an AFSC.","warning");
         $addError = true;
     }
 
     if(!$flashCardManager->checkCategoryBinding($afscUUID)){
-        $sysMsg->addMessage("The flash card category for that AFSC has already been created.");
+        $sysMsg->addMessage("The flash card category for that AFSC has already been created.","warning");
         $addError = true;
     }
 
@@ -25,10 +25,10 @@ if(isset($_POST['confirmCategoryAFSCAdd'])){
         $flashCardManager->newFlashCardCategory();
 
         if($flashCardManager->createCategoryFromAFSC($afscUUID,$afsc,$_SESSION['userUUID'])){
-            $sysMsg->addMessage("Flash card category added successfully.");
+            $sysMsg->addMessage("Flash card category added successfully.","success");
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.","danger");
         }
     }
 }

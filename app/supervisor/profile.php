@@ -3,7 +3,7 @@ if(isset($_SESSION['vars'][0])):
 	$targetUUID = $_SESSION['vars'][0];
 
     if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-        $sysMsg->addMessage("You are not authorized to use the Supervisor profile page.");
+        $sysMsg->addMessage("You are not authorized to use the Supervisor profile page.","danger");
         $cdcMastery->redirect("/errors/403");
     }
 
@@ -15,19 +15,19 @@ if(isset($_SESSION['vars'][0])):
     $subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
 
     if(empty($subordinateUsers)):
-        $sysMsg->addMessage("You do not have any subordinate users.");
+        $sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
         $cdcMastery->redirect("/supervisor/subordinates");
     endif;
 
     if(!in_array($targetUUID,$subordinateUsers)){
-        $sysMsg->addMessage("That user is not associated with your account.");
+        $sysMsg->addMessage("That user is not associated with your account.","danger");
         $cdcMastery->redirect("/supervisor/overview");
     }
 
 	$userProfile = new user($db, $log, $emailQueue);
 	$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
 	if(!$userProfile->loadUser($targetUUID)){
-		$sysMsg->addMessage("That user does not exist.");
+		$sysMsg->addMessage("That user does not exist.","warning");
 	}
 	else{
 		$userProfileStatistics->setUserUUID($targetUUID);
@@ -467,7 +467,7 @@ if(isset($_SESSION['vars'][0])):
 		<?php
 	}
 else:
-    $sysMsg->addMessage("You must select a user profile to view.");
+    $sysMsg->addMessage("You must select a user profile to view.","warning");
     $cdcMastery->redirect("/supervisor/overview");
 endif;
 ?>

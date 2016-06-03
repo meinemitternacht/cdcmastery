@@ -43,7 +43,7 @@ if(isset($_POST['disableConfirm'])){
     if(isset($_SESSION['timeZone']))
         unset($_SESSION['timeZone']);
 
-    $sysMsg->addMessage("Your account has been disabled.  Thank you for using CDCMastery.");
+    $sysMsg->addMessage("Your account has been disabled.  Thank you for using CDCMastery.","success");
     $cdcMastery->redirect("/");
 }
 ?>

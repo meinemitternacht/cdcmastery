@@ -205,12 +205,14 @@ class router extends CDCMastery
 					}
 					else{
 						$this->outputPage = APP_BASE . "/errors/404.php";
+                        $this->error = "That page does not exist.";
 						$this->errorNumber = 404;
 						return false;
 					}
 				}
 				elseif(!file_exists($this->filePath)){
 					$this->outputPage = APP_BASE . "/errors/404.php";
+                    $this->error = "That page does not exist.";
 					$this->errorNumber = 404;
 					return false;
 				}

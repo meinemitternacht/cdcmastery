@@ -6,11 +6,11 @@ if($action){
 	if($action == "add"): 
 		if(isset($_POST['officeSymbolName'])):
 			if($officeSymbol->addOfficeSymbol($_POST['officeSymbolName'])){
-				$sysMsg->addMessage("Office Symbol added successfully.");
+				$sysMsg->addMessage("Office Symbol added successfully.","success");
 				$cdcMastery->redirect("/admin/office-symbols");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem adding the Office Symbol.");
+				$sysMsg->addMessage("There was a problem adding the Office Symbol.","danger");
 				$cdcMastery->redirect("/admin/office-symbols/add");
 			}
 		else: ?>
@@ -36,11 +36,11 @@ if($action){
 	elseif($action == "edit"):
 		if(isset($_POST['officeSymbolName'])):
 			if($officeSymbol->editOfficeSymbol($officeSymbolUUID,$_POST['officeSymbolName'])){
-				$sysMsg->addMessage("Office Symbol edited successfully.");
+				$sysMsg->addMessage("Office Symbol edited successfully.","success");
 				$cdcMastery->redirect("/admin/office-symbols");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem editing the Office Symbol.");
+				$sysMsg->addMessage("There was a problem editing the Office Symbol.","danger");
 				$cdcMastery->redirect("/admin/office-symbols/edit/" . $officeSymbolUUID);
 			}
 		else: 
@@ -64,18 +64,18 @@ if($action){
 				</div>
 			<?php
 			else:
-				$sysMsg->addMessage("That Office Symbol does not exist.");
+				$sysMsg->addMessage("That Office Symbol does not exist.","danger");
 				$cdcMastery->redirect("/admin/office-symbols");
 			endif;
 		endif; ?>
 	<?php
 	elseif($action == "delete"):
 		if($officeSymbol->deleteOfficeSymbol($officeSymbolUUID)){
-			$sysMsg->addMessage("Office Symbol deleted successfully.");
+			$sysMsg->addMessage("Office Symbol deleted successfully.","success");
 			$cdcMastery->redirect("/admin/office-symbols");
 		}
 		else{
-			$sysMsg->addMessage("There was a problem deleting that Office Symbol.");
+			$sysMsg->addMessage("There was a problem deleting that Office Symbol.","danger");
 			$cdcMastery->redirect("/admin/office-symbols");
 		}
 	endif;

@@ -13,10 +13,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Pending AFSC association(s) approved successfully.");
+				$sysMsg->addMessage("Pending AFSC association(s) approved successfully.","success");
 			}
 			break;
 	}
@@ -79,6 +79,6 @@ if($pendingAssociationList): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no pending AFSC Associations.");
+	$sysMsg->addMessage("There are no pending AFSC Associations.","info");
 	$cdcMastery->redirect("/admin");
 endif;

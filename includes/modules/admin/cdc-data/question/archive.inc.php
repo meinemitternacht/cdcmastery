@@ -7,7 +7,7 @@
  */
 
 if(!$qManager->verifyQuestion($workingChild)){
-    $sysMsg->addMessage("That question does not exist.");
+    $sysMsg->addMessage("That question does not exist.","warning");
     $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC);
 }
 else{
@@ -20,7 +20,7 @@ else{
 if(!empty($_POST)){
     if(isset($_POST['confirmQuestionArchive'])){
         if($qManager->archiveQuestion($workingChild)){
-            $sysMsg->addMessage("Question archived.");
+            $sysMsg->addMessage("Question archived.","success");
             $cdcMastery->redirect("/admin/cdc-data/". $workingAFSC);
         }
     }

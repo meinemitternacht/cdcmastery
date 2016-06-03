@@ -6,17 +6,17 @@
  * Time: 9:59 AM
  */
 if(!$flashCardManager->loadCardCategory($workingChild)){
-    $sysMsg->addMessage("That category does not exist.");
+    $sysMsg->addMessage("That category does not exist.","warning");
     $cdcMastery->redirect("/admin/flash-card-categories");
 }
 
 if(isset($_POST['confirmCategoryDelete'])){
     if($flashCardManager->deleteFlashCardCategory($workingChild)){
-        $sysMsg->addMessage("Category deleted successfully.");
+        $sysMsg->addMessage("Category deleted successfully.","success");
         $cdcMastery->redirect("/admin/flash-card-categories");
     }
     else{
-        $sysMsg->addMessage("Category could not be deleted. Contact the support help desk for assistance.");
+        $sysMsg->addMessage("Category could not be deleted. Contact the support help desk for assistance.","danger");
     }
 }
 ?>

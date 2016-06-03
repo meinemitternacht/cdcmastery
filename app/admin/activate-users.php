@@ -6,17 +6,22 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 		case "activateUsers":
 			$error = false;
 
-			foreach($_POST['activationCodeList'] as $activationCode){
-				if(!$userActivation->activateUser($activationCode,$_SESSION['userUUID'])){
-					$error = true;
-				}
-			}
-
-			if($error){
-				$sysMsg->addMessage("There were errors while activating those user(s).  Check the site log for details.");
+			if(empty($_POST['activationCodeList']) || !isset($_POST['activationCodeList'])){
+				$sysMsg->addMessage("You must select users to activate.","warning");
 			}
 			else{
-				$sysMsg->addMessage("User(s) activated successfully.");
+				foreach($_POST['activationCodeList'] as $activationCode){
+					if(!$userActivation->activateUser($activationCode,$_SESSION['userUUID'])){
+						$error = true;
+					}
+				}
+
+				if($error){
+					$sysMsg->addMessage("There were errors while activating those user(s).  Check the site log for details.","danger");
+				}
+				else{
+					$sysMsg->addMessage("User(s) activated successfully.","success");
+				}
 			}
 			break;
 	}
@@ -79,6 +84,6 @@ if($unactivatedUsersList): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no unactivated users.");
+	$sysMsg->addMessage("There are no unactivated users.","info");
 	$cdcMastery->redirect("/admin");
 endif;

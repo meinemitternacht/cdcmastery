@@ -22,7 +22,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
             $log->setDetail("Incomplete Test UUID",$testUUID);
             $log->setDetail("Test Owner",$testManager->getIncompleteUserUUID());
             $log->saveEntry();
-            $sysMsg->addMessage("Sorry, but you are not authorized to take tests as other users!");
+            $sysMsg->addMessage("Sorry, but you are not authorized to take tests as other users!","danger");
             $cdcMastery->redirect("/errors/403");
         }
         ?>
@@ -275,7 +275,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
         /*
          * Test does not exist.
          */
-        $sysMsg->addMessage("Sorry, that test does not exist.");
+        $sysMsg->addMessage("Sorry, that test does not exist.","warning");
         $cdcMastery->redirect("/errors/404");
     }
 }
@@ -286,7 +286,7 @@ else {
 
     if (isset($_POST['startNewTest']) && $_POST['startNewTest'] == true) {
         if(!isset($_POST['userAFSCList']) || empty($_POST['userAFSCList'])){
-            $sysMsg->addMessage("You must select at least one AFSC to test with.");
+            $sysMsg->addMessage("You must select at least one AFSC to test with.","warning");
             $cdcMastery->redirect("/test/take");
         }
 
@@ -307,7 +307,7 @@ else {
 
                 $cdcMastery->redirect("/test/take/" . $testManager->getIncompleteTestUUID());
             } else {
-                $sysMsg->addMessage("That AFSC does not have any questions.  If you would like to add them, please contact the support helpdesk.");
+                $sysMsg->addMessage("That AFSC does not have any questions.  If you would like to add them, please contact the support helpdesk.","info");
                 $cdcMastery->redirect("/test/take");
             }
         } else {

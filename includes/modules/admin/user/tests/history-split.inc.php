@@ -214,6 +214,6 @@ if(!empty($testList)): ?>
     </div>
     <?php
 else:
-    $sysMsg->addMessage("This user has not completed any tests.");
-    $cdcMastery->redirect("/errors/404");
+    $sysMsg->addMessage("This user has not completed any tests.","info");
+    $cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

@@ -4,16 +4,16 @@ if(isset($_POST['confirmActivationResend'])){
 		$userActivate = new userActivation($db, $log, $emailQueue);
 		
 		if($userActivate->queueActivation($userUUID)){
-			$sysMsg->addMessage("Activation code sent to " . $objUser->getFullName());
+			$sysMsg->addMessage("Activation code sent to " . $objUser->getFullName(),"success");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 		else{
-            $sysMsg->addMessage("Sorry, we could not send an activation code to " . $objUser->getFullName());
+            $sysMsg->addMessage("Sorry, we could not send an activation code to " . $objUser->getFullName(),"danger");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 	}
 	else{
-        $sysMsg->addMessage("No User UUID was provided.");
+        $sysMsg->addMessage("No User UUID was provided.","warning");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }

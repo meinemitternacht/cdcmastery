@@ -4,7 +4,7 @@ $answerManager = new answerManager($db,$log);
 $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
-    $sysMsg->addMessage($questionManager->error);
+    $sysMsg->addMessage($questionManager->error,"warning");
     $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
 }
 

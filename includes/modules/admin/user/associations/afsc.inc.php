@@ -11,10 +11,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-                $sysMsg->addMessage("There were errors while adding AFSC association(s) for this user.  Check the site log for details.");
+                $sysMsg->addMessage("There were errors while adding AFSC association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("AFSC association(s) added successfully.");
+				$sysMsg->addMessage("AFSC association(s) added successfully.","success");
 			}
 			break;
 		case "removeAssociation":
@@ -27,10 +27,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing AFSC association(s) for this user.  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while removing AFSC association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("AFSC association(s) removed successfully.");
+				$sysMsg->addMessage("AFSC association(s) removed successfully.","success");
 			}
 			break;
 		case "approvePendingAssociation":
@@ -43,10 +43,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Pending AFSC association(s) approved successfully.");
+				$sysMsg->addMessage("Pending AFSC association(s) approved successfully.","success");
 			}
 			break;
 		case "removePendingAssociation":
@@ -59,10 +59,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Pending AFSC association(s) removed successfully.");
+				$sysMsg->addMessage("Pending AFSC association(s) removed successfully.","success");
 			}
 			break;
 	}

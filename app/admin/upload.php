@@ -8,7 +8,7 @@
 
 if(!empty($_POST)){
     if($_FILES['fileField']['error'] > 0){
-        $sysMsg->addMessage("Upload error " . $_FILES['fileField']['error']);
+        $sysMsg->addMessage("Upload error " . $_FILES['fileField']['error'],"danger");
 
         $log->setAction("ERROR_FILE_UPLOAD");
         $log->setDetail("Error",$_FILES['fileField']['error']);
@@ -23,7 +23,7 @@ if(!empty($_POST)){
             $log->setDetail("File Name",$fileName);
             $log->saveEntry();
 
-            $sysMsg->addMessage($fileName . " could not be uploaded.  Please open a support ticket.");
+            $sysMsg->addMessage($fileName . " could not be uploaded.  Please open a support ticket.","danger");
         }
         else{
             $log->setAction("FILE_UPLOAD");
@@ -32,7 +32,7 @@ if(!empty($_POST)){
             $log->saveEntry();
         }
 
-        $sysMsg->addMessage($fileName . " uploaded successfully.");
+        $sysMsg->addMessage($fileName . " uploaded successfully.","success");
     }
 }
 ?>

@@ -11,7 +11,7 @@ $user->loadUser($_SESSION['userUUID']);
  * Check if test UUID is empty
  */
 if(!$testUUID){
-    $sysMsg->addMessage("You must provide a test to view.");
+    $sysMsg->addMessage("You must select a test to view.","warning");
 	$cdcMastery->redirect("/errors/404");
 }
 
@@ -19,7 +19,7 @@ if(!$testUUID){
  * Check test validity
  */
 if(!$testManager->loadTest($testUUID)){
-    $sysMsg->addMessage("That test does not exist.");
+    $sysMsg->addMessage("That test does not exist.","warning");
 	$cdcMastery->redirect("/errors/404");
 }
 
@@ -27,7 +27,7 @@ if(!$testManager->loadTest($testUUID)){
  * Check test ownership, if role is user.  Deny access to tests that are not their own.
  */
 if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserUUID() != $_SESSION['userUUID']){
-	$sysMsg->addMessage("You are not authorized to view that test.");
+	$sysMsg->addMessage("You are not authorized to view that test.","danger");
 	$cdcMastery->redirect("/errors/403");
 }
 
@@ -44,12 +44,12 @@ if($cdcMastery->verifySupervisor() && $testManager->getUserUUID() != $_SESSION['
 	$subordinateUsers = $supOverview->getSubordinateUserList();
 
 	if(empty($subordinateUsers)):
-		$sysMsg->addMessage("You do not have any subordinate users.");
-		$cdcMastery->redirect("/supervisor/associate");
+		$sysMsg->addMessage("You do not have any subordinate users.","info");
+		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
 	if(!in_array($testManager->getUserUUID(),$subordinateUsers)){
-		$sysMsg->addMessage("That user is not associated with your account.");
+		$sysMsg->addMessage("That user is not associated with your account.","danger");
 		$cdcMastery->redirect("/supervisor/overview");
 	}
 }

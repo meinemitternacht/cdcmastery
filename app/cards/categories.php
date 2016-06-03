@@ -66,7 +66,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                     </section>
                     <?php
                 else:
-                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!");
+                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!","info");
                     $cdcMastery->redirect("/cards/categories/add");
                 endif; ?>
                 <?php

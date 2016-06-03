@@ -14,12 +14,12 @@ else{
 }
 
 if(!$cdcMastery->verifyTrainingManager() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Training Manager Overview.");
+    $sysMsg->addMessage("You are not authorized to view the Training Manager Overview.","danger");
     $cdcMastery->redirect("/errors/403");
 }
 
 if($roles->getRoleType($user->getUserRoleByUUID($trainingManagerUUID)) != "trainingManager"){
-    $sysMsg->addMessage("That user is not a Training Manager.");
+    $sysMsg->addMessage("That user is not a Training Manager.","warning");
     $cdcMastery->redirect("/errors/500");
 }
 
@@ -32,7 +32,7 @@ $subordinateUsers = $user->sortUserUUIDList($tmOverview->getSubordinateUserList(
 $subordinateSupervisors = $user->sortUserUUIDList($tmOverview->getSubordinateSupervisorList(),"userLastName");
 
 if(empty($subordinateSupervisors) && empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.");
+    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account by using the form below.","info");
     $cdcMastery->redirect("/admin/users/".$_SESSION['userUUID']."/associations/subordinate");
 endif;
 

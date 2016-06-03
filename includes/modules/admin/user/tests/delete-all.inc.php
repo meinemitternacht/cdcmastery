@@ -5,11 +5,11 @@ if(isset($_POST['confirmTestDeleteAll'])){
     $testList = $testManager->getTestUUIDList($userUUID);
 
     if($testManager->deleteTests($testList)){
-        $sysMsg->addMessage("Completed tests deleted successfully.");
+        $sysMsg->addMessage("Completed tests deleted successfully.","success");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $sysMsg->addMessage("We could not delete the completed tests taken by this user, please contact the support helpdesk.");
+        $sysMsg->addMessage("We could not delete the completed tests taken by this user, please contact the support helpdesk.","danger");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

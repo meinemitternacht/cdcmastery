@@ -46,9 +46,9 @@
                                     '/css/style.css',
                                     '/css/style-desktop.css');
 
-        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=61F71819";
-        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=61F71818";
-        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=61F71817";
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=8675312";
+        $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=8675312";
+        $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=8675312";
         ?>
 		<script src="<?php echo $scriptURL; ?>"></script>
 		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
@@ -117,7 +117,7 @@
 			<div class="container" id="system-messages-container-block" style="display:none;">
 				<div class="row">
 					<div class="12u">
-						<div class="systemMessages" id="system-messages-block">
+						<div id="system-messages-block">
 							&nbsp;
 						</div>
 					</div>

@@ -9,7 +9,7 @@
 if(!empty($_POST)){
     if(isset($_POST['confirmVolumeAdd']) && $_POST['confirmVolumeAdd'] == true){
         if(!isset($_POST['volumeName']) || empty($_POST['volumeName'])){
-            $sysMsg->addMessage("Volume Name cannot be empty.");
+            $sysMsg->addMessage("Volume Name cannot be empty.","warning");
             $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-volume/" . $workingChild);
         }
         else{
@@ -24,11 +24,11 @@ if(!empty($_POST)){
         }
 
         if($qManager->addVolume($volumeName,$volumeVersion,$workingAFSC,$workingChild)){
-            $sysMsg->addMessage("Volume added.");
+            $sysMsg->addMessage("Volume added.","success");
             $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC);
         }
         else{
-            $sysMsg->addMessage("There was a problem adding the volume.  The error has been logged.");
+            $sysMsg->addMessage("There was a problem adding the volume.  The error has been logged.","danger");
             $cdcMastery->redirect("/admin/cdc-data" . $workingAFSC . "/add-volume/" . $workingChild);
         }
     }

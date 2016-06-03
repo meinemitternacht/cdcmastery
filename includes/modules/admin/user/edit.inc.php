@@ -1,6 +1,6 @@
 <?php
 if(!$user->verifyUser($userUUID)){
-    $sysMsg->addMessage("That user does not exist.");
+    $sysMsg->addMessage("That user does not exist.","warning");
     $cdcMastery->redirect("/admin/users");
 }
 
@@ -10,14 +10,14 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     $error = false;
 
-    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty."); $error = true; }
-    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty."); $error = true; }
-    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty."); $error = true; }
-    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty."); $error = true; }
-    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty."); $error = true; }
-    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If base is not listed, choose 'Other'."); $error = true; }
-    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty."); $error = true; }
-    if(empty($_POST['userRole'])){ $sysMsg->addMessage("User role cannot be empty."); $error = true; }
+    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If their base is not listed, choose 'Other'.","warning"); $error = true; }
+    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userRole'])){ $sysMsg->addMessage("User role cannot be empty.","warning"); $error = true; }
 
     if($error){
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
@@ -28,14 +28,14 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     if($_POST['userHandle'] != $objUser->getUserHandle()) {
         if ($user->getUUIDByHandle($_POST['userHandle'])) {
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
         }
     }
 
     if($_POST['userEmail'] != $objUser->getUserEmail()) {
         if ($user->getUUIDByEmail($_POST['userEmail'])) {
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.","warning");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
         }
     }
@@ -47,7 +47,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
             $objUser->setUserPassword($_POST['user-pw-edit']);
         } else {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError);
+                $sysMsg->addMessage($complexityCheckError,"warning");
             }
 
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
@@ -82,7 +82,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         if($objUserStatistics->getSupervisorSubordinateCount() > 0){
             $subordinateList = $objUserStatistics->getSupervisorAssociations();
 
-            if(sizeof($subordinateList) > 1){
+            if(count($subordinateList) > 1){
                 foreach($subordinateList as $subordinateUUID){
                     $assoc->addTrainingManagerAssociation($objUser->getUUID(),$subordinateUUID);
                     $assoc->deleteSupervisorAssociation($objUser->getUUID(),$subordinateUUID);
@@ -101,7 +101,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                 $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
                 $log->saveEntry();
 
-                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.");
+                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.","danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
             }
             else{
@@ -139,7 +139,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                 $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
                 $log->saveEntry();
 
-                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.");
+                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.","danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
             }
             else{
@@ -159,7 +159,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         $log->setDetail("User UUID",$userUUID);
         $log->saveEntry();
 
-        $sysMsg->addMessage("User " . $objUser->getFullName() . " was edited successfully.");
+        $sysMsg->addMessage("User " . $objUser->getFullName() . " was edited successfully.","success");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
@@ -172,7 +172,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         }
 
         $log->saveEntry();
-        $sysMsg->addMessage("There was a problem saving the information for that user.  Please open a support ticket for assistance.");
+        $sysMsg->addMessage("There was a problem saving the information for that user.  Please open a support ticket for assistance.","danger");
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
     }
 }

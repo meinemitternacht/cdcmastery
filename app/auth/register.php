@@ -1,6 +1,6 @@
 <?php
 if(isset($_SESSION['auth'])){
-    $sysMsg->addMessage("You are already registered.");
+    $sysMsg->addMessage("You are already registered.","info");
     $cdcMastery->redirect("/");
 }
 
@@ -52,23 +52,23 @@ if(isset($_POST['registrationFormStep'])):
 
         foreach($registrationArray as $userAttributeKey => $userAttribute){
             if(empty($userAttribute['data'])){
-                $sysMsg->addMessage($userAttribute['description'] . " cannot be blank.");
+                $sysMsg->addMessage($userAttribute['description'] . " cannot be blank.","warning");
                 $error = true;
             }
         }
 
         if($user->getUUIDByHandle($_SESSION['registrationArray']['userHandle']['data'])){
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
             $error = true;
         }
 
         if($user->getUUIDByEmail($_SESSION['registrationArray']['userEmail']['data'])){
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one or reset your password by clicking the link on the login page.");
+            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one or reset your password by clicking the link on the login page.","warning");
             $error = true;
         }
 
         if($registrationArray['userPassword']['data'] != $registrationArray['userPassword_confirmation']['data']){
-            $sysMsg->addMessage("Your passwords do not match.");
+            $sysMsg->addMessage("Your passwords do not match.","warning");
             $error = true;
         }
 
@@ -80,13 +80,13 @@ if(isset($_POST['registrationFormStep'])):
 
         if (is_array($complexityCheck)) {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError);
+                $sysMsg->addMessage($complexityCheckError,"warning");
             }
             $error = true;
         }
 
         if(!$cdcMastery->checkEmailAddress($registrationArray['userEmail']['data'])){
-            $sysMsg->addMessage("You did not provide a valid Air Force e-mail address.");
+            $sysMsg->addMessage("You did not provide a valid Air Force e-mail address.","warning");
             $error = true;
         }
 
@@ -104,7 +104,7 @@ if(isset($_POST['registrationFormStep'])):
         $userTrainingManager = isset($_POST['userTrainingManager']) ? $_POST['userTrainingManager'] : false;
 
         if(empty($userAFSCList)){
-            $sysMsg->addMessage("You must select at least one AFSC to be associated with.");
+            $sysMsg->addMessage("You must select at least one AFSC to be associated with.","warning");
             $cdcMastery->redirect("/auth/register/" . $accountType . "/2");
         }
 
@@ -177,7 +177,7 @@ if(isset($_POST['registrationFormStep'])):
                     unset($_SESSION['registrationArray']);
                 }
 
-                $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.");
+                $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.","success");
                 $_SESSION['queueActivation'] = true;
                 $cdcMastery->redirect("/");
             }
@@ -192,7 +192,7 @@ if(isset($_POST['registrationFormStep'])):
                 $log->setDetail("Error Reason","Unable to queue user activation");
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The good news is that we were able to save most of your information, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.");
+                $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The good news is that we were able to save most of your information, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.","danger");
 
                 $cdcMastery->redirect("/errors/500");
             }
@@ -208,7 +208,7 @@ if(isset($_POST['registrationFormStep'])):
             $log->setDetail("Error reason","Unable to save user data");
             $log->saveEntry();
 
-            $sysMsg->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to log most of it, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.");
+            $sysMsg->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to log most of it, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.","danger");
 
             $cdcMastery->redirect("/errors/500");
         }
@@ -228,7 +228,7 @@ if($accountType):
             if($accountType == "supervisor" || $accountType == "training-manager"){
                 $accountTypeMessage = "<strong>Note:</strong> Because you selected a supervisor or training manager account type, administrator
 approval is required before the system will grant extended permissions to your account.  Until that time, your account will function as a normal user.";
-                $sysMsg->addMessage($accountTypeMessage);
+                $sysMsg->addMessage($accountTypeMessage,"info");
             }
             ?>
             <form id="registrationFormPartTwo" action="/auth/register/<?php echo $accountType; ?>/2" method="POST">

@@ -14,7 +14,7 @@ $superOverview = new supervisorOverview($db,$log,$userStatistics,$superUser,$rol
 
 $workingAFSC = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 if(!$afsc->loadAFSC($workingAFSC)){
-    $sysMsg->addMessage("That AFSC does not exist.");
+    $sysMsg->addMessage("That AFSC does not exist.","warning");
     $cdcMastery->redirect("/errors/404");
 }
 
@@ -26,12 +26,12 @@ else{
 }
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Supervisor Missed Questions Overview.");
+    $sysMsg->addMessage("You are not authorized to view the Supervisor Missed Questions Overview.","danger");
     $cdcMastery->redirect("/errors/403");
 }
 
 if($roles->getRoleType($user->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
-    $sysMsg->addMessage("That user is not a Supervisor.");
+    $sysMsg->addMessage("That user is not a Supervisor.","warning");
     $cdcMastery->redirect("/errors/500");
 }
 
@@ -41,8 +41,8 @@ $superOverview->loadSupervisor($supervisorUUID);
 $userList = $superOverview->getSubordinateUserList();
 
 if(!$userList){
-    $sysMsg->addMessage("You have no subordinate users.");
-    $cdcMastery->redirect("/");
+    $sysMsg->addMessage("You have no subordinate users. Please associate users with your account by using the form below.","info");
+    $cdcMastery->redirect("/supervisor/subordinates");
 }
 
 $questionList = $superOverview->getQuestionsMissedOverviewByAFSC($workingAFSC,$userList);

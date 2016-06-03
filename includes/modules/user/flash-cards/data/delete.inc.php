@@ -8,17 +8,17 @@
 
 if(isset($_POST['confirmFlashCardDelete'])){
     if($flashCardManager->deleteFlashCardData($actionChild)){
-        $sysMsg->addMessage("Flash card deleted successfully.");
+        $sysMsg->addMessage("Flash card deleted successfully.","success");
         $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     else{
-        $sysMsg->addMessage("That flash card could not be deleted. Contact the support help desk for assistance.");
+        $sysMsg->addMessage("That flash card could not be deleted. Contact the support help desk for assistance.","danger");
     }
 }
 
 if(isset($_POST['confirmDeleteMultipleFlashCards'])){
     if(!isset($_POST['flashCardUUIDList']) || !is_array($_POST['flashCardUUIDList']) || empty($_POST['flashCardUUIDList'])){
-        $sysMsg->addMessage("You must specify flash cards to delete.");
+        $sysMsg->addMessage("You must specify flash cards to delete.","warning");
         $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     else{
@@ -30,18 +30,18 @@ if(isset($_POST['confirmDeleteMultipleFlashCards'])){
         }
 
         if(!$error){
-            $sysMsg->addMessage("Flash cards deleted successfully.");
+            $sysMsg->addMessage("Flash cards deleted successfully.","success");
             $cdcMastery->redirect("/cards/data/".$workingChild);
         }
         else{
-            $sysMsg->addMessage("Some flash cards could not be deleted. Contact the support help desk for assistance.");
+            $sysMsg->addMessage("Some flash cards could not be deleted. Contact the support help desk for assistance.","danger");
         }
     }
 }
 
 if(!empty($actionChild)):
     if(!$flashCardManager->loadFlashCardData($actionChild)){
-        $sysMsg->addMessage("That flash card does not exist.");
+        $sysMsg->addMessage("That flash card does not exist.","warning");
         $cdcMastery->redirect("/cards/data/".$workingChild);
     }
     ?>

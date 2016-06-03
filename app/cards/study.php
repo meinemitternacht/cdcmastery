@@ -54,11 +54,11 @@ if($sessionAction){
 }
 
 if(!$categoryUUID){
-    $sysMsg->addMessage("Category must be specified.");
+    $sysMsg->addMessage("Category must be specified.","warning");
     $cdcMastery->redirect("/cards");
 }
 elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
-    $sysMsg->addMessage("That card category does not exist!");
+    $sysMsg->addMessage("That card category does not exist!","warning");
     $cdcMastery->redirect("/cards");
 }
 ?>

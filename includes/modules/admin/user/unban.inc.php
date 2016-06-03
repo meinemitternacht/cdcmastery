@@ -17,7 +17,7 @@ if(isset($_POST['confirmUserUnban'])){
                 }
                 $log->saveEntry();
 
-                $sysMsg->addMessage($unbanUserObj->getFullName() . " has been unbanned.");
+                $sysMsg->addMessage($unbanUserObj->getFullName() . " has been unbanned.","success");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             } else {
                 $log->setAction("ERROR_USER_UNBAN");
@@ -31,12 +31,12 @@ if(isset($_POST['confirmUserUnban'])){
                 $log->setDetail("Error", $unbanUserObj->error);
                 $log->saveEntry();
 
-                $sysMsg->addMessage($unbanUserObj->getFullName() . " could not be unbanned.  The error has been logged.");
+                $sysMsg->addMessage($unbanUserObj->getFullName() . " could not be unbanned.  The error has been logged.","danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.");
+        $sysMsg->addMessage("No User UUID was provided.","warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

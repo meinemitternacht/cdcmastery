@@ -14,13 +14,13 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     $error = false;
 
-    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty."); $error = true; }
-    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty."); $error = true; }
-    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty."); $error = true; }
-    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty."); $error = true; }
-    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty."); $error = true; }
-    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If base is not listed, choose \"Other\"."); $error = true; }
-    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty."); $error = true; }
+    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If your base is not listed, choose \"Other\".","warning"); $error = true; }
+    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty.","warning"); $error = true; }
 
     if($error){
         $cdcMastery->redirect("/user/edit");
@@ -31,14 +31,14 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     if($_POST['userHandle'] != $user->getUserHandle()) {
         if ($user->getUUIDByHandle($_POST['userHandle'])) {
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
             $cdcMastery->redirect("/user/edit");
         }
     }
 
     if($_POST['userEmail'] != $user->getUserEmail()) {
         if ($user->getUUIDByEmail($_POST['userEmail'])) {
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.");
+            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.","warning");
             $cdcMastery->redirect("/user/edit");
         }
     }
@@ -50,7 +50,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
             $user->setUserPassword($_POST['user-pw-edit']);
         } else {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError);
+                $sysMsg->addMessage($complexityCheckError,"warning");
             }
 
             $cdcMastery->redirect("/user/edit");
@@ -80,7 +80,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         $log->setDetail("User UUID",$_SESSION['userUUID']);
         $log->saveEntry();
 
-        $sysMsg->addMessage("Your profile was edited successfully.");
+        $sysMsg->addMessage("Your profile was edited successfully.","success");
         $cdcMastery->redirect("/user/edit");
     }
     else{
@@ -93,7 +93,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         }
 
         $log->saveEntry();
-        $sysMsg->addMessage("There was a problem saving your profile information.  Please open a support ticket for assistance.");
+        $sysMsg->addMessage("There was a problem saving your profile information.  Please open a support ticket for assistance.","danger");
         $cdcMastery->redirect("/user/edit");
     }
 }

@@ -22,10 +22,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.");
+				$sysMsg->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.","danger");
 			}
 			else{
-				$sysMsg->addMessage("Processed user authorization(s) successfully.");
+				$sysMsg->addMessage("Processed user authorization(s) successfully.","success");
 			}
 			break;
 	}
@@ -94,6 +94,6 @@ if($authorizationQueue): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no users awaiting authorization.");
+	$sysMsg->addMessage("There are no users awaiting authorization.","info");
 	$cdcMastery->redirect("/admin");
 endif;

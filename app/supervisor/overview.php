@@ -14,12 +14,12 @@ else{
 }
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to use the Supervisor Overview.");
+    $sysMsg->addMessage("You are not authorized to use the Supervisor Overview.","danger");
     $cdcMastery->redirect("/errors/403");
 }
 
 if($roles->getRoleType($user->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
-    $sysMsg->addMessage("That user is not a Supervisor.");
+    $sysMsg->addMessage("That user is not a Supervisor.","warning");
     $cdcMastery->redirect("/errors/500");
 }
 
@@ -31,7 +31,7 @@ $supOverview->loadSupervisor($supervisorUUID);
 $subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
 
 if(empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.");
+    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.","info");
     $cdcMastery->redirect("/supervisor/subordinates");
 endif;
 

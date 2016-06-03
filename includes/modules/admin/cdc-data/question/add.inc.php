@@ -14,7 +14,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $correctAnswer = !empty($_POST['correctAnswer']) ? $_POST['correctAnswer'] : false;
 
     if(!$questionData){
-        $sysMsg->addMessage("You must provide question and answer data.");
+        $sysMsg->addMessage("You must provide question and answer data.","warning");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
     }
 
@@ -40,7 +40,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     }
 
     if(isset($emptyAnswer)){
-        $sysMsg->addMessage("You must provide four answers.  Make sure that each answer has a letter and a period followed by a space at the beginning: e.g., A._ where the underscore is a space.");
+        $sysMsg->addMessage("You must provide four answers.  Make sure that each answer has a letter and a period followed by a space at the beginning: e.g., A._ where the underscore is a space.","warning");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
     }
 
@@ -67,7 +67,8 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $questionManager->setFOUO($afsc->getAFSCFOUO());
 
     if(!$questionManager->saveQuestion()){
-        $sysMsg->addMessage($questionManager->error);
+        $sysMsg->addMessage("We could not save that question.  Please contact the Help Desk.","danger");
+        $sysMsg->addMessage($questionManager->error,"danger");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
     }
     else{
@@ -85,8 +86,8 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
             }
 
             if(!$answerManager->saveAnswer()){
-                $sysMsg->addMessage($answerManager->error);
-                $sysMsg->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.");
+                $sysMsg->addMessage($answerManager->error,"danger");
+                $sysMsg->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.","danger");
                 $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
             }
         }
@@ -97,7 +98,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
         $log->setDetail("Question Text",$questionText);
         $log->saveEntry();
 
-        $sysMsg->addMessage("Question added successfully.");
+        $sysMsg->addMessage("Question added successfully.","success");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
     }
 }
@@ -113,7 +114,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
                 To add questions, enter the entire question and answer block in the text area below.  You may only add one question at a time.  For any issues, please contact the helpdesk.
                 <br>
                 <?php if(!isset($_SESSION['prevEnteredQuestion']) || empty($_SESSION['prevEnteredQuestion'])): ?>
-                    <pre>
+<pre>
 Which Maintenance Group agency provides technical assistance for Deficiency
 Reports to work center supervisors?
 a. Plans, Scheduling, and Documentation.

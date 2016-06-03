@@ -10,7 +10,7 @@ $baseUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 if(!$baseUUID){
     $baseUUID = $user->getUserBase();
     if(empty($baseUUID)){
-        $sysMsg->addMessage("Your account settings do not specify a base.");
+        $sysMsg->addMessage("Your account settings do not specify a base.","danger");
         $cdcMastery->redirect("/errors/500");
     }
 }
@@ -20,7 +20,7 @@ if(isset($_POST['baseUUID']) && !empty($_POST['baseUUID'])){
         $baseUUID = $_POST['baseUUID'];
     }
     else{
-        $sysMsg->addMessage("Invalid base specified.");
+        $sysMsg->addMessage("Invalid base specified.","warning");
     }
 }
 

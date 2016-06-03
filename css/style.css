@@ -367,20 +367,43 @@ ul.form-field-list li {
 /*
  *  System Messages
  */
-.systemMessages {
+
+.sysmsg-success,
+.sysmsg-info,
+.sysmsg-warning,
+.sysmsg-danger {
+    padding: 0.66em 1em 0.66em 1em;
+    border-radius: 5px;
+}
+
+.informationMessages {
+    padding: 0.66em 1em 0 1em;
+}
+
+.sysmsg-success {
+    background-color: lightgreen;
+    border: 1px solid darkgreen;
+}
+
+.sysmsg-info {
+    background-color: lightblue;
+    border: 1px solid darkblue;
+}
+
+.sysmsg-warning {
+    background-color: lightyellow;
+    border: 1px solid gold;
+}
+
+.sysmsg-danger {
     background-color: pink;
     border: 1px solid red;
-    padding-left: 1.3em;
-    padding-top: 1em;
-    margin-bottom: 1em;
 }
 
 .informationMessages {
     background-color: lightyellow;
     border: 1px solid gold;
-    padding-left: 1.3em;
-    padding-top: 1em;
-    margin-bottom: 1em;
+    border-radius: 5px;
 }
 
 /*

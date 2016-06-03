@@ -1,6 +1,8 @@
 <?php
-class systemMessages extends cdcMastery
+class systemMessages extends CDCMastery
 {
+    public $validMessageTypes = ['success','info','warning','danger'];
+
     public function __construct(){
         parent::__construct();
         if(!isset($_SESSION['messageStore'])){
@@ -8,8 +10,13 @@ class systemMessages extends cdcMastery
         }
     }
 
-    public function addMessage($message){
-        $_SESSION['messageStore'][] = $message;
+    public function addMessage($message,$messageType="info"){
+        if(!in_array($messageType,$this->validMessageTypes)){
+            return false;
+        }
+        else{
+            $_SESSION['messageStore'][$messageType][] = $message;
+        }
         return true;
     }
 
@@ -20,14 +27,27 @@ class systemMessages extends cdcMastery
     }
 
     public function getMessageCount(){
-        return count($_SESSION['messageStore']);
+        $count = 0;
+        foreach($this->validMessageTypes as $messageType){
+            if(!isset($_SESSION['messageStore'][$messageType])){
+                continue;
+            }
+            
+            $count += count($_SESSION['messageStore'][$messageType]);
+        }
+
+        return $count;
+    }
+    
+    public function getValidMessageTypes(){
+        return $this->validMessageTypes;
     }
 
     public function retrieveMessages(){
-        $rtnVal = $_SESSION['messageStore'];
+        $messageArray = $_SESSION['messageStore'];
         $this->clearMessages();
 
-        return $rtnVal;
+        return $messageArray;
     }
 
     public function __destruct(){

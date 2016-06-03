@@ -11,7 +11,7 @@ $privateCardCategoryList = $flashCardManager->listPrivateCardCategories($_SESSIO
 $userAFSCList = $userStatistics->getAFSCAssociations();
 
 if(!$userAFSCList){
-    $sysMsg->addMessage("You are not associated with any AFSC's! Why don't you add some using the page below?");
+    $sysMsg->addMessage("You are not associated with any AFSC's! Why don't you add some using the page below?","info");
     $cdcMastery->redirect("/user/afsc-associations");
 }
 

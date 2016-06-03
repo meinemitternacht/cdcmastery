@@ -65,10 +65,10 @@ if($afscUUID && $afsc->loadAFSC($afscUUID)):
     </div>
 <?php
     else:
-        $sysMsg->addMessage("That AFSC is marked For Official Use Only.  In order to view questions, you must register an account.");
+        $sysMsg->addMessage("That AFSC is marked For Official Use Only.  In order to view questions, you must register an account.","info");
         $cdcMastery->redirect("/about");
     endif;
 else:
-    $sysMsg->addMessage("That AFSC does not exist.");
+    $sysMsg->addMessage("That AFSC does not exist.","warning");
     $cdcMastery->redirect("/about");
 endif;

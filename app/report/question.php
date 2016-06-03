@@ -9,7 +9,7 @@
 $questionUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if(!$questionUUID){
-    $sysMsg->addMessage("You must select a question to report.");
+    $sysMsg->addMessage("You must select a question to report.","warning");
     $cdcMastery->redirect("/");
 }
 else{
@@ -17,7 +17,7 @@ else{
     $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 
     if(!$questionManager->loadQuestion($questionUUID)){
-        $sysMsg->addMessage("That question does not exist.");
+        $sysMsg->addMessage("That question does not exist.","warning");
         $cdcMastery->redirect("/");
     }
     else {
@@ -29,7 +29,7 @@ else{
                 $log->setDetail("Report Reason",$_POST['userReportComments']);
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Your report has been sent to the CDCMastery help desk successfully.  If we need further information, we will contact you within the next few days.");
+                $sysMsg->addMessage("Your report has been sent to the CDCMastery help desk successfully.  If we need further information, we will contact you within the next few days.","success");
                 $cdcMastery->redirect("/");
             }
             else{
@@ -39,12 +39,12 @@ else{
                 $log->setDetail("Report Reason",$_POST['userReportComments']);
                 $log->saveEntry();
 
-                $sysMsg->addMessage("There was an issue sending this report to the CDCMastery help desk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket instead.");
+                $sysMsg->addMessage("There was an issue sending this report to the CDCMastery help desk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket instead.","danger");
                 $cdcMastery->redirect("/report/question/" . $questionUUID);
             }
         }
         elseif(isset($_POST['userReportComments']) && empty($_POST['userReportComments'])){
-            $sysMsg->addMessage("You must provide details on why this question has an error.");
+            $sysMsg->addMessage("You must provide details on why this question has an error.","warning");
             $cdcMastery->redirect("/report/question/" . $questionUUID);
         }
 

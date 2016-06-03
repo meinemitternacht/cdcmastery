@@ -10,16 +10,17 @@ $answerManager = new answerManager($db,$log);
 $questionManager = new questionManager($db,$log,$afsc,$answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
-    $sysMsg->addMessage($questionManager->error);
+    $sysMsg->addMessage($questionManager->error,"warning");
     $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
 }
 
 if(isset($_POST['confirmQuestionDelete']) && $_POST['confirmQuestionDelete'] == true){
     if(!$questionManager->archiveQuestion($questionManager->getUUID())){
-        $sysMsg->addMessage("There was a problem deleting the question.  Please contact the helpdesk for further assistance.");
+        $sysMsg->addMessage("There was a problem archiving the question.  Please contact the helpdesk for further assistance.","danger");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
     }
     else{
+        $sysMsg->addMessage("Question archived successfully.","success");
         $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
     }
 }

@@ -13,7 +13,7 @@ if(isset($_POST['confirmCategoryEdit'])){
     $editError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Category name cannot be empty.");
+        $sysMsg->addMessage("Category name cannot be empty.","warning");
         $editError = true;
     }
 
@@ -26,13 +26,13 @@ if(isset($_POST['confirmCategoryEdit'])){
             $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
             $log->saveEntry();
 
-            $sysMsg->addMessage("Flash card category edited successfully.");
+            $sysMsg->addMessage("Flash card category edited successfully.","success");
 
             unset($categoryName);
             unset($categoryComments);
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.","danger");
         }
     }
 }

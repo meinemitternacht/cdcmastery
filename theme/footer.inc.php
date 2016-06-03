@@ -77,11 +77,23 @@
 		</div>
 		<?php
 		if($sysMsg->getMessageCount() > 0):
-			$systemMessageHTML = "<ul>";
-			foreach($sysMsg->retrieveMessages() as $systemMessage){
-				$systemMessageHTML .= "<li><strong>".$systemMessage."</strong></li>";
-			}
-			$systemMessageHTML .= "</ul>";
+			$systemMessageHTML = "";
+            $validMessageTypes = $sysMsg->getValidMessageTypes();
+            $messageArray = $sysMsg->retrieveMessages();
+                
+            foreach($validMessageTypes as $messageType){
+                if(!isset($messageArray[$messageType])){
+                    continue;
+                }
+
+                $systemMessageHTML .= '<ul class=\"sysmsg-' . $messageType . '\">';
+
+                foreach($messageArray[$messageType] as $systemMessage){
+                    $systemMessageHTML .= "<li><strong>" . $systemMessage . "</strong></li>";
+                }
+                
+                $systemMessageHTML .= "</ul>";
+            }
 			?>
 		<script type="text/javascript">
 			var sysMsgHTML = "<?php echo $systemMessageHTML; ?>";

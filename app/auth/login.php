@@ -1,6 +1,6 @@
 <?php
 if(isset($_SESSION['queueActivation']))
-    $sysMsg->addMessage("Your account has not yet been activated. Please activate your account by following the link in the e-mail sent to the address you registered with.");
+    $sysMsg->addMessage("Your account has not yet been activated. Please activate your account by following the link in the e-mail sent to the address you registered with.","info");
 
 if(!isset($_SESSION['auth'])):
 	if(!empty($_POST)){
@@ -9,7 +9,7 @@ if(!isset($_SESSION['auth'])):
             $log->setDetail("Provided Username",$_POST['username']);
             $log->saveEntry();
 
-            $sysMsg->addMessage("Your username cannot be blank.");
+            $sysMsg->addMessage("Your username cannot be blank.","warning");
             $cdcMastery->redirect("/auth/login");
         }
 
@@ -18,7 +18,7 @@ if(!isset($_SESSION['auth'])):
             $log->setDetail("Provided Username",$_POST['username']);
             $log->saveEntry();
 
-            $sysMsg->addMessage("Your password cannot be blank.");
+            $sysMsg->addMessage("Your password cannot be blank.","warning");
             $cdcMastery->redirect("/auth/login");
         }
 
@@ -105,6 +105,6 @@ if(!isset($_SESSION['auth'])):
 	</div>
 <?php 
 else:
-    $sysMsg->addMessage("You are already logged in.");
+    $sysMsg->addMessage("You are already logged in.","info");
 	$cdcMastery->redirect("/");
 endif; ?>

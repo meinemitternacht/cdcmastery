@@ -32,6 +32,6 @@ else{
     $log->setDetail("CALLING SCRIPT","/ajax/autocomplete/userFullName");
     $log->saveEntry();
 
-    $sysMsg->addMessage("Direct access to that script is not authorized.");
+    $sysMsg->addMessage("Direct access to this script is not authorized.","danger");
     $cdcMastery->redirect("/errors/403");
 }

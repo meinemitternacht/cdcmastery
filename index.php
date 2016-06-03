@@ -24,7 +24,7 @@ $router = new router();
 if($router->parseURI()){
 	if(!$router->verifyFilePath()){
 		if(isset($router->error) && !empty($router->error)){
-			$sysMsg->addMessage($router->error);
+			$sysMsg->addMessage($router->error,"danger");
 		}
 
 		if($router->route == "ajax/testPlatform"){

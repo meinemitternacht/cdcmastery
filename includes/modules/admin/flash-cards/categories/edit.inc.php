@@ -17,25 +17,25 @@ if(isset($_POST['confirmCategoryEdit'])){
     $editError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Category name cannot be empty.");
+        $sysMsg->addMessage("Category name cannot be empty.","warning");
         $editError = true;
     }
 
     if(!isset($_POST['categoryEncrypted'])){
-        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).");
+        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).","warning");
         $editError = true;
     }
 
     if(!$categoryType){
-        $sysMsg->addMessage("You must choose a category type. (AFSC/Global/Private)");
+        $sysMsg->addMessage("You must choose a category type. (AFSC/Global/Private)","warning");
         $editError = true;
     }
     elseif($categoryType == "private" && !$categoryBindingUser){
-        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.");
+        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.","warning");
         $editError = true;
     }
     elseif($categoryType == "afsc" && !$categoryBindingAFSC){
-        $sysMsg->addMessage("This category was marked as URE Bound. You must choose an AFSC to bind the category to.");
+        $sysMsg->addMessage("This category was marked as URE Bound. You must choose an AFSC to bind the category to.","warning");
         $editError = true;
     }
 
@@ -44,7 +44,7 @@ if(isset($_POST['confirmCategoryEdit'])){
          * Check to see if another category is already bound to the select AFSC
          */
         if ($flashCardManager->checkCategoryBinding($categoryBindingAFSC)) {
-            $sysMsg->addMessage("There is already a URE Bound category associated with the selected AFSC.  There can only be, at most, one.");
+            $sysMsg->addMessage("There is already a URE Bound category associated with the selected AFSC.  There can only be, at most, one.","warning");
             $editError = true;
         }
     }
@@ -54,7 +54,7 @@ if(isset($_POST['confirmCategoryEdit'])){
      */
     if($categoryType == "afsc" && $flashCardManager->getCategoryType() != "afsc"){
         if(!$flashCardManager->deleteCategoryFlashCardData($workingChild)){
-            $sysMsg->addMessage("We could not delete the existing data for that flash card category.  Please contact the support help desk for assistance.");
+            $sysMsg->addMessage("We could not delete the existing data for that flash card category.  Please contact the support help desk for assistance.","danger");
             $editError = true;
         }
     }
@@ -83,7 +83,7 @@ if(isset($_POST['confirmCategoryEdit'])){
             $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
             $log->saveEntry();
 
-            $sysMsg->addMessage("Flash card category edited successfully.");
+            $sysMsg->addMessage("Flash card category edited successfully.","success");
 
             unset($categoryName);
             unset($categoryEncrypted);
@@ -93,7 +93,7 @@ if(isset($_POST['confirmCategoryEdit'])){
             unset($categoryComments);
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.","danger");
         }
     }
 }

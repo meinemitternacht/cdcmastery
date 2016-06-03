@@ -206,6 +206,6 @@ if(!empty($testList)): ?>
     </div>
     <?php
 else:
-    $sysMsg->addMessage("You have not completed any tests.");
+    $sysMsg->addMessage("You have not completed any tests.","info");
     $cdcMastery->redirect("/");
 endif;

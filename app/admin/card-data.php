@@ -77,7 +77,7 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                 <?php
             else:
                 if(!$flashCardManager->loadCardCategory($workingChild)){
-                    $sysMsg->addMessage("That flash card category does not exist.");
+                    $sysMsg->addMessage("That flash card category does not exist.","warning");
                     $cdcMastery->redirect("/admin/card-data");
                 }
 

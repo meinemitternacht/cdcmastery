@@ -16,25 +16,25 @@ if(!empty($_POST)){
     $numQuestions = isset($_POST['numQuestions']) ? $_POST['numQuestions'] : false;
 
     if(!$afscUUID){
-        $sysMsg->addMessage("You must choose an AFSC to generate a test for.");
+        $sysMsg->addMessage("You must choose an AFSC to generate a test for.","warning");
     }
 
     if(!$numQuestions){
-        $sysMsg->addMessage("You must specify the number of questions you desire");
+        $sysMsg->addMessage("You must specify the number of desired questions.","warning");
     }
 
     $genTestManager->setAfscUUID($afscUUID);
     if($genTestManager->generateTest($numQuestions)){
-        $sysMsg->addMessage("Test generated successfully.");
+        $sysMsg->addMessage("Test generated successfully.","success");
     }
     else{
-        $sysMsg->addMessage("Sorry, there was a problem generating that test.  Please contact the helpdesk for assistance.");
+        $sysMsg->addMessage("Sorry, there was a problem generating that test.  Please contact the helpdesk for assistance.","danger");
     }
 }
 
 if($genTestUUID){
     if(!$genTestManager->loadGeneratedTest($genTestUUID)){
-        $sysMsg->addMessage("Sorry, we could not load that test from the database.  Please contact the helpdesk for assistance.");
+        $sysMsg->addMessage("Sorry, we could not load that test from the database.  Please contact the helpdesk for assistance.","danger");
         $cdcMastery->redirect("/supervisor/generate-test");
     }
 }

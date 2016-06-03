@@ -52,10 +52,10 @@ if($testUUID){
                     $log->saveEntry();
 
                     if($testScore >= $cdcMastery->getPassingScore()){
-                        $sysMsg->addMessage("Congratulations!  You passed the test.");
+                        $sysMsg->addMessage("Congratulations!  You passed the test.","success");
                     }
                     else{
-                        $sysMsg->addMessage("Sorry, you didn't pass the test.  Keep studying!");
+                        $sysMsg->addMessage("Sorry, you didn't pass the test.  Keep studying!","danger");
                     }
 
                     $cdcMastery->redirect("/test/view/".$testUUID);
@@ -83,16 +83,16 @@ if($testUUID){
             }
         }
         else{
-            $sysMsg->addMessage("There is no test data for that test UUID.");
+            $sysMsg->addMessage("There is no test data for that test UUID.","warning");
             $cdcMastery->redirect("/errors/500");
         }
     }
     else{
-        $sysMsg->addMessage("That test does not exist.");
+        $sysMsg->addMessage("That test does not exist.","warning");
         $cdcMastery->redirect("/errors/404");
     }
 }
 else{
-    $sysMsg->addMessage("You must provide a test UUID.");
+    $sysMsg->addMessage("You must provide a test UUID.","warning");
     $cdcMastery->redirect("/errors/500");
 }

@@ -8,11 +8,11 @@ $target	  = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : fal
 $testManager = new testManager($db, $log, $afsc);
 
 if(!$testType){
-    $sysMsg->addMessage("You must specify a type of test to delete.");
+    $sysMsg->addMessage("You must specify a type of test to delete.","warning");
 	$cdcMastery->redirect("/errors/500");
 }
 elseif(!$target){
-    $sysMsg->addMessage("You must either specify a test to delete or delete all tests.");
+    $sysMsg->addMessage("You must either specify a test to delete or delete all tests.","warning");
 	$cdcMastery->redirect("/errors/500");
 }
 else{
@@ -21,12 +21,12 @@ else{
 			if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 				if($testManager->deleteIncompleteTest(true,false,$_SESSION['userUUID'])){
 					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-                    $sysMsg->addMessage("Incomplete tests deleted successfully.");
+                    $sysMsg->addMessage("Incomplete tests deleted successfully.","success");
 					$cdcMastery->redirect("/");
 				}
 				else{
 					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-					$sysMsg->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.");
+					$sysMsg->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.","danger");
 					$cdcMastery->redirect("/errors/500");
 				}
 			}
@@ -72,18 +72,18 @@ else{
 				$log->setDetail("Test User UUID",$testManager->getIncompleteUserUUID());
 				$log->saveEntry();
 				
-				$sysMsg->addMessage("You cannot delete a test taken by another user.");
+				$sysMsg->addMessage("You cannot delete a test taken by another user.","danger");
 				$cdcMastery->redirect("/errors/403");
 			}
 			else{
 				if(isset($_POST['confirmIncompleteTestDelete'])){
 					if($testManager->deleteIncompleteTest(false,$target)){
 						$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-                        $sysMsg->addMessage("Test deleted successfully.");
+                        $sysMsg->addMessage("Test deleted successfully.","success");
 						$cdcMastery->redirect("/");
 					}
 					else{
-                        $sysMsg->addMessage("We could not delete that test, please contact the support helpdesk.");
+                        $sysMsg->addMessage("We could not delete that test, please contact the support helpdesk.","danger");
 						$cdcMastery->redirect("/errors/500");
 					}
 				}
@@ -125,12 +125,12 @@ else{
 			}
 		}
 		else{
-            $sysMsg->addMessage("The specified test does not exist.");
+            $sysMsg->addMessage("The specified test does not exist.","warning");
 			$cdcMastery->redirect("/errors/500");
 		}
 	}
 	else{
-        $sysMsg->addMessage("You specified an invalid test type.");
+        $sysMsg->addMessage("You specified an invalid test type.","warning");
 		$cdcMastery->redirect("/errors/500");
 	}
 }

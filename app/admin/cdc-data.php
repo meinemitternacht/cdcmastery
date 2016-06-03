@@ -18,7 +18,7 @@ if (isset($_SESSION['deleteUUIDList']) && $subsection != "delete-questions") {
 
 if ($workingAFSC):
     if (!$afsc->loadAFSC($workingAFSC)) {
-        $sysMsg->addMessage("That AFSC does not exist.");
+        $sysMsg->addMessage("That AFSC does not exist.","danger");
         $cdcMastery->redirect("/admin/cdc-data");
     }
 

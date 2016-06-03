@@ -6,11 +6,11 @@
  * Time: 2:03 PM
  */
 if(!isset($actionChild)){
-    $sysMsg->addMessage("You must specify a flash card to edit.");
+    $sysMsg->addMessage("You must specify a flash card to edit.","warning");
     $cdcMastery->redirect("/admin/card-data/".$workingChild);
 }
 elseif(!$flashCardManager->loadFlashCardData($actionChild)){
-    $sysMsg->addMessage("That flash card does not exist.");
+    $sysMsg->addMessage("That flash card does not exist.","warning");
     $cdcMastery->redirect("/admin/card-data/".$workingChild);
 }
 
@@ -21,12 +21,12 @@ if(isset($_POST['confirmFlashCardEdit'])){
     $editError = false;
 
     if(!$cardFrontText){
-        $sysMsg->addMessage("The front text of the card cannot be empty.");
+        $sysMsg->addMessage("The front text of the card cannot be empty.","warning");
         $editError = true;
     }
 
     if(!$cardBackText){
-        $sysMsg->addMessage("The back text of the card cannot be empty.");
+        $sysMsg->addMessage("The back text of the card cannot be empty.","warning");
         $editError = true;
     }
 
@@ -46,7 +46,7 @@ if(isset($_POST['confirmFlashCardEdit'])){
         }
 
         if($flashCardManager->saveFlashCardData()){
-            $sysMsg->addMessage("Flash card edited successfully.");
+            $sysMsg->addMessage("Flash card edited successfully.","success");
 
             $log->setAction("FLASH_CARD_EDIT");
             $log->setDetail("Card UUID",$flashCardManager->getCardUUID());
@@ -57,8 +57,8 @@ if(isset($_POST['confirmFlashCardEdit'])){
             unset($cardBackText);
         }
         else{
-            $sysMsg->addMessage($flashCardManager->error);
-            $sysMsg->addMessage("The flash card could not be edited.  Contact the support help desk for assistance.");
+            $sysMsg->addMessage($flashCardManager->error,"danger");
+            $sysMsg->addMessage("The flash card could not be edited.  Contact the support help desk for assistance.","danger");
         }
     }
 }

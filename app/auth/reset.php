@@ -14,11 +14,11 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 
 		if (is_array($passwordComplexityCheck)) {
 			foreach ($passwordComplexityCheck as $passwordComplexityCheckError) {
-				$sysMsg->addMessage($passwordComplexityCheckError);
+				$sysMsg->addMessage($passwordComplexityCheckError,"warning");
 			}
 			$cdcMastery->redirect("/auth/reset/" . $_SESSION['vars'][0]);
 		} elseif ($userPassword != $userPasswordConfirm) {
-			$sysMsg->addMessage("Your passwords do not match.");
+			$sysMsg->addMessage("Your passwords do not match.","warning");
 		} else {
 			if ($pwReset->verifyPasswordResetToken($passwordToken)) {
 				$pwReset->setUserPassword($userPassword);
@@ -29,18 +29,18 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 					$log->saveEntry();
 					$pwReset->deletePasswordResetToken($passwordToken);
 
-					$sysMsg->addMessage("Your password has been reset. You may now log in with your new password.");
+					$sysMsg->addMessage("Your password has been reset. You may now log in with your new password.","success");
 					$pwReset->sendPasswordResetCompleteNotification($userUUID);
 					$cdcMastery->redirect("/auth/login");
 				} else {
-					$sysMsg->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
+					$sysMsg->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
 				}
 			} else {
-				$sysMsg->addMessage("That password reset token is invalid.");
+				$sysMsg->addMessage("That password reset token is invalid.","danger");
 			}
 		}
 	} else {
-		$sysMsg->addMessage("That user does not exist.");
+		$sysMsg->addMessage("That user does not exist.","warning");
 	}
 }
 
@@ -54,18 +54,18 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 
         if($auth->getActivationStatus()) {
             if ($pwReset->sendPasswordReset($userUUID)) {
-                $sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.");
+                $sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.","success");
             } else {
-                $sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.");
+                $sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
             }
         }
         else{
-            $sysMsg->addMessage("Please activate your account before performing a password reset. If you did not receive an activation e-mail within one hour of registering, please send a new activation e-mail below.");
+            $sysMsg->addMessage("Please activate your account before performing a password reset. If you did not receive an activation e-mail within one hour of registering, please send a new activation e-mail below.","warning");
             $cdcMastery->redirect("/auth/activate");
         }
 	}
 	else{
-		$sysMsg->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.");
+		$sysMsg->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.","warning");
 	}
 }
 ?>
@@ -93,7 +93,7 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 						<input type="submit" value="Change Password">
 					</form>
 				<?php else:
-                        $sysMsg->addMessage("That password reset token is invalid.  Please try again or contact the helpdesk for assistance by clicking the 'support' link at the top of the page.");
+                        $sysMsg->addMessage("That password reset token is invalid.  Please try again or contact the helpdesk for assistance by clicking the 'support' link at the top of the page.","danger");
                         $cdcMastery->redirect("/auth/reset");
                     endif; ?>
 			<?php else: ?>

@@ -300,7 +300,7 @@ if($logEntries): ?>
 <?php else: ?>
 	<?php
 	if($logFiltered) {
-		$sysMsg->addMessage("There were no results using that log filter.");
+		$sysMsg->addMessage("There were no results using that log filter.","info");
 		$cdcMastery->redirect("/admin/log");
 	} else { ?>
 		There are no log entries in the database.  That's unusual...

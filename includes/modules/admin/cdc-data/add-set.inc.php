@@ -9,16 +9,16 @@
 if(!empty($_POST)){
     if(isset($_POST['confirmSetAdd']) && $_POST['confirmSetAdd'] == true){
         if(!isset($_POST['setName']) || empty($_POST['setName'])){
-            $sysMsg->addMessage("Set Name cannot be empty.");
+            $sysMsg->addMessage("Set Name cannot be empty.","warning");
             $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC . "/add-set");
         }
 
         if($qManager->addSet($_POST['setName'],$workingAFSC)){
-            $sysMsg->addMessage("Set added.");
+            $sysMsg->addMessage("Set added.","success");
             $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC);
         }
         else{
-            $sysMsg->addMessage("There was a problem adding the set.  The error has been logged.");
+            $sysMsg->addMessage("There was a problem adding the set.  The error has been logged.","danger");
             $cdcMastery->redirect("/admin/cdc-data" . $workingAFSC . "/add-set");
         }
     }

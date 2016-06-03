@@ -669,7 +669,7 @@ class user extends CDCMastery {
 		$emailBodyHTML	= "<html><head><title>".$emailSubject."</title></head><body>";
 		$emailBodyHTML .= "CDCMastery Support,";
 		$emailBodyHTML .= "<br /><br />";
-		$emailBodyHTML .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
+		$emailBodyHTML .= $this->getFullName() . " has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
 		$emailBodyHTML .= "<br /><br />";
 		$emailBodyHTML .= "<b>AFSC UUID:</b> ".$afscUUID;
 		$emailBodyHTML .= "<br />";
@@ -690,7 +690,7 @@ class user extends CDCMastery {
 
 		$emailBodyText = "CDCMastery Support,";
 		$emailBodyText .= "\r\n\r\n";
-		$emailBodyText .= "A user has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
+		$emailBodyText .= $this->getFullName() . " has flagged a question as containing an error.  Please review the information below and correct the issue as soon as possible.";
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "AFSC UUID: ".$afscUUID;
 		$emailBodyText .= "\r\n";

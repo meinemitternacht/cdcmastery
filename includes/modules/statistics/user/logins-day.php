@@ -18,7 +18,7 @@ if($loginsByDay){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.");
+    $sysMsg->addMessage("That statistic contains no data.","info");
     $cdcMastery->redirect("/about/statistics");
 }
 

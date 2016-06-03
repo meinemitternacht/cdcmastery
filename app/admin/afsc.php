@@ -19,15 +19,15 @@ if($formAction){
             $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscDescription'] : false;
 
             if(!$afscData['afscName']) {
-                $sysMsg->addMessage("AFSC Name cannot be blank.");
+                $sysMsg->addMessage("AFSC Name cannot be blank.","warning");
                 $cdcMastery->redirect("/admin/afsc");
             }
             elseif(!isset($_POST['afscFOUO'])) {
-                $sysMsg->addMessage("FOUO status must be provided.");
+                $sysMsg->addMessage("FOUO status must be provided.","warning");
                 $cdcMastery->redirect("/admin/afsc");
             }
             elseif($afsc->getAFSCUUIDByName($afscData['afscName']) !== false){
-                $sysMsg->addMessage("That AFSC already exists.  You must either change the name of the existing AFSC or choose a different name.");
+                $sysMsg->addMessage("That AFSC already exists.  You must either change the name of the existing AFSC or choose a different name.","danger");
                 $cdcMastery->redirect("/admin/afsc");
             }
             else{
@@ -43,7 +43,7 @@ if($formAction){
                     $log->setDetail("AFSC Version",$afscData['afscVersion']);
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("AFSC added successfully.");
+                    $sysMsg->addMessage("AFSC added successfully.","success");
                 }
                 else{
                     $log->setAction("ERROR_AFSC_ADD");
@@ -53,7 +53,7 @@ if($formAction){
                     $log->setDetail("AFSC Description",$afscData['afscDescription']);
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("There was a problem adding that AFSC.");
+                    $sysMsg->addMessage("There was a problem adding that AFSC.","danger");
                 }
 
                 $cdcMastery->redirect("/admin/afsc");
@@ -67,20 +67,20 @@ if($formAction){
             $afscData['afscDescription'] = isset($_POST['afscDescription']) ? $_POST['afscDescription'] : false;
 
             if(!$afsc->loadAFSC($workingAFSC)){
-                $sysMsg->addMessage("We could not load that AFSC.");
+                $sysMsg->addMessage("We could not load that AFSC.","danger");
                 $cdcMastery->redirect("/admin/afsc");
             }
 
             if(!$afscData['afscName']) {
-                $sysMsg->addMessage("AFSC Name cannot be blank.");
+                $sysMsg->addMessage("AFSC Name cannot be blank.","warning");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
             elseif(!isset($_POST['afscFOUO'])) {
-                $sysMsg->addMessage("FOUO status must be provided.");
+                $sysMsg->addMessage("FOUO status must be provided.","warning");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
             elseif(!isset($_POST['afscHidden'])) {
-                $sysMsg->addMessage("You must select if the AFSC is hidden.");
+                $sysMsg->addMessage("You must select if the AFSC is hidden.","warning");
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
             }
             else{
@@ -88,7 +88,7 @@ if($formAction){
 
                 if($afsc->getAFSCFOUO() != $afscData['afscFOUO']){
                     if(!$afsc->toggleFOUO($afscData['afscFOUO'])){
-                        $sysMsg->addMessage("There was a problem toggling the FOUO status for that AFSC.  Refer to the site log for details.");
+                        $sysMsg->addMessage("There was a problem toggling the FOUO status for that AFSC.  Refer to the site log for details.","danger");
                         $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
                     }
                 }
@@ -104,7 +104,7 @@ if($formAction){
                     $log->setDetail("AFSC Version",$afscData['afscVersion']);
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("AFSC edited successfully.");
+                    $sysMsg->addMessage("AFSC edited successfully.","success");
                 }
                 else{
                     $log->setAction("ERROR_AFSC_EDIT");
@@ -116,7 +116,7 @@ if($formAction){
                     $log->setDetail("AFSC Description",$afscData['afscDescription']);
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("There was a problem editing that AFSC.");
+                    $sysMsg->addMessage("There was a problem editing that AFSC.","danger");
                 }
 
                 $cdcMastery->redirect("/admin/afsc/edit/".$workingAFSC);
@@ -127,11 +127,11 @@ if($formAction){
                 $afsc->setAFSCHidden(true);
 
                 if($afsc->saveAFSC()){
-                    $sysMsg->addMessage("AFSC " . $afsc->getAFSCName() . " is now hidden.");
+                    $sysMsg->addMessage("AFSC " . $afsc->getAFSCName() . " is now hidden.","success");
                     $cdcMastery->redirect("/admin/afsc");
                 }
                 else{
-                    $sysMsg->addMessage("There was a problem trying to hide " . $afsc->getAFSCName() . ". Please contact the helpdesk for assistance.");
+                    $sysMsg->addMessage("There was a problem trying to hide " . $afsc->getAFSCName() . ". Please contact the helpdesk for assistance.","danger");
                     $cdcMastery->redirect("/admin/afsc");
                 }
             }
@@ -142,23 +142,23 @@ if($formAction){
             $afscRemovePrevious = isset($_POST['remove-old-assoc']) ? $_POST['remove-old-assoc'] : false;
 
             if($afscMigrateSource == $afscMigrateDestination){
-                $sysMsg->addMessage("The AFSC you are migrating from cannot be the AFSC you are migrating to.");
+                $sysMsg->addMessage("The AFSC you are migrating from cannot be the AFSC you are migrating to.","warning");
                 $cdcMastery->redirect("/admin/afsc");
             }
             elseif(!$afscMigrateSource || !$afscMigrateDestination){
-                $sysMsg->addMessage("You must select an AFSC to migrate from and an AFSC to migrate to.");
+                $sysMsg->addMessage("You must select an AFSC to migrate from and an AFSC to migrate to.","warning");
                 $cdcMastery->redirect("/admin/afsc");
             }
             elseif(!isset($_POST['remove-old-assoc'])){
-                $sysMsg->addMessage("You must specify whether or not to remove previous AFSC associations.");
+                $sysMsg->addMessage("You must specify whether or not to remove previous AFSC associations.","warning");
                 $cdcMastery->redirect("/admin/afsc");
             }
 
             if($assoc->migrateAFSCAssociations($afscMigrateSource,$afscMigrateDestination,$afscRemovePrevious)){
-                $sysMsg->addMessage("Associations migrated successfully.");
+                $sysMsg->addMessage("Associations migrated successfully.","success");
             }
             else{
-                $sysMsg->addMessage("Associations were not migrated successfully. Please check the log for details.");
+                $sysMsg->addMessage("Associations were not migrated successfully. Please check the log for details.","danger");
             }
             break;
     }
@@ -322,12 +322,12 @@ if(!$subAction):
     </div>
 <?php elseif($subAction == "edit"):
     if(!$workingAFSC){
-        $sysMsg->addMessage("You must select an AFSC to edit.");
+        $sysMsg->addMessage("You must select an AFSC to edit.","warning");
         $cdcMastery->redirect("/admin/afsc");
     }
     else{
         if(!$afsc->loadAFSC($workingAFSC)){
-            $sysMsg->addMessage("That AFSC does not exist.");
+            $sysMsg->addMessage("That AFSC does not exist.","danger");
             $cdcMastery->redirect("/admin/afsc");
         }
     }
@@ -404,7 +404,7 @@ if(!$subAction):
 <?php elseif($subAction == "hide"): ?>
     <?php
     if(!$afsc->loadAFSC($workingAFSC)){
-        $sysMsg->addMessage("That AFSC does not exist.");
+        $sysMsg->addMessage("That AFSC does not exist.","danger");
         $cdcMastery->redirect("/admin/afsc");
     }
     ?>

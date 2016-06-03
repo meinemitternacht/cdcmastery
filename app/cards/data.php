@@ -71,18 +71,18 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                     </section>
                     <?php
                 else:
-                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!");
+                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!","info");
                     $cdcMastery->redirect("/cards/categories/add");
                 endif; ?>
                 <?php
             else:
                 if(!$flashCardManager->loadCardCategory($workingChild)){
-                    $sysMsg->addMessage("That flash card category does not exist.");
+                    $sysMsg->addMessage("That flash card category does not exist.","warning");
                     $cdcMastery->redirect("/cards/data");
                 }
 
                 if($flashCardManager->getCategoryBinding() != $_SESSION['userUUID']){
-                    $sysMsg->addMessage("That flash card category does not belong to you.");
+                    $sysMsg->addMessage("That flash card category does not belong to you.","danger");
                     $cdcMastery->redirect("/cards/data");
                 }
 

@@ -42,6 +42,8 @@ if(isset($_POST['messageBody'])){
         $log->setDetail("Text Body",$emailBodyText);
         $log->setDetail("Queue User",$messageQueueUser);
         $log->saveEntry();
+
+        $sysMsg->addMessage("There was a problem queueing the message for delivery.  Contact the Help Desk for assistance.","danger");
     }
     else{
         $log->setAction("SEND_USER_MESSAGE");
@@ -54,7 +56,7 @@ if(isset($_POST['messageBody'])){
         $log->setDetail("Queue User",$messageQueueUser);
         $log->saveEntry();
 
-        $sysMsg->addMessage("Message queued for delivery.");
+        $sysMsg->addMessage("Message queued for delivery.","success");
     }
 }
 ?>

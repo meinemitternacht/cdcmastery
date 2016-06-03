@@ -7,7 +7,7 @@
  */
 
 if(!$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to access that page.");
+    $sysMsg->addMessage("You are not authorized to access that page.","danger");
     $cdcMastery->redirect("/errors/403");
 }
 
@@ -29,17 +29,17 @@ if($formAction){
             $error = false;
 
             if(empty($roleEditUUID)) {
-                $sysMsg->addMessage("You must specify a role UUID");
+                $sysMsg->addMessage("You must specify a role UUID","warning");
                 $error = true;
             }
 
             if(empty($roleEditName)) {
-                $sysMsg->addMessage("You must specify a role name");
+                $sysMsg->addMessage("You must specify a role name","warning");
                 $error = true;
             }
 
             if(empty($roleEditType)) {
-                $sysMsg->addMessage("You must specify a role type");
+                $sysMsg->addMessage("You must specify a role type","warning");
                 $error = true;
             }
 
@@ -57,7 +57,7 @@ if($formAction){
                     $log->setDetail("Role Description",$roles->getRoleDescription());
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("Role edited successfully.");
+                    $sysMsg->addMessage("Role edited successfully.","success");
                     $cdcMastery->redirect("/admin/roles");
                 }
                 else{
@@ -68,7 +68,7 @@ if($formAction){
                     $log->setDetail("Role Description",$roles->getRoleDescription());
                     $log->saveEntry();
 
-                    $sysMsg->addMessage("There was an issue editing that role.");
+                    $sysMsg->addMessage("There was an issue editing that role.","danger");
                     $cdcMastery->redirect("/admin/roles/edit/" . $roleEditUUID);
                 }
             }
@@ -82,19 +82,19 @@ if($formAction){
 
             if($roles->verifyRole($currentRole) && $roles->verifyRole($targetRole)){
                 if($roles->migrateUserRoles($currentRole,$targetRole)) {
-                    $sysMsg->addMessage("User roles migrated successfully.");
+                    $sysMsg->addMessage("User roles migrated successfully.","success");
                 }
                 else{
-                    $sysMsg->addMessage("There was an issue migrating user roles.");
+                    $sysMsg->addMessage("There was an issue migrating user roles.","danger");
                 }
             } else {
-                $sysMsg->addMessage("We couldn't verify one or more of the provided roles.");
+                $sysMsg->addMessage("We couldn't verify one or more of the provided roles.","danger");
             }
 
             $cdcMastery->redirect("/admin/roles");
         break;
         case "default":
-            $sysMsg->addMessage("Sorry, we couldn't process your request.");
+            $sysMsg->addMessage("Sorry, we couldn't process your request.","info");
             $cdcMastery->redirect("/errors/500");
         break;
     }

@@ -4,7 +4,7 @@ if(isset($_SESSION['vars'][0])){
 	$objUser = new user($db, $log, $emailQueue);
 	
 	if(!$objUser->loadUser($userUUID)){
-		$sysMsg->addMessage("That user does not exist.");
+		$sysMsg->addMessage("That user does not exist.","warning");
 		$cdcMastery->redirect("/errors/404");
 	}
 	

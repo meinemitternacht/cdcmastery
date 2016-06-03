@@ -17,7 +17,7 @@ if($subPage) {
             include BASE_PATH . "/includes/modules/admin/search/results.inc.php";
             break;
         default:
-            $sysMsg->addMessage("There was an error processing that page path.");
+            $sysMsg->addMessage("There was an error processing that page path.","warning");
             $cdcMastery->redirect("/admin/search");
             break;
     }

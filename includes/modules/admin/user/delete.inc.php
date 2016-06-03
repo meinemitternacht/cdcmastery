@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['confirmUserDelete'])){
     if(empty($_POST['deleteReason'])){
-        $sysMsg->addMessage("You must enter a reason why you are deleting this user.");
+        $sysMsg->addMessage("You must enter a reason why you are deleting this user.","warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/delete");
     }
 
@@ -20,39 +20,39 @@ if(isset($_POST['confirmUserDelete'])){
                 if(!$authObj->getActivationStatus()){
                     $activateObj = new userActivation($db,$log,$emailQueue);
                     if(!$activateObj->deleteUserActivationToken($userUUID)){
-                        $sysMsg->addMessage("User activation token not cleared.");
+                        $sysMsg->addMessage("User activation token not cleared.","danger");
                     }
                 }
 
                 if(!$log->clearLogEntries($userUUID)){
-                    $sysMsg->addMessage("Log Entries not cleared.");
+                    $sysMsg->addMessage("Log Entries not cleared.","danger");
                     $error = true;
                 }
 
                 if(!empty($userTestList)){
                     if(!$testManager->deleteTests($userTestList)){
-                        $sysMsg->addMessage("Tests not cleared.");
+                        $sysMsg->addMessage("Tests not cleared.","danger");
                         $error = true;
                     }
                 }
 
                 if(!$assoc->deleteUserAFSCAssociations($userUUID)){
-                    $sysMsg->addMessage("AFSC Associations not cleared.");
+                    $sysMsg->addMessage("AFSC Associations not cleared.","danger");
                     $error = true;
                 }
 
                 if(!$assoc->deleteUserSupervisorAssociations($userUUID)){
-                    $sysMsg->addMessage("Supervisor Associations not cleared.");
+                    $sysMsg->addMessage("Supervisor Associations not cleared.","danger");
                     $error = true;
                 }
 
                 if(!$assoc->deleteUserTrainingManagerAssociations($userUUID)){
-                    $sysMsg->addMessage("Training Manager Associations not cleared.");
+                    $sysMsg->addMessage("Training Manager Associations not cleared.","danger");
                     $error = true;
                 }
 
                 if(!$delUserObj->deleteUser($userUUID)){
-                    $sysMsg->addMessage("UserData table entry not cleared.");
+                    $sysMsg->addMessage("UserData table entry not cleared.","danger");
                     $error = true;
                 }
 
@@ -67,7 +67,7 @@ if(isset($_POST['confirmUserDelete'])){
                     }
                     $log->saveEntry();
 
-                    $sysMsg->addMessage($delUserObj->getFullName() . " has been deleted.");
+                    $sysMsg->addMessage($delUserObj->getFullName() . " has been deleted.","success");
                     $cdcMastery->redirect("/admin/users");
                 } else {
                     $log->setAction("ERROR_USER_DELETE_PROCESS");
@@ -81,7 +81,7 @@ if(isset($_POST['confirmUserDelete'])){
                     $log->setDetail("Errors",$sysMsg->retrieveMessages());
                     $log->saveEntry();
 
-                    $sysMsg->addMessage($delUserObj->getFullName() . " could not be deleted.  The error has been logged.");
+                    $sysMsg->addMessage($delUserObj->getFullName() . " could not be deleted.  The error has been logged.","danger");
                     $cdcMastery->redirect("/admin/users" . $userUUID);
                 }
             }
@@ -95,12 +95,12 @@ if(isset($_POST['confirmUserDelete'])){
                 }
                 $log->saveEntry();
 
-                $sysMsg->addMessage("Administrators cannot be deleted.");
+                $sysMsg->addMessage("Administrators cannot be deleted.","danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.");
+        $sysMsg->addMessage("No User UUID was provided.","warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

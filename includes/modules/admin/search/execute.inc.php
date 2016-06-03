@@ -10,12 +10,12 @@ $searchParameterJoinMethod = isset($_POST['searchParameterJoinMethod']) ? $_POST
 
 if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
     if(!$searchType){
-        $sysMsg->addMessage("Search type not specified.  Contact the helpdesk for assistance.");
+        $sysMsg->addMessage("Search type not specified.","danger");
         $cdcMastery->redirect("/admin/search");
     }
 
     if(!$searchParameterJoinMethod){
-        $sysMsg->addMessage("Search criteria join method not specified. Please select 'Match All' or 'Match Any' Criteria.");
+        $sysMsg->addMessage("Search criteria join method not specified. Please select 'Match All' or 'Match Any' Criteria.","warning");
         $cdcMastery->redirect("/admin/search");
     }
 
@@ -45,7 +45,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
 
 
     if(!isset($searchParameterList)){
-        $sysMsg->addMessage("Incorrect search parameters.");
+        $sysMsg->addMessage("Incorrect search parameters.","warning");
         $cdcMastery->redirect("/admin/search");
     }
     else {
@@ -71,8 +71,8 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         }
 
         if (!$_SESSION['searchData']['searchResults']) {
-            $sysMsg->addMessage("There were no results for that search query.");
-            $sysMsg->addMessage($searchObj->error);
+            $sysMsg->addMessage("There were no results for that search query.","info");
+            $sysMsg->addMessage($searchObj->error,"info");
 
             $cdcMastery->redirect("/admin/search");
         } else {
