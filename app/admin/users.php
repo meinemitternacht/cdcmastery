@@ -19,19 +19,43 @@ if(isset($_SESSION['vars'][0])){
 			 * Basic Functions
 			 */
 			case "ban":
-				require_once BASE_PATH . "/includes/modules/admin/user/ban.inc.php";
+				if($objUser->getUUID() == $user->getUUID()){
+					$sysMsg->addMessage("You cannot ban yourself.","info");
+					$cdcMastery->redirect("/");
+				}
+				else{
+					require_once BASE_PATH . "/includes/modules/admin/user/ban.inc.php";
+				}
 			break;
             case "unban":
-                require_once BASE_PATH . "/includes/modules/admin/user/unban.inc.php";
+				if($objUser->getUUID() == $user->getUUID()){
+					$sysMsg->addMessage("You cannot unban yourself.","info");
+					$cdcMastery->redirect("/");
+				}
+				else{
+					require_once BASE_PATH . "/includes/modules/admin/user/unban.inc.php";
+				}
             break;
 			case "delete":
-				require_once BASE_PATH . "/includes/modules/admin/user/delete.inc.php";
+				if($objUser->getUUID() == $user->getUUID()){
+					$sysMsg->addMessage("You cannot delete your own account.","info");
+					$cdcMastery->redirect("/");
+				}
+				else {
+					require_once BASE_PATH . "/includes/modules/admin/user/delete.inc.php";
+				}
 			break;
 			case "edit":
 				require_once BASE_PATH . "/includes/modules/admin/user/edit.inc.php";
 			break;
 			case "resend-activation":
-				require_once BASE_PATH . "/includes/modules/admin/user/resend-activation.inc.php";
+				if($objUser->getUUID() == $user->getUUID()){
+					$sysMsg->addMessage("You cannot resend an activation code to your own account.","info");
+					$cdcMastery->redirect("/");
+				}
+				else{
+					require_once BASE_PATH . "/includes/modules/admin/user/resend-activation.inc.php";
+				}
 			break;
 			case "reset-password":
 				require_once BASE_PATH . "/includes/modules/admin/user/reset-password.inc.php";
@@ -102,7 +126,13 @@ if(isset($_SESSION['vars'][0])){
 			 */
 			case "log":
 				if($subAction && $subAction == "clear"){
-					require_once BASE_PATH . "/includes/modules/admin/user/log/clear.inc.php";
+					if($objUser->getUUID() == $user->getUUID()){
+						$sysMsg->addMessage("For security reasons, you cannot clear log entries associated with your own account.","warning");
+						$cdcMastery->redirect("/");
+					}
+					else {
+						require_once BASE_PATH . "/includes/modules/admin/user/log/clear.inc.php";
+					}
 				}
 				else{
 					require_once BASE_PATH . "/includes/modules/admin/user/log/log.inc.php";

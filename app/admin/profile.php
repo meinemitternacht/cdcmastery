@@ -95,9 +95,11 @@ if(isset($_SESSION['vars'][0])):
 						</header>
 						<a href="/admin/profile" class="button">&laquo; Back</a>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/edit" class="button">Edit</a>
+						<?php if($userProfile->getUUID() != $user->getUUID()): ?>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/delete" class="button">Delete</a>
-						<a href="/admin/users/<?php echo $targetUUID; ?>/reset-password" class="button">Reset Password</a>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/message" class="button">Message</a>
+						<?php endif; ?>
+						<a href="/admin/users/<?php echo $targetUUID; ?>/reset-password" class="button">Reset Password</a>
 						<a href="/admin/users/<?php echo $targetUUID; ?>" class="button">User Menu &raquo;</a>
 					</section>
 				</div>
@@ -432,7 +434,7 @@ if(isset($_SESSION['vars'][0])):
 									<?php endforeach; ?>
 								</table>
 								<div class="text-right text-warning">
-									<a href="/admin/users/<?php echo $targetUUID; ?>/delete-log-entries"><i class="icon-inline icon-20 ic-delete"></i>Delete All Log Entries</a>
+									<a href="/admin/users/<?php echo $targetUUID; ?>/log/clear"><i class="icon-inline icon-20 ic-delete"></i>Delete All Log Entries</a>
 								</div>
 							<?php else: ?>
 								<p>This user has no log entries in the system.</p>
