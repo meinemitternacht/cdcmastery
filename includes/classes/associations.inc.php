@@ -195,7 +195,7 @@ class associations extends CDCMastery
 		}
 	}
 	
-	public function deleteAFSCAssociation($userUUID, $afscUUID, $logSuccess=true){
+	public function deleteAFSCAssociation($userUUID,$afscUUID,$logSuccess=true){
 		if(!$this->user->verifyUser($userUUID)){
 			$this->error[] = "That user does not exist.";
 			return false;
@@ -235,7 +235,7 @@ class associations extends CDCMastery
 		}
 	}
 
-    public function deleteUserAFSCAssociations($userUUID){
+    public function deleteUserAFSCAssociations($userUUID,$disableLog = false){
         if(!$this->user->verifyUser($userUUID)){
             $this->error[] = "That user does not exist.";
             return false;
@@ -246,9 +246,11 @@ class associations extends CDCMastery
         $stmt->bind_param("s",$userUUID);
 
         if($stmt->execute()){
-            $this->log->setAction("USER_DELETE_AFSC_ASSOCIATIONS_ALL");
-            $this->log->setDetail("User UUID",$userUUID);
-            $this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_DELETE_AFSC_ASSOCIATIONS_ALL");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->saveEntry();
+			}
 
             $stmt->close();
             return true;
@@ -569,7 +571,7 @@ class associations extends CDCMastery
 		}
 	}
 	
-	public function deleteSupervisorAssociation($supervisorUUID, $userUUID){
+	public function deleteSupervisorAssociation($supervisorUUID,$userUUID,$disableLog = false){
 		if(!$this->user->verifyUser($supervisorUUID)){
 			$this->error[] = "That supervisor does not exist.";
 			return false;
@@ -585,10 +587,12 @@ class associations extends CDCMastery
 		$stmt->bind_param("ss",$supervisorUUID,$userUUID);
 		
 		if($stmt->execute()){
-			$this->log->setAction("USER_REMOVE_SUPERVISOR_ASSOCIATION");
-			$this->log->setDetail("User UUID",$userUUID);
-			$this->log->setDetail("Supervisor UUID",$supervisorUUID);
-			$this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_REMOVE_SUPERVISOR_ASSOCIATION");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->setDetail("Supervisor UUID",$supervisorUUID);
+				$this->log->saveEntry();
+			}
 				
 			$stmt->close();
 			return true;
@@ -607,7 +611,7 @@ class associations extends CDCMastery
 		}
 	}
 
-    public function deleteUserSupervisorAssociations($userUUID){
+    public function deleteUserSupervisorAssociations($userUUID,$disableLog = false){
         if(!$this->user->verifyUser($userUUID)){
             $this->error[] = "That user does not exist.";
             return false;
@@ -618,9 +622,11 @@ class associations extends CDCMastery
         $stmt->bind_param("s",$userUUID);
 
         if($stmt->execute()){
-            $this->log->setAction("USER_REMOVE_SUPERVISOR_ASSOCIATIONS_ALL");
-            $this->log->setDetail("User UUID",$userUUID);
-            $this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_REMOVE_SUPERVISOR_ASSOCIATIONS_ALL");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->saveEntry();
+			}
 
             $stmt->close();
             return true;
@@ -685,7 +691,7 @@ class associations extends CDCMastery
 		}
 	}
 	
-	public function deleteTrainingManagerAssociation($trainingManagerUUID, $userUUID){
+	public function deleteTrainingManagerAssociation($trainingManagerUUID,$userUUID,$disableLog = false){
 		if(!$this->user->verifyUser($trainingManagerUUID)){
 			$this->error[] = "That training manager does not exist.";
 			return false;
@@ -701,10 +707,12 @@ class associations extends CDCMastery
 		$stmt->bind_param("ss",$trainingManagerUUID,$userUUID);
 		
 		if($stmt->execute()){
-			$this->log->setAction("USER_REMOVE_TRAINING_MANAGER_ASSOCIATION");
-			$this->log->setDetail("User UUID",$userUUID);
-			$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
-			$this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_REMOVE_TRAINING_MANAGER_ASSOCIATION");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->setDetail("Training Manager UUID",$trainingManagerUUID);
+				$this->log->saveEntry();
+			}
 				
 			$stmt->close();
 			return true;
@@ -723,7 +731,7 @@ class associations extends CDCMastery
 		}
 	}
 
-    public function deleteUserTrainingManagerAssociations($userUUID){
+    public function deleteUserTrainingManagerAssociations($userUUID,$disableLog = false){
         if(!$this->user->verifyUser($userUUID)){
             $this->error[] = "That user does not exist.";
             return false;
@@ -734,9 +742,11 @@ class associations extends CDCMastery
         $stmt->bind_param("s",$userUUID);
 
         if($stmt->execute()){
-            $this->log->setAction("USER_REMOVE_TRAINING_MANAGER_ASSOCIATIONS_ALL");
-            $this->log->setDetail("User UUID",$userUUID);
-            $this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_REMOVE_TRAINING_MANAGER_ASSOCIATIONS_ALL");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->saveEntry();
+			}
 
             $stmt->close();
             return true;
