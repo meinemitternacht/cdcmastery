@@ -315,7 +315,7 @@ class user extends CDCMastery {
 		}
 	}
 
-    public function deleteUser($userUUID,$deleteLog=true){
+    public function deleteUser($userUUID,$disableLog = false){
         if(!$this->verifyUser($userUUID)){
             $this->error[] = "That user does not exist.";
             return false;
@@ -331,10 +331,12 @@ class user extends CDCMastery {
         $stmt->bind_param("s",$userUUID);
 
         if($stmt->execute()){
-            $this->log->setAction("USER_DELETE");
-            $this->log->setDetail("User UUID",$userUUID);
-            $this->log->setDetail("User Name",$userFullName);
-            $this->log->saveEntry();
+			if(!$disableLog){
+				$this->log->setAction("USER_DELETE");
+				$this->log->setDetail("User UUID",$userUUID);
+				$this->log->setDetail("User Name",$userFullName);
+				$this->log->saveEntry();
+			}
 
             return true;
         }
