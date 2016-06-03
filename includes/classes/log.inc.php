@@ -67,7 +67,7 @@ class log extends CDCMastery
 		return true;
 	}
 
-    function clearLogEntries($userUUID){
+    function clearLogEntries($userUUID,$disableLog = false){
         $stmt = $this->db->prepare("DELETE FROM systemLog WHERE userUUID = ?");
         $stmt->bind_param("s",$userUUID);
 
@@ -83,10 +83,12 @@ class log extends CDCMastery
             return false;
         }
         else{
-            $this->setAction("USER_LOG_CLEAR");
-            $this->setDetail("User UUID",$userUUID);
-            $this->setDetail("Affected Rows",$stmt->affected_rows);
-            $this->saveEntry();
+			if(!$disableLog){
+				$this->setAction("USER_LOG_CLEAR");
+				$this->setDetail("User UUID",$userUUID);
+				$this->setDetail("Affected Rows",$stmt->affected_rows);
+				$this->saveEntry();
+			}
 
             $stmt->close();
 
