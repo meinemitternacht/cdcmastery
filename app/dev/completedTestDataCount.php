@@ -8,7 +8,7 @@
 
 $testManager = new testManager($db,$log,$afsc);
 
-$stmt = $db->prepare("SELECT uuid FROM `testHistory` WHERE (testScore + questionsMissed) != totalQuestions AND oldTestID IS NULL ORDER BY `testHistory`.`testTimeStarted` DESC");
+$stmt = $db->prepare("SELECT uuid FROM `testHistory` WHERE (testScore + questionsMissed) != totalQuestions ORDER BY `testHistory`.`testTimeStarted` DESC");
 $stmt->execute();
 $stmt->bind_result($testUUID);
 

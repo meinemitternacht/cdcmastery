@@ -141,6 +141,8 @@ class auth extends user
 				}
 			}
 		}
+		
+		return false;
 	}
 
     /**

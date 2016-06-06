@@ -81,4 +81,3 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         }
     }
 }
-?>

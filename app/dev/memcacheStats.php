@@ -6,6 +6,9 @@
  * Time: 6:30 PM
  */
 
+/**
+* @param $status
+*/
 function printDetails($status){
 
     echo "<table border='1'>";
@@ -60,7 +63,7 @@ function printDetails($status){
     <div class="row">
         <div class="8u">
             <section>
-                <?php printDetails($memcache->getStats()); ?>
+                <?php printDetails($memcache->getstats()); ?>
             </section>
         </div>
     </div>

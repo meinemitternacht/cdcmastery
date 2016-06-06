@@ -218,6 +218,8 @@ class questionManager extends CDCMastery
 		}
 	}
 
+    /** @noinspection PhpInconsistentReturnPointsInspection */
+    /** @noinspection PhpInconsistentReturnPointsInspection */
     public function archiveQuestion($questionUUID){
         if(!$this->verifyQuestion($questionUUID)){
             $this->error = "That question does not exist.";
@@ -322,6 +324,8 @@ class questionManager extends CDCMastery
                             $this->log->setDetail("Question UUID",$this->getUUID());
                             $this->log->setDetail("AFSC UUID",$this->getAFSCUUID());
                             $this->log->saveEntry();
+
+                            return false;
                         }
                     }
                 }

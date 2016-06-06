@@ -65,7 +65,7 @@ $.formUtils.addValidator({
     	// If not valid try the new method (introduced November 2009) by subtracting 55 from the mod 97 check digit if we can - else add 42
 
     	if (!valid) {
-    		total = total%97  // modulus 97
+    		total = total%97;  // modulus 97
 
     		if (total >= 55) {
     			total = total - 55

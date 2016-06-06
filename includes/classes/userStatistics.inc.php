@@ -222,7 +222,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getIncompleteTests(){
 		if(!$this->userUUID){
 			return false;

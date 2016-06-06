@@ -229,6 +229,14 @@ class log extends CDCMastery
 				return false;
 			}
 		}
+		else{
+			$this->setAction("ERROR_VERIFY_LOG_UUID");
+			$this->setDetail("MySQL Error",$stmt->error);
+			$this->saveEntry();
+
+			$stmt->close();
+			return false;
+		}
 	}
 
 	function listLogActions(){
@@ -573,4 +581,3 @@ class log extends CDCMastery
 		parent::__destruct();
 	}
 }
-?>

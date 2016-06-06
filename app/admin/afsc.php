@@ -49,7 +49,7 @@ if($formAction){
                     $log->setAction("ERROR_AFSC_ADD");
                     $log->setDetail("AFSC Name",$afscData['afscName']);
                     $log->setDetail("AFSC Version",$afscData['afscVersion']);
-                    $log->setDetail("AFSC FOUO",var_dump($afscData['afscFOUO']));
+                    $log->setDetail("AFSC FOUO",$afscData['afscFOUO']);
                     $log->setDetail("AFSC Description",$afscData['afscDescription']);
                     $log->saveEntry();
 

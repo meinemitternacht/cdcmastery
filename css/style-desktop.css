@@ -14,8 +14,8 @@ body,input,textarea,select{font-size: 11pt;}
 /*
  * Header
  */
-#header{position: relative;padding: 0.25em 0em;text-align: center;}
-.homepage #header{padding: 1em 0em;}
+#header{position: relative;padding: 0.25em 0;text-align: center;}
+.homepage #header{padding: 1em 0;}
 #header .container{}
 
 /*
@@ -41,7 +41,7 @@ body,input,textarea,select{font-size: 11pt;}
 /*
  * Main
  */
-#main{padding: 2em 0em 4em 0em;}
+#main{padding: 2em 0 4em 0;}
 #content{}
 #content header{margin-bottom: 0.5em;}
 #content header h2{font-size: 2em;}
@@ -51,18 +51,18 @@ body,input,textarea,select{font-size: 11pt;}
 /*
  * Featured
  */
-#featured{padding: 6em 0em;}
+#featured{padding: 6em 0;}
 
 /*
  * Footer
  */
-#footer{position: relative;padding: 4em 0em;}
+#footer{position: relative;padding: 4em 0;}
 #footer h2{padding-bottom: 2em;font-size: 1.4em;}
 
 /*
  * Copyright
  */
-#copyright{padding: 3em 0em;}
+#copyright{padding: 3em 0;}
 
 /*
  * Registration

@@ -60,5 +60,3 @@ if(!file_exists(BASE_PATH . "/includes/modules/statistics/".$statSection."/".$st
 }
 
 include BASE_PATH . "/includes/modules/statistics/".$statSection."/".$statValue.".php";
-?>
-

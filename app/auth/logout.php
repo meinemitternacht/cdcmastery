@@ -7,4 +7,3 @@ if(!empty($_SESSION['userUUID'])) {
 
 session_destroy();
 $cdcMastery->redirect("/");
-?>

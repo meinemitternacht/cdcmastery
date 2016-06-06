@@ -186,6 +186,7 @@ if($migrationArrayCount > 0){
 				if(!empty($row['data2'])){
 					$workingLog->setDetail("Description", $row['data2']);
 				}
+			break;
 			case "USER_AFSC_ASSOC":
 				$workingLog->setAction("USER_ADD_AFSC_ASSOCIATION");
 				if(empty($row['data2'])){

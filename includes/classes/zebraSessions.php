@@ -347,7 +347,7 @@ class Zebra_Session
                 COUNT(session_id) as count
             FROM ' . $this->table_name . '
 
-        ')) or die(_mysql_error());
+        ')) or die($this->_mysql_error());
 
         // return the number of found rows
         return $result['count'];
@@ -824,5 +824,3 @@ class Zebra_Session
     }
 
 }
-
-?>

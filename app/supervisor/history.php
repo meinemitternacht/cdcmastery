@@ -190,7 +190,7 @@ if(isset($_SESSION['vars'][0])):
                                 data: [
                                     {
                                         /*** Change type "column" to "bar", "area", "line" or "pie"***/
-                                            <?php if(count($chartData > 50)){ ?>type: "line",<?php } else{ ?>type: "column",<?php } ?>
+                                            <?php if(count($chartData) > 50){ ?>type: "line",<?php } else{ ?>type: "column",<?php } ?>
                                         dataPoints: [<?php echo $chartOutputData; ?>]
                                     }
                                 ]

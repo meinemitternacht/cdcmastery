@@ -349,6 +349,9 @@ class flashCardManager extends CDCMastery
                 return false;
             }
         }
+        else{
+            return false;
+        }
     }
 
     public function checkCategoryBinding($categoryBinding){

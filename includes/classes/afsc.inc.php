@@ -103,8 +103,9 @@ class afsc extends CDCMastery
 	}
 
 	/**
+	 * @param bool $showHidden
 	 * @return array|bool
-     */
+	 */
 	public function listAFSC($showHidden=true){
 		if(!$showHidden) {
 			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList WHERE afscHidden = 0 ORDER BY afscName ASC");
@@ -439,6 +440,9 @@ class afsc extends CDCMastery
 				return true;
 			}
 		}
+		else{
+			return false;
+		}
 	}
 
 	/**
@@ -531,8 +535,9 @@ class afsc extends CDCMastery
 	}
 
 	/**
-	 * @param string $uuid
+	 * @param $item
 	 * @return bool|string
+	 * @internal param string $uuid
 	 */
 	public function getAFSCNameCallback(&$item){
 		$afscName = $this->getAFSCName($item);

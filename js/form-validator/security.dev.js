@@ -138,7 +138,7 @@
     $.formUtils.addValidator({
         name : 'strength',
         validatorFunction : function(val, $el, conf) {
-            var requiredStrength = $el.valAttr('strength')
+            var requiredStrength = $el.valAttr('strength');
             if(requiredStrength && requiredStrength > 3)
                 requiredStrength = 3;
 

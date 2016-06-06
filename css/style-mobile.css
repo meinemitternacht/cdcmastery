@@ -42,7 +42,7 @@
 
 	.container
 	{
-		padding: 0em 2em;
+		padding: 0 2em;
 	}
 	
 	.button
@@ -88,7 +88,7 @@
 				position: absolute;
 				left: 25px;
 				top: 20px;
-				background: url('images/mobileUI-site-nav-opener-bg.svg') 0px 0px no-repeat;
+				background: url('images/mobileUI-site-nav-opener-bg.svg') 0 0 no-repeat;
 				opacity: 0.50;
 			}
 
@@ -133,7 +133,7 @@
 /* Header */
 	#header
 	{
-		padding: 1em 0em 0em 0em;
+		padding: 1em 0 0 0;
 		text-align: center;
 	}
 
@@ -176,7 +176,7 @@
 	
 /* Main */
 #main {
-    padding: 1em 0em 1em 0em;
+    padding: 1em 0 1em 0;
 }
 
 #content {
@@ -204,12 +204,12 @@
 	
 /* Featured */
 #featured {
-    padding: 4em 0em 4em 0em;
+    padding: 4em 0 4em 0;
 }
 	
 /* Footer */
 #footer {
-    padding: 4em 0em 2em 0em;
+    padding: 4em 0 2em 0;
 }
 
 #footer h2 {

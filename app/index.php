@@ -1,5 +1,6 @@
 <?php if(!$cdcMastery->loggedIn()): ?>
-<div class="container">
+<!--suppress ALL -->
+	<div class="container">
     <div id="mobile-login">
         <div class="row">
             <div class="12u">

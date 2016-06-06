@@ -108,7 +108,7 @@ class testGenerator extends CDCMastery
 			$this->log->setAction("ERROR_GENERATED_TEST_LOAD");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
-			$this->log->setDetail("Generated Test UUID",$this->generatedTestUUID);
+			$this->log->setDetail("Generated Test UUID",$this->uuid);
 			$this->log->saveEntry();
 			return false;
 		}

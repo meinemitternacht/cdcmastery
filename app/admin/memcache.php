@@ -28,7 +28,7 @@ if(!$cdcMastery->verifyAdmin()){
     <div class="row">
         <div class="6u">
             <section>
-                <?php $memcacheStatus = $memcache->getStats(); ?>
+                <?php $memcacheStatus = $memcache->getstats(); ?>
                 <?php
                 function secondsToTime($seconds) {
                     $dtF = new DateTime("@0");

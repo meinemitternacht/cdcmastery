@@ -235,7 +235,7 @@ if($logEntries): ?>
                         <li>
                             <form action="/admin/log" method="POST" id="filterAction">
                                 <input type="hidden" name="filterBy" value="action">
-                                <select name="filterValue" class="input_full" size="1" onChange="javascript:document.forms['filterAction'].submit()">
+                                <select name="filterValue" class="input_full" size="1" onChange="document.forms['filterAction'].submit()">
                                     <option value="">Choose Action...</option>
                                     <?php
                                     $logActionList = $log->listLogActions();

@@ -481,6 +481,9 @@ class testManager extends CDCMastery
 				return true;
 			}
 		}
+		else{
+			return false;
+		}
 	}
 	
 	public function deleteTests(array $testUUIDArray){
@@ -529,6 +532,9 @@ class testManager extends CDCMastery
                     return false;
                 }
             }
+			else{
+				return false;
+			}
         }
         else{
             return $this->testData;
@@ -722,6 +728,15 @@ class testManager extends CDCMastery
 				return $testArray;
 			}
 		}
+        else{
+            $this->log->setAction("ERROR_LIST_INCOMPLETE_TESTS");
+            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->saveEntry();
+
+            $stmt->close();
+            return false;
+        }
 	}
 	
 	public function listIncompleteTests($uuidOnly = false){

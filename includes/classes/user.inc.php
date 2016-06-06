@@ -546,10 +546,14 @@ class user extends CDCMastery {
 
             if ($_user->loadUser($userUUID)) {
                 return $_user->getUserRole();
-            } else {
+            }
+			else {
                 return false;
             }
         }
+		else {
+			return false;
+		}
     }
 	
 	public function getUserNameByUUID($userUUID){
@@ -943,4 +947,3 @@ class user extends CDCMastery {
 		}
 	}
 }
-?>

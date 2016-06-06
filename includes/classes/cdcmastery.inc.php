@@ -293,6 +293,9 @@ class CDCMastery
         elseif($score < 80){
             return "text-warning-bold";
         }
+		else{
+			return false;
+		}
     }
 	
 	public function trimString($string,$length){

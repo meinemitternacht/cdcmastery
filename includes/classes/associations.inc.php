@@ -342,7 +342,6 @@ class associations extends CDCMastery
 
 	/**
 	 * Notifies administrator of a pending AFSC association
-	 * @param $userUUID
 	 * @return bool
 	 */
 	public function notifyPendingAFSCAssociation(){

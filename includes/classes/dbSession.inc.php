@@ -150,4 +150,3 @@ class dbSession
     	$this->db->close();
     }
 }
-?>

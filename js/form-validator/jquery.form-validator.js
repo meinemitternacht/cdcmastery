@@ -435,7 +435,7 @@
             window.console.warn('Use of deprecated function $.validateForm, use $.isValid instead');
         }
         return this.isValid(language, conf, true);
-    }
+    };
 
     /**
     * Plugin for displaying input length restriction
@@ -1021,7 +1021,7 @@
             // split by dash
             var range = $.split(rangeAllowed, '-');
             // min or max
-            var minmax = parseInt(rangeAllowed.substr(3),10)
+            var minmax = parseInt(rangeAllowed.substr(3),10);
             // range ?
             if (range.length == 2 && (value < parseInt(range[0],10) || value > parseInt(range[1],10) ) )
             {   return [ "out", range[0], range[1] ] ; } // value is out of range
