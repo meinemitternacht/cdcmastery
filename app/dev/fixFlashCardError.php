@@ -61,10 +61,11 @@ if($stmt->execute()){
     ?>
     </table>
     <?php
-
+    /*
     $query = "UPDATE flashCardData SET cardCategory='beb0e81a-5b81-470e-8415-dcaf8789309b' WHERE uuid IN ('".implode("','",$sqlArray)."')";
     echo $query;
     if($db->query($query)){
         echo "Updated.";
     }
+    */
 }
