@@ -53,13 +53,16 @@ if($testManager->loadIncompleteTest($testUUID)) {
             <table>
                 <thead>
                 <tr>
+                    <th>#</th>
                     <th>AFSC</th>
                     <th>Question</th>
                     <th>Answer</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($questionList as $questionUUID):
+                <?php
+                $i=1;
+                foreach ($questionList as $questionUUID):
                     $questionManager->loadQuestion($questionUUID);
                     if (isset($testData[$questionUUID])):
                         if ($questionManager->queryQuestionFOUO($questionUUID)) {
@@ -69,6 +72,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         }
                         $answerManager->loadAnswer($testData[$questionUUID]); ?>
                         <tr>
+                            <td><?php echo $i; ?></td>
                             <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td><span class="<?php if ($answerManager->getAnswerCorrect()) {
@@ -79,11 +83,13 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         </tr>
                     <?php else: ?>
                         <tr>
+                            <td><?php echo $i; ?></td>
                             <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td>Not answered.</td>
                         </tr>
                     <?php endif; ?>
+                    <?php $i++; ?>
                 <?php endforeach; ?>
                 </tbody>
             </table>
