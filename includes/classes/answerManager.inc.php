@@ -30,17 +30,24 @@ class answerManager extends CDCMastery
 		$this->questionUUID = false;
 		return true;
 	}
-	
-	public function listAnswers(){
-		$res = $this->db->query("SELECT uuid, answerText, answerCorrect, questionUUID FROM answerData");
-		
+
+	public function listAnswersNonFOUO(){
+		$res = $this->db->query("SELECT answerData.uuid, answerText, answerCorrect, questionUUID 
+									FROM answerData 
+										LEFT JOIN questionData 
+											ON questionData.uuid=answerData.questionUUID 
+										LEFT JOIN afscList 
+											ON afscList.uuid=questionData.afscUUID 
+									WHERE afscList.afscFOUO = 0");
+
 		if($res->num_rows > 0){
 			while($row = $res->fetch_assoc()){
 				$answerArray[$row['uuid']]['answerText'] = $row['answerText'];
 				$answerArray[$row['uuid']]['answerCorrect'] = $row['answerCorrect'];
 				$answerArray[$row['uuid']]['questionUUID'] = $row['questionUUID'];
+				$answerArray[$row['uuid']]['fouo'] = false;
 			}
-			
+
 			$res->close();
 			if(isset($answerArray) && is_array($answerArray) && !empty($answerArray)){
 				return $answerArray;
@@ -52,6 +59,52 @@ class answerManager extends CDCMastery
 		else{
 			$this->error[] = "There are no answers in the database.";
 			$res->close();
+			return false;
+		}
+	}
+
+	public function listAnswersFOUO(){
+		$res = $this->db->query("SELECT answerData.uuid, AES_DECRYPT(answerText,'".$this->getEncryptionKey()."') AS answerText, answerCorrect, questionUUID 
+									FROM answerData 
+										LEFT JOIN questionData 
+											ON questionData.uuid=answerData.questionUUID 
+										LEFT JOIN afscList 
+											ON afscList.uuid=questionData.afscUUID 
+									WHERE afscList.afscFOUO = 1");
+
+		if($res->num_rows > 0){
+			while($row = $res->fetch_assoc()){
+				$answerArray[$row['uuid']]['answerText'] = $row['answerText'];
+				$answerArray[$row['uuid']]['answerCorrect'] = $row['answerCorrect'];
+				$answerArray[$row['uuid']]['questionUUID'] = $row['questionUUID'];
+				$answerArray[$row['uuid']]['fouo'] = true;
+			}
+
+			$res->close();
+			if(isset($answerArray) && is_array($answerArray) && !empty($answerArray)){
+				return $answerArray;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->error[] = "There are no answers in the database.";
+			$res->close();
+			return false;
+		}
+	}
+	
+	public function listAnswers(){
+		$answerListFOUO = $this->listAnswersFOUO();
+		$answerListNonFOUO = $this->listAnswersNonFOUO();
+
+		if(is_array($answerListFOUO) && is_array($answerListNonFOUO)){
+			$answerList = array_merge($answerListFOUO,$answerListNonFOUO);
+			return $answerList;
+		}
+		else{
+			$this->error[] = "There are no answers in the database.";
 			return false;
 		}
 	}
