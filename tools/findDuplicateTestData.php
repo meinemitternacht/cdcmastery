@@ -40,13 +40,12 @@ foreach($testArray as $test){
 			}
 		}
 	}
-	
+
+	$testCount++;
 	$percentDone = intval(($testCount / $totalTests) * 100);
 	
 	echo "\033[5D";      // Move 5 characters backward
 	echo str_pad($percentDone, 3, ' ', STR_PAD_LEFT) . " %";    // Output is always 5 characters long
-	
-	$testCount++;
 }
 
 echo "\nScan complete.\n";
