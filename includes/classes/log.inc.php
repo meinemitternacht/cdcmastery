@@ -569,7 +569,19 @@ class log extends CDCMastery
                             $linkStr = '<a href="/admin/afsc/edit/' . $detailData . '">' . $detailData . '</a>';
                             break;
                         case 'answerData':
-                            $linkStr = $detailData;
+							$log = new log($this->db);
+							$afsc = new afsc($this->db,$log);
+							$answerManager = new answerManager($this->db,$log);
+							$questionManager = new questionManager($this->db,$log,$afsc,$answerManager);
+
+							if($answerManager->loadAnswer($detailData)){
+								$questionManager->loadQuestion($answerManager->getQuestionUUID());
+
+								$linkStr = '<a href="/admin/cdc-data/' . $questionManager->getAFSCUUID() . '/question/' . $questionManager->getUUID() . '/view">' . $detailData . '</a>';
+							}
+							else{
+								$linkStr = $detailData;
+							}
                             break;
                         case 'answerDataArchived':
                             $linkStr = $detailData;
@@ -587,7 +599,17 @@ class log extends CDCMastery
                             $linkStr = '<a href="/admin/office-symbols/edit/' . $detailData . '">' . $detailData . '</a>';
                             break;
                         case 'questionData':
-                            $linkStr = $detailData;
+							$log = new log($this->db);
+							$afsc = new afsc($this->db,$log);
+							$answerManager = new answerManager($this->db,$log);
+							$questionManager = new questionManager($this->db,$log,$afsc,$answerManager);
+
+							if($questionManager->loadQuestion($detailData)){
+								$linkStr = '<a href="/admin/cdc-data/' . $questionManager->getAFSCUUID() . '/question/' . $detailData . '/view">' . $detailData . '</a>';
+							}
+							else{
+								$linkStr = $detailData;
+							}
                             break;
                         case 'questionDataArchived':
                             $linkStr = $detailData;
