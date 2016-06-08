@@ -115,63 +115,40 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                     <td><strong>Data</strong></td>
                                 </tr>
                                 <?php foreach($logDetails as $detailKey => $detailData):
-                                    $dataTypeSearch = strtolower($detailData['dataType']);
+                                    if($cdcMastery->is_serialized($detailData['data'])): ?>
+                                        <tr>
+                                            <td><?php echo $detailData['dataType']; ?></td>
+                                            <td>
+                                                <?php
+                                                $data = unserialize($detailData['data']);
+                                                if(is_array($data)){
+                                                    $dataCount = count($data);
+                                                    $i = 1;
+                                                    foreach($data as $dataVal){
+                                                        $linkStr = $log->formatDetailData($dataVal);
 
-                                    if(	strpos($dataTypeSearch,"user") !== false ||
-                                        strpos($dataTypeSearch,"supervisor") !== false ||
-                                        strpos($dataTypeSearch,"training manager") !== false) {
-                                        if (strpos($dataTypeSearch, "uuid") !== false) {
-                                            $userName = $user->getUserNameByUUID($detailData['data']);
-                                        }
-                                    }
-                                    elseif($dataTypeSearch == "afsc array"){
-                                        $afscArray = unserialize($detailData['data']);
-
-                                        foreach($afscArray as $dataAFSCUUID){
-                                            $afscList[] = '<a href="/admin/cdc-data/'.$dataAFSCUUID.'">'.$afsc->getAFSCName($dataAFSCUUID).'</a>';
-                                        }
-
-                                        if(count($afscList) > 0){
-                                            $afscList = implode(",",$afscList);
-                                        }
-                                    }
-                                    elseif($dataTypeSearch == "afsc uuid") {
-                                        $afscUUID = true;
-                                    }
-                                    elseif($dataTypeSearch == "test uuid") {
-                                        if ($testManager->loadTest($detailData['data'])) {
-                                            $testUUID = true;
-                                        }
-                                    }
-                                    ?>
-                                    <tr style="background-color:<?php echo $bgColor; ?>">
-                                        <td><?php echo $detailData['dataType']; ?></td>
-                                        <?php if(isset($userName) && !empty($userName)): ?>
-                                            <td>
-                                                <a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
+                                                        if($i < $dataCount){
+                                                            echo $linkStr . ", " . PHP_EOL;
+                                                        }
+                                                        else{
+                                                            echo $linkStr . PHP_EOL;
+                                                        }
+                                                        $i++;
+                                                    }
+                                                }
+                                                ?>
                                             </td>
-                                        <?php elseif(isset($afscUUID) && $afscUUID == true): ?>
-                                            <td>
-                                                <?php echo $afsc->getAFSCName($detailData['data']); ?>
-                                            </td>
-                                        <?php elseif(isset($afscList) && !empty($afscList)): ?>
-                                            <td>
-                                                <?php echo $afscList; ?>
-                                            </td>
-                                        <?php elseif(isset($testUUID) && $testUUID == true): ?>
-                                            <td>
-                                                <a href="/test/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
-                                            </td>
-                                        <?php else: ?>
-                                            <td><?php echo $detailData['data']; ?></td>
-                                        <?php endif; ?>
-                                    </tr>
-                                    <?php
-                                    $afscUUID = false;
-                                    $afscList = false;
-                                    $testUUID = false;
-                                    $userName = false;
-                                    $dataTypeSearch = "";
+                                        </tr>
+                                        <?php
+                                    else:
+                                        $linkStr = $log->formatDetailData($detailData['data']);
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $detailData['dataType']; ?></td>
+                                            <td><?php echo $linkStr; ?></td>
+                                        </tr>
+                                        <?php
+                                    endif;
                                     ?>
                                 <?php endforeach; ?>
                             </table>

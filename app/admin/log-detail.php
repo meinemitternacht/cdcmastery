@@ -78,93 +78,41 @@ if($logUUID):
 								<th>Key</th>
 								<th>Data</th>
 							</tr>
-							<?php foreach($logDetails as $detailKey => $detailData): 
-									$dataTypeSearch = strtolower($detailData['dataType']);
-									
-									if(	strpos($dataTypeSearch,"user") !== false ||
-										strpos($dataTypeSearch,"supervisor") !== false ||
-										strpos($dataTypeSearch,"training manager") !== false) {
-										if (strpos($dataTypeSearch, "uuid") !== false) {
-											$userName = $user->getUserNameByUUID($detailData['data']);
-										}
-									}
-									elseif($dataTypeSearch == "afsc array"){
-										$afscArray = unserialize($detailData['data']);
+							<?php foreach($logDetails as $detailKey => $detailData):
+                                if($cdcMastery->is_serialized($detailData['data'])): ?>
+                                    <tr>
+                                        <td><?php echo $detailData['dataType']; ?></td>
+                                        <td>
+                                    <?php
+                                    $data = unserialize($detailData['data']);
+                                    if(is_array($data)){
+                                        $dataCount = count($data);
+                                        $i = 1;
+                                        foreach($data as $dataVal){
+                                            $linkStr = $log->formatDetailData($dataVal);
 
-										foreach($afscArray as $dataAFSCUUID){
-											$afscList[] = '<a href="/admin/cdc-data/'.$dataAFSCUUID.'">'.$afsc->getAFSCName($dataAFSCUUID).'</a>';
-										}
-
-										if(count($afscList) > 0){
-											$afscList = implode(",",$afscList);
-										}
-									}
-									elseif($dataTypeSearch == "afsc uuid") {
-										$afscUUID = true;
-									}
-                                    elseif($dataTypeSearch == "test uuid") {
-										if ($testManager->loadTest($detailData['data'])) {
-											$testUUID = true;
-										}
-										elseif ($testManager->loadIncompleteTest($detailData['data'])){
-											$incompleteTestUUID = true;
-										}
-									}
-									elseif($dataTypeSearch == "category uuid"){
-										$flashCardManager = new flashCardManager($db,$log);
-										if($flashCardManager->loadCardCategory($detailData['data'])){
-											$flashCardCategory = true;
-										}
-									}
-									elseif($dataTypeSearch == "role uuid"){
-										if($roles->loadRole($detailData['data'])){
-											$roleUUID = true;
-										}
-									}
-							?>
-							<tr>
-								<td><?php echo $detailData['dataType']; ?></td>
-								<?php if(isset($userName) && !empty($userName)): ?>
-									<td>
-										<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
-									</td>
-								<?php elseif(isset($afscUUID) && ($afscUUID == true)): ?>
-									<td>
-										<?php echo $afsc->getAFSCName($detailData['data']); ?>
-									</td>
-								<?php elseif(isset($afscList) && !empty($afscList)): ?>
-									<td>
-										<?php echo $afscList; ?>
-									</td>
-                                <?php elseif(isset($testUUID) && ($testUUID == true)): ?>
-                                    <td>
-                                        <a href="/test/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
-                                    </td>
-								<?php elseif(isset($incompleteTestUUID) && ($incompleteTestUUID == true)): ?>
-									<td>
-										<a href="/admin/users/<?php echo $testManager->getIncompleteUserUUID(); ?>/tests/incomplete/view/<?php echo $detailData['data']; ?>"><?php echo $detailData['data']; ?></a>
-									</td>
-								<?php elseif(isset($flashCardCategory) && ($flashCardCategory == true)): ?>
-									<td>
-										<a href="/admin/card-data/<?php echo $detailData['data']; ?>"><?php echo $flashCardManager->getCategoryName(); ?></a>
-									</td>
-								<?php elseif(isset($roleUUID) && ($roleUUID == true)): ?>
-									<td>
-										<a href="/admin/roles/edit/<?php echo $detailData['data']; ?>"><?php echo $roles->getRoleName(); ?></a>
-									</td>
-								<?php else: ?>
-									<td><?php echo $detailData['data']; ?></td>
-								<?php endif; ?>
-							</tr>
-								<?php
-								$afscUUID = false;
-								$afscList = false;
-								$testUUID = false;
-								$userName = false;
-								$incompleteTestUUID = false;
-								$flashCardCategory = false;
-								$roleUUID = false;
-								$dataTypeSearch = "";
+                                            if($i < $dataCount){
+                                                echo $linkStr . ", " . PHP_EOL;
+                                            }
+                                            else{
+                                                echo $linkStr . PHP_EOL;
+                                            }
+                                            $i++;
+                                        }
+                                    }
+                                    ?>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                else:
+                                    $linkStr = $log->formatDetailData($detailData['data']);
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $detailData['dataType']; ?></td>
+                                        <td><?php echo $linkStr; ?></td>
+                                    </tr>
+                                    <?php
+                                endif;
 								?>
 							<?php endforeach; ?>
 						</table>
