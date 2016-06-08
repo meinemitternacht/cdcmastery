@@ -20,7 +20,7 @@ $stmt->close();
 
 foreach($testUUIDList as $completedTestUUID){
     $testManager->loadTest($completedTestUUID);
-    echo "testUUID: ".$completedTestUUID;
+    echo "testUUID: ".$log->formatDetailData($completedTestUUID);
     echo "<br>";
     echo "Test Score: ".$testManager->getTestScore();
     echo "<br>";

@@ -12,22 +12,22 @@ $incompleteTestList = $testManager->listIncompleteTests(true);
 
 foreach($incompleteTestList as $incompleteTestUUID){
     $testManager->loadIncompleteTest($incompleteTestUUID);
-    echo "testUUID: ".$incompleteTestUUID;
-    echo "<br>";
-    echo "Questions Answered: ".$testManager->getIncompleteQuestionsAnswered();
-    echo "<br>";
-
     $stmt = $db->prepare("SELECT COUNT(*) AS count FROM testData WHERE testUUID = ? ");
     $stmt->bind_param("s",$incompleteTestUUID);
     $stmt->execute();
     $stmt->bind_result($testDataCount);
     $stmt->fetch();
     $stmt->close();
-    if($testManager->getIncompleteQuestionsAnswered() > 0 && $testDataCount == 0){
+    if($testManager->getIncompleteQuestionsAnswered() != $testDataCount) {
         $deleteTestUUID[] = $incompleteTestUUID;
+
+        echo "testUUID: " . $log->formatDetailData($incompleteTestUUID);
+        echo "<br>";
+        echo "Questions Answered: " . $testManager->getIncompleteQuestionsAnswered();
+        echo "<br>";
+        echo "testData Count:" . $testDataCount;
+        echo "<br>";
     }
-    echo "testData Count:".$testDataCount;
-    echo "<br>";
 }
 
 /*
