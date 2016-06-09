@@ -12,7 +12,7 @@ class dbSession
 {
 	protected $db;
 
-    function __construct(mysqli $db, $gc_maxlifetime = "86400", $gc_probability = "1", $gc_divisor = "5", $securityCode = "8dF8dAxSpdBiC", $tableName = "sessionData")
+    function __construct(mysqli $db, $gc_maxlifetime = "604800", $gc_probability = "1", $gc_divisor = "5", $securityCode = "8dF8dAxSpdBiC", $tableName = "sessionData")
     {
     	$this->db = $db;
 
