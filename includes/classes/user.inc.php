@@ -21,12 +21,13 @@ class user extends CDCMastery {
 	public $userRank;			//varchar 255
 	public $userDateRegistered;	//datetime
 	public $userLastLogin;		//datetime
+	public $userLastActive;		//datetime
 	public $userTimeZone;		//varchar 255
 	public $userRole;			//binary  36
 	public $userOfficeSymbol;	//binary  36
 	public $userBase;			//binary  36
 	public $userDisabled;		//bool
-	public $userLastActive;		//datetime
+	public $reminderSent;		//bool
 
 	public function __construct(mysqli $db, log $log, emailQueue $emailQueue) {
 		$this->db = $db;
@@ -192,12 +193,13 @@ class user extends CDCMastery {
 											userRank,
 											userDateRegistered,
 											userLastLogin,
+											userLastActive,
 											userTimeZone,
 											userRole,
 											userOfficeSymbol,
 											userBase,
 											userDisabled,
-											userLastActive
+											reminderSent
 									FROM userData
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
@@ -212,12 +214,13 @@ class user extends CDCMastery {
 							$userRank,
 							$userDateRegistered,
 							$userLastLogin,
+                            $userLastActive,
 							$userTimeZone,
 							$userRole,
 							$userOfficeSymbol,
 							$userBase,
 							$userDisabled,
-							$userLastActive);
+                            $reminderSent);
 
 		while($stmt->fetch()){
 			$this->uuid = $uuid;
@@ -230,12 +233,13 @@ class user extends CDCMastery {
 			$this->userRank = $userRank;
 			$this->userDateRegistered = $userDateRegistered;
 			$this->userLastLogin = $userLastLogin;
+            $this->userLastActive = $userLastActive;
 			$this->userTimeZone = $userTimeZone;
 			$this->userRole = $userRole;
 			$this->userOfficeSymbol = $userOfficeSymbol;
 			$this->userBase = $userBase;
 			$this->userDisabled = $userDisabled;
-			$this->userLastActive = $userLastActive;
+            $this->reminderSent = $reminderSent;
 		}
 
 		$stmt->close();
@@ -263,8 +267,9 @@ class user extends CDCMastery {
 															userRole,
 															userOfficeSymbol,
 															userBase,
-															userDisabled )
-									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+															userDisabled,
+															reminderSent)
+									VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 									ON DUPLICATE KEY UPDATE
 															uuid=VALUES(uuid),
 															userFirstName=VALUES(userFirstName),
@@ -280,9 +285,10 @@ class user extends CDCMastery {
 															userRole=VALUES(userRole),
 															userOfficeSymbol=VALUES(userOfficeSymbol),
 															userBase=VALUES(userBase),
-															userDisabled=VALUES(userDisabled)");
+															userDisabled=VALUES(userDisabled),
+															reminderSent=VALUES(reminderSent)");
 
-		$stmt->bind_param("sssssssssssssss", 	$this->uuid,
+		$stmt->bind_param("ssssssssssssssss", 	$this->uuid,
 												$this->userFirstName,
 												$this->userLastName,
 												$this->userHandle,
@@ -296,7 +302,8 @@ class user extends CDCMastery {
 												$this->userRole,
 												$this->userOfficeSymbol,
 												$this->userBase,
-												$this->userDisabled);
+												$this->userDisabled,
+                                                $this->reminderSent);
 		
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
@@ -434,6 +441,10 @@ class user extends CDCMastery {
 		return $this->userDisabled;
 	}
 
+    public function getReminderSent(){
+        return $this->reminderSent;
+    }
+
 	/***********/
 	/* Setters */
 	/***********/
@@ -511,6 +522,11 @@ class user extends CDCMastery {
 		$this->userDisabled = $userDisabled;
 		return true;
 	}
+
+    public function setReminderSent($reminderSent){
+        $this->reminderSent = $reminderSent;
+        return true;
+    }
 
 	/***********/
 	/*   misc  */
