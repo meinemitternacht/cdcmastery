@@ -16,6 +16,8 @@ class statistics extends CDCMastery {
     public $error;
 
     public $databaseSize;
+    public $totalSessions;
+    public $activeSessions;
 
     public $usersTopTenTestsDay;
     public $usersTopTenTestsMonth;
@@ -195,6 +197,49 @@ class statistics extends CDCMastery {
         $cacheHash = md5($hashVal);
 
         return $this->memcache->get($cacheHash);
+    }
+    
+    public function getTotalSessions(){
+        if($this->queryTotalSessions()){
+            return $this->totalSessions;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    public function queryTotalSessions(){
+        $res = $this->db->query("SELECT COUNT(*) AS count FROM sessionData");
+        
+        if(!$this->db->error) {
+            $row = $res->fetch_assoc();
+
+            $this->totalSessions = $row['count'];
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    public function getActiveSessions(){
+        if($this->queryActiveSessions()){
+            return $this->activeSessions;
+        }
+    }
+    
+    public function queryActiveSessions(){
+        $res = $this->db->query("SELECT COUNT(*) AS count FROM sessionData WHERE session_expire > " . (time() - 86400));
+
+        if(!$this->db->error) {
+            $row = $res->fetch_assoc();
+
+            $this->activeSessions = $row['count'];
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public function getUsersTopTenTestsDay(){

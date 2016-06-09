@@ -112,6 +112,10 @@ $userObj = new user($db,$log,$emailQueue);
                     <h2>User Statistics</h2>
                 </header>
                 <?php
+                $totalSessions = $statisticsObj->getTotalSessions();
+                $activeSessions = $statisticsObj->getActiveSessions();
+                $inactiveSessions = $totalSessions - $activeSessions;
+
                 $totalAccounts = $statisticsObj->getTotalUsers();
                 $inactiveAccounts = $statisticsObj->getInactiveUsers();
                 $totalUsers = $statisticsObj->getTotalRoleUser();
@@ -130,6 +134,18 @@ $userObj = new user($db,$log,$emailQueue);
                 $percentUserClass['questionEditors'] = round((($totalQuestionEditors/$totalAccounts) * 100),2) . "%";
                 ?>
                 <table>
+                    <tr>
+                        <td>Total Sessions</td>
+                        <td colspan="2"><?php echo $totalSessions; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Active Sessions</td>
+                        <td colspan="2"><?php echo $activeSessions; ?></td>
+                    </tr>
+                    <tr style="border-bottom: 2px solid #999">
+                        <td>Inactive Sessions</td>
+                        <td colspan="2"><?php echo $inactiveSessions; ?></td>
+                    </tr>
                     <tr style="border-bottom: 2px solid #999">
                         <td><strong>Total Users</strong></td>
                         <td colspan="2"><?php echo number_format($totalAccounts); ?></td>
