@@ -661,7 +661,6 @@ class log extends CDCMastery
                     return $linkStr;
                 }
                 else{
-                    $stmt->close();
                     continue;
                 }
             }
