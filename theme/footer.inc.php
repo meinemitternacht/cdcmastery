@@ -46,19 +46,14 @@
 									?>s using <?php echo round((memory_get_usage(true) / 1048576),2); ?> MB
 								</li>
 								<?php
-								if($_SERVER['HTTP_HOST'] != "localhost"){
-									//GET SERVER LOADS
-									$loadresult = @exec('uptime');
-									@preg_match("/averages?: ([0-9\.]+),[\s]+([0-9\.]+),[\s]+([0-9\.]+)/",$loadresult,$avgs);
-					
-									//GET SERVER UPTIME
-									$uptime = @explode(' up ', $loadresult);
-									$uptime = @explode(',', $uptime[1]);
-									$uptime = $uptime[0].', '.$uptime[1];
-									$data = "<li>Load: $avgs[1], $avgs[2], $avgs[3]</li>";
-									$data .= "<li>Uptime: $uptime</li>";
-									echo $data;
-								}
+								$loadresult = @exec('uptime');
+								@preg_match("/averages?: ([0-9\.]+),[\s]+([0-9\.]+),[\s]+([0-9\.]+)/",$loadresult,$avgs);
+								$uptime = @explode(' up ', $loadresult);
+								$uptime = @explode(',', $uptime[1]);
+								$uptime = $uptime[0].', '.$uptime[1];
+								$data = "<li>Load: $avgs[1], $avgs[2], $avgs[3]</li>";
+								$data .= "<li>Uptime: $uptime</li>";
+								echo $data;
 								?>
 							</ul>
                             <br>
@@ -98,7 +93,7 @@
 		<script type="text/javascript">
 			var sysMsgHTML = "<?php echo $systemMessageHTML; ?>";
 			$('#system-messages-block').html(sysMsgHTML);
-			$('#system-messages-container-block').show();
+			$('#system-messages-container-block').fadeIn();
 		</script>
 		<?php endif; ?>
         <script>
