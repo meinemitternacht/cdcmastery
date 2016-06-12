@@ -1,11 +1,15 @@
 <?php
+/**
+ * All times should be UTC unless overridden by a user's time zone
+ */
 date_default_timezone_set("UTC");
 
+/**
+ * Load classes
+ */
 require BASE_PATH . '/includes/config.inc.php';
 require BASE_PATH . '/includes/classes/cdcmastery.inc.php';
-
 require BASE_PATH . '/includes/classes/user.inc.php';
-
 require BASE_PATH . '/includes/classes/afsc.inc.php';
 require BASE_PATH . '/includes/classes/auth.inc.php';
 require BASE_PATH . '/includes/classes/answerManager.inc.php';
@@ -24,7 +28,6 @@ require BASE_PATH . '/includes/classes/userStatistics.inc.php';
 require BASE_PATH . '/includes/classes/user/passwordReset.inc.php';
 require BASE_PATH . '/includes/classes/user/userActivation.inc.php';
 require BASE_PATH . '/includes/classes/user/userAuthorizationQueue.inc.php';
-
 require BASE_PATH . '/includes/classes/systemMessages.inc.php';
 require BASE_PATH . '/includes/classes/overviews/trainingManagerOverview.inc.php';
 require BASE_PATH . '/includes/classes/overviews/supervisorOverview.inc.php';
@@ -35,6 +38,9 @@ require BASE_PATH . '/includes/classes/testGenerator.inc.php';
 
 require BASE_PATH . '/includes/pageTitles.inc.php';
 
+/**
+ * PHP Mail functions (PEAR)
+ */
 require 'Mail.php';
 require 'Mail/mime.php';
 
@@ -45,28 +51,31 @@ $db = new mysqli(   $cfg['db']['host'],
                     $cfg['db']['port'],
                     $cfg['db']['socket']);
 
+/**
+ * Redirect to error page if database connection fails
+ */
 if($db->connect_errno){
     http_response_code(500);
 	include APP_BASE . '/errors/dbError.php';
 	exit();
 }
 
+/**
+ * Load Memcache
+ */
 $memcache = new Memcache();
 $memcache->connect($cfg['memcache']['host'],$cfg['memcache']['port']);
 
 define('ENCRYPTION_KEY', $cfg['encryption']['key']);
 
+/**
+ * Instantiate base classes
+ */
 $cdcMastery = new CDCMastery();
-
 $session = new Zebra_Session($db,"92304j8j8fjsdsn923enkc");
 $sysMsg = new systemMessages();
 $log = new log($db);
-
-$emailQueue = new emailQueue($db, $log, $cfg['smtp']['host'],
-                                        $cfg['smtp']['port'],
-                                        $cfg['smtp']['user'],
-                                        $cfg['smtp']['pass']);
-
+$emailQueue = new emailQueue($db, $log, $cfg['smtp']['host'],$cfg['smtp']['port'],$cfg['smtp']['user'],$cfg['smtp']['pass']);
 $roles = new roles($db, $log, $emailQueue);
 $bases = new bases($db, $log);
 $afsc = new afsc($db, $log);
@@ -76,10 +85,21 @@ $userStatistics = new userStatistics($db, $log, $roles, $memcache);
 $assoc = new associations($db, $log, $user, $afsc, $emailQueue);
 
 if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
+    /**
+     * Something went very wrong, and if the application cannot load the user, let's just destroy the session and start over
+     */
 	if(!$user->loadUser($_SESSION['userUUID'])){
         session_destroy();
         $cdcMastery->redirect("/auth/logout");
     }
+
+    /**
+     * This updates the user's latest recorded activity on each page request
+     */
     $user->updateLastActiveTimestamp();
+
+    /**
+     * Ensure user statistics module is fetching stats for this user
+     */
 	$userStatistics->setUserUUID($_SESSION['userUUID']);
 }

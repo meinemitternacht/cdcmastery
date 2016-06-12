@@ -6,6 +6,9 @@
  * Time: 8:12 PM
  */
 
+/**
+ * This seemed to be the cleanest method to customize page titles.  Each array key is a path (app/<key part 1>/<key part 2>)
+ */
 $pageTitleArray = Array(
     'index' => 'Home',
     'about' => 'About',
