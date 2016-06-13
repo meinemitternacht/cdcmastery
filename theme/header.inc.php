@@ -76,7 +76,8 @@
 				<nav id="nav">
 					<ul>
 						<li<?php if($router->getSiteSection() == "index"): ?> class="active"<?php endif; ?>><a href="/">Home</a></li>
-						<li<?php if($router->getSiteSection() == "about"): ?> class="active"<?php endif; ?>><a href="/about">About</a></li>
+						<li<?php if($router->getSiteSection() == "about" && $router->getRoute() != "about/statistics"): ?> class="active"<?php endif; ?>><a href="/about">About</a></li>
+						<li<?php if($router->getRoute() == "about/statistics"): ?> class="active"<?php endif; ?>><a href="/about/statistics">Stats</a></li>
 						<li><a href="http://helpdesk.cdcmastery.com" target="_blank">Support</a></li>
 						<?php if($cdcMastery->loggedIn()): ?>
 							<?php if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()): ?>
@@ -84,23 +85,26 @@
                                     <a href="/admin">Admin Panel</a>
                                     <ul>
                                         <li><a href="/admin/afsc" title="AFSC Manager">AFSC Manager</a></li>
-                                        <li><a href="/admin/cdc-data" title="CDC Data">CDC Data</a></li>
 										<li><a href="/admin/base-overview" title="Base Overview">Base Overview</a></li>
+                                        <li><a href="/admin/cdc-data" title="CDC Data">CDC Data</a></li>
+										<li><a href="/admin/flash-card-categories" title="Flash Card Categories">Flash Card Categories</a></li>
+										<li><a href="/admin/card-data" title="Flash Card Data">Flash Card Data</a></li>
+										<li><a href="/admin/log" title="Log">Log</a></li>
+										<li><a href="/admin/memcache" title="Memcache Statistics">Memcache Statistics</a></li>
                                         <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
-                                        <li><a href="/admin/users" title="User Manager">User Manager</a></li>
-                                        <li><a href="/admin/profile" title="User Profiles">User Profiles</a></li>
-                                        <li><a href="/admin/log" title="Log">Log</a></li>
+										<li><a href="/admin/roles" title="Role Manager">Role Manager</a></li>
 										<li><a href="/admin/search" title="Search">Search</a></li>
 										<li><a href="/admin/statistics" title="Statistics">Statistics</a></li>
-                                        <li><a href="/admin/roles" title="Role Manager">Role Manager</a></li>
-                                        <li><a href="/admin/upload" title="Upload Files">Upload Files</a></li>
+										<li><a href="/admin/upload" title="Upload Files">Upload Files</a></li>
+										<li><a href="/admin/users" title="User Manager">User Manager</a></li>
+										<li><a href="/admin/profile" title="User Profiles">User Profiles</a></li>
                                     </ul>
                                 </li>
 								<?php if($cdcMastery->verifyTrainingManager()): ?>
-									<li<?php if($router->getSiteSection() == "training"): ?> class="active"<?php endif; ?>><a href="/training/overview">Training Overview</a></li>
+									<li<?php if($router->getSiteSection() == "training"): ?> class="active"<?php endif; ?>><a href="/training/overview">Training Panel</a></li>
 								<?php endif; ?>
 							<?php elseif($cdcMastery->verifySupervisor()): ?>
-								<li<?php if($router->getSiteSection() == "supervisor"): ?> class="active"<?php endif; ?>><a href="/supervisor/overview">Supervisor Overview</a></li>
+								<li<?php if($router->getSiteSection() == "supervisor"): ?> class="active"<?php endif; ?>><a href="/supervisor/overview">Supervisor Panel</a></li>
 							<?php endif; ?>
 							<li<?php if($router->getSiteSection() == "auth"): ?> class="active"<?php endif; ?>><a href="/auth/logout">Logout</a></li>
 						<?php else: ?>
