@@ -43,7 +43,7 @@ $statValueList = Array( 'active',
                         'registrations-day',
                         'tests',
                         'users',
-                        'user-composition-30-days');
+                        'user-composition');
 
 if(!$statSection && !$statValue){
     $cdcMastery->redirect("/about/statistics/tests/average-seven-days");

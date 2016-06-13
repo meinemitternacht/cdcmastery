@@ -7,6 +7,8 @@
  */
 $statsObj = new statistics($db,$log,$emailQueue,$memcache);
 
+$dayInterval = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : 30;
+
 $endDateObj = new DateTime();
 $startDateObj = new DateTime();
 $startDateObj->modify("-30 days");
@@ -17,7 +19,7 @@ $chartUsersByBaseData = "";
 $firstRow = true;
 $i=0;
 foreach($baseList as $baseUUID => $baseName){
-    $userCount = $statsObj->getActiveUsersByBase($baseUUID,30);
+    $userCount = $statsObj->getActiveUsersByBase($baseUUID,$dayInterval);
 
     if($userCount > 0) {
         if ($firstRow == false) {
@@ -37,7 +39,7 @@ foreach($baseList as $baseUUID => $baseName){
         var chart = new CanvasJS.Chart("chart-container", {
 
             title:{
-                text: "User Base Composition - Last 30 Days"
+                text: "User Base Composition - Last <?php echo $dayInterval; ?> Days"
             },
             axisY:{
                 valueFormatString: " ",
@@ -70,6 +72,14 @@ foreach($baseList as $baseUUID => $baseName){
                 <div id="chart-container" style="height:400px">
                     &nbsp;
                 </div>
+                Last
+                <?php if($dayInterval != 30): ?><a href="/about/statistics/base/user-composition/30">30</a> | <?php else: ?>30 | <?php endif; ?>
+                <?php if($dayInterval != 60): ?><a href="/about/statistics/base/user-composition/60">60</a> | <?php else: ?>60 | <?php endif; ?>
+                <?php if($dayInterval != 90): ?><a href="/about/statistics/base/user-composition/90">90</a> | <?php else: ?>90 | <?php endif; ?>
+                <?php if($dayInterval != 120): ?><a href="/about/statistics/base/user-composition/120">120</a> | <?php else: ?>120 | <?php endif; ?>
+                <?php if($dayInterval != 180): ?><a href="/about/statistics/base/user-composition/180">180</a> | <?php else: ?>180 | <?php endif; ?>
+                <?php if($dayInterval != 365): ?><a href="/about/statistics/base/user-composition/365">365</a> <?php else: ?>365 <?php endif; ?>
+                Days
                 <table>
                     <tr>
                         <th>Base Name</th>

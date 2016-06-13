@@ -15,7 +15,7 @@
         <li><a href="/about/statistics/base/average">Average Score by Base</a></li>
         <li><a href="/about/statistics/base/tests">Test Count by Base</a></li>
         <li><a href="/about/statistics/base/users">User Count by Base</a></li>
-        <li><a href="/about/statistics/base/user-composition-30-days">Active User Bases (last 30 Days)</a></li>
+        <li><a href="/about/statistics/base/user-composition">Active User Bases</a></li>
     </ul>
     <ul>
         <li><strong>Tests</strong></li>
