@@ -61,7 +61,7 @@
                         <li>Use any account other than your own to log in to CDCMastery</li>
                     </ul>
                     <br>
-                    <strong>Any violation of the above terms of use will result in <strong>immediate suspension of your account</strong> and prosecution to the fullest extent permissible by law.</strong>
+                    <strong>Any violation of the above terms of use will result in <em>immediate suspension of your account</em> and prosecution to the fullest extent permissible by law.</strong>
                 </div>
             </section>
         </div>
