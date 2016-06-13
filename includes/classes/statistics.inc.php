@@ -1362,26 +1362,26 @@ class statistics extends CDCMastery {
         }
     }
 
-    public function getActiveUsersByBase($baseUUID){
-        if($this->getStatsCacheVal(__FUNCTION__,$baseUUID)){
-            return $this->getStatsCacheVal(__FUNCTION__,$baseUUID);
+    public function getActiveUsersByBase($baseUUID,$dayInterval){
+        if($this->getStatsCacheVal(__FUNCTION__,$baseUUID,$dayInterval)){
+            return $this->getStatsCacheVal(__FUNCTION__,$baseUUID,$dayInterval);
         }
         else{
-            if(!$this->queryActiveUsersByBase($baseUUID)){
+            if(!$this->queryActiveUsersByBase($baseUUID,$dayInterval)){
                 return 0;
             }
             else{
-                $this->setStatsCacheVal(__FUNCTION__,$this->activeUsersByBase,$this->getCacheTTL(6),$baseUUID);
+                $this->setStatsCacheVal(__FUNCTION__,$this->activeUsersByBase,$this->getCacheTTL(6),$baseUUID,$dayInterval);
                 return $this->activeUsersByBase;
             }
         }
     }
 
-    public function queryActiveUsersByBase($baseUUID){
+    public function queryActiveUsersByBase($baseUUID,$dayInterval){
         $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM `userData`
-                                        WHERE `userData`.`userBase` = ? AND `userData`.`userLastActive` BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE()");
+                                        WHERE `userData`.`userBase` = ? AND `userData`.`userLastActive` BETWEEN CURDATE() - INTERVAL ? DAY AND CURDATE()");
 
-        $stmt->bind_param("s",$baseUUID);
+        $stmt->bind_param("si",$baseUUID,$dayInterval);
 
         if($stmt->execute()){
             $stmt->bind_result($count);

@@ -17,7 +17,7 @@ $chartUsersByBaseData = "";
 $firstRow = true;
 $i=0;
 foreach($baseList as $baseUUID => $baseName){
-    $userCount = $statsObj->getActiveUsersByBase($baseUUID);
+    $userCount = $statsObj->getActiveUsersByBase($baseUUID,30);
 
     if($userCount > 0) {
         if ($firstRow == false) {
