@@ -1,4 +1,7 @@
 <?php
+/**
+ * To discourage activating accounts that entered an invalid e-mail address, limit this functionality to administrators
+ */
 if(!$cdcMastery->verifyAdmin()){
     $sysMsg->addMessage("Only site administrators can manually activate users.","info");
     $cdcMastery->redirect("/errors/403");
@@ -66,7 +69,7 @@ if($unactivatedUsersList): ?>
 				<section>
 					<p>Select the users you wish to activate below.  Please note that it is preferable for the user to
                        activate with the code they received in their e-mail. Unactivated accounts will be removed after
-                       30 days.  A reminder e-mail is sent after three days informing users of this policy.</p>
+                       30 days, and a reminder e-mail is sent after three days informing users of this policy.</p>
 					<form action="/admin/activate-users" method="POST">
 						<input type="hidden" name="formAction" value="activateUsers">
 						<table>
