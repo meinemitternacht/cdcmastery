@@ -40,9 +40,60 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
             $searchParameterList['userRole'] = isset($_POST['userRole']) ? $_POST['userRole'] : false;
             $searchParameterList['userBase'] = isset($_POST['userBase']) ? $_POST['userBase'] : false;
             $searchParameterList['userOfficeSymbol'] = isset($_POST['userOfficeSymbol']) ? $_POST['userOfficeSymbol'] : false;
+            $searchParameterList['userDateRegistered'][0] = isset($_POST['register-start-date']) ? $_POST['register-start-date'] : false;
+            $searchParameterList['userDateRegistered'][1] = isset($_POST['register-end-date']) ? $_POST['register-end-date'] : false;
+            $searchParameterList['userLastLogin'][0] = isset($_POST['last-login-start-date']) ? $_POST['last-login-start-date'] : false;
+            $searchParameterList['userLastLogin'][1] = isset($_POST['last-login-end-date']) ? $_POST['last-login-end-date'] : false;
+            $searchParameterList['userLastActive'][0] = isset($_POST['last-active-start-date']) ? $_POST['last-active-start-date'] : false;
+            $searchParameterList['userLastActive'][1] = isset($_POST['last-active-end-date']) ? $_POST['last-active-end-date'] : false;
+
+            /**
+             * @param $arrayKey
+             * @param $searchParameterList
+             * @return bool
+             */
+            function checkDateParameters($arrayKey, &$searchParameterList){
+                $searchDateObj = new DateTime();
+
+                if(!empty($searchParameterList[$arrayKey][0]) && !empty($searchParameterList[$arrayKey][1])){
+                    $dateStart = strtotime($searchParameterList[$arrayKey][0]);
+                    $dateEnd = strtotime($searchParameterList[$arrayKey][1]);
+
+                    if($dateStart > $dateEnd){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+                }
+                elseif(!empty($searchParameterList[$arrayKey][0]) && !$searchParameterList[$arrayKey][1]){
+                    $searchParameterList[$arrayKey][1] = $searchDateObj->format("Y-m-d");
+                    return true;
+                }
+                elseif(!$searchParameterList[$arrayKey][0] && !empty($searchParameterList[$arrayKey][1])){
+                    $searchParameterList[$arrayKey][0] = "2012-01-01";
+                    return true;
+                }
+                else{
+                    unset($searchParameterList[$arrayKey]);
+                    return true;
+                }
+            }
+
+            if(!checkDateParameters("userDateRegistered",$searchParameterList)){
+                $sysMsg->addMessage("The starting value for Date Registered cannot be greater than the end date.","warning");
+                $cdcMastery->redirect("/admin/search");
+            }
+            elseif(!checkDateParameters("userLastLogin",$searchParameterList)){
+                $sysMsg->addMessage("The starting value for Last Login Date cannot be greater than the end date.","warning");
+                $cdcMastery->redirect("/admin/search");
+            }
+            elseif(!checkDateParameters("userLastActive",$searchParameterList)){
+                $sysMsg->addMessage("The starting value for Last Active Date cannot be greater than the end date.","warning");
+                $cdcMastery->redirect("/admin/search");
+            }
             break;
     }
-
 
     if(!isset($searchParameterList)){
         $sysMsg->addMessage("Incorrect search parameters.","warning");
@@ -73,6 +124,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         if (!$_SESSION['searchData']['searchResults']) {
             $sysMsg->addMessage("There were no results for that search query.","info");
             $sysMsg->addMessage($searchObj->error,"info");
+            $sysMsg->addMessage($searchObj->searchQuery,"info");
 
             $cdcMastery->redirect("/admin/search");
         } else {

@@ -14,7 +14,7 @@ class search extends CDCMastery
     public $error;
     public $uuid;
 
-    /*
+    /**
      * Valid Search Types:
      *
      * log
@@ -30,19 +30,20 @@ class search extends CDCMastery
     public $searchType;
     public $searchParametersSingleValue;
     public $searchParametersMultipleValues;
-    /*
+    
+    /**
      * Valid search parameter join methods:
      * AND
      * OR
      */
     public $searchParameterJoinMethod;
 
-    /*
+    /**
      * Valid search tables are tables in the database! (duh)
      */
     public $searchTable;
 
-    /*
+    /**
      * Valid return column is usually UUID, but it will be whatever column(s) we want to get from the database
      */
     public $returnColumn;
@@ -109,7 +110,12 @@ class search extends CDCMastery
                     }
                 }
                 else{
-                    $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " IN ('".implode("','",$searchParameterList)."')";
+                    if($searchParameterKey == "userDateRegistered" || $searchParameterKey == "userLastLogin" || $searchParameterKey == "userLastActive"){
+                        $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " BETWEEN '" . $searchParameterList[0] . "' AND '" . $searchParameterList[1] ."'";
+                    }
+                    else{
+                        $queryAppend[] = $this->db->real_escape_string($searchParameterKey) . " IN ('".implode("','",$searchParameterList)."')";
+                    }
                 }
             }
         }
