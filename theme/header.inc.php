@@ -31,9 +31,9 @@
                                 '/js/skel-panels.min.js',
                                 '/js/init.js',
                                 '/js/jquery.formalize.min.js',
-                                '/js/jquery.timeago.js',
                                 '/js/jquery.canvasjs.min.js',
 								'/js/jquery.tablesorter.min.js',
+								'/js/jquery.timeago.js',
 								'/js/jquery.touchSwipe.min.js');
 
         $cssArray = Array(  '/css/jquery-ui.min.css',
@@ -46,23 +46,23 @@
                                     '/css/style.css',
                                     '/css/style-desktop.css');
 
-        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=8675312";
+        $scriptURL = "/minify/min/?f=" . implode(",",$scriptArray) . "&rand=8675313";
         $cssURL = "/minify/min/?f=" . implode(",",$cssArray) . "&rand=8675312";
         $noScriptCSSURL = "/minify/min/?f=" . implode(",",$noScriptCSSArray) . "&rand=8675312";
         ?>
+		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css">
 		<script src="<?php echo $scriptURL; ?>"></script>
-		<link href="<?php echo $cssURL; ?>" rel="stylesheet" type="text/css" />
 		<noscript>
-			<link rel="stylesheet" href="<?php echo $noScriptCSSURL; ?>" />
+			<link rel="stylesheet" href="<?php echo $noScriptCSSURL; ?>">
 		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="/css/ie/v8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="/css/ie/v9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="/css/ie/v8.css"><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="/css/ie/v9.css"><![endif]-->
 	</head>
 	<body>
 		<script>
-			$(function() {
-				$( document ).tooltip();
-				$('abbr.timeago').timeago();
+			jQuery(document).ready(function() {
+				jQuery( document ).tooltip();
+				jQuery("time.timeago").timeago();
 			});
 		</script>
 		<!-- Header -->
