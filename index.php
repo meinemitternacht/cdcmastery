@@ -53,10 +53,18 @@ if($router->parseURI()){
 			$_SESSION['nextPage'] = $router->request;
 		}
 
-		echo '<META http-equiv="refresh" content="0;URL=https://cdcmastery.com/auth/login">';
-		exit();
+		if(!empty($router->errorNumber)) {
+			$cdcMastery->redirect("/errors/" . $router->errorNumber);
+		}
+		else {
+			echo '<META http-equiv="refresh" content="0;URL=https://cdcmastery.com/auth/login">';
+			exit();
+		}
 	}
 
+	/**
+	 * Handle HTTP error codes and redirect as required
+	 */
 	if($router->route == "errors/403"){
         http_response_code(403);
     }
