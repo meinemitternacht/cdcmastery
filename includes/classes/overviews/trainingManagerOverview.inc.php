@@ -55,18 +55,23 @@ class trainingManagerOverview extends CDCMastery
 
             $stmt->close();
 
-            foreach($tempList as $userUUID) {
-                if ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "user") {
-                    $this->subordinateUserList[] = $userUUID;
-                } elseif ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "supervisor") {
-                    $this->subordinateSupervisorList[] = $userUUID;
+            if(isset($tempList) && !empty($tempList) && is_array($tempList)){
+                foreach($tempList as $userUUID) {
+                    if ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "user") {
+                        $this->subordinateUserList[] = $userUUID;
+                    } elseif ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "supervisor") {
+                        $this->subordinateSupervisorList[] = $userUUID;
+                    }
                 }
-            }
 
-            return true;
+                return true;
+            }
+            else{
+                return false;
+            }
         }
         else{
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_LOAD_SUBORDINATE_USERS");
             $this->log->setDetail("Error",$stmt->error);
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->saveEntry();
@@ -95,7 +100,7 @@ class trainingManagerOverview extends CDCMastery
                 $afscArray[] = $row['afscUUID'];
             }
 
-            if(is_array($afscArray) && !empty($afscArray)){
+            if(isset($afscArray) && is_array($afscArray) && !empty($afscArray)){
                 return $afscArray;
             }
             else{
@@ -133,7 +138,7 @@ class trainingManagerOverview extends CDCMastery
                 $questionCountArray[$row['questionUUID']] = $row['count'];
             }
 
-            if(count($questionCountArray) > 0){
+            if(isset($questionCountArray) && count($questionCountArray) > 0){
                 return $questionCountArray;
             }
             else{
@@ -170,7 +175,7 @@ class trainingManagerOverview extends CDCMastery
                 $missedQuestionsArray[$row['questionUUID']] = $row['count'];
             }
 
-            if(count($missedQuestionsArray) > 0){
+            if(isset($missedQuestionsArray) && count($missedQuestionsArray) > 0){
                 return $missedQuestionsArray;
             }
             else{
