@@ -26,7 +26,6 @@ else {
     ?>
     <div class="container">
         <style>
-
             .ui-autocomplete {
                 max-height: 8em;
                 overflow-y: auto;
@@ -36,12 +35,10 @@ else {
             * html .ui-autocomplete {
                 height: 120px;
             }
-
         </style>
 
 
         <script>
-
             $(function () {
                 $("#userFirstName").autocomplete({
                     source: "/ajax/autocomplete/userFirstName",
@@ -99,8 +96,43 @@ else {
                 });
 
                 $( "#search-tabs" ).tabs();
-            });
 
+                $( "#register-start-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                $( "#register-end-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                $( "#last-login-start-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                $( "#last-login-end-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                $( "#last-active-start-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+
+                $( "#last-active-end-date" ).datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'yy-mm-dd'
+                });
+            });
         </script>
         <div class="row">
             <div class="3u">
@@ -162,12 +194,31 @@ else {
                                                         <label for="userEmail">E-mail</label>
                                                         <input type="text" name="userEmail" id="userEmail" maxlength="255" class="input_full">
                                                     </li>
+                                                    <li>
+                                                        <br>
+                                                        <strong>Date Registered</strong><br>
+                                                        <label for="register-start-date">Starting</label>
+                                                        <input type="text" name="register-start-date" id="register-start-date" class="input_full">
+                                                    </li>
+                                                    <li>
+                                                        <label for="register-end-date">Ending</label>
+                                                        <input type="text" name="register-end-date" id="register-end-date" class="input_full">
+                                                    </li>
                                                 </ul>
                                             </section>
                                         </div>
                                         <div class="4u">
                                             <section>
                                                 <ul>
+                                                    <li>
+                                                        <strong>Last Login</strong><br>
+                                                        <label for="last-login-start-date">Starting</label>
+                                                        <input type="text" name="last-login-start-date" id="last-login-start-date" class="input_full">
+                                                    </li>
+                                                    <li>
+                                                        <label for="last-login-end-date">Ending</label>
+                                                        <input type="text" name="last-login-end-date" id="last-login-end-date" class="input_full">
+                                                    </li>
                                                     <li>
                                                         <label for="userRank">Rank</label>
                                                         <select id="userRank"
@@ -213,6 +264,15 @@ else {
                                         <div class="4u">
                                             <section>
                                                 <ul>
+                                                    <li>
+                                                        <strong>Last Active</strong><br>
+                                                        <label for="last-active-start-date">Starting</label>
+                                                        <input type="text" name="last-active-start-date" id="last-active-start-date" class="input_full">
+                                                    </li>
+                                                    <li>
+                                                        <label for="last-active-end-date">Ending</label>
+                                                        <input type="text" name="last-active-end-date" id="last-active-end-date" class="input_full">
+                                                    </li>
                                                     <li>
                                                         <label for="userBase">Base</label>
                                                         <select id="userBase"
