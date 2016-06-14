@@ -129,11 +129,15 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Date Registered</th>
-								<td><?php echo $userProfile->getUserDateRegistered(); ?></td>
+								<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserDateRegistered(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserDateRegistered()); ?> UTC</time></td>
 							</tr>
 							<tr>
 								<th class="th-child">Last Login</th>
-								<td><?php echo $userProfile->getUserLastLogin(); ?></td>
+								<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserLastLogin(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserLastLogin()); ?> UTC</time></td>
+							</tr>
+							<tr>
+								<th class="th-child">Last Active</th>
+								<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserLastActive(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserLastActive()); ?> UTC</time></td>
 							</tr>
 							<tr>
 								<th class="th-child">Role</th>

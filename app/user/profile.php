@@ -127,15 +127,15 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Date Registered</th>
-							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserDateRegistered(),$_SESSION['timeZone']); ?></td>
+							<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserDateRegistered(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserDateRegistered()); ?> UTC</time></td>
 						</tr>
 						<tr>
 							<th class="th-child">Last Login</th>
-							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserLastLogin(),$_SESSION['timeZone']); ?></td>
+							<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserLastLogin(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserLastLogin()); ?> UTC</time></td>
 						</tr>
 						<tr>
 							<th class="th-child">Last Active</th>
-							<td><?php echo $cdcMastery->outputDateTime($userProfile->getUserLastActive(),$_SESSION['timeZone']); ?></td>
+							<td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($userProfile->getUserLastActive(),"c"); ?>"><?php echo $cdcMastery->formatDateTime($userProfile->getUserLastActive()); ?> UTC</time></td>
 						</tr>
 						<tr>
 							<th class="th-child">Role</th>

@@ -281,7 +281,7 @@ if($logEntries): ?>
                             </tr>
                             <?php foreach($logEntries as $logUUID => $logData): ?>
                             <tr>
-                                <td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
+                                <td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($logData['timestamp'], "c"); ?>"><?php echo $cdcMastery->formatDateTime($logData['timestamp']); ?> UTC</time></td>
                                 <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $cdcMastery->formatOutputString($logData['action'],25); ?>"><?php echo $logData['action']; ?></a></span></td>
                                 <?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
                                     <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
