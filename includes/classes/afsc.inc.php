@@ -279,7 +279,11 @@ class afsc extends CDCMastery
 			return true;
 		}
 	}
-	
+
+	/**
+	 * @param $afscName
+	 * @return bool
+	 */
 	public function getAFSCUUIDByName($afscName){
 		$stmt = $this->db->prepare("SELECT uuid FROM afscList WHERE afscName = ?");
 		$stmt->bind_param("s",$afscName);
@@ -309,139 +313,74 @@ class afsc extends CDCMastery
 		}
 	}
 
+	/**
+	 * @param $targetStatus
+	 * @return bool
+	 */
 	public function toggleFOUO($targetStatus){
-		if($this->afscFOUO == true && $targetStatus == true){
+		$answerManager = new answerManager($this->db,$this->log);
+		$questionManager = new questionManager($this->db,$this->log,$this,$answerManager);
+
+		if($this->afscFOUO === $targetStatus){
 			return true;
-		}
-		elseif($this->afscFOUO == false && $targetStatus == false){
-			return true;
-		}
-		elseif($targetStatus == true){
-			$answerManager = new answerManager($this->db,$this->log);
-			$questionManager = new questionManager($this->db,$this->log,$this,$answerManager);
-
-			$questionManager->setAFSCUUID($this->uuid);
-			$questionManager->setFOUO($this->afscFOUO);
-
-			$questionUUIDList = $questionManager->listQuestionsForAFSC();
-
-			$error = false;
-			$errorUUIDArray = Array();
-
-			foreach($questionUUIDList as $questionUUID){
-				$questionManager->loadQuestion($questionUUID);
-
-				$answerUUIDList = $questionManager->loadAssociatedAnswers();
-
-				$answerManager->setFOUO($this->afscFOUO);
-
-				foreach($answerUUIDList as $answerUUID => $answerData){
-					$answerManager->loadAnswer($answerUUID);
-					$answerManager->setFOUO(true);
-					$answerManager->saveAnswer();
-					$answerManager->setFOUO($this->afscFOUO);
-				}
-
-				var_dump($answerUUIDList);
-
-				$questionManager->setFOUO(true);
-				if(!$questionManager->saveQuestion()){
-					$error = true;
-					$errorUUIDArray[] = $questionUUID;
-				}
-				$questionManager->setFOUO($this->afscFOUO);
-			}
-
-			if(isset($error) && $error == true){
-				$this->log->setAction("ERROR_TOGGLE_AFSC_FOUO");
-				$this->log->setDetail("Target FOUO Status",$targetStatus);
-
-				if(isset($questionUUIDList) && !empty($questionUUIDList) && sizeof($questionUUIDList) > 1){
-					foreach($questionUUIDList as $questionUUIDError){
-						$this->log->setDetail("Question UUID",$questionUUIDError);
-					}
-				}
-				else{
-					$this->log->setDetail("Question UUID",$questionUUIDList[0]);
-				}
-
-				$this->log->setDetail("AFSC UUID",$this->uuid);
-				$this->log->setDetail("Question Manager Error",$questionManager->error);
-				$this->log->saveEntry();
-
-				return false;
-			}
-			else{
-                $this->log->setAction("TOGGLE_AFSC_FOUO");
-                $this->log->setDetail("AFSC UUID",$this->uuid);
-                $this->log->setDetail("Target FOUO Status",$targetStatus);
-                $this->log->saveEntry();
-				return true;
-			}
-		}
-		elseif($targetStatus == false){
-			$answerManager = new answerManager($this->db,$this->log);
-			$questionManager = new questionManager($this->db,$this->log,$this,$answerManager);
-
-			$questionManager->setAFSCUUID($this->uuid);
-			$questionManager->setFOUO($this->afscFOUO);
-
-			$questionUUIDList = $questionManager->listQuestionsForAFSC();
-
-			$error = false;
-			$errorUUIDArray = Array();
-
-			foreach($questionUUIDList as $questionUUID){
-				$questionManager->loadQuestion($questionUUID);
-
-				$answerUUIDList = $questionManager->loadAssociatedAnswers();
-
-				$answerManager->setFOUO($this->afscFOUO);
-
-				foreach($answerUUIDList as $answerUUID => $answerData){
-					$answerManager->loadAnswer($answerUUID);
-					$answerManager->setFOUO(false);
-					$answerManager->saveAnswer();
-					$answerManager->setFOUO($this->afscFOUO);
-				}
-
-				$questionManager->setFOUO(false);
-				if(!$questionManager->saveQuestion()){
-					$error = true;
-					$errorUUIDArray[] = $questionUUID;
-				}
-				$questionManager->setFOUO($this->afscFOUO);
-			}
-
-			if(isset($error) && $error == true){
-				$this->log->setAction("ERROR_TOGGLE_AFSC_FOUO");
-				$this->log->setDetail("Target FOUO Status",$targetStatus);
-
-				if(isset($questionUUIDList) && !empty($questionUUIDList) && sizeof($questionUUIDList) > 1){
-					foreach($questionUUIDList as $questionUUIDError){
-						$this->log->setDetail("Question UUID",$questionUUIDError);
-					}
-				}
-				else{
-					$this->log->setDetail("Question UUID",$questionUUIDList[0]);
-				}
-
-				$this->log->setDetail("AFSC UUID",$this->uuid);
-				$this->log->setDetail("Question Manager Error",$questionManager->error);
-				$this->log->saveEntry();
-
-				return false;
-			}
-			else{
-                $this->log->setAction("TOGGLE_AFSC_FOUO");
-                $this->log->setDetail("AFSC UUID",$this->uuid);
-                $this->log->setDetail("Target FOUO Status",$targetStatus);
-                $this->log->saveEntry();
-				return true;
-			}
 		}
 		else{
-			return false;
+			$questionManager->setAFSCUUID($this->uuid);
+			$questionManager->setFOUO($this->afscFOUO);
+
+			$questionUUIDList = $questionManager->listQuestionsForAFSC();
+
+			$error = false;
+			$errorUUIDArray = Array();
+
+			foreach($questionUUIDList as $questionUUID){
+				$questionManager->loadQuestion($questionUUID);
+
+				$answerUUIDList = $questionManager->loadAssociatedAnswers();
+
+				$answerManager->setFOUO($this->afscFOUO);
+
+				foreach($answerUUIDList as $answerUUID => $answerData){
+					$answerManager->loadAnswer($answerUUID);
+					$answerManager->setFOUO($targetStatus);
+					$answerManager->saveAnswer();
+					$answerManager->setFOUO($this->afscFOUO);
+				}
+
+				$questionManager->setFOUO($targetStatus);
+				if(!$questionManager->saveQuestion()){
+					$error = true;
+					$errorUUIDArray[] = $questionUUID;
+				}
+				$questionManager->setFOUO($this->afscFOUO);
+			}
+
+			if(isset($error) && $error == true){
+				$this->log->setAction("ERROR_TOGGLE_AFSC_FOUO");
+				$this->log->setDetail("Target FOUO Status",$targetStatus);
+
+				if(isset($questionUUIDList) && !empty($questionUUIDList) && sizeof($questionUUIDList) > 1){
+					foreach($questionUUIDList as $questionUUIDError){
+						$this->log->setDetail("Question UUID",$questionUUIDError);
+					}
+				}
+				else{
+					$this->log->setDetail("Question UUID",$questionUUIDList[0]);
+				}
+
+				$this->log->setDetail("AFSC UUID",$this->uuid);
+				$this->log->setDetail("Question Manager Error",$questionManager->error);
+				$this->log->saveEntry();
+
+				return false;
+			}
+			else{
+                $this->log->setAction("TOGGLE_AFSC_FOUO");
+                $this->log->setDetail("AFSC UUID",$this->uuid);
+                $this->log->setDetail("Target FOUO Status",$targetStatus);
+                $this->log->saveEntry();
+				return true;
+			}
 		}
 	}
 
