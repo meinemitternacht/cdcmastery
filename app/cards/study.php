@@ -221,7 +221,7 @@ elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
                 <header>
                     <h2 style="text-align:center;"><?php echo $flashCardManager->getCategoryName(); ?></h2>
                 </header>
-                <div id="flashCardArea"></div>
+                <div id="flashCardArea" onclick="flipCard()"></div>
                 <div class="clearfix">&nbsp;</div>
                 <div class="4u -4u">
                     <div class="flip-button">
