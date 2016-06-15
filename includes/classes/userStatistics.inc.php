@@ -663,7 +663,7 @@ class userStatistics extends CDCMastery
         }
         else{
             $this->error = $stmt->error;
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_USERSTATS_QUERY_IP_ADDRESSES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
@@ -689,7 +689,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_LOG_ENTRIES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -715,7 +715,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_AVERAGE_SCORE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -741,7 +741,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COMPLETED_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -767,7 +767,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_INCOMPLETE_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -793,7 +793,7 @@ class userStatistics extends CDCMastery
         }
         else{
             $this->error = $stmt->error;
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_USERSTATS_QUERY_LATEST_TEST_SCORE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
@@ -819,7 +819,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_ANSWERED");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -845,7 +845,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_MISSED");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -886,7 +886,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_MISSED_ACROSS_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -912,7 +912,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_SUPERVISOR_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -938,7 +938,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_TRAINING_MANAGER_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -964,7 +964,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_USER_SUPERVISORS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -990,7 +990,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_USER_TRAINING_MANAGERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1022,7 +1022,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1054,7 +1054,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_PENDING_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1080,7 +1080,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1106,7 +1106,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_PENDING_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1132,7 +1132,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_SUPERVISOR_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1158,7 +1158,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_TRAINING_MANAGER_SUBORDINATES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1184,7 +1184,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_USER_SUPERVISORS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
@@ -1210,7 +1210,7 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_USER_TRAINING_MANAGERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();

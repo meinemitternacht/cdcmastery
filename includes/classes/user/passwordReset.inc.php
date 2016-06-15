@@ -52,7 +52,7 @@ class passwordReset extends user {
 			}
 		}
 		else{
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_GET_PASSWORD_RESET_USER");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Password Token",$passwordToken);
 			$this->log->setDetail("MySQL Error",$stmt->error);

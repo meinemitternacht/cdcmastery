@@ -575,7 +575,7 @@ class testManager extends CDCMastery
                 }
         }
         else{
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_GET_TEST_UUID_LIST");
             $this->log->setDetail("MySQL Error",$stmt->error);
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);

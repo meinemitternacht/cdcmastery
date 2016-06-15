@@ -25,7 +25,7 @@ class userActivation extends user {
         }
         else{
             $this->error = $stmt->error;
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_DELETE_USER_ACTIVATION_TOKEN");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
@@ -59,7 +59,7 @@ class userActivation extends user {
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("MYSQL_ERROR");
+			$this->log->setAction("ERROR_LIST_UNACTIVATED_USERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();

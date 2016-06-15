@@ -57,7 +57,7 @@ class supervisorOverview extends CDCMastery
             return true;
         }
         else{
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_LOAD_SUBORDINATE_USERS");
             $this->log->setDetail("Error",$stmt->error);
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->saveEntry();

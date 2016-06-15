@@ -103,7 +103,7 @@ class userAuthorizationQueue extends user
         }
         else{
             $this->error = $stmt->error;
-            $this->log->setAction("MYSQL_ERROR");
+            $this->log->setAction("ERROR_LIST_USER_AUTHORIZE_QUEUE");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
