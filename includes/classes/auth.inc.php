@@ -153,6 +153,7 @@ class auth extends user
 		if(empty($password)){
 			$this->error = "You must provide a password.";
 			$this->log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
+			$this->log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
 			$this->log->setUserUUID($this->getUUID());
 			$this->log->saveEntry();
 
@@ -163,6 +164,7 @@ class auth extends user
 
 			if(!isset($_SESSION['rateLimitRecorded'])){
 				$this->log->setAction("ERROR_LOGIN_RATE_LIMIT_REACHED");
+				$this->log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
 				$this->log->setUserUUID($this->getUUID());
 				$this->log->saveEntry();
 				$_SESSION['rateLimitRecorded'] = true;
@@ -175,6 +177,7 @@ class auth extends user
 			$this->limitLogins(true);
 
 			$this->log->setAction("ERROR_LOGIN_INVALID_PASSWORD");
+			$this->log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
 			$this->log->setUserUUID($this->getUUID());
 			$this->log->saveEntry();
 
@@ -183,6 +186,7 @@ class auth extends user
 		elseif(!$this->getActivationStatus()){
 			$this->error = "Your account has not been activated. Please check your e-mail inbox for the activation e-mail, or contact the support helpdesk for assistance.";
 			$this->log->setAction("ERROR_LOGIN_UNACTIVATED_ACCOUNT");
+			$this->log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
 			$this->log->setUserUUID($this->getUUID());
 			$this->log->saveEntry();
 
@@ -191,6 +195,7 @@ class auth extends user
         elseif($this->getUserDisabled()){
             $this->error = "Your account has been disabled.  If you feel this is in error, open a support ticket.";
             $this->log->setAction("ERROR_LOGIN_USER_DISABLED");
+			$this->log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
 			$this->log->setUserUUID($this->getUUID());
             $this->log->saveEntry();
 
