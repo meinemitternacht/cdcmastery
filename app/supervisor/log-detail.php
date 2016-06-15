@@ -85,26 +85,10 @@ if(isset($_SESSION['vars'][0])):
 									<th>Key</th>
 									<th>Data</th>
 								</tr>
-								<?php foreach($logDetails as $detailKey => $detailData):
-										$dataTypeSearch = strtolower($detailData['dataType']);
-
-										if(	strpos($dataTypeSearch,"user") !== false ||
-											strpos($dataTypeSearch,"supervisor") !== false ||
-											strpos($dataTypeSearch,"training manager") !== false):
-											if(strpos($dataTypeSearch,"uuid") !== false):
-												$userName = $user->getUserNameByUUID($detailData['data']);
-											endif;
-										endif;
-								?>
+								<?php foreach($logDetails as $detailKey => $detailData): ?>
 								<tr>
 									<td><?php echo $detailData['dataType']; ?></td>
-									<?php if(isset($userName) && !empty($userName)): ?>
-										<td>
-											<a href="/admin/users/<?php echo $detailData['data']; ?>"><?php echo $userName; ?></a>
-										</td>
-									<?php else: ?>
-										<td><?php echo $detailData['data']; ?></td>
-									<?php endif; ?>
+									<td><?php echo $detailData['data']; ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</table>
