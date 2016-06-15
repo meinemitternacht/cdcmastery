@@ -207,10 +207,6 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo round($statisticsObj->getDatabaseSize(),2); ?> GB</td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/MYSQL_ERROR">MySQL Errors</a></span></td>
-                        <td><?php echo number_format($statisticsObj->getLogCountByAction("MYSQL_ERROR")); ?></td>
-                    </tr>
-                    <tr>
                         <td><strong>Log Entries</strong></td>
                         <td><?php echo number_format($statisticsObj->getTotalLogEntries()); ?></td>
                     </tr>
@@ -227,7 +223,7 @@ $userObj = new user($db,$log,$emailQueue);
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ERROR_LOGIN_RATE_LIMIT_REACHED")); ?></td>
                     </tr>
                     <tr>
-                        <td><span class="text-warning"><a href="/admin/log/0/25/microtime/DESC/action/ROUTING_ERROR">Route Errors</a></span></td>
+                        <td><span class="text-info"><a href="/admin/log/0/25/microtime/DESC/action/ROUTING_ERROR">Route Errors</a></span></td>
                         <td><?php echo number_format($statisticsObj->getLogCountByAction("ROUTING_ERROR")); ?></td>
                     </tr>
                     <tr>
