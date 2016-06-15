@@ -135,14 +135,37 @@ elseif($categoryType == "private"){
     });
 </script>
 <section>
+    <script>
+        $(function () {
+            $('#userUUID').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/ajax/autocomplete/userFullName',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: request,
+                        success: function (data) {
+                            response($.map(data, function (value, key) {
+                                return {
+                                    label: value,
+                                    value: key
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 2
+            });
+        });
+    </script>
     <header>
         <h2>Edit Flash Card Category <?php echo $flashCardManager->getCategoryName(); ?></h2>
     </header>
     <form action="/admin/flash-card-categories/edit/<?php echo $workingChild; ?>" method="POST">
         <input type="hidden" name="confirmCategoryEdit" value="1">
         <p>
-            Change the parameters of the flash card category below.  Note:  If you change the category type to AFSC and there is flash card data in the database,
-            <span class="text-warning-bold">the data will be removed!</span>
+            Change the parameters of the flash card category below.  <strong>Note:</strong>  <em>If you change the category type and there is flash card data in the database,
+            <span class="text-warning-bold">the data will be removed!</span></em>
         </p>
         <ul class="form-field-list">
             <li>
@@ -176,30 +199,14 @@ elseif($categoryType == "private"){
             <li id="categoryBindingBlockUser">
                 <label for="categoryBindingUser">Bind to user</label>
                 <p>
-                    Select the user to bind this category to.  After clicking on the drop-down list, type the first few letters of the user's last name
-                    to jump to that user.  This field is required if "<strong>Private</strong>" is selected above.
+                    Enter the name of the user to bind this category to.  Type the first few letters of the user's name (first or last)
+                    to show a list of users to choose from.  After selecting a user, their User ID will be in the text box, which is expected.
+                    This field is required if "<strong>Private</strong>" is selected above.
                 </p>
-                <select id="categoryBindingUser"
-                        name="categoryBindingUser"
-                        class="input_full"
-                        size="1">
-                    <option value="">Select a user...</option>
-                    <?php
-                    $userList = $user->listUsers();
-                    foreach($userList as $userUUID => $userDetails): ?>
-                        <?php if(isset($categoryBindingUser) && $categoryBindingUser == $userUUID): ?>
-                            <option value="<?php echo $userUUID; ?>" SELECTED>
-                                <?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?>
-                            </option>
-                        <?php else: ?>
-                            <option value="<?php echo $userUUID; ?>">
-                                <?php echo $userDetails['userLastName'] . ", " . $userDetails['userFirstName'] . " " . $userDetails['userRank']; ?>
-                            </option>
-                        <?php endif; ?>
-                        <?php
-                    endforeach;
-                    ?>
-                </select>
+                <?php if(isset($categoryBindingUser)): ?>
+                <strong>Currently bound to:</strong> <?php echo $user->getUserNameByUUID($categoryBindingUser); ?>
+                <?php endif; ?>
+                <input type="text" id="userUUID" name="categoryBindingUser" class="input_full" value="<?php if(isset($categoryBindingUser)) echo $categoryBindingUser; ?>">
             </li>
             <li id="categoryBindingBlockAFSC">
                 <label for="categoryBindingAFSC">Bind to AFSC</label>
