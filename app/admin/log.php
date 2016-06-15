@@ -68,7 +68,7 @@ if($logEntries): ?>
     <?php if(!isset($_GET['norefresh'])): ?>
     <script>
         $(document).ready(function () {
-            setTimeout(function () { location.reload(); }, 30000);
+            setTimeout(function () { location.reload(); }, 60000);
         });
     </script>
     <?php endif; ?>
@@ -191,7 +191,7 @@ if($logEntries): ?>
                     <br>
                     <br>
                     <?php if(!isset($_GET['norefresh'])): ?>
-                        <em>Note: This page will automatically refresh every 30 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
+                        <em>Note: This page will automatically refresh every 60 seconds. <a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>?norefresh">Disable Refresh</a></em>
                     <?php else: ?>
                         <em><a href="/admin/log/<?php echo $pageNumber; ?>/<?php echo $pageRows; ?>/<?php echo $sortBy; ?>/<?php echo $sortDirection; if($logFiltered): ?>/<?php echo $filterBy; ?>/<?php echo $filterValue; endif; ?>">Enable Automatic Refresh</a></em>
                     <?php endif; ?>
