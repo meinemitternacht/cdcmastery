@@ -987,18 +987,6 @@ class flashCardManager extends CDCMastery
             }
         }
 
-        /*
-         * Debugging
-         */
-        /*
-        $output .= "Current Card: ".$this->currentCard;
-        $output .= "<br>";
-        $output .= "Total Cards: ".$this->totalCards;
-        $output .= "<br>";
-        $output .= "Current Card State: ".$this->cardCurrentState;
-        $output .= "<br>";
-        */
-
         return $output;
     }
 
@@ -1231,8 +1219,6 @@ class flashCardManager extends CDCMastery
     {
         $this->cardCategory = $cardCategory;
     }
-
-
 
     public function __destruct(){
         parent::__destruct();
