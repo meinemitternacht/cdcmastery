@@ -7,6 +7,7 @@ if(!isset($_SESSION['auth'])):
         if(!isset($_POST['username']) || empty($_POST['username'])){
             $log->setAction("ERROR_LOGIN_EMPTY_USER");
             $log->setDetail("Provided Username",$_POST['username']);
+            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
             $log->saveEntry();
 
             $sysMsg->addMessage("Your username cannot be blank.","warning");
@@ -16,6 +17,7 @@ if(!isset($_SESSION['auth'])):
         if(!isset($_POST['password']) || empty($_POST['password'])){
             $log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
             $log->setDetail("Provided Username",$_POST['username']);
+            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
             $log->saveEntry();
 
             $sysMsg->addMessage("Your password cannot be blank.","warning");
@@ -28,6 +30,7 @@ if(!isset($_SESSION['auth'])):
             $sysMsg->addMessage($user->error);
             $log->setAction("ERROR_LOGIN_UNKNOWN_USER");
             $log->setDetail("Provided Username",$_POST['username']);
+            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
             $log->saveEntry();
 		}
 		else{
