@@ -28,7 +28,7 @@ if($maintenanceMode == true){
  */
 require BASE_PATH . '/includes/bootstrap.inc.php';
 
-$router = new router();
+$router = new router($log);
 
 /**
  * Parse the URI passed from the web server

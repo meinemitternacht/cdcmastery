@@ -2,6 +2,8 @@
 
 class router extends CDCMastery
 {
+	protected $log;
+	
 	public $error;
 	public $errorNumber;
 	public $filePath;
@@ -14,8 +16,9 @@ class router extends CDCMastery
 
     public $publicRoutes = ['index','about','auth','register','errors','ajax/registration'];
 	
-	public function __construct(){
+	public function __construct(log $log){
 		$this->showTheme = true;
+		$this->log = $log;
 	}
 
 	/**
@@ -227,6 +230,20 @@ class router extends CDCMastery
 			return true;
 		}
 		else{
+			$this->log->setAction("ROUTING_ERROR");
+			$this->log->setDetail("REQUEST_URI",$_SERVER['REQUEST_URI']);
+
+			foreach($_SESSION as $sessionKey => $sessionVar){
+				if(is_array($sessionVar)){
+					$this->log->setDetail($sessionKey,implode(",",$sessionVar));
+				}
+				else{
+					$this->log->setDetail($sessionKey,$sessionVar);
+				}
+			}
+
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -243,6 +260,22 @@ class router extends CDCMastery
 			 * redirect them to the login page.
 			 */
 			if(!$this->loggedIn() && !in_array($this->getSiteSection(),$this->publicRoutes)){
+				$this->log->setAction("ROUTING_ERROR");
+				$this->log->setDetail("Route",$this->getRoute());
+				$this->log->setDetail("Error","Session Expired or not logged in");
+
+				foreach($_SESSION as $sessionKey => $sessionVar){
+					if(is_array($sessionVar)){
+						$this->log->setDetail($sessionKey,implode(",",$sessionVar));
+					}
+					else{
+						$this->log->setDetail($sessionKey,$sessionVar);
+					}
+				}
+
+				$this->log->saveEntry();
+
+				$this->errorNumber = 403;
 				$this->error = "We're sorry, but either you have not logged in or your session has expired.  Please log in or register to continue.";
 				return false;
 			}
@@ -251,6 +284,10 @@ class router extends CDCMastery
 			 * and return false, letting /index.php know to redirect to the access denied page
 			 */
 			elseif($this->checkAdminPath($this->filePath) && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
+				$this->log->setAction("ACCESS_DENIED");
+				$this->log->setDetail("Route",$this->getRoute());
+				$this->log->saveEntry();
+
 				$this->errorNumber = 403;
 				return false;
 			}
@@ -259,6 +296,11 @@ class router extends CDCMastery
 			 * and return false, letting /index.php know to redirect to the access denied page
 			 */
 			elseif(strpos($this->filePath, "/training/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager()){
+				$this->log->setAction("ACCESS_DENIED");
+				$this->log->setDetail("Route",$this->getRoute());
+				$this->log->setDetail("Rule","verifyTrainingManager, verifyAdmin");
+				$this->log->saveEntry();
+
 				$this->errorNumber = 403;
 				return false;
 			}
@@ -267,6 +309,11 @@ class router extends CDCMastery
 			 * and return false, letting /index.php know to redirect to the access denied page
 			 */
 			elseif(strpos($this->filePath, "/supervisor/") !== false && !$this->verifyAdmin() && !$this->verifyTrainingManager() && !$this->verifySupervisor()){
+				$this->log->setAction("ACCESS_DENIED");
+				$this->log->setDetail("Route",$this->getRoute());
+				$this->log->setDetail("Rule","verifySupervisor, verifyTrainingManager, verifyAdmin");
+				$this->log->saveEntry();
+
 				$this->errorNumber = 403;
 				return false;
 			}
@@ -306,6 +353,11 @@ class router extends CDCMastery
 						return true;
 					}
 					else{
+						$this->log->setAction("ROUTING_ERROR");
+						$this->log->setDetail("Route",$this->getRoute());
+						$this->log->setDetail("File Path",$this->filePath);
+						$this->log->saveEntry();
+
 						/**
 						 * No way to recover, we need to tell them we could not find what they were looking for.
 						 */
@@ -317,6 +369,11 @@ class router extends CDCMastery
 				 * If the file does not exist, and there is no trailing slash, there is nothing we can do.
 				 */
 				elseif(!file_exists($this->filePath)){
+					$this->log->setAction("ROUTING_ERROR");
+					$this->log->setDetail("Route",$this->getRoute());
+					$this->log->setDetail("File Path",$this->filePath);
+					$this->log->saveEntry();
+
 					$this->errorNumber = 404;
 					return false;
 				}
@@ -335,6 +392,11 @@ class router extends CDCMastery
 			 * How did we get this far without a filePath?  No matter, just tell them it doesn't exist.  Who cares if they 
 			 * didn't ask for it first?
 			 */
+			$this->log->setAction("ROUTING_ERROR");
+			$this->log->setDetail("Route",$this->getRoute());
+			$this->log->setDetail("File Path","NONE");
+			$this->log->saveEntry();
+
 			$this->errorNumber = 404;
 			return false;
 		}
