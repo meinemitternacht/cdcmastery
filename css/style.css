@@ -557,6 +557,15 @@ ul.form-field-list li {
     color: white !important;
 }
 
+.text-info, .text-info a {
+    color: dodgerblue !important;
+}
+
+.text-info-bold, .text-info-bold a {
+    color: dodgerblue !important;
+    font-weight: 900;
+}
+
 /*
  *  Special Text Styling
  */

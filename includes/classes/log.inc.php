@@ -16,6 +16,7 @@ class log extends CDCMastery
 	public $action;				//log entry action
 	public $userUUID;			//uuid of the user
 	public $ip;					//ip of the user
+	public $userAgent;			//user agent (browser) of the remote host
 
 	public $uuidDetail;			//uuid of the log detail
 	public $typeDetail;			//log detail data type
@@ -24,7 +25,7 @@ class log extends CDCMastery
 	public $detailArray;		//array of log details
 	public $detailCount;		//count of detail array
 
-    /*
+    /**
      * Warnings (Administrative functions, errors)
      * Class Name: text-warning
      */
@@ -176,7 +177,6 @@ class log extends CDCMastery
                                 'REPORT_QUESTION',
                                 'ROLE_EDIT',
                                 'ROLE_MIGRATE',
-                                'ROUTING_ERROR',
                                 'SET_DELETE',
                                 'TOGGLE_AFSC_FOUO',
                                 'USER_ACCOUNT_DISABLE_SELF',
@@ -194,8 +194,8 @@ class log extends CDCMastery
                                 'VOLUME_DELETE'
                                 );
 
-    /*
-     * Informational entries
+    /**
+     * Could possibly be damaging, general caution
      * .text-caution
      */
     public $cautionArray = Array(
@@ -223,7 +223,8 @@ class log extends CDCMastery
                                 'VOLUME_EDIT'
                                 );
 
-    /*
+    /**
+	 * @var
      * Normal entries
      * .text-success
      */
@@ -231,12 +232,6 @@ class log extends CDCMastery
                                 'AFSC_ADD',
                                 'BASE_ADD',
                                 'BASE_EDIT',
-                                'CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS',
-                                'CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS',
-                                'CRON_RUN_GARBAGE_COLLECT_SESSIONS',
-                                'CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS',
-                                'CRON_RUN_GARBAGE_COLLECT_XML_ARCHIVES',
-								'CRON_RUN_REMIND_UNUSED_ACCOUNTS',
                                 'EMAIL_QUEUE_ADD',
                                 'EMAIL_SEND',
                                 'FLASH_CARD_ADD',
@@ -268,7 +263,23 @@ class log extends CDCMastery
                                 'USER_REGISTER',
                                 'VOLUME_ADD'
                                 );
+	/**
+	 * Info Array
+	 * .text-info
+	 */
+	public $infoArray = Array(	'CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS',
+								'CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS',
+								'CRON_RUN_GARBAGE_COLLECT_SESSIONS',
+								'CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS',
+								'CRON_RUN_GARBAGE_COLLECT_XML_ARCHIVES',
+								'CRON_RUN_REMIND_UNUSED_ACCOUNTS',
+								'ROUTING_ERROR'
+								);
 
+	/**
+	 * log constructor.
+	 * @param mysqli $db
+	 */
 	public function __construct(mysqli $db) {
 		$this->db = $db;
 		$this->uuid = parent::genUUID();
@@ -279,10 +290,12 @@ class log extends CDCMastery
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
 			$this->setUserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
+			$this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
 		}
 		else{
 			$this->setUserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
+			$this->setUserAgent("php_cli");
 		}
 	}
 
@@ -293,6 +306,7 @@ class log extends CDCMastery
 		$this->action			= NULL;
 		$this->userUUID			= NULL;
 		$this->ip				= NULL;
+		$this->userAgent		= NULL;
 		$this->uuidDetail		= NULL;
 		$this->typeDetail		= NULL;
 		$this->dataDetail		= NULL;
@@ -307,6 +321,7 @@ class log extends CDCMastery
 		else{
 			$this->setUserUUID("SYSTEM");
 			$this->setIP("127.0.0.1");
+			$this->setUserAgent("php_cli");
 		}
 
 		return true;
@@ -393,11 +408,11 @@ class log extends CDCMastery
     }
 
     public function loadEntry($uuid) {
-		$stmt = $this->db->prepare('SELECT uuid, timestamp, microtime, action, userUUID, ip FROM systemLog WHERE uuid = ?');
+		$stmt = $this->db->prepare('SELECT uuid, timestamp, microtime, action, userUUID, ip, user_agent FROM systemLog WHERE uuid = ?');
 		$stmt->bind_param("s",$uuid);
 		$stmt->execute();
 
-		$stmt->bind_result($logUUID, $timestamp, $microtime, $action, $userUUID, $ip);
+		$stmt->bind_result($logUUID, $timestamp, $microtime, $action, $userUUID, $ip, $userAgent);
 
 		while($stmt->fetch()) {
 			$this->uuid = $logUUID;
@@ -406,6 +421,7 @@ class log extends CDCMastery
 			$this->action = $action;
 			$this->userUUID = $userUUID;
 			$this->ip = $ip;
+			$this->userAgent = $userAgent;
 		}
 
 		if(!empty($this->uuid)){
@@ -440,12 +456,22 @@ class log extends CDCMastery
 
     public function saveEntry() {
 		if(!empty($this->timestamp)) {
-			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, microtime, userUUID, action, ip) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-			$stmt->bind_param('ssdsss', $this->uuid, $this->timestamp, $this->microtime, $this->userUUID, $this->action, $this->ip);
+			$stmt = $this->db->prepare('INSERT INTO systemLog 
+											(uuid, timestamp, microtime, userUUID, action, ip, user_agent) 
+										VALUES 
+											(?, ?, ?, ?, ?, ?, ?) 
+										ON DUPLICATE KEY UPDATE 
+											uuid = VALUES(uuid)');
+			$stmt->bind_param('ssdssss', $this->uuid, $this->timestamp, $this->microtime, $this->userUUID, $this->action, $this->ip, $this->userAgent);
 		}
 		else{
-			$stmt = $this->db->prepare('INSERT INTO systemLog (uuid, timestamp, microtime, userUUID, action, ip) VALUES (?, UTC_TIMESTAMP, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE uuid = VALUES(uuid)');
-			$stmt->bind_param('sdsss', $this->uuid, $this->microtime, $this->userUUID, $this->action, $this->ip);
+			$stmt = $this->db->prepare('INSERT INTO systemLog 
+											(uuid, timestamp, microtime, userUUID, action, ip, user_agent) 
+										VALUES 
+											(?, UTC_TIMESTAMP, ?, ?, ?, ?, ?) 
+										ON DUPLICATE KEY UPDATE 
+											uuid = VALUES(uuid)');
+			$stmt->bind_param('sdssss', $this->uuid, $this->microtime, $this->userUUID, $this->action, $this->ip, $this->userAgent);
 		}
 
 		if(!$stmt->execute()) {
@@ -529,6 +555,9 @@ class log extends CDCMastery
 	}
 
     public function formatDetailData($detailData){
+		/**
+		 * Check string length to see if it matches the length of a UUID
+		 */
         if(strlen($detailData) != 36){
             return $detailData;
         }
@@ -674,6 +703,11 @@ class log extends CDCMastery
         return $detailData;
     }
 
+	public function setUserAgent($userAgent){
+		$this->userAgent = htmlspecialchars_decode($userAgent);
+		return true;
+	}
+
     public function setIP($ip) {
 		$this->ip = htmlspecialchars_decode($ip);
 		return true;
@@ -730,6 +764,10 @@ class log extends CDCMastery
         return $this->generalArray;
     }
 
+	public function getUserAgent(){
+		return htmlspecialchars($this->userAgent);
+	}
+
     public function getIP() {
 		return $this->ip;
 	}
@@ -747,6 +785,9 @@ class log extends CDCMastery
 		}
 		elseif(in_array($actionName,$this->generalArray)){
 			$class = "text-success";
+		}
+		elseif(in_array($actionName,$this->infoArray)){
+			$class = "text-info";
 		}
 		else{
 			$class = "text-caution";

@@ -26,7 +26,7 @@ if($logUUID):
 				</div>
 			</div>
 			<div class="row">
-				<div class="6u">
+				<div class="8u">
 					<section>
 						<header>
 							<h2>Log Entry Details</h2>
@@ -61,6 +61,12 @@ if($logUUID):
 								<th>Microtime</th>
 								<td><?php echo $logData->getMicrotime(); ?></td>
 							</tr>
+							<?php if(!empty($logData->getUserAgent())): ?>
+							<tr>
+								<th>User Agent</th>
+								<td><?php echo $logData->getUserAgent(); ?></td>
+							</tr>
+							<?php endif; ?>
 						</table>
 					</section>
 				</div>
