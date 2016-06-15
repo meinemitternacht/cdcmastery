@@ -118,7 +118,19 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                     include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/add-afsc.inc.php";
                     break;
                 case "edit":
-                    include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/edit.inc.php";
+                    if(isset($_SESSION['vars'][1])){
+                        if($flashCardManager->loadCardCategory($_SESSION['vars'][1])){
+                            include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/edit.inc.php";
+                        }
+                        else{
+                            $sysMsg->addMessage("That flash card category does not exist.","danger");
+                            $cdcMastery->redirect("/errors/404");
+                        }
+                    }
+                    else{
+                        $sysMsg->addMessage("You must specify a card category to edit.","warning");
+                        $cdcMastery->redirect("/errors/500");
+                    }
                     break;
                 case "delete":
                     include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/delete.inc.php";
