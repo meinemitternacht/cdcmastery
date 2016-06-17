@@ -139,7 +139,12 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Role</th>
-							<td><?php echo $roles->getRoleName($userProfile->getUserRole()); ?></td>
+							<td>
+								<?php echo $roles->getRoleName($userProfile->getUserRole()); ?>
+								<?php if($userProfile->getUserRole() == $roles->getRoleUUIDByName("Users") || $userProfile->getUserRole() == $roles->getRoleUUIDByName("Supervisors")): ?>
+								&nbsp;<span class="text-warning"><a href="/user/request-role">Change Role &raquo;</a></span>
+								<?php endif; ?>
+							</td>
 						</tr>
 						<tr>
 							<th class="th-child">E-Mail</th>
@@ -200,7 +205,7 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Log Entries</th>
-							<td><?php echo number_format($userProfileStatistics->getLogEntries()); ?></td>
+							<td><?php echo number_format($userProfileStatistics->getLogEntries()); ?> <a href="/user/log">View &raquo;</a></td>
 						</tr>
 						<tr>
 							<th colspan="2">Testing Statistics</th>

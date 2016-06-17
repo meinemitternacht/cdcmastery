@@ -41,6 +41,39 @@ class userAuthorizationQueue extends user
     {
         parent::__destruct();
     }
+    
+    public function checkUserRoleAuthorization($userUUID, $roleUUID)
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS count
+                                    FROM queueRoleAuthorization
+                                      WHERE
+                                        userUUID = ? AND
+                                        roleUUID = ?");
+        
+        $stmt->bind_param("ss",$userUUID,$roleUUID);
+        
+        if($stmt->execute()){
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+            
+            if($count > 0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            $this->log->setAction("ERROR_CHECK_USER_ROLE_AUTHORIZATION");
+            $this->log->setDetail("User UUID",$userUUID);
+            $this->log->setDetail("Role UUID",$roleUUID);
+            $this->log->saveEntry();
+            
+            $stmt->close();
+            return false;
+        }
+    }
 
     /**
      * @param $userUUID
@@ -331,7 +364,7 @@ class userAuthorizationQueue extends user
             $emailBodyHTML .= $this->getFullName().",";
             $emailBodyHTML .= "<br /><br />";
             $emailBodyHTML .= "An administrator at CDCMastery has rejected your pending account authorization. Reasons for this include inability to verify your position, or duplicate accounts.
-            If you wish to discuss this decision with the administrator, please open a support ticket at http://helpdesk.cdcmastery.com.  In the meantime, your account will retain user permissions.";
+            If you wish to discuss this decision with the administrator, please open a support ticket at http://helpdesk.cdcmastery.com.  In the meantime, your account will retain its previous permissions.";
             $emailBodyHTML .= "<br /><br />";
             $emailBodyHTML .= "Regards,";
             $emailBodyHTML .= "<br /><br />";
@@ -341,7 +374,7 @@ class userAuthorizationQueue extends user
             $emailBodyText = $this->getFullName().",";
             $emailBodyText .= "\r\n\r\n";
             $emailBodyText .= "An administrator at CDCMastery has rejected your pending account authorization. Reasons for this include inability to verify your position, or duplicate accounts.
-            If you wish to discuss this decision with the administrator, please open a support ticket at http://helpdesk.cdcmastery.com.  In the meantime, your account will retain user permissions.";
+            If you wish to discuss this decision with the administrator, please open a support ticket at http://helpdesk.cdcmastery.com.  In the meantime, your account will retain its previous permissions.";
             $emailBodyText .= "\r\n\r\n";
             $emailBodyText .= "Regards,";
             $emailBodyText .= "\r\n\r\n";
