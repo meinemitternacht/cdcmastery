@@ -89,13 +89,13 @@ class flashCardManager extends CDCMastery
             }
         } else {
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LIST");
-            $this->log->setDetail("MySQL Error", $stmt->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->listPrivateCardCategories()");
+            $this->log->setDetail("MySQL Error", $this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->saveEntry();
-
-            $stmt->close();
 
             return false;
         }
@@ -154,12 +154,12 @@ class flashCardManager extends CDCMastery
         }
         else{
             $this->error = $stmt->error;
-            $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LIST");
-            $this->log->setDetail("MySQL Error",$stmt->error);
-            $this->log->setDetail("Calling Function","flashCardManager->listCardCategories()");
-            $this->log->saveEntry();
-
             $stmt->close();
+
+            $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LIST");
+            $this->log->setDetail("MySQL Error",$this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+            $this->log->saveEntry();
 
             return false;
         }
@@ -200,13 +200,14 @@ class flashCardManager extends CDCMastery
             }
         }
         else{
+            $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_LOAD");
-            $this->log->setDetail("MySQL Error",$stmt->error);
-            $this->log->setDetail("Calling Function","flashCardManager->loadCardCategory()");
+            $this->log->setDetail("MySQL Error",$this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Category UUID",$categoryUUID);
             $this->log->saveEntry();
-
-            $stmt->close();
 
             return false;
         }
@@ -249,9 +250,12 @@ class flashCardManager extends CDCMastery
                 return true;
             }
             else{
+                $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_SAVE");
-                $this->log->setDetail("MySQL Error",$stmt->error);
-                $this->log->setDetail("Calling Function","flashCardManager->saveCardCategory()");
+                $this->log->setDetail("MySQL Error",$this->error);
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Category UUID",$this->categoryUUID);
                 $this->log->setDetail("Category Name",$this->categoryName);
                 $this->log->setDetail("Category Encrypted",$this->categoryEncrypted);
@@ -261,7 +265,7 @@ class flashCardManager extends CDCMastery
                 $this->log->setDetail("Category Created By",$this->categoryCreatedBy);
                 $this->log->setDetail("Category Comments",$this->categoryComments);
                 $this->log->saveEntry();
-                $stmt->close();
+
                 return false;
             }
         }
@@ -277,42 +281,48 @@ class flashCardManager extends CDCMastery
             $stmt->bind_param("s", $categoryUUID);
 
             if ($stmt->execute()) {
+                $stmt->close();
+
                 $this->log->setAction("FLASH_CARD_CATEGORY_DELETE");
                 $this->log->setDetail("Category UUID", $this->categoryUUID);
                 $this->log->setDetail("Category Name", $this->categoryName);
                 $this->log->setDetail("Category Type", $this->categoryType);
                 $this->log->setDetail("Category Binding", $this->categoryBinding);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 $stmt = $this->db->prepare("DELETE FROM flashCardData WHERE cardCategory = ?");
                 $stmt->bind_param("s",$categoryUUID);
 
                 if($stmt->execute()){
+                    $stmt->close();
+
                     $this->log->setAction("FLASH_CARD_DATA_DELETE");
                     $this->log->setDetail("Category UUID", $this->categoryUUID);
                     $this->log->saveEntry();
-                    $stmt->close();
 
                     return true;
                 }
                 else{
+                    $this->error = $stmt->error;
+                    $stmt->close();
+
                     $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
-                    $this->log->setDetail("MySQL Error", $stmt->error);
-                    $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardCategory()");
+                    $this->log->setDetail("MySQL Error", $this->error);
+                    $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                     $this->log->setDetail("Category UUID", $categoryUUID);
                     $this->log->saveEntry();
-                    $stmt->close();
 
                     return false;
                 }
             } else {
+                $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_DELETE");
-                $this->log->setDetail("MySQL Error", $stmt->error);
-                $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardCategory()");
+                $this->log->setDetail("MySQL Error", $this->error);
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Category UUID", $categoryUUID);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
@@ -321,7 +331,7 @@ class flashCardManager extends CDCMastery
             $this->error = "That category does not exist.";
             $this->log->setAction("ERROR_FLASH_CARD_CATEGORY_DELETE");
             $this->log->setDetail("Error", $this->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardCategory()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Category UUID", $categoryUUID);
             $this->log->saveEntry();
 
@@ -361,6 +371,7 @@ class flashCardManager extends CDCMastery
         if($stmt->execute()){
             $stmt->bind_result($count);
             $stmt->fetch();
+            $stmt->close();
 
             if($count > 0){
                 return false;
@@ -370,11 +381,14 @@ class flashCardManager extends CDCMastery
             }
         }
         else{
+            $sqlError = $stmt->error;
+            $stmt->close();
+
             $this->error = "Could not check category binding.";
             $this->log->setAction("ERROR_FLASH_CARD_CHECK_CATEGORY_BINDING");
             $this->log->setDetail("Error", $this->error);
-            $this->log->setDetail("MySQL Error", $stmt->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->checkCategoryBinding()");
+            $this->log->setDetail("MySQL Error", $sqlError);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Category Binding", $categoryBinding);
             $this->log->saveEntry();
 
@@ -400,13 +414,17 @@ class flashCardManager extends CDCMastery
             if($stmt->execute()){
                 $stmt->bind_result($count);
                 $stmt->fetch();
+                $stmt->close();
 
                 return $count;
             }
             else{
+                $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_FLASH_CARD_COUNT_CARDS");
-                $this->log->setDetail("MySQL Error", $stmt->error);
-                $this->log->setDetail("Calling Function", "flashCardManager->getCardCount()");
+                $this->log->setDetail("MySQL Error", $this->error);
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Category UUID", $categoryUUID);
                 $this->log->saveEntry();
 
@@ -435,6 +453,7 @@ class flashCardManager extends CDCMastery
         if($stmt->execute()){
             $stmt->bind_result($viewCount);
             $stmt->fetch();
+            $stmt->close();
 
             if(isset($viewCount) && !empty($viewCount)){
                 return $viewCount;
@@ -444,9 +463,12 @@ class flashCardManager extends CDCMastery
             }
         }
         else{
+            $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_FLASH_CARD_COUNT_VIEWS");
-            $this->log->setDetail("MySQL Error", $stmt->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->getTimesViewed()");
+            $this->log->setDetail("MySQL Error", $this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Category UUID", $queryCategoryUUID);
             $this->log->saveEntry();
 
@@ -522,6 +544,7 @@ class flashCardManager extends CDCMastery
             $stmt->bind_result($uuid,$frontText,$backText,$cardCategory);
             $stmt->fetch();
             $stmt->close();
+
             if(!empty($uuid)){
                 $this->cardUUID = $uuid;
                 $this->frontText = $frontText;
@@ -536,12 +559,14 @@ class flashCardManager extends CDCMastery
             }
         }
         else{
+            $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_FLASH_CARD_LOAD");
-            $this->log->setDetail("MySQL Error",$stmt->error);
-            $this->log->setDetail("Calling Function","flashCardManager->loadFlashCardData()");
+            $this->log->setDetail("MySQL Error",$this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Card UUID",$this->cardUUID);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -585,16 +610,18 @@ class flashCardManager extends CDCMastery
                 return true;
             }
             else{
+                $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_FLASH_CARD_SAVE");
                 $this->log->setDetail("MySQL Error",$stmt->error);
-                $this->log->setDetail("Calling Function","flashCardManager->saveFlashCardData()");
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Card UUID",$this->cardUUID);
                 $this->log->setDetail("Front Text",$this->frontText);
                 $this->log->setDetail("Back Text",$this->backText);
                 $this->log->setDetail("Card Category",$this->cardCategory);
                 $this->log->setDetail("Card Category Encrypted",$this->categoryEncrypted);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
@@ -611,23 +638,27 @@ class flashCardManager extends CDCMastery
             $stmt->bind_param("s", $cardUUID);
 
             if ($stmt->execute()) {
+                $stmt->close();
                 return true;
             } else {
+                $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_FLASH_CARD_DELETE");
-                $this->log->setDetail("MySQL Error", $stmt->error);
-                $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardData()");
+                $this->log->setDetail("MySQL Error", $this->error);
+                $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("Card UUID", $cardUUID);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
         }
         else{
             $this->error = "That flash card does not exist.";
+
             $this->log->setAction("ERROR_FLASH_CARD_DELETE");
             $this->log->setDetail("Error", $this->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->deleteFlashCardData()");
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Card UUID", $cardUUID);
             $this->log->saveEntry();
 
@@ -648,12 +679,14 @@ class flashCardManager extends CDCMastery
 
             return true;
         } else {
+            $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
-            $this->log->setDetail("MySQL Error", $stmt->error);
-            $this->log->setDetail("Calling Function", "flashCardManager->deleteCategoryFlashCardData()");
+            $this->log->setDetail("MySQL Error", $this->error);
+            $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("Category UUID", $categoryUUID);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -662,7 +695,7 @@ class flashCardManager extends CDCMastery
         $this->error = "That flash card category does not exist.";
         $this->log->setAction("ERROR_FLASH_CARD_DATA_DELETE");
         $this->log->setDetail("Error", $this->error);
-        $this->log->setDetail("Calling Function", "flashCardManager->deleteCategoryFlashCardData()");
+        $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
         $this->log->setDetail("Category UUID", $categoryUUID);
         $this->log->saveEntry();
 
@@ -709,6 +742,7 @@ class flashCardManager extends CDCMastery
 
                     if ($stmt->execute()) {
                         $stmt->bind_result($uuid);
+
                         while ($stmt->fetch()) {
                             $this->flashCardArray[] = $uuid;
                         }
@@ -722,14 +756,17 @@ class flashCardManager extends CDCMastery
                             return false;
                         }
                     } else {
+                        $sqlError = $stmt->error;
+                        $stmt->close();
+
                         $this->error = "Could not list flash cards.";
+
                         $this->log->setAction("ERROR_FLASH_CARD_LIST");
-                        $this->log->setDetail("MySQL Error", $stmt->error);
-                        $this->log->setDetail("Calling Function", "flashCardManager->listFlashCards()");
+                        $this->log->setDetail("MySQL Error", $sqlError);
+                        $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                         $this->log->setDetail("Category UUID", $categoryUUID);
                         $this->log->setDetail("UUID Only", $uuidOnly);
                         $this->log->saveEntry();
-                        $stmt->close();
 
                         return false;
                     }
@@ -767,14 +804,16 @@ class flashCardManager extends CDCMastery
                     }
                 }
                 else{
+                    $sqlError = $stmt->error;
+                    $stmt->close();
+
                     $this->error = "Could not list flash cards.";
                     $this->log->setAction("ERROR_FLASH_CARD_LIST");
-                    $this->log->setDetail("MySQL Error", $stmt->error);
-                    $this->log->setDetail("Calling Function", "flashCardManager->listFlashCards()");
+                    $this->log->setDetail("MySQL Error", $sqlError);
+                    $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                     $this->log->setDetail("Category UUID", $categoryUUID);
                     $this->log->setDetail("UUID Only", $uuidOnly);
                     $this->log->saveEntry();
-                    $stmt->close();
 
                     return false;
                 }

@@ -69,21 +69,32 @@ class auth extends user
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM queueUnactivatedUsers WHERE userUUID = ?");
         $stmt->bind_param("s", $this->uuid);
 
-		$stmt->execute();
-		$stmt->bind_result($count);
+		if($stmt->execute()) {
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
 
-		while($stmt->fetch()){
-			$tempCount = $count;
-		}
+			if (isset($count) && $count > 0) {
+				$this->activationStatus = false;
+			}
+			else {
+				$this->activationStatus = true;
+			}
 
-		if(isset($tempCount) && $tempCount > 0){
-			$this->activationStatus = false;
+			return $this->activationStatus;
 		}
 		else{
-			$this->activationStatus = true;
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_GET_ACTIVATION_STATUS");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("User UUID",$this->uuid);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
+			return false;
 		}
-		
-		return $this->activationStatus;
 	}
 
     /**
@@ -232,10 +243,7 @@ class auth extends user
 			return true;
 		}
 	}
-
-    /**
-     *
-     */
+	
     function __destruct(){
 		parent::__destruct();
 	}

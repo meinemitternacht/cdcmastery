@@ -64,10 +64,7 @@ class userStatistics extends CDCMastery
 		$this->memcache = $memcache;
 	}
 
-	/*
-	 * Cache Functions
-	 */
-	public function deleteUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
+	public function getCacheHash($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
 		if($var1 !== false){
 			if($var2 !== false){
 				if($var3 !== false){
@@ -93,7 +90,14 @@ class userStatistics extends CDCMastery
 
 		$cacheHash = md5($hashVal);
 
-		if($this->memcache->delete($cacheHash)){
+		return $cacheHash;
+	}
+
+	/*
+	 * Cache Functions
+	 */
+	public function deleteUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
+		if($this->memcache->delete($this->getCacheHash($functionName,$var1,$var2,$var3,$ignoreCurrentUser))){
 			return true;
 		}
 		else{
@@ -102,30 +106,7 @@ class userStatistics extends CDCMastery
 	}
 
 	public function setUserStatsCacheVal($functionName,$cacheValue,$cacheTTL,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
-		if($var1 !== false){
-			if($var2 !== false){
-				if($var3 !== false){
-					$hashVal = $functionName . $var1 . $var2 . $var3;
-				}
-				else{
-					$hashVal = $functionName . $var1 . $var2;
-				}
-			}
-			else{
-				$hashVal = $functionName . $var1;
-			}
-		}
-		else{
-			$hashVal = $functionName;
-		}
-
-		if(!$ignoreCurrentUser){
-			if(!empty($this->userUUID)){
-				$hashVal = $hashVal . $this->userUUID;
-			}
-		}
-
-		$cacheHash = md5($hashVal);
+		$cacheHash = $this->getCacheHash($functionName,$var1,$var2,$var3,$ignoreCurrentUser);
 		$this->memcache->delete($cacheHash);
 		if($this->memcache->add($cacheHash,$cacheValue,NULL,$cacheTTL)){
 			return true;
@@ -136,30 +117,7 @@ class userStatistics extends CDCMastery
 	}
 
 	public function getUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
-		if($var1 !== false){
-			if($var2 !== false){
-				if($var3 !== false){
-					$hashVal = $functionName . $var1 . $var2 . $var3;
-				}
-				else{
-					$hashVal = $functionName . $var1 . $var2;
-				}
-			}
-			else{
-				$hashVal = $functionName . $var1;
-			}
-		}
-		else{
-			$hashVal = $functionName;
-		}
-
-		if(!$ignoreCurrentUser){
-			if(!empty($this->userUUID)){
-				$hashVal = $hashVal . $this->userUUID;
-			}
-		}
-
-		$cacheHash = md5($hashVal);
+		$cacheHash = $this->getCacheHash($functionName,$var1,$var2,$var3,$ignoreCurrentUser);
 
 		return $this->memcache->get($cacheHash);
 	}

@@ -100,21 +100,25 @@ class officeSymbol extends CDCMastery
         $stmt = $this->db->prepare("SELECT uuid FROM officeSymbolList WHERE officeSymbol = ?");
         $stmt->bind_param("s",$officeSymbolName);
 
-        if($stmt->execute()){
+        if($stmt->execute()) {
             $stmt->bind_result($officeSymbolUUID);
             $stmt->fetch();
-        }
+            $stmt->close();
 
-        if(!empty($officeSymbolUUID)){
-            return $officeSymbolUUID;
+            if (!empty($officeSymbolUUID)) {
+                return $officeSymbolUUID;
+            }
+            else {
+                return false;
+            }
         }
         else{
+            $stmt->close();
             return false;
         }
     }
 
-    public function loadOfficeSymbol($uuid)
-    {
+    public function loadOfficeSymbol($uuid){
         $stmt = $this->db->prepare("SELECT	uuid,
 											officeSymbol
 									FROM officeSymbolList
@@ -122,25 +126,21 @@ class officeSymbol extends CDCMastery
         $stmt->bind_param("s", $uuid);
 
         if ($stmt->execute()) {
-            $stmt->bind_result($uuid,
-                $officeSymbol);
-
-            while ($stmt->fetch()) {
-                $this->uuid = $uuid;
-                $this->officeSymbol = $officeSymbol;
-
-                $ret = true;
-            }
-
+            $stmt->bind_result($uuid,$officeSymbol);
+            $stmt->fetch();
             $stmt->close();
+
+            $this->uuid = $uuid;
+            $this->officeSymbol = $officeSymbol;
 
             if (empty($this->uuid)) {
                 $this->error = "That office symbol does not exist.";
-                $ret = false;
+                return false;
+            } else {
+                return true;
             }
-
-            return $ret;
-        } else {
+        }
+        else {
             $this->error = $stmt->error;
             $stmt->close();
 
@@ -154,8 +154,7 @@ class officeSymbol extends CDCMastery
         }
     }
 
-    public function deleteOfficeSymbol($uuid)
-    {
+    public function deleteOfficeSymbol($uuid){
         if ($this->getOfficeSymbol($uuid)) {
             $logOSName = $this->getOfficeSymbol($uuid);
 
@@ -163,14 +162,19 @@ class officeSymbol extends CDCMastery
             $stmt->bind_param("s", $uuid);
 
             if (!$stmt->execute()) {
+                $sqlError = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_OFFICE_SYMBOL_DELETE");
-                $this->log->setDetail("MySQL Error", $stmt->error);
+                $this->log->setDetail("MySQL Error", $sqlError);
                 $this->log->setDetail("UUID", $uuid);
                 $this->log->setDetail("Office Symbol Name", $logOSName);
                 $this->log->saveEntry();
 
                 return false;
             } else {
+                $stmt->close();
+                
                 $this->log->setAction("OFFICE_SYMBOL_DELETE");
                 $this->log->setDetail("UUID", $uuid);
                 $this->log->setDetail("Office Symbol Name", $logOSName);
@@ -184,29 +188,26 @@ class officeSymbol extends CDCMastery
         }
     }
 
-    public function getOfficeSymbol($uuid = false)
-    {
-        if (!empty($uuid)) {
-            $_officeSymbols = new officeSymbol($this->db, $this->log);
-            if (!$_officeSymbols->loadOfficeSymbol($uuid)) {
-                $this->error = $_officeSymbols->error;
-                return false;
-            } else {
-                return htmlspecialchars($_officeSymbols->getOfficeSymbol());
+    public function getOfficeSymbol($uuid = false){
+        if($uuid) {
+            if ($this->loadOfficeSymbol($uuid)) {
+                return $this->getOfficeSymbol();
             }
-        } else {
-            return htmlspecialchars($this->officeSymbol);
+            else {
+                return false;
+            }
+        }
+        else{
+            return $this->officeSymbol;
         }
     }
 
-    public function setOfficeSymbol($officeSymbol)
-    {
+    public function setOfficeSymbol($officeSymbol){
         $this->officeSymbol = htmlspecialchars_decode($officeSymbol);
         return true;
     }
 
-    public function listOfficeSymbols()
-    {
+    public function listOfficeSymbols(){
         $res = $this->db->query("SELECT uuid, officeSymbol FROM officeSymbolList ORDER BY officeSymbol ASC");
 
         $osArray = Array();

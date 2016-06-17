@@ -50,11 +50,16 @@ class supervisorOverview extends CDCMastery
 
             $stmt->close();
 
-            foreach($tempList as $userUUID) {
+            if(isset($tempList) && is_array($tempList)){
+                foreach($tempList as $userUUID) {
                     $this->subordinateUserList[] = $userUUID;
-            }
+                }
 
-            return true;
+                return true;
+            }
+            else{
+                return false;
+            }
         }
         else{
             $this->log->setAction("ERROR_LOAD_SUBORDINATE_USERS");

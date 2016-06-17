@@ -52,7 +52,9 @@ class testGenerator extends CDCMastery
 				$resultArray[$uuid]['dateCreated'] = $dateCreated;
 			}
 
-			if(!empty($resultArray)){
+			$stmt->close();
+
+			if(!empty($resultArray) && is_array($resultArray)){
 				return $resultArray;
 			}
 			else{
@@ -61,11 +63,13 @@ class testGenerator extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_GENERATED_TEST_LIST");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
-			if($userUUID)
-				$this->log->setDetail("User UUID",$userUUID);
+			if($userUUID) $this->log->setDetail("User UUID",$userUUID);
+
 			$this->log->saveEntry();
 			return false;
 		}
@@ -84,15 +88,15 @@ class testGenerator extends CDCMastery
 
 		if($stmt->execute()){
 			$stmt->bind_result($uuid, $afscUUID, $questionList, $totalQuestions, $userUUID, $dateCreated);
+			$stmt->fetch();
+			$stmt->close();
 
-			while($stmt->fetch()){
-				$this->uuid = $uuid;
-				$this->afscUUID = $afscUUID;
-				$serializedQuestionList = $questionList;
-				$this->totalQuestions = $totalQuestions;
-				$this->userUUID = $userUUID;
-				$this->dateCreated = $dateCreated;
-			}
+			$this->uuid = $uuid;
+			$this->afscUUID = $afscUUID;
+			$serializedQuestionList = $questionList;
+			$this->totalQuestions = $totalQuestions;
+			$this->userUUID = $userUUID;
+			$this->dateCreated = $dateCreated;
 
 			if(!empty($this->uuid)) {
 				$this->questionList = unserialize($serializedQuestionList);
@@ -105,11 +109,14 @@ class testGenerator extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_GENERATED_TEST_LOAD");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->setDetail("Generated Test UUID",$this->uuid);
 			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -139,6 +146,8 @@ class testGenerator extends CDCMastery
 
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_GENERATED_TEST_SAVE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
@@ -148,6 +157,7 @@ class testGenerator extends CDCMastery
 			return false;
 		}
 		else{
+			$stmt->close();
 			return true;
 		}
 	}

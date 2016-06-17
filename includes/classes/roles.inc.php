@@ -88,40 +88,48 @@ class roles extends CDCMastery
 	}
 
     /**
-     * @param $uuid
+     * @param $roleUUID
      * @return bool
      */
-    public function loadRole($uuid){
+    public function loadRole($roleUUID){
 		$stmt = $this->db->prepare("SELECT	uuid,
 											roleType,
 											roleName,
 											roleDescription
 									FROM roleList
 									WHERE uuid = ?");
-		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
-		$stmt->bind_result( $uuid,
-							$roleType,
-							$roleName,
-							$roleDescription );
-		
-		while($stmt->fetch()){
+		$stmt->bind_param("s",$roleUUID);
+
+		if($stmt->execute()) {
+			$stmt->bind_result($uuid, $roleType, $roleName, $roleDescription);
+			$stmt->fetch();
+			$stmt->close();
+
 			$this->uuid = $uuid;
 			$this->roleType = $roleType;
 			$this->roleName = $roleName;
 			$this->roleDescription = $roleDescription;
-			
-			$ret = true;
+
+			if(empty($this->uuid)){
+				$this->error = "That role does not exist.";
+				return false;
+			}
+			else{
+				return true;
+			}
 		}
-		
-		$stmt->close();
-		
-		if(empty($this->uuid)){
-			$this->error = "That role does not exist.";
-			$ret = false;
+		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_ROLE_LOAD");
+			$this->log->setDetail("Role UUID",$roleUUID);
+			$this->log->setDetail("MySQL Error",$sqlError);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
 		}
-		
-		return $ret;
 	}
 
     /**
@@ -138,10 +146,8 @@ class roles extends CDCMastery
 										roleType=VALUES(roleType),
 										roleName=VALUES(roleName),
 										roleDescription=VALUES(roleDescription)");
-		$stmt->bind_param("ssss", 	$this->uuid,
-									$this->roleType,
-									$this->roleName,
-									$this->roleDescription);
+
+		$stmt->bind_param("ssss",$this->uuid,$this->roleType,$this->roleName,$this->roleDescription);
 		
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
@@ -167,16 +173,31 @@ class roles extends CDCMastery
     public function verifyRole($roleUUID){
         $stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM roleList WHERE uuid = ?");
         $stmt->bind_param("s",$roleUUID);
-        $stmt->execute();
-        $stmt->bind_result($count);
-        $stmt->fetch();
 
-        if(isset($count)){
-            return $count;
-        }
-        else{
-            return false;
-        }
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
+
+			if(!$count){
+				return false;
+			}
+			else{
+				return $count;
+			}
+		}
+		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_ROLE_VERIFY");
+			$this->log->setDetail("Role UUID",$roleUUID);
+			$this->log->setDetail("MySQL Error",$sqlError);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
+		}
     }
 
     /**
@@ -189,23 +210,29 @@ class roles extends CDCMastery
         $stmt->bind_param("ss",$targetRoleUUID,$currentRoleUUID);
 
         if($stmt->execute()){
+			$affectedRows = $stmt->affected_rows;
+			$stmt->close();
+
             $this->log->setAction("ROLE_MIGRATE");
             $this->log->setDetail("Current Role",$currentRoleUUID);
             $this->log->setDetail("Current Role Name",$this->getRoleName($currentRoleUUID));
             $this->log->setDetail("Target Role",$targetRoleUUID);
             $this->log->setDetail("Target Role Name",$this->getRoleName($targetRoleUUID));
-            $this->log->setDetail("Affected Users",$stmt->affected_rows);
+            $this->log->setDetail("Affected Users",$affectedRows);
             $this->log->saveEntry();
 
             return true;
         }
         else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
             $this->log->setAction("ERROR_ROLE_MIGRATE");
             $this->log->setDetail("Current Role",$currentRoleUUID);
             $this->log->setDetail("Current Role Name",$this->getRoleName($currentRoleUUID));
             $this->log->setDetail("Target Role",$targetRoleUUID);
             $this->log->setDetail("Target Role Name",$this->getRoleName($targetRoleUUID));
-            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("MySQL Error",$sqlError);
             $this->log->saveEntry();
 
             return false;
@@ -252,7 +279,9 @@ class roles extends CDCMastery
 				$userArray[] = $userUUID;
 			}
 
-			if(isset($userArray)){
+			$stmt->close();
+
+			if(isset($userArray) && is_array($userArray)){
 				return $userArray;
 			}
 			else{
@@ -260,17 +289,18 @@ class roles extends CDCMastery
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_ROLE_LIST_USERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->setDetail("MySQL Error",$this->error);
             $this->log->setDetail("Role Name",$roleName);
             if($baseUUID)
                 $this->log->setDetail("Base UUID",$baseUUID);
 
 			$this->log->saveEntry();
-		
-			$this->error = $stmt->error;
-			$stmt->close();
+
 			return false;
 		}
 	}
@@ -398,8 +428,9 @@ class roles extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($roleUUID);
 			$stmt->fetch();
+			$stmt->close();
 			
-			if(isset($roleUUID)){
+			if(!empty($roleUUID)){
 				return $roleUUID;
 			}
 			else{
@@ -407,41 +438,15 @@ class roles extends CDCMastery
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_ROLE_GET_UUID");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("Role Name",$roleName);
-			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->setDetail("MySQL Error",$this->error);
 			$this->log->saveEntry();
-			
-			$this->error = $stmt->error;
-			$stmt->close();
-			return false;
-		}
-	}
 
-    /**
-     * @param $oldID
-     * @return bool
-     */
-    public function getMigratedRoleUUID($oldID){
-		$stmt = $this->db->prepare("SELECT uuid FROM roleList WHERE oldID = ?");
-		$stmt->bind_param("s",$oldID);
-		
-		if($stmt->execute()){
-			$stmt->bind_result($uuid);
-				
-			while($stmt->fetch()){
-				$retUUID = $uuid;
-			}
-				
-			if(!empty($retUUID)){
-				return $retUUID;
-			}
-			else{
-				return false;
-			}
-		}
-		else{
 			return false;
 		}
 	}

@@ -160,13 +160,15 @@ class testManager extends CDCMastery
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USER_LIST_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("ERROR",$this->error);
 			$this->log->setDetail("USER UUID",$userUUID);
 			$this->log->saveEntry();
-			
-			$stmt->close();
+
 			return false;
 		}
 	}
@@ -305,29 +307,19 @@ class testManager extends CDCMastery
 		$stmt->bind_param("s",$uuid);
 		
 		if($stmt->execute()){
-			$stmt->bind_result( $uuid,
-								$userUUID,
-								$afscList,
-								$totalQuestions,
-								$questionsMissed,
-								$testScore,
-								$testTimeStarted,
-								$testTimeCompleted,
-								$testArchived);
-			
-			while($stmt->fetch()){
-				$this->uuid = $uuid;
-				$this->userUUID = $userUUID;
-				$this->afscList = unserialize($afscList);
-				$this->totalQuestions = $totalQuestions;
-				$this->questionsMissed = $questionsMissed;
-				$this->testScore = $testScore;
-				$this->testTimeStarted = $testTimeStarted;
-				$this->testTimeCompleted = $testTimeCompleted;
-				$this->testArchived = $testArchived;
-			}
-			
+			$stmt->bind_result($uuid,$userUUID,$afscList,$totalQuestions,$questionsMissed,$testScore,$testTimeStarted,$testTimeCompleted,$testArchived);
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->uuid = $uuid;
+			$this->userUUID = $userUUID;
+			$this->afscList = unserialize($afscList);
+			$this->totalQuestions = $totalQuestions;
+			$this->questionsMissed = $questionsMissed;
+			$this->testScore = $testScore;
+			$this->testTimeStarted = $testTimeStarted;
+			$this->testTimeCompleted = $testTimeCompleted;
+			$this->testArchived = $testArchived;
 			
 			if(empty($this->uuid)){
 				$this->error = "That test does not exist.";
@@ -338,6 +330,15 @@ class testManager extends CDCMastery
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_TEST_LOAD");
+			$this->log->setDetail("Test UUID",$uuid);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -365,17 +366,10 @@ class testManager extends CDCMastery
                                                             testTimeCompleted=VALUES(testTimeCompleted),
                                                             testArchived=VALUES(testArchived)");
 
-        $stmt->bind_param("sssiiissi",   $this->uuid,
-                                        $this->userUUID,
-                                        $serializedAFSCList,
-                                        $this->totalQuestions,
-                                        $this->questionsMissed,
-                                        $this->testScore,
-                                        $this->testTimeStarted,
-                                        $this->testTimeCompleted,
-										$this->testArchived);
+        $stmt->bind_param("sssiiissi",$this->uuid,$this->userUUID,$serializedAFSCList,$this->totalQuestions,$this->questionsMissed,$this->testScore,$this->testTimeStarted,$this->testTimeCompleted,$this->testArchived);
 
         if($stmt->execute()){
+			$stmt->close();
             if($logSuccess) {
                 $this->log->setAction("SAVE_TEST");
                 $this->log->setDetail("Test UUID", $this->uuid);
@@ -383,10 +377,12 @@ class testManager extends CDCMastery
                 $this->log->saveEntry();
             }
 
-            $stmt->close();
             return true;
         }
         else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
             $this->log->setAction("ERROR_SAVE_TEST");
             $this->log->setDetail("Test UUID",$this->uuid);
             $this->log->setDetail("User UUID",$this->userUUID);
@@ -397,9 +393,10 @@ class testManager extends CDCMastery
             $this->log->setDetail("Test Time Started",$this->testTimeStarted);
             $this->log->setDetail("Test Time Completed",$this->testTimeCompleted);
 			$this->log->setDetail("Test Archived",$this->testArchived);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
             $this->log->saveEntry();
 
-            $stmt->close();
             return false;
         }
     }
@@ -414,24 +411,32 @@ class testManager extends CDCMastery
 		$stmt->bind_param("s",$testUUID);
 		
 		if($stmt->execute()){
-			$stmt->bind_result( $questionUUID,
-								$answerUUID );
+			$stmt->bind_result($questionUUID,$answerUUID);
 				
 			while($stmt->fetch()){
 				$this->testData[$questionUUID] = $answerUUID;
-				$ret = true;
 			}
 				
 			$stmt->close();
 				
 			if(empty($this->testData)){
 				$this->error = "There is no data for that test.";
-				$ret = false;
+				return false;
 			}
-			
-			return $ret;
+			else{
+				return true;
+			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_TEST_LOAD_DATA");
+			$this->log->setDetail("Test UUID",$testUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -567,6 +572,8 @@ class testManager extends CDCMastery
                     $testUUIDList[] = $testUUID;
                 }
 
+				$stmt->close();
+
                 if(!empty($testUUIDList)){
                     return $testUUIDList;
                 }
@@ -575,8 +582,11 @@ class testManager extends CDCMastery
                 }
         }
         else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
             $this->log->setAction("ERROR_GET_TEST_UUID_LIST");
-            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("MySQL Error",$this->error);
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("User UUID",$userUUID);
             $this->log->saveEntry();
@@ -669,13 +679,7 @@ class testManager extends CDCMastery
 		}
 	
 		if($stmt->execute()){
-			$stmt->bind_result(	$testUUID,
-								$timeStarted,
-								$currentQuestion,
-								$questionsAnswered,
-								$totalQuestions,
-								$afscList,
-								$combinedTest);
+			$stmt->bind_result($testUUID,$timeStarted,$currentQuestion,$questionsAnswered,$totalQuestions,$afscList,$combinedTest);
 				
 			while($stmt->fetch()){
 				$testArray[$testUUID]['timeStarted'] = $timeStarted;
@@ -697,13 +701,15 @@ class testManager extends CDCMastery
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USER_LIST_INCOMPLETE_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("ERROR",$this->error);
 			$this->log->setDetail("USER UUID",$userUUID);
 			$this->log->saveEntry();
-				
-			$stmt->close();
+
 			return false;
 		}
 	}
@@ -729,12 +735,15 @@ class testManager extends CDCMastery
 			}
 		}
         else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
             $this->log->setAction("ERROR_LIST_INCOMPLETE_TESTS");
-            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("MySQL Error",$this->error);
             $this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->saveEntry();
 
-            $stmt->close();
             return false;
         }
 	}
@@ -802,27 +811,19 @@ class testManager extends CDCMastery
 		$stmt->bind_param("s",$uuid);
 		
 		if($stmt->execute()){
-			$stmt->bind_result(	$incompleteTestUUID,
-								$incompleteTimeStarted,
-								$incompleteQuestionList,
-								$incompleteCurrentQuestion,
-								$incompleteQuestionsAnswered,
-								$incompleteTotalQuestions,
-								$incompleteAFSCList,
-								$incompleteUserUUID,
-								$incompleteCombinedTest);
-			
-			while($stmt->fetch()){
-				$this->incompleteTestUUID = $incompleteTestUUID;
-				$this->incompleteTimeStarted = $incompleteTimeStarted;
-				$serializedQuestionList = $incompleteQuestionList;
-				$this->incompleteCurrentQuestion = $incompleteCurrentQuestion;
-				$this->incompleteQuestionsAnswered = $incompleteQuestionsAnswered;
-				$this->incompleteTotalQuestions = $incompleteTotalQuestions;
-				$serializedAFSCList = $incompleteAFSCList;
-				$this->incompleteUserUUID = $incompleteUserUUID;
-				$this->incompleteCombinedTest = $incompleteCombinedTest;
-			}
+			$stmt->bind_result($incompleteTestUUID,$incompleteTimeStarted,$incompleteQuestionList,$incompleteCurrentQuestion,$incompleteQuestionsAnswered,$incompleteTotalQuestions,$incompleteAFSCList,$incompleteUserUUID,$incompleteCombinedTest);
+			$stmt->fetch();
+			$stmt->close();
+
+			$this->incompleteTestUUID = $incompleteTestUUID;
+			$this->incompleteTimeStarted = $incompleteTimeStarted;
+			$serializedQuestionList = $incompleteQuestionList;
+			$this->incompleteCurrentQuestion = $incompleteCurrentQuestion;
+			$this->incompleteQuestionsAnswered = $incompleteQuestionsAnswered;
+			$this->incompleteTotalQuestions = $incompleteTotalQuestions;
+			$serializedAFSCList = $incompleteAFSCList;
+			$this->incompleteUserUUID = $incompleteUserUUID;
+			$this->incompleteCombinedTest = $incompleteCombinedTest;
 
             if(!empty($this->incompleteTestUUID)) {
                 $this->incompleteQuestionList = unserialize($serializedQuestionList);
@@ -835,6 +836,15 @@ class testManager extends CDCMastery
             }
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_LOAD_INCOMPLETE_TEST");
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Test UUID",$uuid);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -875,6 +885,8 @@ class testManager extends CDCMastery
 		
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_INCOMPLETE_TEST_SAVE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
@@ -884,6 +896,7 @@ class testManager extends CDCMastery
 			return false;
 		}
 		else{
+			$stmt->close();
 			return true;
 		}
 	}
@@ -893,15 +906,20 @@ class testManager extends CDCMastery
 		$stmt->bind_param("s",$testUUID);
 		
 		if(!$stmt->execute()){
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_TEST_DATA_DELETE");
 			$this->log->setDetail("Test UUID",$testUUID);
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("MySQL Error",$stmt->error);
+			$this->log->setDetail("MySQL Error",$this->error);
 			$this->log->saveEntry();
 			
 			return false;
 		}
 		else{
+			$stmt->close();
+
 			if($logAction) {
 				$this->log->setAction("TEST_DATA_DELETE");
 				$this->log->setDetail("Test UUID", $testUUID);
@@ -928,14 +946,19 @@ class testManager extends CDCMastery
 			$stmt->bind_param("s",$userUUID);
 			
 			if(!$stmt->execute()){
+				$this->error = $stmt->error;
+				$stmt->close();
+
 				$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
-				$this->log->setDetail("ERROR",$stmt->error);
+				$this->log->setDetail("ERROR",$this->error);
 				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 				$this->log->setDetail("allIncompleteTests","true");
 				$this->log->saveEntry();
 				$error = true;
 			}
 			else{
+				$stmt->close();
+
 				foreach($incompleteTestList as $incompleteTestUUID){
 					if(!$this->deleteTestData($incompleteTestUUID,false)){
 						$error = true;
@@ -962,14 +985,15 @@ class testManager extends CDCMastery
 				$stmt->bind_param("s",$testUUID);
 				
 				if(!$stmt->execute()){
+					$this->error = $stmt->error;
+					$stmt->close();
+
 					$this->log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
-					$this->log->setDetail("ERROR",$stmt->error);
+					$this->log->setDetail("ERROR",$this->error);
 					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("allIncompleteTests","false");
 					$this->log->setDetail("Test UUID",$testUUID);
 					$this->log->saveEntry();
-					
-					$stmt->close();
 				
 					return false;
 				}
@@ -1044,15 +1068,36 @@ class testManager extends CDCMastery
 						$randomQuestionArray[] = $row['uuid'];
 					}
 
-					shuffle($randomQuestionArray);
+					if(isset($randomQuestionArray) && is_array($randomQuestionArray) && count($randomQuestionArray) > 0) {
+						$randomQuestionArrayCount = count($randomQuestionArray);
 
-					$randomQuestionArray = array_slice($randomQuestionArray,0,$this->maxQuestions);
+						if ($randomQuestionArrayCount < $this->maxQuestions) {
+							$sliceLength = $randomQuestionArrayCount;
+						}
+						else {
+							$sliceLength = $this->maxQuestions;
+						}
 
-					foreach($randomQuestionArray as $randomQuestion){
-						$this->addQuestion($randomQuestion);
+						shuffle($randomQuestionArray);
+						$randomQuestionArray = array_slice($randomQuestionArray, 0, $sliceLength);
+
+						foreach ($randomQuestionArray as $randomQuestion) {
+							$this->addQuestion($randomQuestion);
+						}
+
+						return true;
 					}
-					
-					return true;
+					else{
+						$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
+						$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+						$this->log->setDetail("COMBINED TEST", "FALSE");
+						$this->log->setDetail("ERROR","randomQuestionArray was not an array, wasn't set, or wasn't greater than 0");
+						$this->log->saveEntry();
+
+						$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
+
+						return false;
+					}
 				}
 				else{
 					$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
@@ -1084,22 +1129,47 @@ class testManager extends CDCMastery
 						$randomQuestionArray[] = $questionUUID;
 					}
 
-					if(is_array($randomQuestionArray) && count($randomQuestionArray) > 1) {
+					$stmt->close();
+
+					if(isset($randomQuestionArray) && is_array($randomQuestionArray) && count($randomQuestionArray) > 0) {
+						$randomQuestionArrayCount = count($randomQuestionArray);
+
+						if($randomQuestionArrayCount < $this->maxQuestions){
+							$sliceLength = $randomQuestionArrayCount;
+						}
+						else{
+							$sliceLength = $this->maxQuestions;
+						}
+
 						shuffle($randomQuestionArray);
-						$randomQuestionArray = array_slice($randomQuestionArray, 0, $this->maxQuestions);
-					}
+						$randomQuestionArray = array_slice($randomQuestionArray, 0, $sliceLength);
 
-					foreach($randomQuestionArray as $randomQuestion){
-						$this->addQuestion($randomQuestion);
-					}
+						foreach ($randomQuestionArray as $randomQuestion) {
+							$this->addQuestion($randomQuestion);
+						}
 
-					return true;
+						return true;
+					}
+					else{
+						$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
+						$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+						$this->log->setDetail("COMBINED TEST", "FALSE");
+						$this->log->setDetail("ERROR","randomQuestionArray was not an array, wasn't set, or wasn't greater than 0");
+						$this->log->saveEntry();
+
+						$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
+
+						return false;
+					}
 				}
 				else{
+					$this->error = $stmt->error;
+					$stmt->close();
+
 					$this->log->setAction("ERROR_TEST_POPULATE_QUESTIONS");
 					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-					$this->log->setDetail("COMBINED TEST", "FALSE");
-					$this->log->setDetail("ERROR",$stmt->error);
+					$this->log->setDetail("Combined Test", "FALSE");
+					$this->log->setDetail("MySQL Error",$this->error);
 					$this->log->saveEntry();
 						
 					$this->error = "Sorry, we were unable to populate a pool of questions for the test.";
@@ -1110,12 +1180,11 @@ class testManager extends CDCMastery
 	}
 	
 	public function answerQuestion($testUUID, $questionUUID, $answerUUID){
-		/*
+		/**
 		 * Fix for issue where double-clicking answers will enter false data into testing data table.  Ensure answer provided matches current question.
 		 */
 		$this->answer->loadAnswer($answerUUID);
 		if($this->answer->getQuestionUUID() == $questionUUID) {
-
 			$previouslyAnsweredUUID = $this->queryQuestionPreviousAnswer($questionUUID);
 			$stmt = $this->db->prepare("INSERT INTO testData (	testUUID,
 															questionUUID,
@@ -1126,9 +1195,12 @@ class testManager extends CDCMastery
 			$stmt->bind_param("sss", $testUUID, $questionUUID, $answerUUID);
 
 			if (!$stmt->execute()) {
+				$this->error = $stmt->error;
+				$stmt->close();
+
 				$this->log->setAction("ERROR_TEST_STORE_ANSWER");
 				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-				$this->log->setDetail("ERROR", $stmt->error);
+				$this->log->setDetail("ERROR", $this->error);
 				$this->log->setDetail("QUESTION UUID", $questionUUID);
 				$this->log->setDetail("ANSWER UUID", $answerUUID);
 				$this->log->setDetail("TEST UUID", $testUUID);
@@ -1138,6 +1210,8 @@ class testManager extends CDCMastery
 
 				return false;
 			} else {
+				$stmt->close();
+
 				if (!$previouslyAnsweredUUID) {
 					$this->incompleteQuestionsAnswered++;
 				}
@@ -1260,28 +1334,27 @@ class testManager extends CDCMastery
 		
 		if($stmt->execute()){
 			$stmt->bind_result($answerUUID);
-			
-			while($stmt->fetch()){
-				$tempAnswerUUID = $answerUUID;
-			}
-			
+			$stmt->fetch();
 			$stmt->close();
 			
-			if(isset($tempAnswerUUID)){
-				return $tempAnswerUUID;
+			if($answerUUID){
+				return $answerUUID;
 			}
 			else{
 				return false;
 			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_TEST_RETRIEVE_PREVIOUS_ANSWER");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("TEST UUID",$this->incompleteTestUUID);
-			$this->log->setDetail("QUESTION UUID",$questionUUID);
+			$this->log->setDetail("Test UUID",$this->incompleteTestUUID);
+			$this->log->setDetail("Question UUID",$questionUUID);
+			$this->log->setDetail("MySQL Error",$this->error);
 			$this->log->saveEntry();
-			
-			$stmt->close();
+
 			return false;
 		}
 	}

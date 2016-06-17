@@ -361,28 +361,37 @@ class log extends CDCMastery
 
 		$stmt = $this->db->prepare('SELECT uuid, dataType, data FROM systemLogData WHERE logUUID = ? ORDER BY dataType ASC');
 		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
-		
-		$stmt->bind_result($detailUUID, $dataType, $data);
-		
-		$i = 0;
-		while ($stmt->fetch()) {
-			$this->detailArray[$i]['uuid'] = $detailUUID;
-			$this->detailArray[$i]['dataType'] = htmlspecialchars($dataType);
-			if($dataType != "AFSC ARRAY") {
-				$this->detailArray[$i]['data'] = htmlspecialchars($data);
+
+		if($stmt->execute()){
+			$stmt->bind_result($detailUUID, $dataType, $data);
+
+			$i = 0;
+			while ($stmt->fetch()) {
+				$this->detailArray[$i]['uuid'] = $detailUUID;
+				$this->detailArray[$i]['dataType'] = htmlspecialchars($dataType);
+				if(strtolower($dataType) != "afsc array") {
+					$this->detailArray[$i]['data'] = htmlspecialchars($data);
+				}
+				else{
+					$this->detailArray[$i]['data'] = $data;
+				}
+
+				$i++;
+			}
+
+			$stmt->close();
+
+			if(!empty($this->detailArray)){
+				return $this->detailArray;
 			}
 			else{
-				$this->detailArray[$i]['data'] = $data;
+				return false;
 			}
-
-			$i++;
-		}
-
-		if(!empty($this->detailArray)){
-			return $this->detailArray;
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
 			return false;
 		}
 	}
@@ -394,6 +403,7 @@ class log extends CDCMastery
         if($stmt->execute()){
             $stmt->bind_result($logUUID);
             $stmt->fetch();
+			$stmt->close();
 
             if(!empty($logUUID)){
                 return $logUUID;
@@ -403,6 +413,8 @@ class log extends CDCMastery
             }
         }
         else{
+			$stmt->close();
+
             return false;
         }
     }
@@ -410,11 +422,12 @@ class log extends CDCMastery
     public function loadEntry($uuid) {
 		$stmt = $this->db->prepare('SELECT uuid, timestamp, microtime, action, userUUID, ip, user_agent FROM systemLog WHERE uuid = ?');
 		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
 
-		$stmt->bind_result($logUUID, $timestamp, $microtime, $action, $userUUID, $ip, $userAgent);
+		if($stmt->execute()){
+			$stmt->bind_result($logUUID, $timestamp, $microtime, $action, $userUUID, $ip, $userAgent);
+			$stmt->fetch();
+			$stmt->close();
 
-		while($stmt->fetch()) {
 			$this->uuid = $logUUID;
 			$this->timestamp = $timestamp;
 			$this->microtime = $microtime;
@@ -422,12 +435,16 @@ class log extends CDCMastery
 			$this->userUUID = $userUUID;
 			$this->ip = $ip;
 			$this->userAgent = $userAgent;
-		}
 
-		if(!empty($this->uuid)){
-			return true;
+			if(!empty($this->uuid)){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
+			$stmt->close();
 			return false;
 		}
 	}
@@ -510,7 +527,6 @@ class log extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($count);
 			$stmt->fetch();
-			
 			$stmt->close();
 			
 			if($count){
@@ -521,10 +537,6 @@ class log extends CDCMastery
 			}
 		}
 		else{
-			$this->setAction("ERROR_VERIFY_LOG_UUID");
-			$this->setDetail("MySQL Error",$stmt->error);
-			$this->saveEntry();
-
 			$stmt->close();
 			return false;
 		}
@@ -550,6 +562,7 @@ class log extends CDCMastery
 			}
 		}
 		else{
+			$stmt->close();
 			return false;
 		}
 	}

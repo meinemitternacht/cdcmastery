@@ -111,15 +111,26 @@ class user extends CDCMastery {
                 $userArray[$uuid]['userLastName'] = $userLastName;
                 $userArray[$uuid]['userRank'] = $userRank;
             }
-        }
-        else{
-            return false;
-        }
 
-        if(isset($userArray) && !empty($userArray)){
-            return $userArray;
+			$stmt->close();
+
+			if(isset($userArray) && !empty($userArray)){
+				return $userArray;
+			}
+			else{
+				return false;
+			}
         }
         else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_LIST_USERS_BY_ROLE");
+			$this->log->setDetail("Role UUID",$roleUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
             return false;
         }
     }
@@ -144,15 +155,26 @@ class user extends CDCMastery {
 				$userArray[$uuid]['userLastName'] = $userLastName;
 				$userArray[$uuid]['userRank'] = $userRank;
 			}
-		}
-		else{
-			return false;
-		}
 
-		if(isset($userArray) && !empty($userArray)){
-			return $userArray;
+			$stmt->close();
+
+			if(isset($userArray) && !empty($userArray)){
+				return $userArray;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_LIST_USERS_BY_BASE");
+			$this->log->setDetail("Base UUID",$baseUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
@@ -169,20 +191,31 @@ class user extends CDCMastery {
 			while($stmt->fetch()){
 				$userArray[] = $uuid;
 			}
-		}
-		else{
-			return false;
-		}
 
-		if(isset($userArray) && !empty($userArray)){
-			return $userArray;
+			$stmt->close();
+
+			if(isset($userArray) && !empty($userArray)){
+				return $userArray;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_LIST_USER_UUID_BY_BASE");
+			$this->log->setDetail("Base UUID",$baseUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}
 
-	public function loadUser($uuid){
+	public function loadUser($userUUID){
 		$stmt = $this->db->prepare("SELECT  uuid,
 											userFirstName,
 											userLastName,
@@ -202,27 +235,13 @@ class user extends CDCMastery {
 											reminderSent
 									FROM userData
 									WHERE uuid = ?");
-		$stmt->bind_param("s",$uuid);
-		$stmt->execute();
-		$stmt->bind_result( $uuid,
-							$userFirstName,
-							$userLastName,
-							$userHandle,
-							$userPassword,
-							$userLegacyPassword,
-							$userEmail,
-							$userRank,
-							$userDateRegistered,
-							$userLastLogin,
-                            $userLastActive,
-							$userTimeZone,
-							$userRole,
-							$userOfficeSymbol,
-							$userBase,
-							$userDisabled,
-                            $reminderSent);
+		$stmt->bind_param("s",$userUUID);
+		
+		if($stmt->execute()) {
+			$stmt->bind_result($uuid, $userFirstName, $userLastName, $userHandle, $userPassword, $userLegacyPassword, $userEmail, $userRank, $userDateRegistered, $userLastLogin, $userLastActive, $userTimeZone, $userRole, $userOfficeSymbol, $userBase, $userDisabled, $reminderSent);
+			$stmt->fetch();
+			$stmt->close();
 
-		while($stmt->fetch()){
 			$this->uuid = $uuid;
 			$this->userFirstName = $userFirstName;
 			$this->userLastName = $userLastName;
@@ -233,23 +252,34 @@ class user extends CDCMastery {
 			$this->userRank = $userRank;
 			$this->userDateRegistered = $userDateRegistered;
 			$this->userLastLogin = $userLastLogin;
-            $this->userLastActive = $userLastActive;
+			$this->userLastActive = $userLastActive;
 			$this->userTimeZone = $userTimeZone;
 			$this->userRole = $userRole;
 			$this->userOfficeSymbol = $userOfficeSymbol;
 			$this->userBase = $userBase;
 			$this->userDisabled = $userDisabled;
-            $this->reminderSent = $reminderSent;
+			$this->reminderSent = $reminderSent;
+
+			if (empty($this->userHandle)) {
+				$this->error = "That user does not exist";
+				return false;
+			}
+			else{
+				return true;
+			}
 		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
 
-		$stmt->close();
-
-		if(empty($this->userHandle)){
-			$this->error = "That user does not exist";
+			$this->log->setAction("ERROR_USER_LOAD");
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+			
 			return false;
 		}
-		
-		return true;
 	}
 
 	public function saveUser(){
@@ -605,37 +635,91 @@ class user extends CDCMastery {
 	public function getUUIDByEmail($userEmail){
 		$stmt = $this->db->prepare("SELECT uuid FROM userData WHERE userEmail = ?");
 		$stmt->bind_param("s",$userEmail);
-		$stmt->execute();
-		$stmt->bind_result($uuid);
 
-		while($stmt->fetch()){
-			$ret = $uuid;
+		if($stmt->execute()){
+			$stmt->bind_result($uuid);
+			$stmt->fetch();
+			$stmt->close();
+
+			if($uuid){
+				return $uuid;
+			}
+			else{
+				return false;
+			}
 		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
 
-		if(empty($ret)){
-			$ret = false;
+			$this->log->setAction("ERROR_GET_UUID_BY_EMAIL");
+			$this->log->setDetail("User Email",$userEmail);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
 		}
+	}
 
-		$stmt->close();
-		return $ret;
+	public function getLoginUUID($providedUsername){
+		$stmt = $this->db->prepare("SELECT `userData`.`uuid` FROM `userData` WHERE `userData`.`userHandle` = ? OR `userData`.`userEmail` = ?");
+		$stmt->bind_param("ss",$providedUsername,$providedUsername);
+
+		if($stmt->execute()){
+			$stmt->bind_result($userUUID);
+			$stmt->fetch();
+			$stmt->close();
+
+			if(isset($userUUID) && !empty($userUUID)){
+				return $userUUID;
+			}
+			else{
+				return false;
+			}
+		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_GET_LOGIN_UUID");
+			$this->log->setDetail("Provided Username",$providedUsername);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
+		}
 	}
 
 	public function getUUIDByHandle($userHandle){
 		$stmt = $this->db->prepare("SELECT uuid FROM userData WHERE userHandle = ?");
 		$stmt->bind_param("s",$userHandle);
-		$stmt->execute();
-		$stmt->bind_result($uuid);
 
-		while($stmt->fetch()){
-			$ret = $uuid;
+		if($stmt->execute()){
+			$stmt->bind_result($uuid);
+			$stmt->fetch();
+			$stmt->close();
+
+			if($uuid){
+				return $uuid;
+			}
+			else{
+				return false;
+			}
 		}
+		else{
+			$this->error = $stmt->error;
+			$stmt->close();
 
-		if(empty($ret)){
-			$ret = false;
+			$this->log->setAction("ERROR_GET_UUID_BY_HANDLE");
+			$this->log->setDetail("User Handle",$userHandle);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
 		}
-
-		$stmt->close();
-		return $ret;
 	}
 
 	public function getUserByUUID($uuid){
@@ -646,37 +730,37 @@ class user extends CDCMastery {
             return "SYSTEM";
         }
 
-		$_user = new user($this->db, $this->log, $this->emailQueue);
-		if(!$_user->loadUser($uuid)){
-			return false;
+		$stmt = $this->db->prepare("SELECT userHandle FROM userData WHERE uuid = ?");
+		$stmt->bind_param("s",$uuid);
+
+		if($stmt->execute()){
+			$stmt->bind_result($userHandle);
+			$stmt->fetch();
+			$stmt->close();
+
+			if($userHandle){
+				return $userHandle;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
-			return $_user->getUserHandle();
+			$this->error = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_GET_USER_BY_UUID");
+			$this->log->setDetail("User UUID",$uuid);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
+
+			return false;
 		}
 	}
 
 	public function userLoginName($input){
-		if(strpos($input,"@") !== false){
-			$ret = $this->getUUIDByEmail($input); //get uuid by email
-			if(!$ret){
-				$this->error = "That user does not exist";
-				return false;
-			}
-			else{
-				return $ret;
-			}
-		}
-		else{
-			$ret = $this->getUUIDByHandle($input); //get uuid by username
-
-			if(!$ret){
-				$this->error = "That user does not exist";
-				return false;
-			}
-			else{
-				return $ret;
-			}
-		}
+		return $this->getLoginUUID($input);
 	}
 
 	public function reportQuestion($userEmail,$afscUUID,$questionUUID,$questionText,$userComments){
@@ -704,6 +788,8 @@ class user extends CDCMastery {
 		$emailBodyHTML .= "<b>User Comments:</b> ".nl2br($userComments);
 		$emailBodyHTML .= "<br /><br />";
 		$emailBodyHTML .= "<b>Link to question:</b> <a href=\"https://cdcmastery.com/admin/cdc-data/".$afscUUID."/question/".$questionUUID."/view\">Click Here</a>";
+		$emailBodyHTML .= "<br /><br />";
+		$emailBodyHTML .= "<b>Link to user:</b> <a href=\"https://cdcmastery.com/admin/users/".$this->getUUID()."\">Click Here</a>";
 		$emailBodyHTML .= "<br /><br /><br />";
 		$emailBodyHTML .= "Regards,";
 		$emailBodyHTML .= "<br /><br />";
@@ -722,9 +808,11 @@ class user extends CDCMastery {
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "Question Text: ".$questionText;
 		$emailBodyText .= "\r\n\r\n";
-		$emailBodyText .= "User Comments: ".nl2br($userComments);
+		$emailBodyText .= "User Comments: ".$userComments;
 		$emailBodyText .= "\r\n\r\n";
 		$emailBodyText .= "Link to question: https://cdcmastery.com/admin/cdc-data/".$afscUUID."/question/".$questionUUID."/view";
+		$emailBodyText .= "\r\n\r\n";
+		$emailBodyText .= "Link to user: https://cdcmastery.com/admin/users/".$this->getUUID();
 		$emailBodyText .= "\r\n\r\n\r\n";
 		$emailBodyText .= "Regards,";
 		$emailBodyText .= "\r\n\r\n";
@@ -763,6 +851,8 @@ class user extends CDCMastery {
 				}
 				else{
 					$this->error = $stmt->error;
+					$stmt->close();
+
 					$this->log->setAction("ERROR_USER_RESOLVE_NAMES");
 					$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 					$this->log->setDetail("userUUID", $userUUID);
@@ -772,9 +862,9 @@ class user extends CDCMastery {
 					break;
 				}
 			}
-			
+
 			$stmt->close();
-			
+
 			if(empty($resultArray)){
 				return false;
 			}
@@ -785,7 +875,7 @@ class user extends CDCMastery {
 		}
 	}
 	
-	public function sortUserList($userArray, $sortColumn, $sortDirection="ASC"){
+	public function sortUserList(array $userArray, $sortColumn, $sortDirection="ASC"){
 		/*
 		 * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
 		 * a completely new array.  Makes life easier, and let's the database do the work!
@@ -797,10 +887,11 @@ class user extends CDCMastery {
 					$implodeArray[] = $userUUID;
 				}
 			}
-			
-			$userList = implode("','",$implodeArray);
-			
-			$res = $this->db->query("SELECT uuid,
+
+			if(isset($implodeArray) && is_array($implodeArray)) {
+				$userList = implode("','", $implodeArray);
+
+				$res = $this->db->query("SELECT uuid,
 											userFirstName,
 											userLastName,
 											userHandle,
@@ -810,32 +901,39 @@ class user extends CDCMastery {
 											userOfficeSymbol,
 											userBase
 										FROM userData
-										WHERE uuid IN ('".$userList."')
-										ORDER BY ".$sortColumn." ".$sortDirection);
-			
-			if($res->num_rows > 0){
-				while($row = $res->fetch_assoc()){
-					$returnArray[$row['uuid']]['userFirstName'] = $row['userFirstName'];
-					$returnArray[$row['uuid']]['userLastName'] = $row['userLastName'];
-					$returnArray[$row['uuid']]['userHandle'] = $row['userHandle'];
-					$returnArray[$row['uuid']]['userEmail'] = $row['userEmail'];
-					$returnArray[$row['uuid']]['userRank'] = $row['userRank'];
-					$returnArray[$row['uuid']]['userRole'] = $row['userRole'];
-					$returnArray[$row['uuid']]['userOfficeSymbol'] = $row['userOfficeSymbol'];
-					$returnArray[$row['uuid']]['userBase'] = $row['userBase'];
-					$returnArray[$row['uuid']]['fullName'] = $this->getFullName($row['userRank'],$row['userFirstName'],$row['userLastName']);
+										WHERE uuid IN ('" . $userList . "')
+										ORDER BY " . $sortColumn . " " . $sortDirection);
+
+				if ($res->num_rows > 0) {
+					while ($row = $res->fetch_assoc()) {
+						$returnArray[$row['uuid']]['userFirstName'] = $row['userFirstName'];
+						$returnArray[$row['uuid']]['userLastName'] = $row['userLastName'];
+						$returnArray[$row['uuid']]['userHandle'] = $row['userHandle'];
+						$returnArray[$row['uuid']]['userEmail'] = $row['userEmail'];
+						$returnArray[$row['uuid']]['userRank'] = $row['userRank'];
+						$returnArray[$row['uuid']]['userRole'] = $row['userRole'];
+						$returnArray[$row['uuid']]['userOfficeSymbol'] = $row['userOfficeSymbol'];
+						$returnArray[$row['uuid']]['userBase'] = $row['userBase'];
+						$returnArray[$row['uuid']]['fullName'] = $this->getFullName($row['userRank'], $row['userFirstName'], $row['userLastName']);
+					}
+
+					if (isset($returnArray) && !empty($returnArray)) {
+						return $returnArray;
+					}
+					else {
+						$this->error = "returnArray was empty.";
+
+						return false;
+					}
 				}
-				
-				if(isset($returnArray) && !empty($returnArray)){
-					return $returnArray;
-				}
-				else{
-					$this->error = "returnArray was empty.";
+				else {
+					$this->error = $this->db->error;
+
 					return false;
 				}
 			}
 			else{
-				$this->error = $this->db->error;
+				$this->error = "No valid users.";
 				return false;
 			}
 		}
@@ -845,7 +943,7 @@ class user extends CDCMastery {
 		}
 	}
 
-    public function sortUserUUIDList($userArray, $sortColumn, $sortDirection="ASC"){
+    public function sortUserUUIDList(array $userArray, $sortColumn, $sortDirection="ASC"){
         /*
          * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
          * a completely new array.  Makes life easier, and let's the database do the work!
@@ -890,11 +988,6 @@ class user extends CDCMastery {
     }
 
 	public function filterUserUUIDList($userArray,$filterColumn,$filterOperand,$filterValue){
-		/*
-         * Rather than sorting the array directly, we will just implode the list (after verifying UUID's) and return
-         * a completely new array.  Makes life easier, and let's the database do the work!
-         */
-
 		if(is_array($userArray) && !empty($userArray)){
 			$implodeArray = Array();
 			foreach($userArray as $userUUID){
@@ -943,6 +1036,7 @@ class user extends CDCMastery {
 		if($stmt->execute()){
 			$stmt->bind_result($count);
 			$stmt->fetch();
+			$stmt->close();
 			
 			if($count > 0){
 				return true;
@@ -952,13 +1046,14 @@ class user extends CDCMastery {
 			}
 		}
 		else{
-			$this->log->setAction("ERROR_USER_VERIFY");
-			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("MySQL Error",$stmt->error);
-			$this->log->saveEntry();
-			
 			$this->error = $stmt->error;
 			$stmt->close();
+
+			$this->log->setAction("ERROR_USER_VERIFY");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
 			return false;
 		}
 	}

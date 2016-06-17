@@ -148,14 +148,16 @@ class answerManager extends CDCMastery
 				}
 			}
 			else{
+				$sqlError = $stmt->error;
+				$stmt->close();
+
 				$this->log->setAction("ERROR_ANSWERS_LIST");
 				$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-				$this->log->setDetail("ERROR",$stmt->error);
+				$this->log->setDetail("ERROR",$sqlError);
 				$this->log->setDetail("Question UUID",$this->questionUUID);
 				$this->log->saveEntry();
 				
 				$this->error[] = "Sorry, we could not retrieve the answers from the database.";
-				$stmt->close();
 				return false;
 			}
 		}
@@ -176,25 +178,27 @@ class answerManager extends CDCMastery
 
 		if($stmt->execute()){
 			$stmt->bind_result($uuid, $answerText, $answerCorrect, $questionUUID);
-			while($stmt->fetch()){
-				$this->uuid = $uuid;
-				$this->answerText = $answerText;
-				$this->answerCorrect = $answerCorrect;
-				$this->questionUUID = $questionUUID;
-			}
-			
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->uuid = $uuid;
+			$this->answerText = $answerText;
+			$this->answerCorrect = $answerCorrect;
+			$this->questionUUID = $questionUUID;
+
 			return true;
 		}
 		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_ANSWERS_LOAD");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("ERROR",$sqlError);
 			$this->log->setDetail("UUID",$answerUUID);
 			$this->log->saveEntry();
 		
 			$this->error[] = "Sorry, we could not retrieve the answer from the database.";
-			$stmt->close();
 			return false;
 		}
 	}
@@ -217,14 +221,16 @@ class answerManager extends CDCMastery
 			return true;
 		}
 		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_ANSWERS_LOAD");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("ERROR",$sqlError);
 			$this->log->setDetail("UUID",$answerUUID);
 			$this->log->saveEntry();
 
 			$this->error[] = "Sorry, we could not retrieve the answer from the database.";
-			$stmt->close();
 			return false;
 		}
 	}
@@ -255,13 +261,15 @@ class answerManager extends CDCMastery
 			return true;
 		}
 		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_ANSWERS_SAVE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("ERROR",$stmt->error);
+			$this->log->setDetail("ERROR",$sqlError);
 			$this->log->saveEntry();
 		
 			$this->error[] = "Sorry, we could not save the answer data to the database.";
-			$stmt->close();
 			return false;
 		}
 	}
@@ -280,13 +288,13 @@ class answerManager extends CDCMastery
             return true;
         }
         else{
+			$this->error = $stmt->error;
+			$stmt->close();
+
             $this->log->setAction("ERROR_ANSWER_DELETE");
             $this->log->setDetail("Answer UUID",$answerUUID);
-            $this->log->setDetail("MySQL Error",$stmt->error);
+            $this->log->setDetail("MySQL Error",$this->error);
             $this->log->saveEntry();
-
-            $this->error = $stmt->error;
-            $stmt->close();
             return false;
         }
     }
@@ -298,19 +306,24 @@ class answerManager extends CDCMastery
         if($stmt->execute()){
             $stmt->bind_result($answerCount);
             $stmt->fetch();
+			$stmt->close();
 
             if($answerCount > 0){
-                $stmt->close();
                 return true;
             }
             else{
-                $stmt->close();
                 return false;
             }
         }
         else{
             $this->error = $stmt->error;
             $stmt->close();
+
+			$this->log->setAction("ERROR_ANSWER_VERIFY");
+			$this->log->setDetail("Answer UUID",$answerUUID);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
+
             return false;
         }
     }
@@ -334,6 +347,11 @@ class answerManager extends CDCMastery
 		else{
 			$this->error = $stmt->error;
 			$stmt->close();
+
+			$this->log->setAction("ERROR_RETRIEVE_CORRECT_ANSWER");
+			$this->log->setDetail("Question UUID",$questionUUID);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
 			return false;
 		}
 	}

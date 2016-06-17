@@ -80,21 +80,21 @@ class logFilter extends log {
 		$validDirections = Array(	0 => 'ASC',
 				1 => 'DESC');
 	
-		/*
+		/**
 		 * Sanitize sort by variable
 		 */
 		if(!in_array($sortBy,$validColumns)){
 			$sortBy = "timestamp";
 		}
 	
-		/*
+		/**
 		 * Sanitize sort direction variable
 		 */
 		if(!in_array($sortDirection,$validDirections)){
 			$sortDirection = "DESC";
 		}
 		
-		/*
+		/**
 		 * Build WHERE clause
 		 */
 		$whereArray = Array();
@@ -120,7 +120,7 @@ class logFilter extends log {
 			}
 		}
 		
-		/*
+		/**
 		 * If we are sorting by user, we need to join the userData table (just the userLastName column)
 		 */
 		if(strtolower($sortBy) == "useruuid"){
@@ -170,7 +170,9 @@ class logFilter extends log {
 
 				$returnArray[$uuid]['ip'] = $ip;
 			}
-				
+
+			$stmt->close();
+
 			if(isset($returnArray) && !empty($returnArray)){
 				return $returnArray;
 			}
@@ -179,6 +181,7 @@ class logFilter extends log {
 			}
 		}
 		else{
+			$stmt->close();
 			return false;
 		}
 	}

@@ -43,7 +43,7 @@ class passwordReset extends user {
 		if($stmt->execute()){
 			$stmt->bind_result($userUUID);
 			$stmt->fetch();
-	
+
 			if($userUUID){
 				return $userUUID;
 			}
@@ -228,6 +228,7 @@ class passwordReset extends user {
 		if($stmt->execute()){
 			$stmt->bind_result($count);
 			$stmt->fetch();
+			$stmt->close();
 				
 			if($count){
 				return true;
@@ -240,10 +241,14 @@ class passwordReset extends user {
 			}
 		}
 		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
 			$this->error = "There was an issue resetting your password.  Contact the helpdesk for assistance.";
 			$this->log->setAction("ERROR_USER_PASSWORD_RESET");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("System Error",$this->error);
+			$this->log->setDetail("MySQL Error",$sqlError);
 			$this->log->setDetail("Password Reset Token",$passwordToken);
 			$this->log->saveEntry();
 			return false;

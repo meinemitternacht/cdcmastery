@@ -15,9 +15,20 @@ if(isset($_SESSION['vars']['get']['term'])) {
             $jsonArray[] = $userEmail;
         }
 
+        $stmt->close();
+
         if (isset($jsonArray) && is_array($jsonArray) && !empty($jsonArray)) {
             echo json_encode($jsonArray);
         }
+    }
+    else{
+        $sqlError = $stmt->error;
+        $stmt->close();
+
+        $log->setAction("ERROR_AJAX_EMAIL_AUTOCOMPLETE_LIST");
+        $log->setDetail("Search Term",$_SESSION['vars']['get']['term']);
+        $log->setDetail("MySQL Error",$sqlError);
+        $log->saveEntry();
     }
 }
 else{

@@ -8,6 +8,7 @@ if($emailString){
     if($stmt->execute()){
         $stmt->bind_result($count);
         $stmt->fetch();
+        $stmt->close();
 
         if($count > 0){
             $emailUsed = true;
@@ -17,16 +18,18 @@ if($emailString){
         }
     }
     else{
+        $sqlError = $stmt->error;
+        $stmt->close();
+        
         $log->setAction("ERROR_AJAX_CHECK_EMAIL");
         $log->setDetail("CALLING SCRIPT","/ajax/registration/checkEmail");
         $log->setDetail("E-mail String",$emailString);
-        $log->setDetail("MySQL Error",$stmt->error);
+        $log->setDetail("MySQL Error",$sqlError);
         $log->saveEntry();
 
         $emailUsed = false;
     }
-
-    $stmt->close();
+    
     /*
      * Check if it's valid first
      */

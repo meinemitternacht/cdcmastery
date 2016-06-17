@@ -68,11 +68,12 @@ class associations extends CDCMastery
         }
         else{
             $this->error = $stmt->error;
+			$stmt->close();
+			
             $this->log->setAction("ERROR_ASSOCIATIONS_AFSC_LIST_PENDING");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -85,6 +86,7 @@ class associations extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($userCount);
 			$stmt->fetch();
+			$stmt->close();
 
 			if($userCount > 0){
 				return $userCount;
@@ -96,12 +98,13 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+			
 			$this->log->setAction("ERROR_ASSOCIATIONS_LIST_USERS_BY_AFSC");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL ERROR",$this->error);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->saveEntry();
-			$stmt->close();
 
 			return false;
 		}
@@ -117,8 +120,10 @@ class associations extends CDCMastery
 			while($stmt->fetch()){
 				$userUUIDArray[] = $userUUID;
 			}
+			
+			$stmt->close();
 
-			if(is_array($userUUIDArray) && count($userUUIDArray) > 0){
+			if(isset($userUUIDArray) && is_array($userUUIDArray) && count($userUUIDArray) > 0){
 				return $userUUIDArray;
 			}
 			else{
@@ -128,12 +133,13 @@ class associations extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+			
 			$this->log->setAction("ERROR_ASSOCIATIONS_LIST_USERS_BY_AFSC");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MySQL ERROR",$this->error);
 			$this->log->setDetail("AFSC UUID",$afscUUID);
 			$this->log->saveEntry();
-			$stmt->close();
 
 			return false;
 		}

@@ -645,10 +645,10 @@ class statistics extends CDCMastery {
 
     public function queryTestAFSCCount($afscUUIDList){
         if(is_array($afscUUIDList) && count($afscUUIDList) > 0) {
+            $stmt = $this->db->prepare("SELECT COUNT(*) AS count, AVG(testScore) AS afscAverageScore FROM `testHistory` WHERE afscList LIKE CONCAT('%',?,'%')");
+
             foreach($afscUUIDList as $afscUUID) {
-                $stmt = $this->db->prepare("SELECT COUNT(*) AS count, AVG(testScore) AS afscAverageScore FROM `testHistory` WHERE afscList LIKE ?");
-                $afscUUIDParam = "%".$afscUUID."%";
-                $stmt->bind_param("s",$afscUUIDParam);
+                $stmt->bind_param("s",$afscUUID);
 
                 if($stmt->execute()){
                     $stmt->bind_result($count,$afscAverageScore);
@@ -657,20 +657,21 @@ class statistics extends CDCMastery {
                         $this->testAFSCCount[$afscUUID]['count'] = $count;
                         $this->testAFSCCount[$afscUUID]['average'] = $afscAverageScore;
                     }
-
-                    $stmt->close();
                 }
                 else{
                     $this->error = $stmt->error;
+                    $stmt->close();
+
                     $this->log->setAction("ERROR_STATS_QUERY_TEST_AFSC_COUNT");
                     $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                     $this->log->setDetail("MYSQL ERROR",$this->error);
                     $this->log->saveEntry();
-                    $stmt->close();
 
                     return false;
                 }
             }
+
+            $stmt->close();
 
             if(isset($this->testAFSCCount) && is_array($this->testAFSCCount) && count($this->testAFSCCount) > 0){
                 return true;
@@ -700,6 +701,8 @@ class statistics extends CDCMastery {
     }
 
     public function queryTestAverageLastSeven(){
+        $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
+
         $j=0;
         for($i=7;$i>0;$i--) {
             $dateObj = new DateTime('now');
@@ -707,8 +710,6 @@ class statistics extends CDCMastery {
 
             $startDateTime = $dateObj->format('Y-m-d 00:00:00');
             $endDateTime = $dateObj->format('Y-m-d 23:59:59');
-
-            $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
 
             $stmt->bind_param("ss",$startDateTime,$endDateTime);
 
@@ -722,21 +723,22 @@ class statistics extends CDCMastery {
                     $this->testsAverageScoreArrayLastSeven[$j]['averageScore'] = round($averageScore,2);
                     $this->testsAverageScoreArrayLastSeven[$j]['dateTime'] = $dateObj->format('j-M-Y');
                 }
-
-                $stmt->close();
             }
             else{
                 $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_TEST_AVERAGE_LAST_SEVEN");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
             $j++;
         }
+
+        $stmt->close();
 
         if(isset($this->testsAverageScoreArrayLastSeven) && is_array($this->testsAverageScoreArrayLastSeven) && count($this->testsAverageScoreArrayLastSeven) > 0){
             return true;
@@ -954,28 +956,27 @@ class statistics extends CDCMastery {
         $endDateTime = $dateTimeEnd->format('Y-m-d 23:59:59');
 
         $stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM `testHistory` WHERE testTimeCompleted BETWEEN ? AND ?");
-
         $stmt->bind_param("ss",$startDateTime,$endDateTime);
 
         if($stmt->execute()){
             $stmt->bind_result($averageScore);
+            $stmt->fetch();
 
-            while($stmt->fetch()){
-                if(!$averageScore){
-                    $averageScore = "0";
-                }
-                $this->testsAverageScoreByTimespan = round($averageScore,2);
-            }
+            if(!$averageScore)
+                $averageScore = "0";
+
+            $this->testsAverageScoreByTimespan = round($averageScore,2);
 
             $stmt->close();
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TEST_AVERAGE_BY_TIMESPAN");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1018,15 +1019,18 @@ class statistics extends CDCMastery {
             }
             else{
                 $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_TESTS_BY_HOUR_OF_DAY");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
         }
+
+        $stmt->close();
 
         if(!empty($this->testsByHourOfDay)){
             return true;
@@ -1066,15 +1070,18 @@ class statistics extends CDCMastery {
             }
             else{
                 $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_TESTS_BY_DAY_OF_MONTH");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
         }
+
+        $stmt->close();
 
         if(!empty($this->testsByDayOfMonth)){
             return true;
@@ -1289,23 +1296,22 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                if(!$count){
-                    $count = "0";
-                }
-                $this->testCountByTimespan = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            if(!$count)
+                $count = "0";
+
+            $this->testCountByTimespan = $count;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TEST_COUNT_BY_TIMESPAN");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1342,21 +1348,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalTestsByBase = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalTestsByBase = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_TESTS_BY_BASE");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1385,21 +1391,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->activeUsersByBase = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->activeUsersByBase = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_ACTIVE_USERS_BY_BASE");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1428,21 +1434,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalUsersByBase = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalUsersByBase = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_USERS_BY_BASE");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1472,21 +1478,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($averageScore);
-
-            while($stmt->fetch()){
-                $this->averageScoreByBase = $averageScore;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->averageScoreByBase = $averageScore;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_AVERAGE_SCORE_BY_BASE");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1531,21 +1537,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalIncompleteTests = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalIncompleteTests = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_INCOMPLETE_TESTS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1571,21 +1577,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalArchivedTests = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalArchivedTests = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ARCHIVED_TESTS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1611,21 +1617,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalCompletedTests = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalCompletedTests = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_COMPLETED_TESTS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1651,21 +1657,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($sumQuestions);
-
-            while($stmt->fetch()){
-                $this->totalQuestionsAnswered = $sumQuestions;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalQuestionsAnswered = $sumQuestions;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTIONS_ANSWERED");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1691,21 +1697,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($sumQuestions);
-
-            while($stmt->fetch()){
-                $this->totalDatabaseQuestionsAnswered = $sumQuestions;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalDatabaseQuestionsAnswered = $sumQuestions;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_DATABASE_QUESTIONS_ANSWERED");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1731,21 +1737,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalAFSCCategories = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalAFSCCategories = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_AFSC_CATEGORIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1771,21 +1777,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalAFSCAssociations = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalAFSCAssociations = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_AFSC_ASSOCIATIONS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1811,21 +1817,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalFOUOAFSCCategories = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalFOUOAFSCCategories = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_FOUO_AFSC_CATEGORIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1851,21 +1857,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalQuestions = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalQuestions = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTIONS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1891,21 +1897,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalQuestionsArchived = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalQuestionsArchived = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTIONS_ARCHIVED");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1931,21 +1937,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalQuestionsFOUO = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalQuestionsFOUO = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTIONS_FOUO");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -1971,21 +1977,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalAnswers = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalAnswers = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ANSWERS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2011,21 +2017,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalAnswersArchived = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalAnswersArchived = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ANSWERS_ARCHIVED");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2051,21 +2057,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalAnswersFOUO = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalAnswersFOUO = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ANSWERS_FOUO");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2091,21 +2097,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalUsers = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalUsers = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_USERS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2136,21 +2142,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleUser = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleUser = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_USER");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2181,21 +2187,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleTrainingManager = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleTrainingManager = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_TRAINING_MANAGER");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2226,21 +2232,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleSupervisor = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleSupervisor = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_SUPERVISOR");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2271,21 +2277,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleAdministrator = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleAdministrator = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_ADMINISTRATOR");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2316,21 +2322,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleSuperAdministrator = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleSuperAdministrator = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_SUPER_ADMINISTRATOR");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2361,21 +2367,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalRoleEditor = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalRoleEditor = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ROLE_EDITOR");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2401,21 +2407,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalLogEntries = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalLogEntries = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_LOG_ENTRIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2441,21 +2447,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalLogDetails = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalLogDetails = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_LOG_DETAILS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2481,21 +2487,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalLoginErrors = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalLoginErrors = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_LOGIN_ERRORS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2522,21 +2528,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->logActionCount[$logAction] = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->logActionCount[$logAction] = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_LOG_COUNT_BY_ACTION");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2572,15 +2578,18 @@ class statistics extends CDCMastery {
             }
             else{
                 $this->error = $stmt->error;
+                $stmt->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_LOG_ACTION_COUNT_BY_HOUR_OF_DAY");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
-                $stmt->close();
 
                 return false;
             }
         }
+
+        $stmt->close();
 
         if(!empty($this->testsByHourOfDay)){
             return true;
@@ -2653,21 +2662,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->totalOfficeSymbols = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->totalOfficeSymbols = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_OFFICE_SYMBOLS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2697,21 +2706,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->userRegistrationsCount = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->userRegistrationsCount = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_REGISTRATIONS_BY_TIMESPAN");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -2745,11 +2754,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $this->db->error;
+            $res->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_REGISTRATIONS_BY_DAY");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $res->close();
 
             return false;
         }
@@ -2783,11 +2793,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $this->db->error;
+            $res->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_EMAILS_BY_DAY");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $res->close();
 
             return false;
         }
@@ -2821,11 +2832,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $this->db->error;
+            $res->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_SYSTEM_ERRORS_BY_DAY");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $res->close();
 
             return false;
         }
@@ -2859,6 +2871,8 @@ class statistics extends CDCMastery {
                 $this->loginsByDay[$row['loginDate']] = $row['userLogins'];
             }
 
+            $res->close();
+
             if(isset($this->loginsByDay) && !empty($this->loginsByDay)){
                 return true;
             }
@@ -2867,6 +2881,7 @@ class statistics extends CDCMastery {
             }
         }
         else{
+            $res->close();
             return false;
         }
     }
@@ -2904,17 +2919,18 @@ class statistics extends CDCMastery {
             }
             else{
                 $this->error = $this->db->error;
+                $res->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_LOGINS_BY_MONTH");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
 
-                $res->close();
-
                 return false;
             }
         }
         else{
+            $res->close();
             return false;
         }
     }
@@ -2952,17 +2968,18 @@ class statistics extends CDCMastery {
             }
             else{
                 $this->error = $this->db->error;
+                $res->close();
+
                 $this->log->setAction("ERROR_STATS_QUERY_LOGINS_BY_YEAR");
                 $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
                 $this->log->setDetail("MYSQL ERROR",$this->error);
                 $this->log->saveEntry();
 
-                $res->close();
-
                 return false;
             }
         }
         else{
+            $res->close();
             return false;
         }
     }
@@ -2986,21 +3003,21 @@ class statistics extends CDCMastery {
         $stmt = $this->db->prepare("SELECT COUNT(*) AS count  FROM `userData` WHERE `userLastLogin` IS NULL OR `userLastLogin` < DATE_SUB(NOW(), INTERVAL 12 MONTH);");
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->inactiveUsers = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->inactiveUsers = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_INACTIVE_USERS");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3033,21 +3050,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->usersActiveToday = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->usersActiveToday = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_USERS_ACTIVE_TODAY");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3083,21 +3100,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->usersActiveThisWeek = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->usersActiveThisWeek = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_USERS_ACTIVE_THIS_WEEK");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3132,21 +3149,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->usersActiveThisMonth = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->usersActiveThisMonth = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_USERS_ACTIVE_THIS_MONTH");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3179,21 +3196,21 @@ class statistics extends CDCMastery {
 
         if($stmt->execute()){
             $stmt->bind_result($count);
-
-            while($stmt->fetch()){
-                $this->usersActiveThisYear = $count;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->usersActiveThisYear = $count;
+
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_USERS_ACTIVE_THIS_YEAR");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3238,11 +3255,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_USERS_ACTIVE_FIFTEEN_MINUTES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3278,11 +3296,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTION_OCCURRENCES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3318,11 +3337,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_ANSWER_OCCURRENCES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3358,11 +3378,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_QUESTION_ANSWER_PAIR_OCCURRENCES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3396,11 +3417,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_AFSC_FLASH_CARD_CATEGORIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3434,11 +3456,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_GLOBAL_FLASH_CARD_CATEGORIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
@@ -3472,11 +3495,12 @@ class statistics extends CDCMastery {
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_STATS_QUERY_TOTAL_PRIVATE_FLASH_CARD_CATEGORIES");
             $this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }

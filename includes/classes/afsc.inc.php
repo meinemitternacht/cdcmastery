@@ -82,6 +82,7 @@ class afsc extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($count);
 			$stmt->fetch();
+			$stmt->close();
 				
 			if($count > 0){
 				return true;
@@ -91,13 +92,13 @@ class afsc extends CDCMastery
 			}
 		}
 		else{
-			$this->log->setAction("ERROR_AFSC_VERIFY");
-			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
-			$this->log->setDetail("MySQL Error",$stmt->error);
-			$this->log->saveEntry();
-				
 			$this->error = $stmt->error;
 			$stmt->close();
+
+			$this->log->setAction("ERROR_AFSC_VERIFY");
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->setDetail("MySQL Error",$this->error);
+			$this->log->saveEntry();
 			return false;
 		}
 	}
@@ -108,10 +109,10 @@ class afsc extends CDCMastery
 	 */
 	public function listAFSC($showHidden=true){
 		if(!$showHidden) {
-			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList WHERE afscHidden = 0 ORDER BY afscName ASC");
+			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden FROM afscList WHERE afscHidden = 0 ORDER BY afscName ASC");
 		}
 		else{
-			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden, oldID FROM afscList ORDER BY afscName ASC");
+			$res = $this->db->query("SELECT uuid, afscName, afscDescription, afscVersion, afscFOUO, afscHidden FROM afscList ORDER BY afscName ASC");
 		}
 
 		$afscArray = Array();
@@ -123,7 +124,6 @@ class afsc extends CDCMastery
 				$afscArray[$row['uuid']]['afscVersion'] = $row['afscVersion'];
 				$afscArray[$row['uuid']]['afscFOUO'] = $row['afscFOUO'];
 				$afscArray[$row['uuid']]['afscHidden'] = $row['afscHidden'];
-				$afscArray[$row['uuid']]['oldID'] = $row['oldID'];
 				$afscArray[$row['uuid']]['totalQuestions'] = $this->getTotalQuestions($row['uuid']);
 			}
 
@@ -211,15 +211,16 @@ class afsc extends CDCMastery
 				$this->afscFOUO = $afscFOUO;
 				$this->afscHidden = $afscHidden;
 				$this->oldID = $oldID;
-				
-				$ret = true;
 			}
 			
 			$stmt->close();
 
 			if(empty($this->uuid)){
 				$this->error = "That AFSC does not exist.";
-				$ret = false;
+				return false;
+			}
+			else{
+				return true;
 			}
 		}
 		else{
@@ -232,10 +233,8 @@ class afsc extends CDCMastery
 			$this->log->setDetail("UUID",$uuid);
 			$this->log->saveEntry();
 			
-			$ret = false;
+			return false;
 		}
-		
-		return $ret;
 	}
 
 	/**
@@ -291,6 +290,7 @@ class afsc extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($uuid);
 			$stmt->fetch();
+			$stmt->close();
 			
 			if(!empty($uuid)){
 				return $uuid;
@@ -385,33 +385,6 @@ class afsc extends CDCMastery
 	}
 
 	/**
-	 * @param $oldID
-	 * @return bool
-     */
-	public function getMigratedAFSCUUID($oldID){
-		$stmt = $this->db->prepare("SELECT uuid FROM afscList WHERE oldID = ?");
-		$stmt->bind_param("s",$oldID);
-		
-		if($stmt->execute()){
-			$stmt->bind_result($uuid);
-				
-			while($stmt->fetch()){
-				$retUUID = $uuid;
-			}
-				
-			if(!empty($retUUID)){
-				return $retUUID;
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			return false;
-		}
-	}
-
-	/**
 	 * @param bool|false $uuid
 	 * @return bool
      */
@@ -432,6 +405,7 @@ class afsc extends CDCMastery
 		if($stmt->execute()){
 			$stmt->bind_result($count);
 			$stmt->fetch();
+			$stmt->close();
 
 			if(!empty($count)){
 				return $count;
@@ -441,6 +415,19 @@ class afsc extends CDCMastery
 			}
 		}
 		else{
+			$sqlError = $stmt->error;
+			$stmt->close();
+
+			$this->log->setAction("ERROR_AFSC_GET_TOTAL_QUESTIONS");
+			if($uuid){
+				$this->log->setDetail("AFSC UUID",$uuid);
+			}
+			else{
+				$this->log->setDetail("AFSC UUID",$this->uuid);
+			}
+			$this->log->setDetail("MySQL Error",$sqlError);
+			$this->log->saveEntry();
+			
 			return false;
 		}
 	}

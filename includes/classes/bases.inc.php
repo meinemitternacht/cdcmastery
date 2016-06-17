@@ -112,19 +112,18 @@ class bases extends CDCMastery
 				$baseArray[$row['uuid']] = $row['baseName'];
 			}
 			
-			$noResults = false;
+			$res->close();
+
+			if(isset($baseArray)){
+				return $baseArray;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
-			$noResults = true;
-		}
-		
-		$res->close();
-		
-		if($noResults){
+			$res->close();
 			return false;
-		}
-		else{
-			return $baseArray;
 		}
 	}
 
@@ -142,52 +141,40 @@ class bases extends CDCMastery
             while($row = $res->fetch_assoc()){
                 $baseArray[$row['userBase']] = $row['baseName'];
             }
-
-            $noResults = false;
-        }
-        else{
-            $noResults = true;
         }
 
         $res->close();
 
-        if($noResults){
-            return false;
-        }
-        else{
-            return $baseArray;
-        }
+        if(isset($baseArray)){
+			return $baseArray;
+		}
+		else{
+			return false;
+		}
     }
 	
 	public function loadBase($uuid){
 		$stmt = $this->db->prepare("SELECT	uuid,
-											baseName,
-											oldID
+											baseName
 									FROM baseList
 									WHERE uuid = ?");
 		$stmt->bind_param("s",$uuid);
 		
 		if($stmt->execute()){
-			$stmt->bind_result( $uuid,
-								$baseName,
-								$oldID);
-			
-			while($stmt->fetch()){
-				$this->uuid = $uuid;
-				$this->baseName = $baseName;
-				$this->oldID = $oldID;
-				
-				$ret = true;
-			}
-			
+			$stmt->bind_result($uuid,$baseName);
+			$stmt->fetch();
 			$stmt->close();
+			
+			$this->uuid = $uuid;
+			$this->baseName = $baseName;
 			
 			if(empty($this->uuid)){
 				$this->error = "That base does not exist.";
-				$ret = false;
+				return false;
 			}
-			
-			return $ret;
+			else{
+				return true;
+			}
 		}
 		else{
 			$this->error = $stmt->error;
@@ -205,16 +192,12 @@ class bases extends CDCMastery
 	
 	public function saveBase(){
 		$stmt = $this->db->prepare("INSERT INTO baseList (  uuid,
-															baseName,
-															oldID )
-									VALUES (?,?,?)
+															baseName )
+									VALUES (?,?)
 									ON DUPLICATE KEY UPDATE
 										uuid=VALUES(uuid),
-										baseName=VALUES(baseName),
-										oldID=VALUES(oldID)");
-		$stmt->bind_param("sss", 	$this->uuid,
-									$this->baseName,
-									$this->oldID);
+										baseName=VALUES(baseName)");
+		$stmt->bind_param("ss",$this->uuid,$this->baseName);
 		
 		if(!$stmt->execute()){
 			$this->error = $stmt->error;
@@ -253,10 +236,6 @@ class bases extends CDCMastery
 		}
 	}
 	
-	public function getOldID(){
-		return htmlspecialchars($this->oldID);
-	}
-	
 	public function setUUID($uuid){
 		$this->uuid = $uuid;
 		return true;
@@ -265,34 +244,6 @@ class bases extends CDCMastery
 	public function setBaseName($baseName){
 		$this->baseName = htmlspecialchars_decode($baseName);
 		return true;
-	}
-	
-	public function setOldID($oldID){
-		$this->oldID = htmlspecialchars_decode($oldID);
-		return true;
-	}
-	
-	public function getMigratedBaseUUID($oldID){
-		$stmt = $this->db->prepare("SELECT uuid FROM baseList WHERE oldID = ?");
-		$stmt->bind_param("s",$oldID);
-		
-		if($stmt->execute()){
-			$stmt->bind_result($uuid);
-			
-			while($stmt->fetch()){
-				$retUUID = $uuid;
-			}
-			
-			if(!empty($retUUID)){
-				return $retUUID;
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			return false;
-		}
 	}
 	
 	public function __destruct(){
