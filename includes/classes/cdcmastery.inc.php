@@ -239,81 +239,81 @@ class CDCMastery
 	 */
 	public function is_serialized($value, &$result = null)
 	{
-		// Bit of a give away this one
-		if (!is_string($value))
-		{
-			return false;
-		}
+		if(!empty($value)) {
+			// Bit of a give away this one
+			if (!is_string($value)) {
+				return false;
+			}
 
-		// Serialized false, return true. unserialize() returns false on an
-		// invalid string or it could return false if the string is serialized
-		// false, eliminate that possibility.
-		if ($value === 'b:0;')
-		{
-			$result = false;
+			// Serialized false, return true. unserialize() returns false on an
+			// invalid string or it could return false if the string is serialized
+			// false, eliminate that possibility.
+			if ($value === 'b:0;') {
+				$result = false;
+
+				return true;
+			}
+
+			$length = strlen($value);
+			$end = '';
+
+			switch ($value[0]) {
+				case 's':
+					if ($value[$length - 2] !== '"') {
+						return false;
+					}
+				case 'b':
+				case 'i':
+				case 'd':
+					// This looks odd but it is quicker than isset()ing
+					$end .= ';';
+				case 'a':
+				case 'O':
+					$end .= '}';
+
+					if ($value[1] !== ':') {
+						return false;
+					}
+
+					switch ($value[2]) {
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+						case 7:
+						case 8:
+						case 9:
+							break;
+
+						default:
+							return false;
+					}
+				case 'N':
+					$end .= ';';
+
+					if ($value[$length - 1] !== $end[0]) {
+						return false;
+					}
+					break;
+
+				default:
+					return false;
+			}
+
+			if (($result = @unserialize($value)) === false) {
+				$result = null;
+
+				return false;
+			}
+
 			return true;
 		}
-
-		$length	= strlen($value);
-		$end	= '';
-
-		switch ($value[0])
-		{
-			case 's':
-				if ($value[$length - 2] !== '"')
-				{
-					return false;
-				}
-			case 'b':
-			case 'i':
-			case 'd':
-				// This looks odd but it is quicker than isset()ing
-				$end .= ';';
-			case 'a':
-			case 'O':
-				$end .= '}';
-
-				if ($value[1] !== ':')
-				{
-					return false;
-				}
-
-				switch ($value[2])
-				{
-					case 0:
-					case 1:
-					case 2:
-					case 3:
-					case 4:
-					case 5:
-					case 6:
-					case 7:
-					case 8:
-					case 9:
-						break;
-
-					default:
-						return false;
-				}
-			case 'N':
-				$end .= ';';
-
-				if ($value[$length - 1] !== $end[0])
-				{
-					return false;
-				}
-				break;
-
-			default:
-				return false;
-		}
-
-		if (($result = @unserialize($value)) === false)
-		{
-			$result = null;
+		else{
 			return false;
 		}
-		return true;
 	}
 	
 	public function isTimeEmpty($time){
@@ -409,6 +409,43 @@ class CDCMastery
 			return false;
 		}
     }
+
+	/**
+	 * @param $filepath
+	 * @param int $lines
+	 * @param bool $adaptive
+	 * @return bool|string
+	 *
+	 * https://gist.github.com/lorenzos/1711e81a9162320fde20
+	 */
+	public function tailCustom($filepath, $lines = 1, $adaptive = true) {
+		$f = @fopen($filepath, "rb");
+		if ($f === false) return false;
+		if (!$adaptive) $buffer = 4096;
+		else $buffer = ($lines < 2 ? 64 : ($lines < 10 ? 512 : 4096));
+
+		fseek($f, -1, SEEK_END);
+
+		if (fread($f, 1) != "\n") $lines -= 1;
+
+		$output = '';
+		$chunk = '';
+
+		while (ftell($f) > 0 && $lines >= 0) {
+			$seek = min(ftell($f), $buffer);
+			fseek($f, -$seek, SEEK_CUR);
+			$output = ($chunk = fread($f, $seek)) . $output;
+			fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
+			$lines -= substr_count($chunk, "\n");
+		}
+
+		while ($lines++ < 0) {
+			$output = substr($output, strpos($output, "\n") + 1);
+		}
+
+		fclose($f);
+		return trim($output);
+	}
 	
 	public function trimString($string,$length){
 		if(strlen($string) > $length){

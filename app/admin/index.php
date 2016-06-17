@@ -84,7 +84,25 @@ else{
 						<li><a href="/admin/upload" title="Upload Files"><i class="icon-inline icon-20 ic-upload"></i>Upload Files</a></li>
 					</ul>
 				</div>
-			</section> 
+			</section>
+		</div>
+	</div>
+	<div class="row">
+		<div class="12u">
+			<section>
+				<header>
+					<h2>nginx Error Log</h2>
+				</header>
+				<table class="tableSmallText">
+				<?php
+				$errorLog = explode("\n",$cdcMastery->tailCustom($cfg['log']['error_log'],10));
+				foreach($errorLog as $logLine): ?>
+					<tr>
+						<td><?php echo $logLine; ?></td>
+					</tr>
+				<?php endforeach; ?>
+				</table>
+			</section>
 		</div>
 	</div>
 </div>

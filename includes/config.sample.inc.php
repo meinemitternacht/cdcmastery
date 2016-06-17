@@ -39,3 +39,8 @@ $cfg['smtp']['pass'] = "<password>";
  * Path to save archived tests to (XML format)
  */
 $cfg['xml']['directory'] = "/home/cdcmastery/xml-archives";
+
+/**
+ * Path to nginx error log
+ */
+$cfg['log']['error_log'] = "/home/cdcmastery/logs/cdcmastery.com.ssl.error.log";
