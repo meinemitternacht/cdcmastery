@@ -57,6 +57,11 @@ if(isset($_POST['registrationFormStep'])):
             }
         }
 
+        if(strpos($_SESSION['registrationArray']['userHandle']['data'],'@') !== false){
+            $sysMsg->addMessage("Your username should not contain the @ symbol.");
+            $error = true;
+        }
+
         if($user->getUUIDByHandle($_SESSION['registrationArray']['userHandle']['data'])){
             $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
             $error = true;
@@ -380,7 +385,7 @@ approval is required before the system will grant extended permissions to your a
                         data: {'userHandle': userHandle },
                         success: function (response) {
                             if(response > 0) {
-                                finishAjax('system-messages-block', '<ul><li><strong>That username is already in use.</strong></li></ul>');
+                                finishAjax('system-messages-block', '<ul class="sysmsg-danger"><li><strong>That username is already in use.</strong></li></ul>');
                             }
                             else{
                                 $('#system-messages-container-block').hide();
