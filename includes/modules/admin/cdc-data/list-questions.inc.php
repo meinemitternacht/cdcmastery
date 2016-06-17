@@ -13,26 +13,6 @@ $questionManager->setAFSCUUID($workingAFSC);
 
 $questionList = $questionManager->listQuestionsForAFSC();
 
-$childSetList = $questionManager->listChildSets($workingAFSC);
-
-if($childSetList){
-    if(is_array($childSetList)){
-        $selectHTML = "";
-        foreach($childSetList as $childSet){
-            $childVolumeList = $questionManager->listChildVolumes($childSet);
-
-            if(is_array($childVolumeList)) {
-                $setName = $questionManager->getSetName($childSet);
-                $selectHTML .= '<optgroup label="' . $setName . '">';
-                foreach($childVolumeList as $childVolume){
-                    $selectHTML .= '<option value="' . $childVolume . '">' . $questionManager->getVolumeName($childVolume) . '</option>';
-                }
-                $selectHTML .= '</optgroup>';
-            }
-        }
-    }
-}
-
 if(isset($selectHTML) && !empty($selectHTML)){
     $showForm = true;
 }
@@ -49,16 +29,8 @@ else{
 </script>
 <!--[if !IE]><!-->
 <style type="text/css">
-    /*
-    Max width before this PARTICULAR table gets nasty
-    This query will take effect for any screen smaller than 760px
-    and also iPads specifically.
-    */
-    @media
-    only screen and (max-width: 760px),
+    @media only screen and (max-width: 760px),
     (min-device-width: 768px) and (max-device-width: 1024px)  {
-
-        /* Force table to not be like tables anymore */
         table, thead, tbody, th, td, tr {
             display: block;
         }
@@ -66,7 +38,6 @@ else{
         tr { border: 1px solid #ccc; }
 
         td {
-            /* Behave  like a "row" */
             border: none;
             border-bottom: 1px solid #eee;
             position: relative;
@@ -74,9 +45,7 @@ else{
         }
 
         td:before {
-            /* Now like a table header */
             position: absolute;
-            /* Top/left values mimic padding */
             top: 6px;
             left: 6px;
             width: 20%;
@@ -85,7 +54,6 @@ else{
         }
     }
 
-    /* Smartphones (portrait and landscape) ----------- */
     @media only screen
     and (min-device-width : 320px)
     and (max-device-width : 480px) {
@@ -94,8 +62,7 @@ else{
             margin: 0;
             width: 320px; }
     }
-
-    /* iPads (portrait and landscape) ----------- */
+    
     @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
         body {
             width: 495px;
@@ -144,13 +111,6 @@ else{
                         <td class="text-caution"><?php echo $percentCorrect; ?>%</td>
                     <?php else: ?>
                         <td class="text-warning"><?php echo $percentCorrect; ?>%</td>
-                    <?php endif; ?>
-                    <?php if($showForm): ?>
-                    <td>
-                        <select name="selectVolume[<?php echo $uuid; ?>]" size="1" disabled="disabled">
-                            <?php echo $selectHTML; ?>
-                        </select>
-                    </td>
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
