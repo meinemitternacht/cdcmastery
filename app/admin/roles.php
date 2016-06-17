@@ -182,7 +182,7 @@ if($pageAction == "edit"):
                 <header>
                     <h2>Current Roles</h2>
                 </header>
-                <p>Click on role name to edit or delete role.</p>
+                <p>Click on role name to edit the role name and description.</p>
                 <table>
                     <thead>
                         <tr>
