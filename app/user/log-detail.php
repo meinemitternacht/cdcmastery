@@ -34,7 +34,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>Action</th>
-								<td><?php echo $logData->getAction(); ?></td>
+								<td><span class="<?php echo $logData->getRowStyle($logData->getAction()); ?>"><?php echo $logData->getAction(); ?></span></td>
 							</tr>
 							<tr>
 								<th>IP</th>
@@ -44,6 +44,12 @@ if($logUUID):
 								<th>Timestamp</th>
 								<td><?php echo $cdcMastery->outputDateTime($logData->getTimestamp(), $_SESSION['timeZone']); ?></td>
 							</tr>
+							<?php if(!empty($logData->getUserAgent())): ?>
+							<tr>
+								<th>User Agent (Browser)</th>
+								<td><?php echo $logData->getUserAgent(); ?></td>
+							</tr>
+							<?php endif; ?>
 						</table>
 					</section>
 				</div>

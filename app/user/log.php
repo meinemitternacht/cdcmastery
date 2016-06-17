@@ -182,7 +182,7 @@ and (max-device-width : 480px) {
 						<?php foreach($logEntries as $logUUID => $logData): ?>
 						<tr>
 							<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
-							<td><?php echo $logData['action']; ?></td>
+							<td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><?php echo $logData['action']; ?></span></td>
 							<?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
 								<td><a href="/user/profile"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
 							<?php else: ?>
