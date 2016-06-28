@@ -3,22 +3,26 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
 		case "addAssociation":
 			$error = false;
-			
-			foreach($_POST['afscUUID'] as $afscUUID){
-				if($afsc->loadAFSC($afscUUID)) {
-					if ($afsc->getAFSCFOUO()) {
-						if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID, false)) {
-							$error = true;
+
+			if(isset($_POST['afscUUID'])) {
+				foreach ($_POST['afscUUID'] as $afscUUID) {
+					if ($afsc->loadAFSC($afscUUID)) {
+						if ($afsc->getAFSCFOUO()) {
+							if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID, false)) {
+								$error = true;
+							}
+						} else {
+							if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+								$error = true;
+							}
 						}
 					} else {
-						if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
-							$error = true;
-						}
+						$error = true;
 					}
 				}
-				else{
-					$error = true;
-				}
+			}
+			else{
+				$error = true;
 			}
 			
 			if($error){
@@ -30,11 +34,16 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 		break;
 		case "removeAssociation":
 			$error = false;
-			
-			foreach($_POST['afscUUID'] as $afscUUID){
-				if(!$assoc->deleteAFSCAssociation($_SESSION['userUUID'], $afscUUID)){
-					$error = true;
+
+			if(isset($_POST['afscUUID'])) {
+				foreach ($_POST['afscUUID'] as $afscUUID) {
+					if (!$assoc->deleteAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+						$error = true;
+					}
 				}
+			}
+			else{
+				$error = true;
 			}
 			
 			if($error){
@@ -46,13 +55,18 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 		break;
 		case "removePendingAssociation":
 			$error = false;
-			
-			foreach($_POST['afscUUID'] as $afscUUID){
-				if(!$assoc->deletePendingAFSCAssociation($_SESSION['userUUID'], $afscUUID)){
-					$error = true;
+
+			if(isset($_POST['afscUUID'])) {
+				foreach ($_POST['afscUUID'] as $afscUUID) {
+					if (!$assoc->deletePendingAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+						$error = true;
+					}
 				}
 			}
-			
+			else{
+				$error = true;
+			}
+
 			if($error){
 				$sysMsg->addMessage("There were errors while removing pending AFSC association(s) from your account.  Please contact the Help Desk.","danger");
 			}
