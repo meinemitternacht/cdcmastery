@@ -290,7 +290,13 @@ class log extends CDCMastery
 			$logUID = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "ANONYMOUS";
 			$this->setUserUUID($logUID);
 			$this->setIP($_SERVER['REMOTE_ADDR']);
-			$this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+			
+			if(isset($_SERVER['HTTP_USER_AGENT'])) {
+				$this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+			}
+			else{
+				$this->setUserAgent(null);
+			}
 		}
 		else{
 			$this->setUserUUID("SYSTEM");
