@@ -266,7 +266,7 @@ class router extends CDCMastery
 
 				foreach($_SESSION as $sessionKey => $sessionVar){
 					if(is_array($sessionVar)){
-						$this->log->setDetail($sessionKey,implode(",",$sessionVar));
+						$this->log->setDetail($sessionKey,serialize($sessionVar));
 					}
 					else{
 						$this->log->setDetail($sessionKey,$sessionVar);
