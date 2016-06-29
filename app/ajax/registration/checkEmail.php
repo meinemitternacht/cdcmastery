@@ -2,41 +2,13 @@
 $emailString = isset($_POST['userEmail']) ? $_POST['userEmail'] : false;
 
 if($emailString){
-    $stmt = $db->prepare("SELECT COUNT(*) AS count FROM userData WHERE userEmail = ?");
-    $stmt->bind_param("s",$emailString);
-
-    if($stmt->execute()){
-        $stmt->bind_result($count);
-        $stmt->fetch();
-        $stmt->close();
-
-        if($count > 0){
-            $emailUsed = true;
-        }
-        else{
-            $emailUsed = false;
-        }
-    }
-    else{
-        $sqlError = $stmt->error;
-        $stmt->close();
-        
-        $log->setAction("ERROR_AJAX_CHECK_EMAIL");
-        $log->setDetail("CALLING SCRIPT","/ajax/registration/checkEmail");
-        $log->setDetail("E-mail String",$emailString);
-        $log->setDetail("MySQL Error",$sqlError);
-        $log->saveEntry();
-
-        $emailUsed = false;
-    }
-    
-    /*
+    /**
      * Check if it's valid first
      */
     if(!$cdcMastery->checkEmailAddress($emailString)){
-        echo "That e-mail address is invalid:  It must end with '.mil'";
+        echo "That e-mail address is invalid:  It must be a properly formatted address such as first.last_optional.1@us.af.mil or sample.user_optional1.mil@mail.mil.  If you are certain your e-mail is correct, contact the help desk.";
     }
-    elseif($emailUsed){
+    elseif($user->getUUIDByEmail($emailString) !== false){
         echo "That e-mail address is already in use.";
     }
     else{
