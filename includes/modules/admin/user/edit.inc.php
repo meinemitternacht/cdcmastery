@@ -4,6 +4,11 @@ if(!$user->verifyUser($userUUID)){
     $cdcMastery->redirect("/admin/users");
 }
 
+if($roles->getRoleType($objUser->getUserRole()) == "admin" && $roles->getRoleType($user->getUserRole()) != "admin"){
+    $sysMsg->addMessage("You cannot edit administrators unless you are an administrator.");
+    $cdcMastery->redirect("/admin/users/".$userUUID);
+}
+
 if(!empty($_POST) && $_POST['saveUser'] == true){
     /*
      * Check for empty fields that are required
@@ -75,7 +80,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUserStatistics = new userStatistics($db, $log, $roles, $memcache);
     $objUserStatistics->setUserUUID($objUser->getUUID());
 
-    /*
+    /**
      * Migrate Supervisor Subordinates to Training Manager
      */
     if($roles->getRoleType($objUser->getUserRole()) == "supervisor" && $roles->getRoleType($_POST['userRole']) == "trainingManager"){
@@ -113,7 +118,8 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
             }
         }
     }
-    /*
+
+    /**
      * Migrate Training Manager Subordinates to Supervisor
      */
     elseif($roles->getRoleType($objUser->getUserRole()) == "trainingManager" && $roles->getRoleType($_POST['userRole']) == "supervisor"){
