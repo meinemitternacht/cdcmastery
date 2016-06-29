@@ -455,6 +455,9 @@ approval is required before the system will grant extended permissions to your a
                             <h2>Create Account &raquo; Step 1</h2>
                         </header>
                     </section>
+                    <div class="sysmsg-info">
+                        <strong>Before continuing, please ensure your e-mail address is entered correctly.  An activation code will be sent to this address and your account must be activated prior to use.</strong>
+                    </div>
                 </div>
             </div>
             <div class="row">
