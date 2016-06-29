@@ -42,12 +42,23 @@ if(!isset($_SESSION['auth'])):
 			}
 			else{
                 $session->regenerate_id();
+
+                $user->loadUser($userUUID);
+
                 if(isset($_SESSION['nextPage']) && !empty($_SESSION['nextPage'])){
                     $nextPage = $_SESSION['nextPage'];
                     unset($_SESSION['nextPage']);
                     $cdcMastery->redirect($nextPage);
                 }
-                else {
+                elseif(preg_match("/\.mil/",$user->getUserEmail())){
+                    if(!$cdcMastery->checkEmailAddress($user->getUserEmail())){
+                        $cdcMastery->redirect("/user/update-email");
+                    }
+                    else{
+                        $cdcMastery->redirect("/");
+                    }
+                }
+                else{
                     $cdcMastery->redirect("/");
                 }
 			}
