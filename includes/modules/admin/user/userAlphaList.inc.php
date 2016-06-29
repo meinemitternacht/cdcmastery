@@ -62,6 +62,7 @@ if($userList): ?>
 
 				$firstColComplete = false;
 				$secondColComplete = false;
+				$thirdColComplete = false;
 
 				foreach($userList as $uuid => $userRow){
 					$letter = strtolower(substr($userRow['userLastName'],0,1));
