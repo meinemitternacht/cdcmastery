@@ -155,8 +155,8 @@ else{
                                             . <?php echo $questionManager->getQuestionText(); ?></strong>
                                     </li>
                                     <?php
-                                    $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID);
-                                    $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$answerUUID);
+                                    $questionOccurrences = $userStatistics->getQuestionOccurrences($testManager->getUserUUID(),$questionUUID);
+                                    $answerOccurrences = $userStatistics->getAnswerOccurrences($testManager->getUserUUID(),$answerUUID);
 
                                     if(($questionOccurrences > 0) && ($answerOccurrences > 0)){
                                         $pickPercent = (($answerOccurrences)/($questionOccurrences) * 100);
@@ -200,10 +200,10 @@ else{
                                     </li>
                                     <li style="padding:0.3em">
                                         <ul>
-                                            <?php $questionOccurrences = $userStatistics->queryQuestionOccurrences($testManager->getUserUUID(),$questionUUID); ?>
+                                            <?php $questionOccurrences = $userStatistics->getQuestionOccurrences($testManager->getUserUUID(),$questionUUID); ?>
                                             <?php foreach($answerUUIDList as $allAnswersUUID => $allAnswersData): ?>
                                                 <?php
-                                                $answerOccurrences = $userStatistics->queryAnswerOccurrences($testManager->getUserUUID(),$allAnswersUUID);
+                                                $answerOccurrences = $userStatistics->getAnswerOccurrences($testManager->getUserUUID(),$allAnswersUUID);
 
                                                 if(!$questionOccurrences){
                                                     $pickPercentString = "This question has not been answered by you yet.";
