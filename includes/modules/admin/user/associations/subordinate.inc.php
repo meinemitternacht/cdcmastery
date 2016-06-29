@@ -51,15 +51,23 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 }
 
 $userStatistics->setUserUUID($userUUID);
-$userInfo = new user($db, $log, $emailQueue);
 $userList = $user->listUsersByBase($user->getUserBase());
 
+$subordinateList = false;
+$subordinateCount = 0;
+
 if($userRole == "trainingManager"):
-	$subordinateList = $user->sortUserList($userStatistics->getTrainingManagerAssociations(),"userLastName");
-	$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	$rawList = $userStatistics->getTrainingManagerAssociations();
+	if(is_array($rawList)):
+		$subordinateList = $user->sortUserList($rawList,"userLastName");
+		$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	endif;
 elseif($userRole == "supervisor"):
-	$subordinateList = $user->sortUserList($userStatistics->getSupervisorAssociations(),"userLastName");
-	$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	$rawList = $userStatistics->getSupervisorAssociations();
+	if(is_array($rawList)):
+		$subordinateList = $user->sortUserList($rawList,"userLastName");
+		$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	endif;
 else:
 	$cdcMastery->redirect("/admin/users/".$userUUID);
 endif;
@@ -109,9 +117,8 @@ $(document).ready(function() {
 				<input type="hidden" name="formAction" value="removeSubordinate">
 				<ul>
 					<li><input type="checkbox" id="selectAll"> <em>Select All</em>
-					<?php foreach($subordinateList as $subordinateKey => $subordinate):
-							if(isset($userList[$subordinateKey]))
-								unset($userList[$subordinateKey]); ?>
+					<?php foreach($subordinateList as $subordinateKey => $subordinate): ?>
+							<?php if(isset($userList[$subordinateKey])) unset($userList[$subordinateKey]); ?>
 							<li><input class="subordinateCheckbox" type="checkbox" name="userUUID[]" value="<?php echo $subordinateKey; ?>"> <?php echo $subordinate['fullName']; ?></li>
 					<?php endforeach; ?>
 					<li><input type="submit" value="Remove Subordinate(s)"></li>
