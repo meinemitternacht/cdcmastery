@@ -57,12 +57,30 @@ class userStatistics extends CDCMastery
 	public $countUserSupervisors;
 	public $countUserTrainingManagers;
 
+	/**
+	 * User question and answer occurrences
+	 */
+	public $questionOccurrences;
+	public $answerOccurrences;
+
+	/**
+	 * userStatistics constructor.
+	 * @param mysqli $db
+	 * @param log $log
+	 * @param roles $roles
+	 * @param Memcache $memcache
+	 */
+
 	public function __construct(mysqli $db, log $log, roles $roles, Memcache $memcache){
 		$this->db = $db;
 		$this->log = $log;
 		$this->roles = $roles;
 		$this->memcache = $memcache;
 	}
+
+    /**
+     * Cache Functions
+     */
 
 	public function getCacheHash($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
 		if($var1 !== false){
@@ -93,9 +111,6 @@ class userStatistics extends CDCMastery
 		return $cacheHash;
 	}
 
-	/*
-	 * Cache Functions
-	 */
 	public function deleteUserStatsCacheVal($functionName,$var1=false,$var2=false,$var3=false,$ignoreCurrentUser=false){
 		if($this->memcache->delete($this->getCacheHash($functionName,$var1,$var2,$var3,$ignoreCurrentUser))){
 			return true;
@@ -122,10 +137,13 @@ class userStatistics extends CDCMastery
 		return $this->memcache->get($cacheHash);
 	}
 	
-	/*
+	/**
 	 * Entry Functions
 	 */
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getLogEntries(){
 		if(!$this->userUUID){
 			return false;
@@ -145,7 +163,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|double
+	 */
 	public function getAverageScore(){
 		if(!$this->userUUID){
 			return false;
@@ -165,7 +186,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getCompletedTests(){
 		if(!$this->userUUID){
 			return false;
@@ -198,6 +222,9 @@ class userStatistics extends CDCMastery
 		}
 	}
 
+	/**
+	 * @return array|bool
+	 */
     public function getIPAddresses(){
 		if(!$this->userUUID){
 			return false;
@@ -218,6 +245,9 @@ class userStatistics extends CDCMastery
 		}
     }
 
+	/**
+	 * @return bool|double
+	 */
     public function getLatestTestScore(){
         $this->latestTestScore = 0;
 		if(!$this->userUUID){
@@ -238,11 +268,17 @@ class userStatistics extends CDCMastery
 			}
 		}
     }
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getTotalTests(){
 		return ($this->getCompletedTests() + $this->getIncompleteTests());
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getQuestionsAnswered(){
 		if(!$this->userUUID){
 			return false;
@@ -262,7 +298,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getQuestionsMissed(){
 		if(!$this->userUUID){
 			return false;
@@ -283,6 +322,9 @@ class userStatistics extends CDCMastery
 		}
 	}
 
+	/**
+	 * @return bool|int
+	 */
 	public function getQuestionsMissedAcrossTests(){
 		if(!$this->userUUID){
 			return false;
@@ -306,7 +348,6 @@ class userStatistics extends CDCMastery
 	/**
 	 * @return array|bool
 	 */
-	
 	public function getSupervisorAssociations(){
 		if(!$this->userUUID){
 			return false;
@@ -330,7 +371,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+	 */
 	public function getTrainingManagerAssociations(){
 		if(!$this->userUUID){
 			return false;
@@ -354,7 +398,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+	 */
 	public function getUserSupervisors(){
 		if(!$this->userUUID){
 			return false;
@@ -374,7 +421,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+	 */
 	public function getUserTrainingManagers(){
 		if(!$this->userUUID){
 			return false;
@@ -394,7 +444,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+	 */
 	public function getAFSCAssociations(){
 		if(!$this->userUUID){
 			return false;
@@ -414,7 +467,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return array|bool
+	 */
 	public function getPendingAFSCAssociations(){
 		if(!$this->userUUID){
 			return false;
@@ -434,7 +490,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getAFSCAssociationCount(){
 		if(!$this->userUUID){
 			return false;
@@ -454,7 +513,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getPendingAFSCAssociationCount(){
 		if(!$this->userUUID){
 			return false;
@@ -474,7 +536,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getSupervisorSubordinateCount(){
 		if(!$this->userUUID){
 			return false;
@@ -494,7 +559,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getTrainingManagerSubordinateCount(){
 		if(!$this->userUUID){
 			return false;
@@ -514,7 +582,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getUserSupervisorCount(){
 		if(!$this->userUUID){
 			return false;
@@ -534,7 +605,10 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
-	
+
+	/**
+	 * @return bool|int
+	 */
 	public function getUserTrainingManagerCount(){
 		if(!$this->userUUID){
 			return false;
@@ -554,57 +628,118 @@ class userStatistics extends CDCMastery
 			}
 		}
 	}
+
+	/**
+	 * @return bool|int
+	 */
+	public function getQuestionOccurrences($userUUID,$questionUUID){
+		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID)){
+			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID);
+		}
+		else{
+			if(!$this->queryQuestionOccurrences($userUUID,$questionUUID)){
+				return false;
+			}
+			else{
+				$this->setUserStatsCacheVal(__FUNCTION__,$this->questionOccurrences[$userUUID][$questionUUID],$this->getCacheTTL(),$userUUID,$questionUUID);
+				return $this->questionOccurrences[$userUUID][$questionUUID];
+			}
+		}
+	}
+
+	/**
+	 * @return bool|int
+	 */
+	public function getAnswerOccurrences($userUUID,$answerUUID){
+		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID)){
+			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID);
+		}
+		else{
+			if(!$this->queryAnswerOccurrences($userUUID,$answerUUID)){
+				return false;
+			}
+			else{
+				$this->setUserStatsCacheVal(__FUNCTION__,$this->answerOccurrences[$userUUID][$answerUUID],$this->getCacheTTL(),$userUUID,$answerUUID);
+				return $this->answerOccurrences[$userUUID][$answerUUID];
+			}
+		}
+	}
 	
-	/*
+	/**
 	 * Queries
 	 */
 
+	/**
+	 * @param $userUUID
+	 * @param $questionUUID
+	 * @return bool
+	 */
 	public function queryQuestionOccurrences($userUUID,$questionUUID){
-		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID,false,true)){
-			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$questionUUID,false,true);
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND questionUUID = ?");
+
+		$stmt->bind_param("ss",$userUUID,$questionUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
+
+			$this->questionOccurrences[$userUUID][$questionUUID] = $count;
+
+			return true;
 		}
 		else{
-			$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND questionUUID = ?");
+			$sqlError = $stmt->error;
+			$stmt->close();
 
-			$stmt->bind_param("ss",$userUUID, $questionUUID);
+			$this->log->setAction("ERROR_QUERY_QUESTION_OCCURRENCES");
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("Question UUID",$questionUUID);
+			$this->log->setDetail("MySQL Error",$sqlError);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
 
-			if($stmt->execute()){
-				$stmt->bind_result($count);
-				$stmt->fetch();
-				$stmt->close();
-				$this->setUserStatsCacheVal(__FUNCTION__,$count,$this->getCacheTTL(3),$userUUID,$questionUUID,false,true);
-
-				return $count;
-			}
-			else{
-				return false;
-			}
+			return false;
 		}
 	}
 
+	/**
+	 * @param $userUUID
+	 * @param $answerUUID
+	 * @return bool
+	 */
 	public function queryAnswerOccurrences($userUUID,$answerUUID){
-		if($this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID,false,true)){
-			return $this->getUserStatsCacheVal(__FUNCTION__,$userUUID,$answerUUID,false,true);
+		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND answerUUID = ?");
+
+		$stmt->bind_param("ss",$userUUID, $answerUUID);
+
+		if($stmt->execute()){
+			$stmt->bind_result($count);
+			$stmt->fetch();
+			$stmt->close();
+
+			$this->answerOccurrences[$userUUID][$answerUUID] = $count;
+
+			return true;
 		}
 		else{
-			$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testData LEFT JOIN testHistory ON testHistory.uuid = testData.testUUID WHERE testHistory.userUUID = ? AND answerUUID = ?");
+			$sqlError = $stmt->error;
+			$stmt->close();
 
-			$stmt->bind_param("ss",$userUUID, $answerUUID);
+			$this->log->setAction("ERROR_QUERY_ANSWER_OCCURRENCES");
+			$this->log->setDetail("User UUID",$userUUID);
+			$this->log->setDetail("Answer UUID",$answerUUID);
+			$this->log->setDetail("MySQL Error",$sqlError);
+			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
+			$this->log->saveEntry();
 
-			if($stmt->execute()){
-				$stmt->bind_result($count);
-				$stmt->fetch();
-				$stmt->close();
-				$this->setUserStatsCacheVal(__FUNCTION__,$count,$this->getCacheTTL(3),$userUUID,$answerUUID,false,true);
-
-				return $count;
-			}
-			else{
-				return false;
-			}
+			return false;
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function queryIPAddresses(){
         $stmt = $this->db->prepare("SELECT DISTINCT(ip) FROM systemLog WHERE userUUID = ?");
         $stmt->bind_param("s",$this->userUUID);
@@ -621,198 +756,216 @@ class userStatistics extends CDCMastery
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_USERSTATS_QUERY_IP_ADDRESSES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
     }
-	
+
+	/**
+	 * @return bool
+	 */
 	public function queryLogEntries(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM systemLog WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-			
-			while($stmt->fetch()){
-				$this->logEntries = $count;
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->logEntries = $count;
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+            $stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_LOG_ENTRIES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+	 */
 	public function queryAverageScore(){
 		$stmt = $this->db->prepare("SELECT AVG(testScore) AS averageScore FROM testHistory WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($averageScore);
-		
-			while($stmt->fetch()){
-				$this->averageScore = round($averageScore,2);
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->averageScore = round($averageScore,2);
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+            $stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_AVERAGE_SCORE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 				
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+	 */
 	public function queryCompletedTests(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testHistory WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-			
-			while($stmt->fetch()){
-				$this->completedTests = $count;
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->completedTests = $count;
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+            $stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COMPLETED_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 			
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+	 */
 	public function queryIncompleteTests(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM testManager WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->incompleteTests = $count;
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->incompleteTests = $count;
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+            $stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_INCOMPLETE_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 				
 			return false;
 		}
 	}
 
-    public function queryLatestTestScore(){
+	/**
+	 * @return bool
+     */
+	public function queryLatestTestScore(){
         $stmt = $this->db->prepare("SELECT testScore FROM `testHistory` WHERE userUUID = ? ORDER BY testTimeCompleted DESC LIMIT 1");
 		$stmt->bind_param("s",$this->userUUID);
 
 		if($stmt->execute()){
             $stmt->bind_result($testScore);
-
-            while($stmt->fetch()){
-                $this->latestTestScore = $testScore;
-            }
-
+            $stmt->fetch();
             $stmt->close();
+
+            $this->latestTestScore = $testScore;
             return true;
         }
         else{
             $this->error = $stmt->error;
+            $stmt->close();
+
             $this->log->setAction("ERROR_USERSTATS_QUERY_LATEST_TEST_SCORE");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
             $this->log->setDetail("MYSQL ERROR",$this->error);
             $this->log->saveEntry();
-            $stmt->close();
 
             return false;
         }
     }
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryQuestionsAnswered(){
 		$stmt = $this->db->prepare("SELECT SUM(totalQuestions) AS questionsAnswered FROM testHistory WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($questionsAnswered);
-		
-			while($stmt->fetch()){
-				$this->questionsAnswered = $questionsAnswered;
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->questionsAnswered = $questionsAnswered;
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_ANSWERED");
+			$stmt->close();
+
+            $this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_ANSWERED");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
-				
+
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryQuestionsMissed(){
 		$stmt = $this->db->prepare("SELECT SUM(questionsMissed) AS questionsMissed FROM testHistory WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($questionsMissed);
-		
-			while($stmt->fetch()){
-				$this->questionsMissed = $questionsMissed;
-			}
-			
-			$stmt->close();
+            $stmt->fetch();
+            $stmt->close();
+
+            $this->questionsMissed = $questionsMissed;
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
-			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_MISSED");
+			$stmt->close();
+
+            $this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_MISSED");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
-	
+
 			return false;
 		}
 	}
 
+	/**
+	 * @return bool
+     */
 	public function queryQuestionsMissedAcrossTests(){
 		$query = "SELECT
 						testData.questionUUID,
@@ -844,16 +997,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+            $stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_QUESTIONS_MISSED_ACROSS_TESTS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function querySupervisorAssociations(){
 		$stmt = $this->db->prepare("SELECT userUUID FROM userSupervisorAssociations WHERE supervisorUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
@@ -870,16 +1027,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_SUPERVISOR_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryTrainingManagerAssociations(){
 		$stmt = $this->db->prepare("SELECT userUUID FROM userTrainingManagerAssociations WHERE trainingManagerUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
@@ -896,16 +1057,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_TRAINING_MANAGER_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 			
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryUserSupervisors(){
 		$stmt = $this->db->prepare("SELECT supervisorUUID FROM userSupervisorAssociations WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
@@ -922,16 +1087,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_USER_SUPERVISORS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 	
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryUserTrainingManagers(){
 		$stmt = $this->db->prepare("SELECT trainingManagerUUID FROM userTrainingManagerAssociations WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
@@ -948,16 +1117,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_USER_TRAINING_MANAGERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 	
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryAFSCAssociations(){
 		$stmt = $this->db->prepare("SELECT afscUUID, afscName
                                     FROM userAFSCAssociations
@@ -980,16 +1153,20 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryPendingAFSCAssociations(){
 		$stmt = $this->db->prepare("SELECT afscUUID, afscName
                                     FROM userAFSCAssociations
@@ -1012,176 +1189,202 @@ class userStatistics extends CDCMastery
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_PENDING_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 	
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountAFSCAssociations(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE userAuthorized = 1 AND userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->countAFSCAssociations = $count;
-			}
-		
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countAFSCAssociations = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountPendingAFSCAssociations(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE userAuthorized = 0 AND userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->countPendingAFSCAssociations = $count;
-			}
-		
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countPendingAFSCAssociations = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_PENDING_AFSC_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountSupervisorSubordinates(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userSupervisorAssociations WHERE supervisorUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-				
-			while($stmt->fetch()){
-				$this->countSupervisorSubordinates = $count;
-			}
-			
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countSupervisorSubordinates = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_SUPERVISOR_ASSOCIATIONS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountTrainingManagerSubordinates(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userTrainingManagerAssociations WHERE trainingManagerUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->countTrainingManagerSubordinates = $count;
-			}
-				
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countTrainingManagerSubordinates = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_TRAINING_MANAGER_SUBORDINATES");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 				
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountUserSupervisors(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userSupervisorAssociations WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->countUserSupervisors = $count;
-			}
-				
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countUserSupervisors = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_USER_SUPERVISORS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return bool
+     */
 	public function queryCountUserTrainingManagers(){
 		$stmt = $this->db->prepare("SELECT COUNT(*) AS count FROM userTrainingManagerAssociations WHERE userUUID = ?");
 		$stmt->bind_param("s",$this->userUUID);
 		
 		if($stmt->execute()){
 			$stmt->bind_result($count);
-		
-			while($stmt->fetch()){
-				$this->countUserTrainingManagers = $count;
-			}
-				
+			$stmt->fetch();
 			$stmt->close();
+
+			$this->countUserTrainingManagers = $count;
+
 			return true;
 		}
 		else{
 			$this->error = $stmt->error;
+			$stmt->close();
+
 			$this->log->setAction("ERROR_USERSTATS_QUERY_COUNT_USER_TRAINING_MANAGERS");
 			$this->log->setDetail("Calling Function",__CLASS__ . "->" . __FUNCTION__);
 			$this->log->setDetail("MYSQL ERROR",$this->error);
 			$this->log->saveEntry();
-			$stmt->close();
 		
 			return false;
 		}
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	public function getUserUUID(){
 		return $this->userUUID;
 	}
-	
+
+	/**
+	 * @param $userUUID
+	 * @return bool
+	 */
 	public function setUserUUID($userUUID){
 		$this->userUUID = $userUUID;
 		return true;
