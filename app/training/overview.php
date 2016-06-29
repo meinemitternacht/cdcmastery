@@ -79,30 +79,31 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
                     <?php
                     $i=0;
                     foreach($subordinateUsers as $subordinateUser):
-                        $tmUser->loadUser($subordinateUser);
-                        $userStatistics->setUserUUID($subordinateUser);
-                        $userAverage = round($userStatistics->getAverageScore(),2);
-                        $userLatestScore = $userStatistics->getLatestTestScore();
-                        $userTestCount = $userStatistics->getTotalTests();
+                        if($tmUser->loadUser($subordinateUser)):
+                            $userStatistics->setUserUUID($subordinateUser);
+                            $userAverage = round($userStatistics->getAverageScore(),2);
+                            $userLatestScore = $userStatistics->getLatestTestScore();
+                            $userTestCount = $userStatistics->getTotalTests();
 
-                        if($userTestCount > 0) {
-                            $chartData[$i]['userName'] = $tmUser->getFullName();
-                            $chartData[$i]['userAverage'] = $userAverage;
-                            $chartData[$i]['userTestCount'] = $userTestCount;
-                            $i++;
-                        }
-                        ?>
-                        <tr>
-                            <td><a href="/admin/profile/<?php echo $tmUser->getUUID(); ?>"><?php echo $tmUser->getFullName(); ?></a></td>
-                            <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
-                            <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
-                            <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                            <td>
-                                <abbr class="timeago" title="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
-                                    <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
-                                </abbr>
-                            </td>
-                        </tr>
+                            if($userTestCount > 0) {
+                                $chartData[$i]['userName'] = $tmUser->getFullName();
+                                $chartData[$i]['userAverage'] = $userAverage;
+                                $chartData[$i]['userTestCount'] = $userTestCount;
+                                $i++;
+                            }
+                            ?>
+                            <tr>
+                                <td><a href="/admin/profile/<?php echo $tmUser->getUUID(); ?>"><?php echo $tmUser->getFullName(); ?></a></td>
+                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
+                                <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
+                                <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
+                                <td>
+                                    <time class="timeago" datetime="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
+                                        <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
+                                    </time>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     <?php endforeach;?>
                 </table>
             </section>
@@ -188,95 +189,107 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
                     </tr>
                     <?php
                     foreach($subordinateSupervisors as $subordinateSupervisor):
-                        $tmUser->loadUser($subordinateSupervisor);
-                        $userStatistics->setUserUUID($subordinateSupervisor);
-                        $supervisorAverage = round($userStatistics->getAverageScore(),2);
-                        $supervisorLatestTestScore = $userStatistics->getLatestTestScore();
-                        $supervisorTestCount = $userStatistics->getTotalTests();
+                        if($tmUser->loadUser($subordinateSupervisor)) {
+                            $userStatistics->setUserUUID($subordinateSupervisor);
+                            $supervisorAverage = round($userStatistics->getAverageScore(), 2);
+                            $supervisorLatestTestScore = $userStatistics->getLatestTestScore();
+                            $supervisorTestCount = $userStatistics->getTotalTests();
 
-                        if($supervisorTestCount > 0) {
-                            $supervisorChartData[$i]['userName'] = $tmUser->getFullName();
-                            $supervisorChartData[$i]['userAverage'] = $supervisorAverage;
-                            $supervisorChartData[$i]['userTestCount'] = $supervisorTestCount;
-                            $i++;
+                            if ($supervisorTestCount > 0) {
+                                $supervisorChartData[$i]['userName'] = $tmUser->getFullName();
+                                $supervisorChartData[$i]['userAverage'] = $supervisorAverage;
+                                $supervisorChartData[$i]['userTestCount'] = $supervisorTestCount;
+                                $i++;
+                            }
+                            ?>
+                            <tr>
+                                <td>
+                                    <a href="/admin/profile/<?php echo $tmUser->getUUID(); ?>"><?php echo $tmUser->getFullName(); ?></a>
+                                </td>
+                                <td><?php echo $supervisorTestCount; ?> <span class="text-float-right"><a
+                                            href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span>
+                                </td>
+                                <td<?php if ($cdcMastery->scoreColor($supervisorAverage)) {
+                                    echo " class=\"" . $cdcMastery->scoreColor($supervisorAverage) . "\"";
+                                } ?>><?php echo $supervisorAverage; ?></td>
+                                <td<?php if ($cdcMastery->scoreColor($supervisorLatestTestScore)) {
+                                    echo " class=\"" . $cdcMastery->scoreColor($supervisorLatestTestScore) . "\"";
+                                } ?>><?php echo $supervisorLatestTestScore; ?></td>
+                                <td>
+                                    <time class="timeago"
+                                          datetime="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(), $_SESSION['timeZone'], "c"); ?>">
+                                        <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(), $_SESSION['timeZone'], "j-M-Y \a\\t h:i A"); ?>
+                                    </time>
+                                </td>
+                            </tr>
+                            <?php
                         }
-                        ?>
-                        <tr>
-                            <td><a href="/admin/profile/<?php echo $tmUser->getUUID(); ?>"><?php echo $tmUser->getFullName(); ?></a></td>
-                            <td><?php echo $supervisorTestCount; ?> <span class="text-float-right"><a href="/admin/users/<?php echo $tmUser->getUUID(); ?>/tests">[view]</a></span></td>
-                            <td<?php if($cdcMastery->scoreColor($supervisorAverage)){ echo " class=\"".$cdcMastery->scoreColor($supervisorAverage)."\""; }?>><?php echo $supervisorAverage; ?></td>
-                            <td<?php if($cdcMastery->scoreColor($supervisorLatestTestScore)){ echo " class=\"".$cdcMastery->scoreColor($supervisorLatestTestScore)."\""; }?>><?php echo $supervisorLatestTestScore; ?></td>
-                            <td>
-                                <abbr class="timeago" title="<?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
-                                    <?php echo ($tmUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($tmUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
-                                </abbr>
-                            </td>
-                        </tr>
-                    <?php endforeach;?>
+                    endforeach; ?>
                 </table>
             </section>
         </div>
     </div>
     <?php endif; ?>
     <?php
-    if(isset($chartData)):
-        $chartOutputData = "";
-        $firstRow = true;
-        $i=0;
-        foreach($chartData as $rowKey => $rowData){
-            if ($firstRow == false) {
-                $chartOutputData .= ",";
+    if($totalUserTestCount > 0):
+        if(isset($chartData)):
+            $chartOutputData = "";
+            $firstRow = true;
+            $i=0;
+            foreach($chartData as $rowKey => $rowData){
+                if ($firstRow == false) {
+                    $chartOutputData .= ",";
+                }
+
+                $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+                $firstRow = false;
+                $i++;
             }
+        endif;
 
-            $chartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
-            $firstRow = false;
-            $i++;
-        }
-    endif;
+        if(isset($supervisorChartData)):
+            $supervisorChartOutputData = "";
+            $firstRow = true;
+            $i=0;
+            foreach($supervisorChartData as $rowKey => $rowData){
+                if ($firstRow == false) {
+                    $supervisorChartOutputData .= ",";
+                }
 
-    if(isset($supervisorChartData)):
-        $supervisorChartOutputData = "";
-        $firstRow = true;
-        $i=0;
-        foreach($supervisorChartData as $rowKey => $rowData){
-            if ($firstRow == false) {
-                $supervisorChartOutputData .= ",";
+                $supervisorChartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
+                $firstRow = false;
+                $i++;
             }
+        endif; ?>
+        <script type="text/javascript">
+            window.onload = function () {
+                var dataPoints = [<?php echo $chartOutputData; ?>];
+                renderMyChart("chart-container", dataPoints, "User Testing Overview");
+                <?php if(isset($supervisorChartOutputData)): ?>
+                var supervisorDataPoints = [<?php echo $supervisorChartOutputData; ?>];
+                renderMyChart("supervisor-chart-container", supervisorDataPoints, "Supervisor Testing Overview");
+                <?php endif; ?>
 
-            $supervisorChartOutputData .= "{ x: " . $i . ", toolTipContent: \"<strong>" . $rowData['userName'] . "</strong><br>Average: <strong>{y}</strong><br>Tests: <strong>" . $rowData['userTestCount'] . "</strong>\", y: " . $rowData['userAverage'] . " }";
-            $firstRow = false;
-            $i++;
-        }
-        ?>
+                function renderMyChart(theDIVid, myData, chartTitle) {
+                    var chart = new CanvasJS.Chart(theDIVid, {
+                        title:{
+                            text: chartTitle
+                        },
+                        axisX:{
+                            valueFormatString: " ",
+                            tickLength: 0
+                        },
+                        data: [
+                            {
+                                type: "column",
+                                dataPoints: myData
+                            }
+                        ]
+                    });
+                    chart.render();
+                }
+            }
+        </script>
     <?php endif; ?>
-    <script type="text/javascript">
-        window.onload = function () {
-            var dataPoints = [<?php echo $chartOutputData; ?>];
-            renderMyChart("chart-container", dataPoints, "User Testing Overview");
-            <?php if(isset($supervisorChartOutputData)): ?>
-            var supervisorDataPoints = [<?php echo $supervisorChartOutputData; ?>];
-            renderMyChart("supervisor-chart-container", supervisorDataPoints, "Supervisor Testing Overview");
-            <?php endif; ?>
-
-            function renderMyChart(theDIVid, myData, chartTitle) {
-                var chart = new CanvasJS.Chart(theDIVid, {
-                    title:{
-                        text: chartTitle
-                    },
-                    axisX:{
-                        valueFormatString: " ",
-                        tickLength: 0
-                    },
-                    data: [
-                        {
-                            type: "column",
-                            dataPoints: myData
-                        }
-                    ]
-                });
-                chart.render();
-            }
-        }
-    </script>
 </div>
 <div class="clearfix"><br></div>

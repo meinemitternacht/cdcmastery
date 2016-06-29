@@ -77,31 +77,33 @@ $totalUserTestCount = $supOverview->getTotalUserTests();
                         <?php
                         $i=0;
                         foreach($subordinateUsers as $subordinateUser):
-                            $supUser->loadUser($subordinateUser);
-                            $userStatistics->setUserUUID($subordinateUser);
-                            $userAverage = round($userStatistics->getAverageScore(),2);
-                            $userLatestScore = $userStatistics->getLatestTestScore();
-                            $userTestCount = $userStatistics->getTotalTests();
+                            if($supUser->loadUser($subordinateUser)){
+                                $userStatistics->setUserUUID($subordinateUser);
+                                $userAverage = round($userStatistics->getAverageScore(),2);
+                                $userLatestScore = $userStatistics->getLatestTestScore();
+                                $userTestCount = $userStatistics->getTotalTests();
 
-                            if($userTestCount > 0) {
-                                $chartData[$i]['userName'] = $supUser->getFullName();
-                                $chartData[$i]['userAverage'] = $userAverage;
-                                $chartData[$i]['userTestCount'] = $userTestCount;
-                                $i++;
+                                if($userTestCount > 0) {
+                                    $chartData[$i]['userName'] = $supUser->getFullName();
+                                    $chartData[$i]['userAverage'] = $userAverage;
+                                    $chartData[$i]['userTestCount'] = $userTestCount;
+                                    $i++;
+                                }
+                                ?>
+                                <tr>
+                                    <td><a href="/supervisor/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
+                                    <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/supervisor/history/<?php echo $supUser->getUUID(); ?>">[view]</a></span></td>
+                                    <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
+                                    <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
+                                    <td>
+                                        <time class="timeago" datetime="<?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
+                                            <?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
+                                        </time>
+                                    </td>
+                                </tr>
+                            <?php
                             }
-                            ?>
-                            <tr>
-                                <td><a href="/supervisor/profile/<?php echo $supUser->getUUID(); ?>"><?php echo $supUser->getFullName(); ?></a></td>
-                                <td><?php echo $userStatistics->getTotalTests(); ?> <span class="text-float-right"><a href="/supervisor/history/<?php echo $supUser->getUUID(); ?>">[view]</a></span></td>
-                                <td<?php if($cdcMastery->scoreColor($userAverage)){ echo " class=\"".$cdcMastery->scoreColor($userAverage)."\""; }?>><?php echo $userAverage; ?></td>
-                                <td<?php if($cdcMastery->scoreColor($userLatestScore)){ echo " class=\"".$cdcMastery->scoreColor($userLatestScore)."\""; }?>><?php echo $userLatestScore; ?></td>
-                                <td>
-                                    <abbr class="timeago" title="<?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"c"); ?>">
-                                        <?php echo ($supUser->getUserLastLogin() == "Never") ? "Never" : $cdcMastery->outputDateTime($supUser->getUserLastLogin(),$_SESSION['timeZone'],"j-M-Y \a\\t h:i A");  ?>
-                                    </abbr>
-                                </td>
-                            </tr>
-                        <?php endforeach;?>
+                        endforeach; ?>
                     </table>
                     <?php
                     if(isset($chartData)):
@@ -131,7 +133,6 @@ $totalUserTestCount = $supOverview->getTotalUserTests();
                                     },
                                     data: [
                                         {
-                                            /*** Change type "column" to "bar", "area", "line" or "pie"***/
                                             type: "column",
                                             dataPoints: [<?php echo $chartOutputData; ?>]
                                         }
