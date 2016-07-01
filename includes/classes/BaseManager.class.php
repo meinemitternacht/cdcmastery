@@ -1,6 +1,6 @@
 <?php
 
-class bases extends CDCMastery
+class BaseManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -11,7 +11,7 @@ class bases extends CDCMastery
 	public $baseName;
 	public $oldID;
 	
-	public function __construct(mysqli $db, log $log){
+	public function __construct(mysqli $db, SystemLog $log){
 		$this->db = $db;
 		$this->log = $log;
 	}
@@ -222,7 +222,7 @@ class bases extends CDCMastery
 	
 	public function getBaseName($uuid = false){
 		if(!empty($uuid)){
-			$_bases = new bases($this->db, $this->log);
+			$_bases = new BaseManager($this->db, $this->log);
 			if(!$_bases->loadBase($uuid)){
 				$this->error = $_bases->error;
 				return false;

@@ -3,18 +3,18 @@
 /**
  * Class roles
  */
-class roles extends CDCMastery
+class RoleManager extends CDCMastery
 {
     /**
      * @var mysqli
      */
     protected $db;
     /**
-     * @var log
+     * @var SystemLog
      */
     protected $log;
     /**
-     * @var emailQueue
+     * @var EmailQueueManager
      */
     protected $emailQueue;
 
@@ -47,10 +47,10 @@ class roles extends CDCMastery
 
     /**
      * @param mysqli $db
-     * @param log $log
-     * @param emailQueue $emailQueue
+     * @param SystemLog $log
+     * @param EmailQueueManager $emailQueue
      */
-    public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
+    public function __construct(mysqli $db, SystemLog $log, EmailQueueManager $emailQueue){
 		$this->db = $db;
 		$this->log = $log;
 		$this->emailQueue = $emailQueue;
@@ -244,7 +244,7 @@ class roles extends CDCMastery
      * @return bool|string
      */
     public function verifyUserRole($userUUID){
-		$_user = new user($this->db, $this->log, $this->emailQueue);
+		$_user = new UserManager($this->db, $this->log, $this->emailQueue);
 		
 		if(!$_user->loadUser($userUUID)){
 			$this->error = $_user->error;
@@ -400,7 +400,7 @@ class roles extends CDCMastery
      */
     public function getRoleType($uuid = false){
 		if(!empty($uuid)){
-			$_roles = new roles($this->db, $this->log, $this->emailQueue);
+			$_roles = new RoleManager($this->db, $this->log, $this->emailQueue);
 			
 			if($_roles->loadRole($uuid)){
 				$tempRoleType = $_roles->getRoleType();
@@ -457,7 +457,7 @@ class roles extends CDCMastery
      */
     public function getRoleName($uuid=false){
 		if(!empty($uuid)){
-			$_roles = new roles($this->db, $this->log, $this->emailQueue);
+			$_roles = new RoleManager($this->db, $this->log, $this->emailQueue);
 			
 			if(!$_roles->loadRole($uuid)){
 				$this->error = $_roles->error;

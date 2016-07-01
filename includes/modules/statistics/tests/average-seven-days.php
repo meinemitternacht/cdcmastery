@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $testAverageLastSevenArray = $statsObj->getTestAverageLastSeven();
 

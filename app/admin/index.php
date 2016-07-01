@@ -1,5 +1,5 @@
 <?php
-$pendingAssociations = $assoc->listPendingAFSCAssociations();
+$pendingAssociations = $associationManager->listPendingAFSCAssociations();
 if(is_array($pendingAssociations)){
     $pendingAssociationsCount = count($pendingAssociations);
 }
@@ -7,7 +7,7 @@ else{
     $pendingAssociationsCount = 0;
 }
 
-$userActivation = new userActivation($db,$log,$emailQueue);
+$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
 $unactivatedUsers = $userActivation->listUnactivatedUsers();
 if(is_array($unactivatedUsers)){
     $unactivatedUsersCount = count($unactivatedUsers);
@@ -16,7 +16,7 @@ else{
     $unactivatedUsersCount = 0;
 }
 
-$userAuthorization = new userAuthorizationQueue($db,$log,$emailQueue);
+$userAuthorization = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 $authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 if(is_array($authorizationQueue)){
     $authorizationQueueCount = count($authorizationQueue);
@@ -95,7 +95,7 @@ else{
 				</header>
 				<table class="tableSmallText">
 				<?php
-				$errorLog = explode("\n",$cdcMastery->tailCustom($cfg['log']['error_log'],10));
+				$errorLog = explode("\n",$cdcMastery->tailCustom($configurationManager->getNGINXConfiguration('error_log'),10));
 				foreach($errorLog as $logLine): ?>
 					<tr>
 						<td><?php echo $logLine; ?></td>

@@ -1,106 +1,106 @@
 <?php
 if(isset($_POST['confirmUserDelete'])){
     if(empty($_POST['deleteReason'])){
-        $sysMsg->addMessage("You must enter a reason why you are deleting this user.","warning");
+        $systemMessages->addMessage("You must enter a reason why you are deleting this user.", "warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/delete");
     }
 
     if($userUUID){
         $error = false;
-        $delUserObj = new user($db,$log,$emailQueue);
+        $delUserObj = new UserManager($db, $systemLog, $emailQueue);
 
         if($delUserObj->loadUser($userUUID)){
             $userFullName = $delUserObj->getFullName();
 
-            if($roles->getRoleType($delUserObj->getUserRole()) != "admin") {
-                $authObj = new auth($userUUID,$log,$db,$roles,$emailQueue);
-                $testManager = new testManager($db,$log,$afsc);
+            if($roleManager->getRoleType($delUserObj->getUserRole()) != "admin") {
+                $authObj = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
+                $testManager = new TestManager($db, $systemLog, $afscManager);
                 $userTestList = $testManager->getTestUUIDList($userUUID);
 
                 if(!$authObj->getActivationStatus()){
-                    $activateObj = new userActivation($db,$log,$emailQueue);
+                    $activateObj = new UserActivationManager($db, $systemLog, $emailQueue);
                     if(!$activateObj->deleteUserActivationToken($userUUID)){
-                        $sysMsg->addMessage("User activation token not cleared.","danger");
+                        $systemMessages->addMessage("User activation token not cleared.", "danger");
                     }
                 }
 
-                if(!$log->clearLogEntries($userUUID)){
-                    $sysMsg->addMessage("Log Entries not cleared.","danger");
+                if(!$systemLog->clearLogEntries($userUUID)){
+                    $systemMessages->addMessage("Log Entries not cleared.", "danger");
                     $error = true;
                 }
 
                 if(!empty($userTestList)){
                     if(!$testManager->deleteTests($userTestList)){
-                        $sysMsg->addMessage("Tests not cleared.","danger");
+                        $systemMessages->addMessage("Tests not cleared.", "danger");
                         $error = true;
                     }
                 }
 
-                if(!$assoc->deleteUserAFSCAssociations($userUUID)){
-                    $sysMsg->addMessage("AFSC Associations not cleared.","danger");
+                if(!$associationManager->deleteUserAFSCAssociations($userUUID)){
+                    $systemMessages->addMessage("AFSC Associations not cleared.", "danger");
                     $error = true;
                 }
 
-                if(!$assoc->deleteUserSupervisorAssociations($userUUID)){
-                    $sysMsg->addMessage("Supervisor Associations not cleared.","danger");
+                if(!$associationManager->deleteUserSupervisorAssociations($userUUID)){
+                    $systemMessages->addMessage("Supervisor Associations not cleared.", "danger");
                     $error = true;
                 }
 
-                if(!$assoc->deleteUserTrainingManagerAssociations($userUUID)){
-                    $sysMsg->addMessage("Training Manager Associations not cleared.","danger");
+                if(!$associationManager->deleteUserTrainingManagerAssociations($userUUID)){
+                    $systemMessages->addMessage("Training Manager Associations not cleared.", "danger");
                     $error = true;
                 }
 
                 if(!$delUserObj->deleteUser($userUUID)){
-                    $sysMsg->addMessage("UserData table entry not cleared.","danger");
+                    $systemMessages->addMessage("UserData table entry not cleared.", "danger");
                     $error = true;
                 }
 
                 if (!$error) {
-                    $log->setAction("USER_DELETE_PROCESS_COMPLETE");
-                    $log->setDetail("User UUID", $userUUID);
-                    $log->setDetail("User Name", $userFullName);
+                    $systemLog->setAction("USER_DELETE_PROCESS_COMPLETE");
+                    $systemLog->setDetail("User UUID", $userUUID);
+                    $systemLog->setDetail("User Name", $userFullName);
                     if (!empty($_POST['deleteReason'])) {
-                        $log->setDetail("Reason", $_POST['deleteReason']);
+                        $systemLog->setDetail("Reason", $_POST['deleteReason']);
                     } else {
-                        $log->setDetail("Reason", "No Reason Provided");
+                        $systemLog->setDetail("Reason", "No Reason Provided");
                     }
-                    $log->saveEntry();
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage($delUserObj->getFullName() . " has been deleted.","success");
+                    $systemMessages->addMessage($delUserObj->getFullName() . " has been deleted.", "success");
                     $cdcMastery->redirect("/admin/users");
                 } else {
-                    $log->setAction("ERROR_USER_DELETE_PROCESS");
-                    $log->setDetail("User UUID", $userUUID);
-                    $log->setDetail("User Name", $userFullName);
+                    $systemLog->setAction("ERROR_USER_DELETE_PROCESS");
+                    $systemLog->setDetail("User UUID", $userUUID);
+                    $systemLog->setDetail("User Name", $userFullName);
                     if (!empty($_POST['deleteReason'])) {
-                        $log->setDetail("Reason", $_POST['deleteReason']);
+                        $systemLog->setDetail("Reason", $_POST['deleteReason']);
                     } else {
-                        $log->setDetail("Reason", "No Reason Provided");
+                        $systemLog->setDetail("Reason", "No Reason Provided");
                     }
-                    $log->setDetail("Errors",$sysMsg->retrieveMessages());
-                    $log->saveEntry();
+                    $systemLog->setDetail("Errors", $systemMessages->retrieveMessages());
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage($delUserObj->getFullName() . " could not be deleted.  The error has been logged.","danger");
+                    $systemMessages->addMessage($delUserObj->getFullName() . " could not be deleted.  The error has been logged.", "danger");
                     $cdcMastery->redirect("/admin/users" . $userUUID);
                 }
             }
             else{
-                $log->setAction("ERROR_USER_DELETE_NOT_AUTH");
-                $log->setDetail("User UUID",$userUUID);
+                $systemLog->setAction("ERROR_USER_DELETE_NOT_AUTH");
+                $systemLog->setDetail("User UUID", $userUUID);
                 if (!empty($_POST['deleteReason'])) {
-                    $log->setDetail("Reason", $_POST['deleteReason']);
+                    $systemLog->setDetail("Reason", $_POST['deleteReason']);
                 } else {
-                    $log->setDetail("Reason", "No Reason Provided");
+                    $systemLog->setDetail("Reason", "No Reason Provided");
                 }
-                $log->saveEntry();
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("Administrators cannot be deleted.","danger");
+                $systemMessages->addMessage("Administrators cannot be deleted.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.","warning");
+        $systemMessages->addMessage("No User UUID was provided.", "warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

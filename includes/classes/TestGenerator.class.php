@@ -1,6 +1,6 @@
 <?php
 
-class testGenerator extends CDCMastery
+class TestGenerator extends CDCMastery
 {
 	public $db;
 	protected $log;
@@ -21,12 +21,12 @@ class testGenerator extends CDCMastery
 	public $userUUID; //binary(36)
 	public $dateCreated; //timestamp (default UTC_TIMESTAMP)
 	
-	public function __construct(mysqli $db, log $log, afsc $afsc){
+	public function __construct(mysqli $db, SystemLog $log, AFSCManager $afsc){
 		$this->db = $db;
 		$this->log = $log;
 		$this->afsc = $afsc;
-		$this->answer = new answerManager($this->db, $this->log);
-		$this->question = new questionManager($this->db, $this->log, $this->afsc, $this->answer);
+		$this->answer = new AnswerManager($this->db, $this->log);
+		$this->question = new QuestionManager($this->db, $this->log, $this->afsc, $this->answer);
 	}
 
 	public function listGeneratedTests($userUUID = false){

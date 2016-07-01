@@ -1,5 +1,5 @@
 <?php
-$logFilter = new logFilter($db, $user);
+$logFilter = new SystemLogFilter($db, $userManager);
 
 $pageNumber = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : 0;
 $pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 15;
@@ -182,11 +182,11 @@ and (max-device-width : 480px) {
 						<?php foreach($logEntries as $logUUID => $logData): ?>
 						<tr>
 							<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
-							<td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><?php echo $logData['action']; ?></span></td>
+							<td><span class="<?php echo $systemLog->getRowStyle($logData['action']); ?>"><?php echo $logData['action']; ?></span></td>
 							<?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
-								<td><a href="/user/profile"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
+								<td><a href="/user/profile"><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></a></td>
 							<?php else: ?>
-								<td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
+								<td><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></td>
 							<?php endif; ?>
 							<td><a href="/user/log-detail/<?php echo $logUUID; ?>"><i class="icon-inline icon-20 ic-clipboard"></i>details</a></td>
 						</tr>

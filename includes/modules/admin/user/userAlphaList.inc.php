@@ -28,9 +28,9 @@ $alpha = Array(
 		26 => "Z");
 
 if(isset($_SESSION['vars'][2])){
-    $userList = $user->listUsersByRole($_SESSION['vars'][2]);
+    $userList = $userManager->listUsersByRole($_SESSION['vars'][2]);
 }
-$userList = $user->listUsers();
+$userList = $userManager->listUsers();
 $userCount = count($userList) + 1;
 
 if($userList): ?>
@@ -108,7 +108,7 @@ if($userList): ?>
 	</div>
 	<?php
 else:
-	$sysMsg->addMessage("There are no users in the database.","info");
+	$systemMessages->addMessage("There are no users in the database.", "info");
 	$cdcMastery->redirect("/admin");
 endif;
 ?>

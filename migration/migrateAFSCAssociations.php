@@ -22,8 +22,8 @@ if($migrationArrayCount > 0){
 	$buildTotal=1;
 	while($row = $res->fetch_assoc()){
 		$uuid = $cdcMastery->genUUID();
-		$userUUID = $user->getUUIDByHandle($row['userHandle']);
-		$afscUUID = $afsc->getMigratedAFSCUUID($row['afsc_id']);
+		$userUUID = $userManager->getUUIDByHandle($row['userHandle']);
+		$afscUUID = $afscManager->getMigratedAFSCUUID($row['afsc_id']);
 		
 		if(!empty($userUUID) && !empty($afscUUID)){
 			$assocArray[$uuid]['userUUID'] = $userUUID;

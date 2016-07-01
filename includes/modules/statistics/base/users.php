@@ -5,9 +5,9 @@
  * Date: 1/9/2016
  * Time: 6:51 PM
  */
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
-$baseList = $bases->listBases();
+$baseList = $baseManager->listBases();
 
 $chartUsersByBaseData = "";
 $firstRow = true;

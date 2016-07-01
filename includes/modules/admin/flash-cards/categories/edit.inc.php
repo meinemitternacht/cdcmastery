@@ -17,25 +17,25 @@ if(isset($_POST['confirmCategoryEdit'])){
     $editError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Category name cannot be empty.","warning");
+        $systemMessages->addMessage("Category name cannot be empty.", "warning");
         $editError = true;
     }
 
     if(!isset($_POST['categoryEncrypted'])){
-        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).","warning");
+        $systemMessages->addMessage("You must choose a category encryption value (Yes/No).", "warning");
         $editError = true;
     }
 
     if(!$categoryType){
-        $sysMsg->addMessage("You must choose a category type. (AFSC/Global/Private)","warning");
+        $systemMessages->addMessage("You must choose a category type. (AFSC/Global/Private)", "warning");
         $editError = true;
     }
     elseif($categoryType == "private" && !$categoryBindingUser){
-        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.","warning");
+        $systemMessages->addMessage("This category was marked private. You must choose a user to bind the category to.", "warning");
         $editError = true;
     }
     elseif($categoryType == "afsc" && !$categoryBindingAFSC){
-        $sysMsg->addMessage("This category was marked as URE Bound. You must choose an AFSC to bind the category to.","warning");
+        $systemMessages->addMessage("This category was marked as URE Bound. You must choose an AFSC to bind the category to.", "warning");
         $editError = true;
     }
 
@@ -44,7 +44,7 @@ if(isset($_POST['confirmCategoryEdit'])){
          * Check to see if another category is already bound to the select AFSC
          */
         if ($flashCardManager->checkCategoryBinding($categoryBindingAFSC)) {
-            $sysMsg->addMessage("There is already a URE Bound category associated with the selected AFSC.  There can only be, at most, one.","warning");
+            $systemMessages->addMessage("There is already a URE Bound category associated with the selected AFSC.  There can only be, at most, one.", "warning");
             $editError = true;
         }
     }
@@ -54,7 +54,7 @@ if(isset($_POST['confirmCategoryEdit'])){
      */
     if($categoryType == "afsc" && $flashCardManager->getCategoryType() != "afsc"){
         if(!$flashCardManager->deleteCategoryFlashCardData($workingChild)){
-            $sysMsg->addMessage("We could not delete the existing data for that flash card category.  Please contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage("We could not delete the existing data for that flash card category.  Please contact the support help desk for assistance.", "danger");
             $editError = true;
         }
     }
@@ -79,11 +79,11 @@ if(isset($_POST['confirmCategoryEdit'])){
         $flashCardManager->setCategoryCreatedBy($_SESSION['userUUID']);
 
         if($flashCardManager->saveFlashCardCategory()){
-            $log->setAction("FLASH_CARD_CATEGORY_EDIT");
-            $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
-            $log->saveEntry();
+            $systemLog->setAction("FLASH_CARD_CATEGORY_EDIT");
+            $systemLog->setDetail("Category UUID", $flashCardManager->getCategoryUUID());
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Flash card category edited successfully.","success");
+            $systemMessages->addMessage("Flash card category edited successfully.", "success");
 
             unset($categoryName);
             unset($categoryEncrypted);
@@ -93,7 +93,7 @@ if(isset($_POST['confirmCategoryEdit'])){
             unset($categoryComments);
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage("The flash card category could not be edited.  Contact the support help desk for assistance.", "danger");
         }
     }
 }
@@ -204,7 +204,7 @@ elseif($categoryType == "private"){
                     This field is required if "<strong>Private</strong>" is selected above.
                 </p>
                 <?php if(isset($categoryBindingUser)): ?>
-                <strong>Currently bound to:</strong> <?php echo $user->getUserNameByUUID($categoryBindingUser); ?>
+                <strong>Currently bound to:</strong> <?php echo $userManager->getUserNameByUUID($categoryBindingUser); ?>
                 <?php endif; ?>
                 <input type="text" id="userUUID" name="categoryBindingUser" class="input_full" value="<?php if(isset($categoryBindingUser)) echo $categoryBindingUser; ?>">
             </li>
@@ -220,7 +220,7 @@ elseif($categoryType == "private"){
                         size="1">
                     <option value="">Select an AFSC...</option>
                     <?php
-                    $afscList = $afsc->listAFSC(false);
+                    $afscList = $afscManager->listAFSC(false);
                     foreach($afscList as $afscUUID => $afscData): ?>
                         <?php if(isset($categoryBindingAFSC) && $categoryBindingAFSC == $afscUUID): ?>
                             <option value="<?php echo $afscUUID; ?>" SELECTED>

@@ -4,25 +4,25 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 		case "approvePendingAssociation":
 			$error = false;
 
-			$pendingAssociationList = $assoc->listPendingAFSCAssociations();
+			$pendingAssociationList = $associationManager->listPendingAFSCAssociations();
 
 			foreach($_POST['assocUUIDList'] as $assocUUID){
-				if(!$assoc->approvePendingAFSCAssociation($pendingAssociationList[$assocUUID]['userUUID'], $pendingAssociationList[$assocUUID]['afscUUID'])){
+				if(!$associationManager->approvePendingAFSCAssociation($pendingAssociationList[$assocUUID]['userUUID'], $pendingAssociationList[$assocUUID]['afscUUID'])){
 					$error = true;
 				}
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Pending AFSC association(s) approved successfully.","success");
+				$systemMessages->addMessage("Pending AFSC association(s) approved successfully.", "success");
 			}
 			break;
 	}
 }
 
-$pendingAssociationList = $assoc->listPendingAFSCAssociations();
+$pendingAssociationList = $associationManager->listPendingAFSCAssociations();
 
 if($pendingAssociationList): ?>
 	<script type="text/javascript">
@@ -66,7 +66,7 @@ if($pendingAssociationList): ?>
 							<?php foreach($pendingAssociationList as $assocUUID => $assocData): ?>
 							<tr>
 								<td><input type="checkbox" class="selectAssociation" name="assocUUIDList[]" value="<?php echo $assocUUID; ?>"></td>
-								<td><a href="/admin/profile/<?php echo $assocData['userUUID']; ?>"><?php echo $user->getUserNameByUUID($assocData['userUUID']); ?></a></td>
+								<td><a href="/admin/profile/<?php echo $assocData['userUUID']; ?>"><?php echo $userManager->getUserNameByUUID($assocData['userUUID']); ?></a></td>
 								<td><?php echo $assocData['afscName']; ?></td>
 							</tr>
 							<?php endforeach; ?>
@@ -79,6 +79,6 @@ if($pendingAssociationList): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no pending AFSC Associations.","info");
+	$systemMessages->addMessage("There are no pending AFSC Associations.", "info");
 	$cdcMastery->redirect("/admin");
 endif;

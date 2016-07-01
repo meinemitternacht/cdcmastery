@@ -1,5 +1,5 @@
 <?php
-$afscList = $afsc->listAFSC(false);
+$afscList = $afscManager->listAFSC(false);
 ?>
 <div class="container">
     <div class="row">

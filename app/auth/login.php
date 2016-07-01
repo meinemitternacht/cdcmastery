@@ -1,57 +1,57 @@
 <?php
 if(isset($_SESSION['queueActivation']))
-    $sysMsg->addMessage("Your account has not yet been activated. Please activate your account by following the link in the e-mail sent to the address you registered with.","info");
+    $systemMessages->addMessage("Your account has not yet been activated. Please activate your account by following the link in the e-mail sent to the address you registered with.", "info");
 
 if(!isset($_SESSION['auth'])):
 	if(!empty($_POST)){
         if(!isset($_POST['username']) || empty($_POST['username'])){
-            $log->setAction("ERROR_LOGIN_EMPTY_USER");
-            $log->setDetail("Provided Username",$_POST['username']);
-            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
-            $log->saveEntry();
+            $systemLog->setAction("ERROR_LOGIN_EMPTY_USER");
+            $systemLog->setDetail("Provided Username", $_POST['username']);
+            $systemLog->setDetail("Remote Port", $_SERVER['REMOTE_PORT']);
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Your username cannot be blank.","warning");
+            $systemMessages->addMessage("Your username cannot be blank.", "warning");
             $cdcMastery->redirect("/auth/login");
         }
 
         if(!isset($_POST['password']) || empty($_POST['password'])){
-            $log->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
-            $log->setDetail("Provided Username",$_POST['username']);
-            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
-            $log->saveEntry();
+            $systemLog->setAction("ERROR_LOGIN_EMPTY_PASSWORD");
+            $systemLog->setDetail("Provided Username", $_POST['username']);
+            $systemLog->setDetail("Remote Port", $_SERVER['REMOTE_PORT']);
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Your password cannot be blank.","warning");
+            $systemMessages->addMessage("Your password cannot be blank.", "warning");
             $cdcMastery->redirect("/auth/login");
         }
 
-		$userUUID = $user->userLoginName($_POST['username']);
+		$userUUID = $userManager->userLoginName($_POST['username']);
 		
 		if(!$userUUID){
-            $sysMsg->addMessage($user->error);
-            $log->setAction("ERROR_LOGIN_UNKNOWN_USER");
-            $log->setDetail("Provided Username",$_POST['username']);
-            $log->setDetail("Remote Port",$_SERVER['REMOTE_PORT']);
-            $log->saveEntry();
+            $systemMessages->addMessage($userManager->error);
+            $systemLog->setAction("ERROR_LOGIN_UNKNOWN_USER");
+            $systemLog->setDetail("Provided Username", $_POST['username']);
+            $systemLog->setDetail("Remote Port", $_SERVER['REMOTE_PORT']);
+            $systemLog->saveEntry();
 		}
 		else{
-			$a = new auth($userUUID,$log,$db,$roles,$emailQueue);
+			$a = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
 	
 			if(!$a->login($_POST['password'])){
-                $sysMsg->addMessage($a->getError());
+                $systemMessages->addMessage($a->getError());
                 $cdcMastery->redirect("/auth/login");
 			}
 			else{
-                $session->regenerate_id();
+                $zebraSession->regenerate_id();
 
-                $user->loadUser($userUUID);
+                $userManager->loadUser($userUUID);
 
                 if(isset($_SESSION['nextPage']) && !empty($_SESSION['nextPage'])){
                     $nextPage = $_SESSION['nextPage'];
                     unset($_SESSION['nextPage']);
                     $cdcMastery->redirect($nextPage);
                 }
-                elseif(preg_match("/\.mil/",$user->getUserEmail())){
-                    if(!$cdcMastery->checkEmailAddress($user->getUserEmail())){
+                elseif(preg_match("/\.mil/", $userManager->getUserEmail())){
+                    if(!$cdcMastery->checkEmailAddress($userManager->getUserEmail())){
                         $cdcMastery->redirect("/user/update-email");
                     }
                     else{
@@ -119,6 +119,6 @@ if(!isset($_SESSION['auth'])):
 	</div>
 <?php 
 else:
-    $sysMsg->addMessage("You are already logged in.","info");
+    $systemMessages->addMessage("You are already logged in.", "info");
 	$cdcMastery->redirect("/");
 endif; ?>

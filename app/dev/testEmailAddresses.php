@@ -38,17 +38,17 @@ $stmt->close();
 
 if(isset($matchFailArray) && is_array($matchFailArray)){
     $matchFailCount = count($matchFailArray);
-    $sysMsg->addMessage("Failed Matches: ".$matchFailCount,"danger");
+    $systemMessages->addMessage("Failed Matches: ".$matchFailCount, "danger");
 }
 
 if(isset($matchPassArray) && is_array($matchPassArray)){
     $matchPassCount = count($matchPassArray);
-    $sysMsg->addMessage("Passed Matches: ".$matchPassCount,"success");
+    $systemMessages->addMessage("Passed Matches: ".$matchPassCount, "success");
 }
 
 if(isset($matchIgnoreArray) && is_array($matchIgnoreArray)){
     $matchIgnoreCount = count($matchIgnoreArray);
-    $sysMsg->addMessage("Ignored Matches: ".$matchIgnoreCount,"warning");
+    $systemMessages->addMessage("Ignored Matches: ".$matchIgnoreCount, "warning");
 }
 
 $totalMatches = $matchFailCount + $matchPassCount + $matchIgnoreCount;

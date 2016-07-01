@@ -6,13 +6,13 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if(isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if ($afsc->loadAFSC($afscUUID)) {
-						if ($afsc->getAFSCFOUO()) {
-							if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID, false)) {
+					if ($afscManager->loadAFSC($afscUUID)) {
+						if ($afscManager->getAFSCFOUO()) {
+							if (!$associationManager->addAFSCAssociation($_SESSION['userUUID'], $afscUUID, false)) {
 								$error = true;
 							}
 						} else {
-							if (!$assoc->addAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+							if (!$associationManager->addAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
 								$error = true;
 							}
 						}
@@ -26,10 +26,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-                $sysMsg->addMessage("There were errors while adding those AFSC association(s) to your account.  Please contact the Help Desk.","danger");
+                $systemMessages->addMessage("There were errors while adding those AFSC association(s) to your account.  Please contact the Help Desk.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("AFSC association(s) added successfully.","success");
+				$systemMessages->addMessage("AFSC association(s) added successfully.", "success");
 			}
 		break;
 		case "removeAssociation":
@@ -37,7 +37,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if(isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->deleteAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+					if (!$associationManager->deleteAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
 						$error = true;
 					}
 				}
@@ -47,10 +47,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing those AFSC association(s) from your account.  Please contact the Help Desk.","danger");
+				$systemMessages->addMessage("There were errors while removing those AFSC association(s) from your account.  Please contact the Help Desk.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("AFSC association(s) removed successfully.","success");
+				$systemMessages->addMessage("AFSC association(s) removed successfully.", "success");
 			}
 		break;
 		case "removePendingAssociation":
@@ -58,7 +58,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if(isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->deletePendingAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
+					if (!$associationManager->deletePendingAFSCAssociation($_SESSION['userUUID'], $afscUUID)) {
 						$error = true;
 					}
 				}
@@ -68,10 +68,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while removing pending AFSC association(s) from your account.  Please contact the Help Desk.","danger");
+				$systemMessages->addMessage("There were errors while removing pending AFSC association(s) from your account.  Please contact the Help Desk.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Pending AFSC association(s) removed successfully.","success");
+				$systemMessages->addMessage("Pending AFSC association(s) removed successfully.", "success");
 			}
 		break;
 	}
@@ -86,7 +86,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 		<div class="4u">
 			<section>
 				<header>
-					<h2><em><?php echo $user->getFullName(); ?></em></h2>
+					<h2><em><?php echo $userManager->getFullName(); ?></em></h2>
 				</header>
 				<div class="sub-menu">
 					<div class="menu-heading">
@@ -141,7 +141,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			<form action="/user/afsc-associations" method="POST">
 				<input type="hidden" name="formAction" value="addAssociation">
 				<?php
-				$afscList = $afsc->listAFSC(false);
+				$afscList = $afscManager->listAFSC(false);
 				if(!empty($userAFSCList)) {
                     foreach ($userAFSCList as $userAFSC) {
                         if (isset($afscList[$userAFSC])) {

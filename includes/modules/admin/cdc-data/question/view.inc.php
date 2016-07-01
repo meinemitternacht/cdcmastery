@@ -1,14 +1,14 @@
 <?php
-$statistics = new statistics($db,$log,$emailQueue,$memcache);
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$statistics = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
-    $sysMsg->addMessage($questionManager->error,"warning");
-    $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
+    $systemMessages->addMessage($questionManager->error, "warning");
+    $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/list-questions");
 }
 
-$questionFOUO = $afsc->getAFSCFOUO();
+$questionFOUO = $afscManager->getAFSCFOUO();
 
 $answerManager->setFOUO($questionFOUO);
 $answerManager->setQuestionUUID($workingChild);
@@ -64,8 +64,8 @@ $answerArray = $answerManager->listAnswersByQuestion();
             <h2>Actions</h2>
         </header>
         <ul>
-            <li><a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/delete">Delete Question</a></li>
-            <li><a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/edit">Edit Question</a></li>
+            <li><a href="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/delete">Delete Question</a></li>
+            <li><a href="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/edit">Edit Question</a></li>
         </ul>
     </section>
 </div>

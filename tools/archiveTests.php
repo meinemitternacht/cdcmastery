@@ -10,9 +10,9 @@ define('APP_BASE', realpath(__DIR__ . '/../app'));
 
 include "../includes/bootstrap.inc.php";
 
-$testManager = new testManager($db, $log, $afsc);
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$testManager = new TestManager($db, $systemLog, $afscManager);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $testArray = $testManager->listArchivableTests();
 $totalTests = count($testArray);
@@ -26,7 +26,7 @@ if($totalTests > 0) {
             $rawAFSCList = $testManager->getAFSCList();
 
             foreach ($rawAFSCList as $key => $val) {
-                $rawAFSCList[$key] = $afsc->getAFSCName($val);
+                $rawAFSCList[$key] = $afscManager->getAFSCName($val);
             }
 
             if (count($rawAFSCList) > 1) {
@@ -79,7 +79,7 @@ if($totalTests > 0) {
                 }
             }
 
-            $path = $cfg['xml']['directory'] . $testManager->getUserUUID();
+            $path = $configurationManager->getXMLArchiveConfiguration('directory') . $testManager->getUserUUID();
             $fileName = strtotime($testManager->getTestTimeCompleted()) . '#' . $testUUID . '.xml';
             $fileString = $path . '/' . $fileName;
 
@@ -102,24 +102,24 @@ if($totalTests > 0) {
 
                 if (!$testManager->saveTest(false)) {
                     $errorArray[] = "Could not update archive status for test " . $testUUID;
-                    $log->setAction("ERROR_TEST_ARCHIVE");
-                    $log->setDetail("Test UUID", $testUUID);
-                    $log->setDetail("User UUID", $testManager->getUserUUID());
-                    $log->setDetail("Error", $testManager->error);
-                    $log->saveEntry();
+                    $systemLog->setAction("ERROR_TEST_ARCHIVE");
+                    $systemLog->setDetail("Test UUID", $testUUID);
+                    $systemLog->setDetail("User UUID", $testManager->getUserUUID());
+                    $systemLog->setDetail("Error", $testManager->error);
+                    $systemLog->saveEntry();
                 } else {
                     if (!$testManager->deleteTestData($testUUID, false)) {
                         $errorArray[] = "Could not delete test data for test " . $testUUID;
-                        $log->setAction("ERROR_TEST_ARCHIVE");
-                        $log->setDetail("Test UUID", $testUUID);
-                        $log->setDetail("User UUID", $testManager->getUserUUID());
-                        $log->setDetail("Error", "Could not delete test data.");
-                        $log->saveEntry();
+                        $systemLog->setAction("ERROR_TEST_ARCHIVE");
+                        $systemLog->setDetail("Test UUID", $testUUID);
+                        $systemLog->setDetail("User UUID", $testManager->getUserUUID());
+                        $systemLog->setDetail("Error", "Could not delete test data.");
+                        $systemLog->saveEntry();
                     } else {
-                        $log->setAction("TEST_ARCHIVE");
-                        $log->setDetail("Test UUID", $testUUID);
-                        $log->setDetail("User UUID", $testManager->getUserUUID());
-                        $log->saveEntry();
+                        $systemLog->setAction("TEST_ARCHIVE");
+                        $systemLog->setDetail("Test UUID", $testUUID);
+                        $systemLog->setDetail("User UUID", $testManager->getUserUUID());
+                        $systemLog->saveEntry();
                     }
                 }
             }

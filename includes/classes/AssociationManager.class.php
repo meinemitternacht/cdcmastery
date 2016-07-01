@@ -1,6 +1,6 @@
 <?php
 
-class associations extends CDCMastery
+class AssociationManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -32,7 +32,7 @@ class associations extends CDCMastery
 	public $trainingManagerUUID;
 	public $utmaUserUUID;	
 	
-	public function __construct(mysqli $db, log $log, user $user, afsc $afsc, emailQueue $emailQueue){
+	public function __construct(mysqli $db, SystemLog $log, UserManager $user, AFSCManager $afsc, EmailQueueManager $emailQueue){
 		$this->db = $db;
 		$this->log = $log;
 		$this->user = $user;

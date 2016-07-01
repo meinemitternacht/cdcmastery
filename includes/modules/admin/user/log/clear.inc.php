@@ -1,12 +1,12 @@
 <?php
 
 if(isset($_POST['confirmClearLogEntries'])){
-    if($log->clearLogEntries($userUUID)){
-        $sysMsg->addMessage("Log entries for this user deleted successfully.","success");
+    if($systemLog->clearLogEntries($userUUID)){
+        $systemMessages->addMessage("Log entries for this user deleted successfully.", "success");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $sysMsg->addMessage("We could not delete the log entries for this user, please contact the support helpdesk.","danger");
+        $systemMessages->addMessage("We could not delete the log entries for this user, please contact the support helpdesk.", "danger");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

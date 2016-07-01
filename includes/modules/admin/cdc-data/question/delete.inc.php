@@ -6,22 +6,22 @@
  * Time: 4:39 AM
  */
 
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
-    $sysMsg->addMessage($questionManager->error,"warning");
-    $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
+    $systemMessages->addMessage($questionManager->error, "warning");
+    $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID());
 }
 
 if(isset($_POST['confirmQuestionDelete']) && $_POST['confirmQuestionDelete'] == true){
     if(!$questionManager->archiveQuestion($questionManager->getUUID())){
-        $sysMsg->addMessage("There was a problem archiving the question.  Please contact the helpdesk for further assistance.","danger");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
+        $systemMessages->addMessage("There was a problem archiving the question.  Please contact the helpdesk for further assistance.", "danger");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/list-questions");
     }
     else{
-        $sysMsg->addMessage("Question archived successfully.","success");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/list-questions");
+        $systemMessages->addMessage("Question archived successfully.", "success");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/list-questions");
     }
 }
 
@@ -62,12 +62,12 @@ $answerArray = $answerManager->listAnswersByQuestion();
             ?>
         </p>
         <br>
-        <form action="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/delete" method="POST">
+        <form action="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/question/<?php echo $questionManager->getUUID(); ?>/delete" method="POST">
             <input type="hidden" name="confirmQuestionDelete" value="1">
             <input type="submit" value="Confirm Delete">
             <br>
             <br>
-            <a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/list-questions">Cancel</a>
+            <a href="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/list-questions">Cancel</a>
         </form>
     </section>
 </div>

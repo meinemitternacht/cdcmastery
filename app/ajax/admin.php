@@ -2,10 +2,10 @@
 $ajaxRoute = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if(!$cdcMastery->verifyAdmin()){
-    $log->setAction("ACCESS_DENIED");
-    $log->setDetail("Page","ajax/admin");
-    $log->setDetail("AJAX Route",$ajaxRoute);
-    $log->saveEntry();
+    $systemLog->setAction("ACCESS_DENIED");
+    $systemLog->setDetail("Page", "ajax/admin");
+    $systemLog->setDetail("AJAX Route", $ajaxRoute);
+    $systemLog->saveEntry();
 }
 
 if($ajaxRoute){

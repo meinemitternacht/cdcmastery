@@ -6,8 +6,8 @@
  * Time: 9:35 PM
  */
 
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $answerList = $answerManager->listAnswers();
 ?>

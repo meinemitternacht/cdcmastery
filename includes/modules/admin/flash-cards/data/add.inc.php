@@ -13,12 +13,12 @@ if(isset($_POST['confirmFlashCardAdd'])){
     $addError = false;
 
     if(!$cardFrontText){
-        $sysMsg->addMessage("The front text of the card cannot be empty.","warning");
+        $systemMessages->addMessage("The front text of the card cannot be empty.", "warning");
         $addError = true;
     }
 
     if(!$cardBackText){
-        $sysMsg->addMessage("The back text of the card cannot be empty.","warning");
+        $systemMessages->addMessage("The back text of the card cannot be empty.", "warning");
         $addError = true;
     }
 
@@ -29,12 +29,12 @@ if(isset($_POST['confirmFlashCardAdd'])){
         $flashCardManager->setCardCategory($flashCardManager->getCategoryUUID());
 
         if($flashCardManager->saveFlashCardData()){
-            $sysMsg->addMessage("Flash card added successfully.","success");
+            $systemMessages->addMessage("Flash card added successfully.", "success");
 
-            $log->setAction("FLASH_CARD_ADD");
-            $log->setDetail("Card UUID",$flashCardManager->getCardUUID());
-            $log->setDetail("Card Category",$flashCardManager->getCategoryUUID());
-            $log->saveEntry();
+            $systemLog->setAction("FLASH_CARD_ADD");
+            $systemLog->setDetail("Card UUID", $flashCardManager->getCardUUID());
+            $systemLog->setDetail("Card Category", $flashCardManager->getCategoryUUID());
+            $systemLog->saveEntry();
 
             $_SESSION['previousFlashCardFront'] = $cardFrontText;
             $_SESSION['previousFlashCardBack'] = $cardBackText;
@@ -43,8 +43,8 @@ if(isset($_POST['confirmFlashCardAdd'])){
             unset($cardBackText);
         }
         else{
-            $sysMsg->addMessage($flashCardManager->error,"danger");
-            $sysMsg->addMessage("The flash card could not be added.  Contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage($flashCardManager->error, "danger");
+            $systemMessages->addMessage("The flash card could not be added.  Contact the support help desk for assistance.", "danger");
         }
     }
 }

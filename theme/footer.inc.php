@@ -71,10 +71,10 @@
 			</div>
 		</div>
 		<?php
-		if($sysMsg->getMessageCount() > 0):
+		if($systemMessages->getMessageCount() > 0):
 			$systemMessageHTML = "";
-            $validMessageTypes = $sysMsg->getValidMessageTypes();
-            $messageArray = $sysMsg->retrieveMessages();
+            $validMessageTypes = $systemMessages->getValidMessageTypes();
+            $messageArray = $systemMessages->retrieveMessages();
                 
             foreach($validMessageTypes as $messageType){
                 if(!isset($messageArray[$messageType])){

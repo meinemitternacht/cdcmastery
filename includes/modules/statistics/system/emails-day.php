@@ -6,7 +6,7 @@
  * Time: 9:52 AM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $emailsByDay = $statsObj->getEmailsByDay();
 
 if($emailsByDay){
@@ -20,7 +20,7 @@ if($emailsByDay){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.","info");
+    $systemMessages->addMessage("That statistic contains no data.", "info");
     $cdcMastery->redirect("/about/statistics");
 }
 

@@ -5,7 +5,7 @@
  * Date: 1/9/2016
  * Time: 6:51 PM
  */
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $dayInterval = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : 30;
 
@@ -13,7 +13,7 @@ $endDateObj = new DateTime();
 $startDateObj = new DateTime();
 $startDateObj->modify("-30 days");
 
-$baseList = $bases->listUserBases($startDateObj,$endDateObj);
+$baseList = $baseManager->listUserBases($startDateObj, $endDateObj);
 
 $chartUsersByBaseData = "";
 $firstRow = true;

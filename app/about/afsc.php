@@ -12,18 +12,18 @@
 
 $afscUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
-if($afscUUID && $afsc->loadAFSC($afscUUID)):
-    if(!$afsc->getAFSCFOUO()): ?>
+if($afscUUID && $afscManager->loadAFSC($afscUUID)):
+    if(!$afscManager->getAFSCFOUO()): ?>
     <div class="container">
         <div class="row">
             <div class="8u">
                 <section>
                     <header>
-                        <h2><?php echo $afsc->getAFSCName(); ?> Practice Test</h2>
+                        <h2><?php echo $afscManager->getAFSCName(); ?> Practice Test</h2>
                     </header>
                     <p>
-                        Listed below are sample questions for <?php echo $afsc->getAFSCName(); ?> from our database.  <a href="/auth/register">Register now</a> to start taking tests for this AFSC!  We have <?php echo $afsc->getTotalQuestions(); ?>
-                        questions currently in the database for this category.  <?php if(!empty($afsc->getAFSCVersion())): ?><br><br>The version of this CDC we have in the database is <strong><?php echo $afsc->getAFSCVersion(); ?></strong><?php endif; ?>
+                        Listed below are sample questions for <?php echo $afscManager->getAFSCName(); ?> from our database.  <a href="/auth/register">Register now</a> to start taking tests for this AFSC!  We have <?php echo $afscManager->getTotalQuestions(); ?>
+                        questions currently in the database for this category.  <?php if(!empty($afscManager->getAFSCVersion())): ?><br><br>The version of this CDC we have in the database is <strong><?php echo $afscManager->getAFSCVersion(); ?></strong><?php endif; ?>
                     </p>
                     <a href="/about">&laquo; Return to AFSC List</a>
                 </section>
@@ -33,8 +33,8 @@ if($afscUUID && $afsc->loadAFSC($afscUUID)):
             <div class="8u">
                 <section>
                     <?php
-                    $answerManager = new answerManager($db,$log);
-                    $questionManager = new questionManager($db,$log,$afsc,$answerManager);
+                    $answerManager = new AnswerManager($db, $systemLog);
+                    $questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
                     $questionManager->setAFSCUUID($afscUUID);
                     $questionList = $questionManager->listQuestionsForAFSC(10,true);
@@ -65,10 +65,10 @@ if($afscUUID && $afsc->loadAFSC($afscUUID)):
     </div>
 <?php
     else:
-        $sysMsg->addMessage("That AFSC is marked For Official Use Only.  In order to view questions, you must register an account.","info");
+        $systemMessages->addMessage("That AFSC is marked For Official Use Only.  In order to view questions, you must register an account.", "info");
         $cdcMastery->redirect("/about");
     endif;
 else:
-    $sysMsg->addMessage("That AFSC does not exist.","warning");
+    $systemMessages->addMessage("That AFSC does not exist.", "warning");
     $cdcMastery->redirect("/about");
 endif;

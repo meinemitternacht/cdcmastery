@@ -1,5 +1,6 @@
 <?php
-class passwordReset extends user {
+class UserPasswordResetManager extends UserManager 
+{
 	protected $db;
 	protected $log;
 	protected $emailQueue;

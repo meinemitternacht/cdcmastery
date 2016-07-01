@@ -22,7 +22,7 @@ if($normQuestionCount > 0){
 	echo "Progress :      ";
 	$buildTotal=1;
 	while($row = $res->fetch_assoc()){
-		$afscUUID = $afsc->getMigratedAFSCUUID($row['afsc']);
+		$afscUUID = $afscManager->getMigratedAFSCUUID($row['afsc']);
 		
 		if(!empty($afscUUID)){
 			$normalQuestionArray[$row['uuid']]['questionText'] = $row['question'];
@@ -153,7 +153,7 @@ if($fouoQuestionCount > 0){
 	echo "Progress :      ";
 	$buildTotal=1;
 	while($row = $res->fetch_assoc()){
-		$afscUUID = $afsc->getMigratedAFSCUUID($row['afsc']);
+		$afscUUID = $afscManager->getMigratedAFSCUUID($row['afsc']);
 
 		if(!empty($afscUUID)){
 			$fouoQuestionArray[$row['uuid']]['questionText'] = $row['question'];

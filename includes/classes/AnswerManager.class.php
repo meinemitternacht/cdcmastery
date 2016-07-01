@@ -1,6 +1,6 @@
 <?php
 
-class answerManager extends CDCMastery
+class AnswerManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -15,7 +15,7 @@ class answerManager extends CDCMastery
 
 	public $sortAnswers;
 	
-	public function __construct(mysqli $db, log $log){
+	public function __construct(mysqli $db, SystemLog $log){
 		$this->uuid = parent::genUUID();
 		$this->db = $db;
 		$this->log = $log;

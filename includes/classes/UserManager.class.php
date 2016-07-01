@@ -4,7 +4,7 @@
 This script provides a class interface for the site users
 */
 
-class user extends CDCMastery {
+class UserManager extends CDCMastery {
 	protected $db;
 	protected $log;
 	protected $emailQueue;
@@ -29,7 +29,7 @@ class user extends CDCMastery {
 	public $userDisabled;		//bool
 	public $reminderSent;		//bool
 
-	public function __construct(mysqli $db, log $log, emailQueue $emailQueue) {
+	public function __construct(mysqli $db, SystemLog $log, EmailQueueManager $emailQueue) {
 		$this->db = $db;
 		$this->log = $log;
 		$this->emailQueue = $emailQueue;
@@ -358,7 +358,7 @@ class user extends CDCMastery {
             return false;
         }
 
-        $_user = new user($this->db,$this->log,$this->emailQueue);
+        $_user = new UserManager($this->db, $this->log, $this->emailQueue);
         $_user->loadUser($userUUID);
         $userFullName = $_user->getFullName();
 
@@ -588,7 +588,7 @@ class user extends CDCMastery {
 
     public function getUserRoleByUUID($userUUID){
         if($this->verifyUser($userUUID)) {
-            $_user = new user($this->db, $this->log, $this->emailQueue);
+            $_user = new UserManager($this->db, $this->log, $this->emailQueue);
 
             if ($_user->loadUser($userUUID)) {
                 return $_user->getUserRole();
@@ -610,7 +610,7 @@ class user extends CDCMastery {
 			return "SYSTEM";
 		}
 		else{
-			$_user = new user($this->db, $this->log, $this->emailQueue);
+			$_user = new UserManager($this->db, $this->log, $this->emailQueue);
 			
 			if($_user->loadUser($userUUID)){
 				return $_user->getFullName();
@@ -764,7 +764,7 @@ class user extends CDCMastery {
 	}
 
 	public function reportQuestion($userEmail,$afscUUID,$questionUUID,$questionText,$userComments){
-		$afscManager = new afsc($this->db,$this->log);
+		$afscManager = new AFSCManager($this->db, $this->log);
 		$afscManager->loadAFSC($afscUUID);
 		$afscName = $afscManager->getAFSCName();
 

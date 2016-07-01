@@ -5,14 +5,14 @@
 $testType = isset($_SESSION['vars'][0]) ? strtolower($_SESSION['vars'][0]) : false;
 $target	  = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : false;
 
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 if(!$testType){
-    $sysMsg->addMessage("You must specify a type of test to delete.","warning");
+    $systemMessages->addMessage("You must specify a type of test to delete.", "warning");
 	$cdcMastery->redirect("/errors/500");
 }
 elseif(!$target){
-    $sysMsg->addMessage("You must either specify a test to delete or delete all tests.","warning");
+    $systemMessages->addMessage("You must either specify a test to delete or delete all tests.", "warning");
 	$cdcMastery->redirect("/errors/500");
 }
 else{
@@ -21,12 +21,12 @@ else{
 			if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 				if($testManager->deleteIncompleteTest(true,false,$_SESSION['userUUID'])){
 					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-                    $sysMsg->addMessage("Incomplete tests deleted successfully.","success");
+                    $systemMessages->addMessage("Incomplete tests deleted successfully.", "success");
 					$cdcMastery->redirect("/");
 				}
 				else{
 					$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-					$sysMsg->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.","danger");
+					$systemMessages->addMessage("We could not delete your incomplete tests, please contact the support helpdesk.", "danger");
 					$cdcMastery->redirect("/errors/500");
 				}
 			}
@@ -66,24 +66,24 @@ else{
 		}
 		elseif($testManager->loadIncompleteTest($target)){
 			if($testManager->getIncompleteUserUUID() != $_SESSION['userUUID']){
-				$log->setAction("ERROR_INCOMPLETE_TEST_DELETE");
-				$log->setDetail("Error","User UUID does not match Test User UUID");
-				$log->setDetail("Test UUID",$target);
-				$log->setDetail("Test User UUID",$testManager->getIncompleteUserUUID());
-				$log->saveEntry();
+				$systemLog->setAction("ERROR_INCOMPLETE_TEST_DELETE");
+				$systemLog->setDetail("Error", "User UUID does not match Test User UUID");
+				$systemLog->setDetail("Test UUID", $target);
+				$systemLog->setDetail("Test User UUID", $testManager->getIncompleteUserUUID());
+				$systemLog->saveEntry();
 				
-				$sysMsg->addMessage("You cannot delete a test taken by another user.","danger");
+				$systemMessages->addMessage("You cannot delete a test taken by another user.", "danger");
 				$cdcMastery->redirect("/errors/403");
 			}
 			else{
 				if(isset($_POST['confirmIncompleteTestDelete'])){
 					if($testManager->deleteIncompleteTest(false,$target)){
 						$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-                        $sysMsg->addMessage("Test deleted successfully.","success");
+                        $systemMessages->addMessage("Test deleted successfully.", "success");
 						$cdcMastery->redirect("/");
 					}
 					else{
-                        $sysMsg->addMessage("We could not delete that test, please contact the support helpdesk.","danger");
+                        $systemMessages->addMessage("We could not delete that test, please contact the support helpdesk.", "danger");
 						$cdcMastery->redirect("/errors/500");
 					}
 				}
@@ -125,12 +125,12 @@ else{
 			}
 		}
 		else{
-            $sysMsg->addMessage("The specified test does not exist.","warning");
+            $systemMessages->addMessage("The specified test does not exist.", "warning");
 			$cdcMastery->redirect("/errors/500");
 		}
 	}
 	else{
-        $sysMsg->addMessage("You specified an invalid test type.","warning");
+        $systemMessages->addMessage("You specified an invalid test type.", "warning");
 		$cdcMastery->redirect("/errors/500");
 	}
 }

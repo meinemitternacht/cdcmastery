@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $testAverageByYear = $statsObj->getTestAverageByYear();
 
 if($testAverageByYear){
@@ -18,7 +18,7 @@ if($testAverageByYear){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.","info");
+    $systemMessages->addMessage("That statistic contains no data.", "info");
     $cdcMastery->redirect("/about/statistics");
 }
 

@@ -1,5 +1,5 @@
 <?php
-class emailQueue extends CDCMastery {
+class EmailQueueManager extends CDCMastery {
 	protected $db;
 	protected $log;
 
@@ -20,7 +20,7 @@ class emailQueue extends CDCMastery {
     public $emailBodyText;
     public $queueUser;
 
-	public function __construct(mysqli $db, log $log, $smtpHost, $smtpPort, $smtpUsername, $smtpPassword){
+	public function __construct(mysqli $db, SystemLog $log, $smtpHost, $smtpPort, $smtpUsername, $smtpPassword){
 		$this->db = $db;
 		$this->log = $log;
 		$this->smtpHost = $smtpHost;

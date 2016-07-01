@@ -6,7 +6,7 @@
  * Time: 1:32 AM
  */
 
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 $incompleteTestList = $testManager->listIncompleteTests(true);
 
@@ -21,7 +21,7 @@ foreach($incompleteTestList as $incompleteTestUUID){
     if($testManager->getIncompleteQuestionsAnswered() != $testDataCount) {
         $deleteTestUUID[] = $incompleteTestUUID;
 
-        echo "testUUID: " . $log->formatDetailData($incompleteTestUUID);
+        echo "testUUID: " . $systemLog->formatDetailData($incompleteTestUUID);
         echo "<br>";
         echo "Questions Answered: " . $testManager->getIncompleteQuestionsAnswered();
         echo "<br>";

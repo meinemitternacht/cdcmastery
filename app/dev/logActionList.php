@@ -6,8 +6,8 @@
  * Time: 7:01 PM
  */
 
-$logActionList = $log->listLogActions();
-$logActionArray = $log->getAllActionArrays();
+$logActionList = $systemLog->listLogActions();
+$logActionArray = $systemLog->getAllActionArrays();
 
 foreach($logActionList as $logAction){
     if(!in_array($logAction,$logActionArray)){

@@ -1,6 +1,6 @@
 <?php
 
-class router extends CDCMastery
+class Router extends CDCMastery
 {
 	protected $log;
 	
@@ -16,7 +16,7 @@ class router extends CDCMastery
 
     public $publicRoutes = ['index','about','auth','register','errors','ajax/registration'];
 	
-	public function __construct(log $log){
+	public function __construct(SystemLog $log){
 		$this->showTheme = true;
 		$this->log = $log;
 	}

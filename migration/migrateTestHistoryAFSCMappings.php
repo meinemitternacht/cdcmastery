@@ -17,7 +17,7 @@ if($migrationArrayCount > 0){
 	while($row = $res->fetch_assoc()){
 		$afscString = unserialize($row['afscList']);
 		
-		$newID = $afsc->getMigratedAFSCUUID($afscString);
+		$newID = $afscManager->getMigratedAFSCUUID($afscString);
 		
 		if($newID){
 			$mappingArray[$row['uuid']][] = $newID;

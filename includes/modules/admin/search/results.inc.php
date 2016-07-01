@@ -19,7 +19,7 @@ else{
 }
 
 if(!$searchResults || !$numSearchResults){
-    $sysMsg->addMessage("There are no search results stored in the session.  Try your search again.","info");
+    $systemMessages->addMessage("There are no search results stored in the session.  Try your search again.", "info");
     $cdcMastery->redirect("/admin/search");
 }
 
@@ -70,16 +70,16 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $userObj = new user($db,$log,$emailQueue);
+                            $userObj = new UserManager($db, $systemLog, $emailQueue);
                             $userObj->loadUser($result);
                             ?>
                             <tr>
                                 <td><?php echo $userObj->getUserLastName(); ?></td>
                                 <td><?php echo $userObj->getUserFirstName(); ?></td>
                                 <td><?php echo $userObj->getUserRank(); ?></td>
-                                <td><?php echo $bases->getBaseName($userObj->getUserBase()); ?></td>
+                                <td><?php echo $baseManager->getBaseName($userObj->getUserBase()); ?></td>
                                 <td><?php echo $cdcMastery->outputDateTime($userObj->getUserLastLogin(),$_SESSION['timeZone'],"j M Y H:i"); ?></td>
-                                <td><?php echo $roles->getRoleName($userObj->getUserRole()); ?></td>
+                                <td><?php echo $roleManager->getRoleName($userObj->getUserRole()); ?></td>
                                 <td><a href="/admin/profile/<?php echo $result; ?>">Profile &raquo;</a></td>
                             </tr>
                         <?php endforeach; ?>
@@ -87,8 +87,8 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                 <?php elseif($searchType == "log"): ?>
                     <?php $bgColor = "#ffffff;"; ?>
                     <?php foreach($paginatedResults as $searchResult): ?>
-                        <?php $log->loadEntry($searchResult); ?>
-                        <?php $logDetails = $log->fetchDetails($searchResult); ?>
+                        <?php $systemLog->loadEntry($searchResult); ?>
+                        <?php $logDetails = $systemLog->fetchDetails($searchResult); ?>
                         <table class="logSearchTable">
                             <tr style="background-color:<?php echo $bgColor; ?>">
                                 <td><strong>Log Action</strong></td>
@@ -97,18 +97,18 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                 <td>&nbsp;</td>
                             </tr>
                             <tr style="background-color:<?php echo $bgColor; ?>">
-                                <td><span class="<?php echo $log->getRowStyle($log->getAction()); ?>"><?php echo $log->getAction(); ?></span></td>
-                                <td><?php echo $cdcMastery->outputDateTime($log->getTimestamp(),$_SESSION['timeZone']); ?></td>
-                                <?php if(!in_array($log->getUserUUID(),$cdcMastery->getStaticUserArray())): ?>
-                                    <td><a href="/admin/users/<?php echo $log->getUserUUID(); ?>" title="Manage User"><?php echo $user->getUserNameByUUID($log->getUserUUID()); ?></a></td>
+                                <td><span class="<?php echo $systemLog->getRowStyle($systemLog->getAction()); ?>"><?php echo $systemLog->getAction(); ?></span></td>
+                                <td><?php echo $cdcMastery->outputDateTime($systemLog->getTimestamp(), $_SESSION['timeZone']); ?></td>
+                                <?php if(!in_array($systemLog->getUserUUID(), $cdcMastery->getStaticUserArray())): ?>
+                                    <td><a href="/admin/users/<?php echo $systemLog->getUserUUID(); ?>" title="Manage User"><?php echo $userManager->getUserNameByUUID($systemLog->getUserUUID()); ?></a></td>
                                 <?php else: ?>
-                                    <td><?php echo $user->getUserNameByUUID($log->getUserUUID()); ?></td>
+                                    <td><?php echo $userManager->getUserNameByUUID($systemLog->getUserUUID()); ?></td>
                                 <?php endif; ?>
-                                <td><a href="/admin/log-detail/<?php echo $log->getUUID(); ?>">View &raquo;</a></td>
+                                <td><a href="/admin/log-detail/<?php echo $systemLog->getUUID(); ?>">View &raquo;</a></td>
                             </tr>
                         </table>
                         <?php if($logDetails): ?>
-                            <?php $testManager = new testManager($db,$log,$afsc); ?>
+                            <?php $testManager = new TestManager($db, $systemLog, $afscManager); ?>
                             <table class="logSearchTable" style="width:auto;">
                                 <tr style="background-color:<?php echo $bgColor; ?>">
                                     <td style="min-width: 8em;"><strong>Key</strong></td>
@@ -125,7 +125,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                                     $dataCount = count($data);
                                                     $i = 1;
                                                     foreach($data as $dataVal){
-                                                        $linkStr = $log->formatDetailData($dataVal);
+                                                        $linkStr = $systemLog->formatDetailData($dataVal);
 
                                                         if($i < $dataCount){
                                                             echo $linkStr . ", " . PHP_EOL;
@@ -141,7 +141,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                         </tr>
                                         <?php
                                     else:
-                                        $linkStr = $log->formatDetailData($detailData['data']);
+                                        $linkStr = $systemLog->formatDetailData($detailData['data']);
                                         ?>
                                         <tr>
                                             <td><?php echo $detailData['dataType']; ?></td>
@@ -169,16 +169,16 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $userObj = new user($db,$log,$emailQueue);
+                            $userObj = new UserManager($db, $systemLog, $emailQueue);
                             $userObj->loadUser($result);
                             ?>
                             <tr>
                                 <td><?php echo $userObj->getUserLastName(); ?></td>
                                 <td><?php echo $userObj->getUserFirstName(); ?></td>
                                 <td><?php echo $userObj->getUserRank(); ?></td>
-                                <td><?php echo $bases->getBaseName($userObj->getUserBase()); ?></td>
+                                <td><?php echo $baseManager->getBaseName($userObj->getUserBase()); ?></td>
                                 <td><?php echo $userObj->getUserHandle(); ?></td>
-                                <td><?php echo $roles->getRoleName($userObj->getUserRole()); ?></td>
+                                <td><?php echo $roleManager->getRoleName($userObj->getUserRole()); ?></td>
                                 <td><a href="/admin/profile/<?php echo $result; ?>">View Profile</a></td>
                             </tr>
                         <?php endforeach; ?>
@@ -195,12 +195,12 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $testManager = new testManager($db,$log,$afsc);
+                            $testManager = new TestManager($db, $systemLog, $afscManager);
                             $testManager->loadTest($result);
                             ?>
                             <tr>
                                 <td><?php echo $cdcMastery->formatDateTime($testManager->getTestTimeCompleted(),"j M Y H:i"); ?></td>
-                                <td><a href="/admin/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+                                <td><a href="/admin/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $userManager->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
                                 <td><?php echo $testManager->getTestScore(); ?></td>
                                 <td><?php echo $testManager->getTotalQuestions(); ?></td>
                                 <td>
@@ -210,7 +210,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                                     }
                                     else{
                                         $testManagerAFSCList = $testManager->getAFSCList();
-                                        echo $afsc->getAFSCName($testManagerAFSCList[0]);
+                                        echo $afscManager->getAFSCName($testManagerAFSCList[0]);
                                     }
                                     ?>
                                 </td>

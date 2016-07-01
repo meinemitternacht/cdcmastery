@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $testCountByYear = $statsObj->getTestCountByYear();
 
 if($testCountByYear){
@@ -20,7 +20,7 @@ if($testCountByYear){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.","info");
+    $systemMessages->addMessage("That statistic contains no data.", "info");
     $cdcMastery->redirect("/about/statistics");
 }
 

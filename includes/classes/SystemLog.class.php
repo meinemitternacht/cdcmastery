@@ -4,7 +4,7 @@
 This script provides a class interface for the site logging function.
 */
 
-class log extends CDCMastery
+class SystemLog extends CDCMastery
 {
 	protected $db;				//holds database object
 	
@@ -619,10 +619,10 @@ class log extends CDCMastery
                             $linkStr = '<a href="/admin/afsc/edit/' . $detailData . '">' . $detailData . '</a>';
                             break;
                         case 'answerData':
-							$log = new log($this->db);
-							$afsc = new afsc($this->db,$log);
-							$answerManager = new answerManager($this->db,$log);
-							$questionManager = new questionManager($this->db,$log,$afsc,$answerManager);
+							$log = new SystemLog($this->db);
+							$afsc = new AFSCManager($this->db, $log);
+							$answerManager = new AnswerManager($this->db, $log);
+							$questionManager = new QuestionManager($this->db, $log, $afsc, $answerManager);
 
 							if($answerManager->loadAnswer($detailData)){
 								$questionManager->loadQuestion($answerManager->getQuestionUUID());
@@ -649,10 +649,10 @@ class log extends CDCMastery
                             $linkStr = '<a href="/admin/office-symbols/edit/' . $detailData . '">' . $detailData . '</a>';
                             break;
                         case 'questionData':
-							$log = new log($this->db);
-							$afsc = new afsc($this->db,$log);
-							$answerManager = new answerManager($this->db,$log);
-							$questionManager = new questionManager($this->db,$log,$afsc,$answerManager);
+							$log = new SystemLog($this->db);
+							$afsc = new AFSCManager($this->db, $log);
+							$answerManager = new AnswerManager($this->db, $log);
+							$questionManager = new QuestionManager($this->db, $log, $afsc, $answerManager);
 
 							if($questionManager->loadQuestion($detailData)){
 								$linkStr = '<a href="/admin/cdc-data/' . $questionManager->getAFSCUUID() . '/question/' . $detailData . '/view">' . $detailData . '</a>';
@@ -687,9 +687,9 @@ class log extends CDCMastery
                             $linkStr = '<a href="/test/view/' . $detailData . '">' . $detailData . '</a>';
                             break;
                         case 'testManager':
-                            $log = new log($this->db);
-                            $afsc = new afsc($this->db,$log);
-                            $testManager = new testManager($this->db,$log,$afsc);
+                            $log = new SystemLog($this->db);
+                            $afsc = new AFSCManager($this->db, $log);
+                            $testManager = new TestManager($this->db, $log, $afsc);
 
                             if($testManager->loadIncompleteTest($detailData)){
                                 $linkStr = '<a href="/admin/users/' . $testManager->getIncompleteUserUUID() . '/tests/incomplete/view/' . $detailData . '">'.$detailData.'</a>';
