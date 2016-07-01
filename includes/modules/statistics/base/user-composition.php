@@ -11,7 +11,7 @@ $dayInterval = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : 30;
 
 $endDateObj = new DateTime();
 $startDateObj = new DateTime();
-$startDateObj->modify("-30 days");
+$startDateObj->modify("-".$dayInterval." days");
 
 $baseList = $baseManager->listUserBases($startDateObj, $endDateObj);
 
