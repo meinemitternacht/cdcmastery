@@ -5,8 +5,8 @@ define('APP_BASE', realpath(__DIR__ . '/../app'));
 
 include "../includes/bootstrap.inc.php";
 
-$workingLog = new log($db);
-$testManager = new testManager($db, $log, $afsc);
+$workingLog = new SystemLog($db);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 $oldDB = new mysqli($cfg['db']['host'], $cfg['db']['user'], $cfg['db']['pass'], "cdcmastery_main", $cfg['db']['port'], $cfg['db']['socket']);
 
 if($oldDB->connect_errno){
@@ -59,17 +59,17 @@ if($migrationArrayCount > 0){
 		switch($row['action']){
 			case "ADDED_QUESTION":
 				$workingLog->setAction("QUESTION_ADD");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("Question UUID",$row['data']);
 			break;
 			case "ADD_AFSC":
 				$workingLog->setAction("AFSC_ADD");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("AFSC Name",$row['data']);
 			break;
 			case "AUTH_ERROR":
 				$workingLog->setAction("ERROR_LOGIN_BAD_PASSWORD");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "AUTH_ERROR_UNKNOWN":
 				$workingLog->setAction("ERROR_LOGIN_UNKNOWN_USER");
@@ -78,7 +78,7 @@ if($migrationArrayCount > 0){
 			break;
 			case "COMPLETED_TEST":
 				$workingLog->setAction("TEST_COMPLETED");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$testUUID = $testManager->getMigratedTestUUID($row['data']);
 				if($testUUID){
 					$workingLog->setDetail("Test UUID",$testUUID);
@@ -86,11 +86,11 @@ if($migrationArrayCount > 0){
 			break;
 			case "DELETED_QUESTION":
 				$workingLog->setAction("QUESTION_DELETE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "DELETED_TEST":
 				$workingLog->setAction("TEST_DELETE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$testUUID = $testManager->getMigratedTestUUID($row['data']);
 				if($testUUID){
 					$workingLog->setDetail("Test UUID",$testUUID);
@@ -98,74 +98,74 @@ if($migrationArrayCount > 0){
 			break;
 			case "DELETED_USER":
 				$workingLog->setAction("USER_DELETE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("User Full Name",$row['data']);
 			break;
 			case "DELETE_AFSC":
 				$workingLog->setAction("AFSC_DELETE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("AFSC Name",$row['data']);
 			break;
 			case "EDITED_QUESTION":
 				$workingLog->setAction("QUESTION_EDIT");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("Question UUID",$row['data']);
 			break;
 			case "EDIT_AFSC":
 				$workingLog->setAction("AFSC_EDIT");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "EDIT_PROFILE":
 				$workingLog->setAction("USER_EDIT_PROFILE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("Target User",$row['data']);
 				$workingLog->setDetail("Query String",$row['data2']);
 			break;
 			case "FOUO_NOT_AUTH":
 				$workingLog->setAction("ERROR_TEST_UNAUTHORIZED");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "LOGGED_IN":
 				$workingLog->setAction("LOGIN_SUCCESS");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "LOGGED_OUT":
 				$workingLog->setAction("LOGOUT_SUCCESS");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "LOGIN_RATE_LIMIT_REACHED":
 				$workingLog->setAction("ERROR_LOGIN_RATE_LIMIT_REACHED");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "MYSQL_ERROR":
 				$workingLog->setAction("MYSQL_ERROR");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$workingLog->setDetail("MYSQL ERROR",$row['data']);
 			break;
 			case "PASSWORD_CHANGE":
 				$workingLog->setAction("USER_EDIT_PROFILE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "PASSWORD_RESET":
 				$workingLog->setAction("USER_PASSWORD_RESET");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$userHandle = getUserHandle($row['data'],$oldDB);
 				if($userHandle){
-					$userUUID = $user->getUUIDByHandle($userHandle);
+					$userUUID = $userManager->getUUIDByHandle($userHandle);
 					if($userUUID){
-						$user->loadUser($userUUID);
+						$userManager->loadUser($userUUID);
 						$workingLog->setDetail("Target User UUID", $userUUID);
-						$workingLog->setDetail("Target User Name", $user->getFullName());
+						$workingLog->setDetail("Target User Name", $userManager->getFullName());
 					}
 				}
 			break;
 			case "REGISTERED":
 				$workingLog->setAction("USER_REGISTER");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "STARTED_TEST":
 				$workingLog->setAction("TEST_START");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 				$testUUID = $testManager->getMigratedTestUUID($row['data']);
 				if($testUUID){
 					$workingLog->setDetail("Test UUID",$testUUID);
@@ -173,11 +173,11 @@ if($migrationArrayCount > 0){
 			break;
 			case "UPDATE_BASE":
 				$workingLog->setAction("USER_EDIT_PROFILE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "UPDATE_TIME_ZONE":
 				$workingLog->setAction("USER_EDIT_PROFILE");
-				$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
+				$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
 			break;
 			case "UPLOAD_FILE":
 				$workingLog->setAction("FILE_UPLOAD");
@@ -191,31 +191,31 @@ if($migrationArrayCount > 0){
 				$workingLog->setAction("USER_ADD_AFSC_ASSOCIATION");
 				if(empty($row['data2'])){
 					$workingLog->setUserUUID("SYSTEM");
-					$afscUUID = $afsc->getMigratedAFSCUUID($row['data']);
+					$afscUUID = $afscManager->getMigratedAFSCUUID($row['data']);
 						
 					if($afscUUID){
 						$workingLog->setDetail("AFSC UUID",$afscUUID);
-						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
+						$workingLog->setDetail("AFSC Name", $afscManager->getAFSCName($afscUUID));
 					}
 					
 					$workingLog->setDetail("Target User",$row['logEnteredBy']);
 				}
 				else{
-					$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
-					$afscUUID = $afsc->getMigratedAFSCUUID($row['data2']);
+					$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
+					$afscUUID = $afscManager->getMigratedAFSCUUID($row['data2']);
 					
 					if($afscUUID){
 						$workingLog->setDetail("AFSC UUID",$afscUUID);
-						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
+						$workingLog->setDetail("AFSC Name", $afscManager->getAFSCName($afscUUID));
 					}
 					
 					$userHandle = getUserHandle($row['data'],$oldDB);
 					if($userHandle){
-						$userUUID = $user->getUUIDByHandle($userHandle);
+						$userUUID = $userManager->getUUIDByHandle($userHandle);
 						if($userUUID){
-							$user->loadUser($userUUID);
+							$userManager->loadUser($userUUID);
 							$workingLog->setDetail("Target User UUID", $userUUID);
-							$workingLog->setDetail("Target User Name", $user->getFullName());
+							$workingLog->setDetail("Target User Name", $userManager->getFullName());
 						}
 					}
 				}
@@ -224,31 +224,31 @@ if($migrationArrayCount > 0){
 				$workingLog->setAction("USER_DELETE_AFSC_ASSOCIATION");
 				if(empty($row['data2'])){
 					$workingLog->setUserUUID("SYSTEM");
-					$afscUUID = $afsc->getMigratedAFSCUUID($row['data']);
+					$afscUUID = $afscManager->getMigratedAFSCUUID($row['data']);
 						
 					if($afscUUID){
 						$workingLog->setDetail("AFSC UUID",$afscUUID);
-						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
+						$workingLog->setDetail("AFSC Name", $afscManager->getAFSCName($afscUUID));
 					}
 					
 					$workingLog->setDetail("Target User",$row['logEnteredBy']);
 				}
 				else{
-					$workingLog->setUserUUID($user->getUUIDByHandle($row['logEnteredBy']));
-					$afscUUID = $afsc->getMigratedAFSCUUID($row['data2']);
+					$workingLog->setUserUUID($userManager->getUUIDByHandle($row['logEnteredBy']));
+					$afscUUID = $afscManager->getMigratedAFSCUUID($row['data2']);
 					
 					if($afscUUID){
 						$workingLog->setDetail("AFSC UUID",$afscUUID);
-						$workingLog->setDetail("AFSC Name",$afsc->getAFSCName($afscUUID));
+						$workingLog->setDetail("AFSC Name", $afscManager->getAFSCName($afscUUID));
 					}
 					
 					$userHandle = getUserHandle($row['data'],$oldDB);
 					if($userHandle){
-						$userUUID = $user->getUUIDByHandle($userHandle);
+						$userUUID = $userManager->getUUIDByHandle($userHandle);
 						if($userUUID){
-							$user->loadUser($userUUID);
+							$userManager->loadUser($userUUID);
 							$workingLog->setDetail("Target User UUID", $userUUID);
-							$workingLog->setDetail("Target User Name", $user->getFullName());
+							$workingLog->setDetail("Target User Name", $userManager->getFullName());
 						}
 					}
 				}

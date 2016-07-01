@@ -6,15 +6,15 @@
  * Time: 2:29 AM
  */
 
-$statistics = new statistics($db,$log,$emailQueue,$memcache);
-$answerManager = new answerManager($db, $log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
-$tmUser = new user($db,$log,$emailQueue);
-$tmOverview = new trainingManagerOverview($db,$log,$userStatistics,$tmUser,$roles);
+$statistics = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$tmUser = new UserManager($db, $systemLog, $emailQueue);
+$tmOverview = new TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
 
 $workingAFSC = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
-if(!$afsc->loadAFSC($workingAFSC)){
-    $sysMsg->addMessage("That AFSC does not exist.","warning");
+if(!$afscManager->loadAFSC($workingAFSC)){
+    $systemMessages->addMessage("That AFSC does not exist.", "warning");
     $cdcMastery->redirect("/errors/404");
 }
 
@@ -26,12 +26,12 @@ else{
 }
 
 if(!$cdcMastery->verifyTrainingManager() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Training Manager Missed Questions Overview.","danger");
+    $systemMessages->addMessage("You are not authorized to view the Training Manager Missed Questions Overview.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 
-if($roles->getRoleType($user->getUserRoleByUUID($trainingManagerUUID)) != "trainingManager"){
-    $sysMsg->addMessage("That user is not a Training Manager.","warning");
+if($roleManager->getRoleType($userManager->getUserRoleByUUID($trainingManagerUUID)) != "trainingManager"){
+    $systemMessages->addMessage("That user is not a Training Manager.", "warning");
     $cdcMastery->redirect("/errors/500");
 }
 
@@ -42,7 +42,7 @@ $userList = $tmOverview->getSubordinateUserList();
 $supervisorList = $tmOverview->getSubordinateSupervisorList();
 
 if(!$userList && !$supervisorList){
-    $sysMsg->addMessage("You have no subordinate users. Please associate users with your account by using the form below.","info");
+    $systemMessages->addMessage("You have no subordinate users. Please associate users with your account by using the form below.", "info");
     $cdcMastery->redirect("/");
 }
 elseif(!empty($userList) && !empty($supervisorList)){

@@ -1,5 +1,5 @@
 <?php
-$pwReset = new passwordReset($db, $log, $emailQueue);
+$pwReset = new UserPasswordResetManager($db, $systemLog, $emailQueue);
 
 if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 	$passwordToken = $_SESSION['vars'][0];
@@ -14,33 +14,33 @@ if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 
 		if (is_array($passwordComplexityCheck)) {
 			foreach ($passwordComplexityCheck as $passwordComplexityCheckError) {
-				$sysMsg->addMessage($passwordComplexityCheckError,"warning");
+				$systemMessages->addMessage($passwordComplexityCheckError, "warning");
 			}
 			$cdcMastery->redirect("/auth/reset/" . $_SESSION['vars'][0]);
 		} elseif ($userPassword != $userPasswordConfirm) {
-			$sysMsg->addMessage("Your passwords do not match.","warning");
+			$systemMessages->addMessage("Your passwords do not match.", "warning");
 		} else {
 			if ($pwReset->verifyPasswordResetToken($passwordToken)) {
 				$pwReset->setUserPassword($userPassword);
 				$pwReset->setUserLegacyPassword(false);
 				if ($pwReset->saveUser()) {
-					$log->setAction("USER_PASSWORD_RESET_COMPLETE");
-					$log->setUserUUID($userUUID);
-					$log->saveEntry();
+					$systemLog->setAction("USER_PASSWORD_RESET_COMPLETE");
+					$systemLog->setUserUUID($userUUID);
+					$systemLog->saveEntry();
 					$pwReset->deletePasswordResetToken($passwordToken);
 
-					$sysMsg->addMessage("Your password has been reset. You may now log in with your new password.","success");
+					$systemMessages->addMessage("Your password has been reset. You may now log in with your new password.", "success");
 					$pwReset->sendPasswordResetCompleteNotification($userUUID);
 					$cdcMastery->redirect("/auth/login");
 				} else {
-					$sysMsg->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
+					$systemMessages->addMessage("We could not update your password.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.", "danger");
 				}
 			} else {
-				$sysMsg->addMessage("That password reset token is invalid.","danger");
+				$systemMessages->addMessage("That password reset token is invalid.", "danger");
 			}
 		}
 	} else {
-		$sysMsg->addMessage("That user does not exist.","warning");
+		$systemMessages->addMessage("That user does not exist.", "warning");
 	}
 }
 
@@ -50,22 +50,22 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 	$userUUID = $pwReset->getUUIDByEmail($userEmail);
 	
 	if($userUUID){
-        $auth = new auth($userUUID,$log,$db,$roles,$emailQueue);
+        $auth = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
 
         if($auth->getActivationStatus()) {
             if ($pwReset->sendPasswordReset($userUUID)) {
-                $sysMsg->addMessage("A password reset link has been sent to the e-mail address provided.","success");
+                $systemMessages->addMessage("A password reset link has been sent to the e-mail address provided.", "success");
             } else {
-                $sysMsg->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.","danger");
+                $systemMessages->addMessage("Sorry, we could not send a password reset to that e-mail address.  Contact CDCMastery Support (support@cdcmastery.com) for further assistance.", "danger");
             }
         }
         else{
-            $sysMsg->addMessage("Please activate your account before performing a password reset. If you did not receive an activation e-mail within one hour of registering, please send a new activation e-mail below.","warning");
+            $systemMessages->addMessage("Please activate your account before performing a password reset. If you did not receive an activation e-mail within one hour of registering, please send a new activation e-mail below.", "warning");
             $cdcMastery->redirect("/auth/activate");
         }
 	}
 	else{
-		$sysMsg->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.","warning");
+		$systemMessages->addMessage("Sorry, we could not find your account.  Re-check your typed e-mail address and try again.", "warning");
 	}
 }
 ?>
@@ -93,7 +93,7 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 						<input type="submit" value="Change Password">
 					</form>
 				<?php else:
-                        $sysMsg->addMessage("That password reset token is invalid.  Please try again or contact the helpdesk for assistance by clicking the 'support' link at the top of the page.","danger");
+                        $systemMessages->addMessage("That password reset token is invalid.  Please try again or contact the helpdesk for assistance by clicking the 'support' link at the top of the page.", "danger");
                         $cdcMastery->redirect("/auth/reset");
                     endif; ?>
 			<?php else: ?>

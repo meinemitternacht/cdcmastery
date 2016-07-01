@@ -5,7 +5,7 @@
  * Date: 10/2/2015
  * Time: 11:08 PM
  */
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserTests($_SESSION['userUUID'],false,true);
 
 if(!empty($testList)): ?>
@@ -110,7 +110,7 @@ if(!empty($testList)): ?>
                                 $rawAFSCList = $testDetails['afscList'];
 
                                 foreach($rawAFSCList as $key => $val){
-                                    $rawAFSCList[$key] = $afsc->getAFSCName($val);
+                                    $rawAFSCList[$key] = $afscManager->getAFSCName($val);
                                 }
 
                                 if(count($rawAFSCList) > 1){
@@ -206,6 +206,6 @@ if(!empty($testList)): ?>
     </div>
     <?php
 else:
-    $sysMsg->addMessage("You have not completed any tests.","info");
+    $systemMessages->addMessage("You have not completed any tests.", "info");
     $cdcMastery->redirect("/");
 endif;

@@ -7,16 +7,16 @@
  */
 
 if(isset($_POST['disableConfirm'])){
-    $user->setUserDisabled(true);
-    $user->saveUser();
+    $userManager->setUserDisabled(true);
+    $userManager->saveUser();
 
-    $log->setAction("USER_ACCOUNT_DISABLE_SELF");
+    $systemLog->setAction("USER_ACCOUNT_DISABLE_SELF");
 
     if(isset($_POST['disableMessage'])){
-        $log->setDetail("disableMessage",$_POST['disableMessage']);
+        $systemLog->setDetail("disableMessage", $_POST['disableMessage']);
     }
 
-    $log->saveEntry();
+    $systemLog->saveEntry();
     unset($_SESSION['auth']);
 
     if(isset($_SESSION['cdcMasteryAdmin']))
@@ -43,7 +43,7 @@ if(isset($_POST['disableConfirm'])){
     if(isset($_SESSION['timeZone']))
         unset($_SESSION['timeZone']);
 
-    $sysMsg->addMessage("Your account has been disabled.  Thank you for using CDCMastery.","success");
+    $systemMessages->addMessage("Your account has been disabled.  Thank you for using CDCMastery.", "success");
     $cdcMastery->redirect("/");
 }
 ?>

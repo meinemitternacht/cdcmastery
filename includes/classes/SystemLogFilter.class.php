@@ -1,5 +1,5 @@
 <?php
-class logFilter extends log {
+class SystemLogFilter extends SystemLog {
 	protected $user;
 
 	public $query;
@@ -16,7 +16,7 @@ class logFilter extends log {
 	public $filterTimestampEnd;
 	public $filterUserUUID;
 	
-	function __construct(mysqli $db, user $user){
+	function __construct(mysqli $db, UserManager $user){
 		$this->user = $user;
 
 		parent::__construct($db);

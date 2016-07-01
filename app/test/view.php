@@ -2,16 +2,16 @@
 $testUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $showAnswers = isset($_SESSION['vars'][1]) ? ($_SESSION['vars'][1] == "show-all") ? true : false : false;
 
-$testManager = new testManager($db, $log, $afsc);
-$answerManager = new answerManager($db, $log);
-$questionManager = new questionManager($db, $log, $afsc, $answerManager);
-$user->loadUser($_SESSION['userUUID']);
+$testManager = new TestManager($db, $systemLog, $afscManager);
+$answerManager = new AnswerManager($db, $systemLog);
+$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$userManager->loadUser($_SESSION['userUUID']);
 
 /*
  * Check if test UUID is empty
  */
 if(!$testUUID){
-    $sysMsg->addMessage("You must select a test to view.","warning");
+    $systemMessages->addMessage("You must select a test to view.", "warning");
 	$cdcMastery->redirect("/errors/404");
 }
 
@@ -19,15 +19,15 @@ if(!$testUUID){
  * Check test validity
  */
 if(!$testManager->loadTest($testUUID)){
-    $sysMsg->addMessage("That test does not exist.","warning");
+    $systemMessages->addMessage("That test does not exist.", "warning");
 	$cdcMastery->redirect("/errors/404");
 }
 
 /*
  * Check test ownership, if role is user.  Deny access to tests that are not their own.
  */
-if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserUUID() != $_SESSION['userUUID']){
-	$sysMsg->addMessage("You are not authorized to view that test.","danger");
+if($roleManager->getRoleType($userManager->getUserRole()) == "user" && $testManager->getUserUUID() != $_SESSION['userUUID']){
+	$systemMessages->addMessage("You are not authorized to view that test.", "danger");
 	$cdcMastery->redirect("/errors/403");
 }
 
@@ -36,20 +36,20 @@ if($roles->getRoleType($user->getUserRole()) == "user" && $testManager->getUserU
  */
 
 if($cdcMastery->verifySupervisor() && $testManager->getUserUUID() != $_SESSION['userUUID']){
-	$supUser = new user($db,$log,$emailQueue);
-	$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+	$supUser = new UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
 	$subordinateUsers = $supOverview->getSubordinateUserList();
 
 	if(empty($subordinateUsers)):
-		$sysMsg->addMessage("You do not have any subordinate users.","info");
+		$systemMessages->addMessage("You do not have any subordinate users.", "info");
 		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
 	if(!in_array($testManager->getUserUUID(),$subordinateUsers)){
-		$sysMsg->addMessage("That user is not associated with your account.","danger");
+		$systemMessages->addMessage("That user is not associated with your account.", "danger");
 		$cdcMastery->redirect("/supervisor/overview");
 	}
 }
@@ -58,10 +58,10 @@ $rawAFSCList = $testManager->getAFSCList();
 
 foreach($rawAFSCList as $key => $val){
     if($cdcMastery->verifyTrainingManager() || $cdcMastery->verifyAdmin()) {
-        $rawAFSCList[$key] = "<a href=\"/admin/cdc-data/".$val."\" title=\"View CDC Data\">".$afsc->getAFSCName($val)."</a>";
+        $rawAFSCList[$key] = "<a href=\"/admin/cdc-data/".$val."\" title=\"View CDC Data\">".$afscManager->getAFSCName($val)."</a>";
     }
     else{
-        $rawAFSCList[$key] = $afsc->getAFSCName($val);
+        $rawAFSCList[$key] = $afscManager->getAFSCName($val);
     }
 }
 
@@ -84,9 +84,9 @@ else{
 					<tr>
 						<th>Test Owner</th>
 						<?php if($cdcMastery->verifySupervisor()): ?>
-							<td><a href="/supervisor/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+							<td><a href="/supervisor/profile/<?php echo $testManager->getUserUUID(); ?>"><?php echo $userManager->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
 						<?php else: ?>
-							<td><a href="/admin/users/<?php echo $testManager->getUserUUID(); ?>"><?php echo $user->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
+							<td><a href="/admin/users/<?php echo $testManager->getUserUUID(); ?>"><?php echo $userManager->getUserNameByUUID($testManager->getUserUUID()); ?></a></td>
 						<?php endif; ?>
 					</tr>
 					<?php endif; ?>

@@ -25,17 +25,17 @@ if(isset($_SESSION['vars']['get']['term'])) {
         $sqlError = $stmt->error;
         $stmt->close();
 
-        $log->setAction("ERROR_AJAX_EMAIL_AUTOCOMPLETE_LIST");
-        $log->setDetail("Search Term",$_SESSION['vars']['get']['term']);
-        $log->setDetail("MySQL Error",$sqlError);
-        $log->saveEntry();
+        $systemLog->setAction("ERROR_AJAX_EMAIL_AUTOCOMPLETE_LIST");
+        $systemLog->setDetail("Search Term", $_SESSION['vars']['get']['term']);
+        $systemLog->setDetail("MySQL Error", $sqlError);
+        $systemLog->saveEntry();
     }
 }
 else{
-    $log->setAction("AJAX_DIRECT_ACCESS");
-    $log->setDetail("CALLING SCRIPT","/ajax/autocomplete/userEmail");
-    $log->saveEntry();
+    $systemLog->setAction("AJAX_DIRECT_ACCESS");
+    $systemLog->setDetail("CALLING SCRIPT", "/ajax/autocomplete/userEmail");
+    $systemLog->saveEntry();
 
-    $sysMsg->addMessage("Direct access to this script is not authorized.","danger");
+    $systemMessages->addMessage("Direct access to this script is not authorized.", "danger");
     $cdcMastery->redirect("/errors/403");
 }

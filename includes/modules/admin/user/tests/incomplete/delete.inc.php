@@ -1,20 +1,20 @@
 <?php
 if(!$finalChild){
-    $sysMsg->addMessage("You did not specify an incomplete test to delete.","warning");
+    $systemMessages->addMessage("You did not specify an incomplete test to delete.", "warning");
     $cdcMastery->redirect("/admin/users/".$userUUID."/tests/incomplete");
 }
 
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 if(isset($_POST['confirmIncompleteTestDelete'])){
 	if($testManager->deleteIncompleteTest(false,$finalChild)){
 		$userStatistics->setUserUUID($userUUID);
 		$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-        $sysMsg->addMessage("Incomplete test deleted successfully.","success");
+        $systemMessages->addMessage("Incomplete test deleted successfully.", "success");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 	else{
-        $sysMsg->addMessage("We could not delete that incomplete test. Please contact the support helpdesk.","danger");
+        $systemMessages->addMessage("We could not delete that incomplete test. Please contact the support helpdesk.", "danger");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }

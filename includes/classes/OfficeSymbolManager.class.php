@@ -1,6 +1,6 @@
 <?php
 
-class officeSymbol extends CDCMastery
+class OfficeSymbolManager extends CDCMastery
 {
     public $error;
     public $uuid;
@@ -8,7 +8,7 @@ class officeSymbol extends CDCMastery
     protected $db;
     protected $log;
 
-    public function __construct(mysqli $db, log $log)
+    public function __construct(mysqli $db, SystemLog $log)
     {
         $this->db = $db;
         $this->log = $log;

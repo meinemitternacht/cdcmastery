@@ -6,7 +6,7 @@
  * Time: 3:20 AM
  */
 
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 $stmt = $db->prepare("SELECT uuid FROM `testHistory` WHERE (testScore + questionsMissed) != totalQuestions ORDER BY `testHistory`.`testTimeStarted` DESC");
 $stmt->execute();
@@ -20,7 +20,7 @@ $stmt->close();
 
 foreach($testUUIDList as $completedTestUUID){
     $testManager->loadTest($completedTestUUID);
-    echo "testUUID: ".$log->formatDetailData($completedTestUUID);
+    echo "testUUID: ".$systemLog->formatDetailData($completedTestUUID);
     echo "<br>";
     echo "Test Score: ".$testManager->getTestScore();
     echo "<br>";

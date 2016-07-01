@@ -1,10 +1,10 @@
 <?php
 if(isset($_SESSION['vars'][0])){
 	$userUUID = $_SESSION['vars'][0];
-	$objUser = new user($db, $log, $emailQueue);
+	$objUser = new UserManager($db, $systemLog, $emailQueue);
 	
 	if(!$objUser->loadUser($userUUID)){
-		$sysMsg->addMessage("That user does not exist.","warning");
+		$systemMessages->addMessage("That user does not exist.", "warning");
 		$cdcMastery->redirect("/errors/404");
 	}
 	
@@ -19,8 +19,8 @@ if(isset($_SESSION['vars'][0])){
 			 * Basic Functions
 			 */
 			case "ban":
-				if($objUser->getUUID() == $user->getUUID()){
-					$sysMsg->addMessage("You cannot ban yourself.","info");
+				if($objUser->getUUID() == $userManager->getUUID()){
+					$systemMessages->addMessage("You cannot ban yourself.", "info");
 					$cdcMastery->redirect("/");
 				}
 				else{
@@ -28,8 +28,8 @@ if(isset($_SESSION['vars'][0])){
 				}
 			break;
             case "unban":
-				if($objUser->getUUID() == $user->getUUID()){
-					$sysMsg->addMessage("You cannot unban yourself.","info");
+				if($objUser->getUUID() == $userManager->getUUID()){
+					$systemMessages->addMessage("You cannot unban yourself.", "info");
 					$cdcMastery->redirect("/");
 				}
 				else{
@@ -37,8 +37,8 @@ if(isset($_SESSION['vars'][0])){
 				}
             break;
 			case "delete":
-				if($objUser->getUUID() == $user->getUUID()){
-					$sysMsg->addMessage("You cannot delete your own account.","info");
+				if($objUser->getUUID() == $userManager->getUUID()){
+					$systemMessages->addMessage("You cannot delete your own account.", "info");
 					$cdcMastery->redirect("/");
 				}
 				else {
@@ -49,8 +49,8 @@ if(isset($_SESSION['vars'][0])){
 				require_once BASE_PATH . "/includes/modules/admin/user/edit.inc.php";
 			break;
 			case "resend-activation":
-				if($objUser->getUUID() == $user->getUUID()){
-					$sysMsg->addMessage("You cannot resend an activation code to your own account.","info");
+				if($objUser->getUUID() == $userManager->getUUID()){
+					$systemMessages->addMessage("You cannot resend an activation code to your own account.", "info");
 					$cdcMastery->redirect("/");
 				}
 				else{
@@ -126,8 +126,8 @@ if(isset($_SESSION['vars'][0])){
 			 */
 			case "log":
 				if($subAction && $subAction == "clear"){
-					if($objUser->getUUID() == $user->getUUID()){
-						$sysMsg->addMessage("For security reasons, you cannot clear log entries associated with your own account.","warning");
+					if($objUser->getUUID() == $userManager->getUUID()){
+						$systemMessages->addMessage("For security reasons, you cannot clear log entries associated with your own account.", "warning");
 						$cdcMastery->redirect("/");
 					}
 					else {
@@ -216,10 +216,10 @@ if(isset($_SESSION['vars'][0])){
 							</div>
 							<ul>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/afsc"><i class="icon-inline icon-20 ic-puzzle"></i>AFSCs</a></li>
-								<?php if($roles->verifyUserRole($userUUID) == "trainingManager"): ?>
+								<?php if($roleManager->verifyUserRole($userUUID) == "trainingManager"): ?>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="icon-inline icon-20 ic-relationship"></i>Subordinates</a></li>
                                 <li><a href="/training/overview/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-clipboard"></i>Training Manager Overview</a></li>
-								<?php elseif($roles->verifyUserRole($userUUID) == "supervisor"): ?>
+								<?php elseif($roleManager->verifyUserRole($userUUID) == "supervisor"): ?>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/subordinate"><i class="icon-inline icon-20 ic-relationship"></i>Subordinates</a></li>
 								<li><a href="/admin/users/<?php echo $userUUID; ?>/associations/training-manager"><i class="icon-inline icon-20 ic-relationship"></i>Training Managers</a></li>
                                 <li><a href="/supervisor/overview/<?php echo $userUUID; ?>"><i class="icon-inline icon-20 ic-clipboard"></i>Supervisor Overview</a></li>

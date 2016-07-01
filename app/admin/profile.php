@@ -1,10 +1,10 @@
 <?php
 if(isset($_SESSION['vars'][0])):
 	$targetUUID = $_SESSION['vars'][0];
-	$userProfile = new user($db, $log, $emailQueue);
-	$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
+	$userProfile = new UserManager($db, $systemLog, $emailQueue);
+	$userProfileStatistics = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 	if(!$userProfile->loadUser($targetUUID)){
-		$sysMsg->addMessage("That user does not exist.","warning");
+		$systemMessages->addMessage("That user does not exist.", "warning");
 	}
 	else{
 		$userProfileStatistics->setUserUUID($targetUUID);
@@ -82,7 +82,7 @@ if(isset($_SESSION['vars'][0])):
 						</header>
 						<a href="/admin/profile" class="button">&laquo; Back</a>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/edit" class="button">Edit</a>
-						<?php if($userProfile->getUUID() != $user->getUUID()): ?>
+						<?php if($userProfile->getUUID() != $userManager->getUUID()): ?>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/delete" class="button">Delete</a>
 						<a href="/admin/users/<?php echo $targetUUID; ?>/message" class="button">Message</a>
 						<?php endif; ?>
@@ -100,11 +100,11 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Base</th>
-								<td><a href="/admin/base-overview/<?php echo $userProfile->getUserBase(); ?>" title="Go to Base Overview"><?php echo $bases->getBaseName($userProfile->getUserBase()); ?></a></td>
+								<td><a href="/admin/base-overview/<?php echo $userProfile->getUserBase(); ?>" title="Go to Base Overview"><?php echo $baseManager->getBaseName($userProfile->getUserBase()); ?></a></td>
 							</tr>
 							<tr>
 								<th class="th-child">Office Symbol</th>
-								<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbol->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
+								<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbolManager->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Date Registered</th>
@@ -120,7 +120,7 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Role</th>
-								<td><?php echo $roles->getRoleName($userProfile->getUserRole()); ?></td>
+								<td><?php echo $roleManager->getRoleName($userProfile->getUserRole()); ?></td>
 							</tr>
 							<tr>
 								<th colspan="2">Personal Details</th>
@@ -151,7 +151,7 @@ if(isset($_SESSION['vars'][0])):
 									}
 									else{
 										foreach($userAFSCList as $userAFSCuuid => $afscData){
-											echo $afsc->getAFSCName($userAFSCuuid)."<br>";
+											echo $afscManager->getAFSCName($userAFSCuuid)."<br>";
 										}
 									}
 									?>
@@ -168,7 +168,7 @@ if(isset($_SESSION['vars'][0])):
 									}
 									else{
 										foreach($afscList as $userAFSCuuid => $afscData){
-											echo $afsc->getAFSCName($userAFSCuuid)."<br />";
+											echo $afscManager->getAFSCName($userAFSCuuid)."<br />";
 										}
 									}
 									?>
@@ -218,7 +218,7 @@ if(isset($_SESSION['vars'][0])):
 								<th colspan="2"><div class="text-float-left">User Associations</div></th>
 							</tr>
 							<?php
-							$userRole = $roles->verifyUserRole($targetUUID);
+							$userRole = $roleManager->verifyUserRole($targetUUID);
 							if($userRole == "supervisor"): ?>
 							<tr>
 								<th class="th-child">Supervisor For</th>
@@ -328,7 +328,7 @@ if(isset($_SESSION['vars'][0])):
 							</ul>
 							<div id="history-tabs-1">
 							<?php 
-							$testManager = new testManager($db, $log, $afsc);
+							$testManager = new TestManager($db, $systemLog, $afscManager);
 							$userTestArray = $testManager->listUserTests($targetUUID,10);
 							
 							if($userTestArray): ?>
@@ -345,7 +345,7 @@ if(isset($_SESSION['vars'][0])):
 									<?php foreach($userTestArray as $testUUID => $testData): ?>
 										<tr>
 											<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
-											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php echo $testData['testScore']; ?></td>
 											<td>
 												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -382,7 +382,7 @@ if(isset($_SESSION['vars'][0])):
 											<td><?php echo $cdcMastery->outputDateTime($testData['timeStarted'],$_SESSION['timeZone']); ?></td>
 											<td><?php echo $testData['questionsAnswered']; ?></td>
 											<td><?php echo $testData['totalQuestions']; ?></td>
-											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
 										</tr>
 									<?php endforeach; ?>
@@ -405,7 +405,7 @@ if(isset($_SESSION['vars'][0])):
 										<th>&nbsp;</th>
 									</tr>
 									<?php 
-									$logFilter = new logFilter($db, $user);
+									$logFilter = new SystemLogFilter($db, $userManager);
 									$logFilter->setFilterUserUUID($targetUUID);
 									$logFilter->setPageRows(10);
 									$logFilter->setRowOffset(0);
@@ -414,7 +414,7 @@ if(isset($_SESSION['vars'][0])):
 									foreach($logEntries as $logUUID => $logData): ?>
 									<tr>
 										<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
-										<td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><?php echo $logData['action']; ?></span></td>
+										<td><span class="<?php echo $systemLog->getRowStyle($logData['action']); ?>"><?php echo $logData['action']; ?></span></td>
 										<td><a href="/admin/log/0/25/timestamp/DESC/ip/<?php echo base64_encode($logData['ip']); ?>" title="Show log entries for this IP"><?php echo $logData['ip']; ?></a></td>
 										<td><a href="/admin/log-detail/<?php echo $logUUID; ?>/profile"><i class="icon-inline icon-20 ic-arrow-right"></i>details</a></td>
 									</tr>

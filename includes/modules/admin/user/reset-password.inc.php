@@ -1,19 +1,19 @@
 <?php
 if(isset($_POST['confirmPasswordReset'])){
 	if($userUUID){
-		$pwReset = new passwordReset($db, $log, $emailQueue);
+		$pwReset = new UserPasswordResetManager($db, $systemLog, $emailQueue);
 		
 		if($pwReset->sendPasswordReset($userUUID)){
-            $sysMsg->addMessage("A password reset link has been sent to " . $objUser->getFullName(),"success");
+            $systemMessages->addMessage("A password reset link has been sent to " . $objUser->getFullName(), "success");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 		else{
-            $sysMsg->addMessage("Sorry, we could not reset the password for " . $objUser->getFullName(),"danger");
+            $systemMessages->addMessage("Sorry, we could not reset the password for " . $objUser->getFullName(), "danger");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 	}
 	else{
-        $sysMsg->addMessage("No User UUID was provided.","warning");
+        $systemMessages->addMessage("No User UUID was provided.", "warning");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }

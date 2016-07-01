@@ -1,31 +1,31 @@
 <?php
 if(isset($_SESSION['vars'][0])):
 	if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-		$sysMsg->addMessage("You are not authorized to use the Supervisor log page.","danger");
+		$systemMessages->addMessage("You are not authorized to use the Supervisor log page.", "danger");
 		$cdcMastery->redirect("/errors/403");
 	}
 
-	$supUser = new user($db,$log,$emailQueue);
-	$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+	$supUser = new UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
 	$subordinateUsers = $supOverview->getSubordinateUserList();
 
 	if(empty($subordinateUsers)):
-		$sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
+		$systemMessages->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.", "info");
 		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
 	$logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 	if($logUUID):
-		if($log->verifyLogUUID($logUUID)):
-			$logData = new log($db);
+		if($systemLog->verifyLogUUID($logUUID)):
+			$logData = new SystemLog($db);
 			$logData->loadEntry($logUUID);
 
 			if(!in_array($logData->getUserUUID(),$subordinateUsers)){
-				$sysMsg->addMessage("That user is not associated with your account.","danger");
+				$systemMessages->addMessage("That user is not associated with your account.", "danger");
 				$cdcMastery->redirect("/supervisor/overview");
 			}
 
@@ -54,7 +54,7 @@ if(isset($_SESSION['vars'][0])):
 								</tr>
 								<tr>
 									<th>User</th>
-									<td><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></td>
+									<td><?php echo $userManager->getUserByUUID($logData->getUserUUID()); ?></td>
 								</tr>
 								<tr>
 									<th>Action</th>
@@ -99,15 +99,15 @@ if(isset($_SESSION['vars'][0])):
 			</div>
 		<?php
 		else:
-			$sysMsg->addMessage("That log entry does not exist.","warning");
+			$systemMessages->addMessage("That log entry does not exist.", "warning");
 			$cdcMastery->redirect("/supervisor/overview");
 		endif;
 	else:
-		$sysMsg->addMessage("No log entry specified.","warning");
+		$systemMessages->addMessage("No log entry specified.", "warning");
 		$cdcMastery->redirect("/supervisor/overview");
 	endif;
 else:
-	$sysMsg->addMessage("You must select a user log to view.","warning");
+	$systemMessages->addMessage("You must select a user log to view.", "warning");
 	$cdcMastery->redirect("/supervisor/overview");
 endif;
 ?>

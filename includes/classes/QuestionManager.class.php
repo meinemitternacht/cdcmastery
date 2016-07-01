@@ -1,5 +1,5 @@
 <?php
-class questionManager extends CDCMastery
+class QuestionManager extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -14,7 +14,7 @@ class questionManager extends CDCMastery
 
     public $error;
 	
-	public function __construct(mysqli $db, log $log, afsc $afsc, answerManager $answer){
+	public function __construct(mysqli $db, SystemLog $log, AFSCManager $afsc, AnswerManager $answer){
 		$this->uuid = parent::genUUID();
 		$this->db = $db;
 		$this->log = $log;

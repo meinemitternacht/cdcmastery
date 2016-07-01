@@ -8,31 +8,31 @@
 
 if(!empty($_POST)){
     if($_FILES['fileField']['error'] > 0){
-        $sysMsg->addMessage("Upload error " . $_FILES['fileField']['error'],"danger");
+        $systemMessages->addMessage("Upload error " . $_FILES['fileField']['error'], "danger");
 
-        $log->setAction("ERROR_FILE_UPLOAD");
-        $log->setDetail("Error",$_FILES['fileField']['error']);
-        $log->saveEntry();
+        $systemLog->setAction("ERROR_FILE_UPLOAD");
+        $systemLog->setDetail("Error", $_FILES['fileField']['error']);
+        $systemLog->saveEntry();
     }
     else{
         $fileName = date("YmdHis",time()) . "_" . $_FILES['fileField']['name'];
 
         if(!move_uploaded_file($_FILES['fileField']['tmp_name'], BASE_PATH . "/uploads/" . $fileName)){
-            $log->setAction("ERROR_FILE_UPLOAD");
-            $log->setDetail("Error","Could not move file after upload. Check permissions.");
-            $log->setDetail("File Name",$fileName);
-            $log->saveEntry();
+            $systemLog->setAction("ERROR_FILE_UPLOAD");
+            $systemLog->setDetail("Error", "Could not move file after upload. Check permissions.");
+            $systemLog->setDetail("File Name", $fileName);
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage($fileName . " could not be uploaded.  Please open a support ticket.","danger");
+            $systemMessages->addMessage($fileName . " could not be uploaded.  Please open a support ticket.", "danger");
         }
         else{
-            $log->setAction("FILE_UPLOAD");
-            $log->setDetail("File Name",$fileName);
-            $log->setDetail("File Description",$_POST['fileDescription']);
-            $log->saveEntry();
+            $systemLog->setAction("FILE_UPLOAD");
+            $systemLog->setDetail("File Name", $fileName);
+            $systemLog->setDetail("File Description", $_POST['fileDescription']);
+            $systemLog->saveEntry();
         }
 
-        $sysMsg->addMessage($fileName . " uploaded successfully.","success");
+        $systemMessages->addMessage($fileName . " uploaded successfully.", "success");
     }
 }
 ?>

@@ -28,9 +28,9 @@ if($res->num_rows > 0){
 		$userArray[$uuid]['userDateRegistered'] = $row['register_date'];
 		$userArray[$uuid]['userLastLogin'] = $row['last_login'];
 		$userArray[$uuid]['userTimeZone'] = $row['time_zone'];
-		$userArray[$uuid]['userRole'] = $roles->getMigratedRoleUUID($row['default_group']);
+		$userArray[$uuid]['userRole'] = $roleManager->getMigratedRoleUUID($row['default_group']);
 		$userArray[$uuid]['userOfficeSymbol'] = $row['officeSymbol'];
-		$userArray[$uuid]['userBase'] = $bases->getMigratedBaseUUID($row['base_id']);
+		$userArray[$uuid]['userBase'] = $baseManager->getMigratedBaseUUID($row['base_id']);
 		$userArray[$uuid]['userDisabled'] = $row['disabled'];
 	}
 	

@@ -13,7 +13,7 @@ if(isset($_POST['confirmCategoryAdd'])){
     $addError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Flash card category name cannot be empty.","warning");
+        $systemMessages->addMessage("Flash card category name cannot be empty.", "warning");
         $addError = true;
     }
 
@@ -28,16 +28,16 @@ if(isset($_POST['confirmCategoryAdd'])){
         $flashCardManager->setCategoryCreatedBy($_SESSION['userUUID']);
 
         if($flashCardManager->saveFlashCardCategory()){
-            $log->setAction("FLASH_CARD_CATEGORY_ADD");
-            $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
-            $log->setDetail("Category Name",$flashCardManager->getCategoryName());
-            $log->setDetail("Category Type",$flashCardManager->getCategoryType());
-            $log->setDetail("Category Encrypted",$flashCardManager->getCategoryEncrypted());
-            $log->setDetail("Category Private",$flashCardManager->getCategoryPrivate());
-            $log->setDetail("Category Binding",$flashCardManager->getCategoryBinding());
-            $log->saveEntry();
+            $systemLog->setAction("FLASH_CARD_CATEGORY_ADD");
+            $systemLog->setDetail("Category UUID", $flashCardManager->getCategoryUUID());
+            $systemLog->setDetail("Category Name", $flashCardManager->getCategoryName());
+            $systemLog->setDetail("Category Type", $flashCardManager->getCategoryType());
+            $systemLog->setDetail("Category Encrypted", $flashCardManager->getCategoryEncrypted());
+            $systemLog->setDetail("Category Private", $flashCardManager->getCategoryPrivate());
+            $systemLog->setDetail("Category Binding", $flashCardManager->getCategoryBinding());
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Flash card category added successfully. Start creating cards below.","success");
+            $systemMessages->addMessage("Flash card category added successfully. Start creating cards below.", "success");
 
             unset($categoryName);
             unset($categoryComments);
@@ -45,7 +45,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             $cdcMastery->redirect("/cards/data/".$flashCardManager->getCategoryUUID());
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.", "danger");
         }
     }
 }

@@ -1,5 +1,5 @@
 <?php
-$logFilter = new logFilter($db, $user);
+$logFilter = new SystemLogFilter($db, $userManager);
 
 $pageNumber = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : 0;
 $pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 32;
@@ -238,7 +238,7 @@ if($logEntries): ?>
                                 <select name="filterValue" class="input_full" size="1" onChange="document.forms['filterAction'].submit()">
                                     <option value="">Choose Action...</option>
                                     <?php
-                                    $logActionList = $log->listLogActions();
+                                    $logActionList = $systemLog->listLogActions();
 
                                     foreach($logActionList as $logAction): ?>
                                         <?php if($filterValue == $logAction): ?>
@@ -282,11 +282,11 @@ if($logEntries): ?>
                             <?php foreach($logEntries as $logUUID => $logData): ?>
                             <tr>
                                 <td><time class="timeago" datetime="<?php echo $cdcMastery->formatDateTime($logData['timestamp'], "c"); ?>"><?php echo $cdcMastery->formatDateTime($logData['timestamp']); ?> UTC</time></td>
-                                <td><span class="<?php echo $log->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $cdcMastery->formatOutputString($logData['action'],25); ?>"><?php echo $logData['action']; ?></a></span></td>
+                                <td><span class="<?php echo $systemLog->getRowStyle($logData['action']); ?>"><a href="/admin/log/0/<?php echo $pageRows; ?>/timestamp/DESC/action/<?php echo $logData['action']; if(isset($_GET['norefresh'])) echo "?norefresh"; ?>" title="Filter by <?php echo $cdcMastery->formatOutputString($logData['action'], 25); ?>"><?php echo $logData['action']; ?></a></span></td>
                                 <?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
-                                    <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
+                                    <td><a href="/admin/users/<?php echo $logData['userUUID']; ?>" title="Manage User"><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></a></td>
                                 <?php else: ?>
-                                    <td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
+                                    <td><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></td>
                                 <?php endif; ?>
                                 <td><a href="/admin/log-detail/<?php echo $logUUID; ?>/log"><i class="icon-inline icon-10 ic-log"></i>details</a></td>
                             </tr>
@@ -300,7 +300,7 @@ if($logEntries): ?>
 <?php else: ?>
 	<?php
 	if($logFiltered) {
-		$sysMsg->addMessage("There were no results using that log filter.","info");
+		$systemMessages->addMessage("There were no results using that log filter.", "info");
 		$cdcMastery->redirect("/admin/log");
 	} else { ?>
 		There are no log entries in the database.  That's unusual...

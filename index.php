@@ -8,27 +8,24 @@ $time_start = microtime(true);
 ini_set('session.cookie_lifetime', 60 * 60 * 24 * 7);
 header('Access-Control-Allow-Origin: *');
 
-/**
- * Define application constants
- */
-define('BASE_PATH', realpath(__DIR__));
-define('APP_BASE', realpath(__DIR__ . '/app'));
+define('BASE_PATH', __DIR__);
+define('APP_BASE', __DIR__ . '/app');
 
 /**
  * Maintenance mode short-circuit
  */
 $maintenanceMode = false;
 if($maintenanceMode == true){
-	include APP_BASE . '/errors/maintenance.php';
+	include __DIR__ . 'app/errors/maintenance.php';
 	exit();
 }
 
 /**
  * Start the application
  */
-require BASE_PATH . '/includes/bootstrap.inc.php';
+require __DIR__ . '/includes/bootstrap.inc.php';
 
-$router = new router($log);
+$router = new Router($systemLog);
 
 /**
  * Parse the URI passed from the web server
@@ -40,7 +37,7 @@ if($router->parseURI()){
 	 */
 	if(!$router->verifyFilePath()){
 		if(isset($router->error) && !empty($router->error)){
-			$sysMsg->addMessage($router->error,"danger");
+			$systemMessages->addMessage($router->error, "danger");
 		}
 
 		if($router->route == "ajax/testPlatform"){
@@ -79,12 +76,12 @@ if($router->parseURI()){
     }
 	
 	if($router->showTheme)
-		include BASE_PATH . '/theme/header.inc.php';
+		include __DIR__ . '/theme/header.inc.php';
 	
 	include $router->outputPage;
 	
 	if($router->showTheme)
-		include BASE_PATH . '/theme/footer.inc.php';
+		include __DIR__ . '/theme/footer.inc.php';
 }
 
 /**

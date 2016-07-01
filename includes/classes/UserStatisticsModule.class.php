@@ -1,6 +1,6 @@
 <?php
 
-class userStatistics extends CDCMastery
+class UserStatisticsModule extends CDCMastery
 {
 	protected $db;
 	protected $log;
@@ -66,12 +66,12 @@ class userStatistics extends CDCMastery
 	/**
 	 * userStatistics constructor.
 	 * @param mysqli $db
-	 * @param log $log
-	 * @param roles $roles
+	 * @param SystemLog $log
+	 * @param RoleManager $roles
 	 * @param Memcache $memcache
 	 */
 
-	public function __construct(mysqli $db, log $log, roles $roles, Memcache $memcache){
+	public function __construct(mysqli $db, SystemLog $log, RoleManager $roles, Memcache $memcache){
 		$this->db = $db;
 		$this->log = $log;
 		$this->roles = $roles;

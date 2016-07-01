@@ -136,14 +136,14 @@ only screen and (max-width: 760px),
 <!--<![endif]-->
 <?php
 if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
-	$pendingAssociations = $assoc->listPendingAFSCAssociations();
+	$pendingAssociations = $associationManager->listPendingAFSCAssociations();
 	if (is_array($pendingAssociations)) {
 		$pendingAssociationsCount = count($pendingAssociations);
 	} else {
 		$pendingAssociationsCount = 0;
 	}
 
-	$userActivation = new userActivation($db, $log, $emailQueue);
+	$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
 	$unactivatedUsers = $userActivation->listUnactivatedUsers();
 	if (is_array($unactivatedUsers)) {
 		$unactivatedUsersCount = count($unactivatedUsers);
@@ -151,7 +151,7 @@ if($cdcMastery->verifyAdmin() || $cdcMastery->verifyTrainingManager()) {
 		$unactivatedUsersCount = 0;
 	}
 
-	$userAuthorization = new userAuthorizationQueue($db, $log, $emailQueue);
+	$userAuthorization = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 	$authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 	if (is_array($authorizationQueue)) {
 		$authorizationQueueCount = count($authorizationQueue);
@@ -243,7 +243,7 @@ else{
 		<div class="8u">
             <section>
                 <header>
-                    <h2>Welcome, <?php echo $user->getFullName(); ?></h2>
+                    <h2>Welcome, <?php echo $userManager->getFullName(); ?></h2>
                 </header>
 				<?php /*
 				<div class="informationMessages">
@@ -259,7 +259,7 @@ else{
 					<h2>Overview</h2>
 				</header>
 				<?php
-				$testManager = new testManager($db, $log, $afsc);
+				$testManager = new TestManager($db, $systemLog, $afscManager);
 				$userTestArray = $testManager->listUserTests($_SESSION['userUUID'],10);
 				
 				if($userTestArray): ?>
@@ -275,7 +275,7 @@ else{
 							<?php $tooltipList = $testData['afscList']; ?>
 						<tr>
 							<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
-							<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+							<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 							<td><?php echo $testData['testScore']; ?>%</td>
 							<td>
 								<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -301,7 +301,7 @@ else{
 						<tr>
 							<td><?php echo $cdcMastery->outputDateTime($testData['timeStarted'],$_SESSION['timeZone']); ?></td>
 							<td><?php echo round((($testData['questionsAnswered']/$testData['totalQuestions']) * 100),2); ?> %</td>
-							<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+							<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 							<td>
 								<a href="/test/delete/incomplete/<?php echo $testUUID; ?>" title="Delete Test"><i class="icon-inline icon-20 ic-delete"></i></a>
 								<a href="/test/resume/<?php echo $testUUID; ?>" title="Resume Test"><i class="icon-inline icon-20 ic-arrow-right"></i></a>

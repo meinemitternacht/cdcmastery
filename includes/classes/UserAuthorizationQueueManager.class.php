@@ -6,14 +6,14 @@
  * Date: 10/27/14
  * Time: 6:14 PM
  */
-class userAuthorizationQueue extends user
+class UserAuthorizationQueueManager extends UserManager
 {
     /**
      * @var mysqli
      */
     protected $db;
     /**
-     * @var log
+     * @var SystemLog
      */
     protected $log;
 
@@ -22,10 +22,10 @@ class userAuthorizationQueue extends user
 
     /**
      * @param mysqli $db
-     * @param log $log
-     * @param emailQueue $emailQueue
+     * @param SystemLog $log
+     * @param EmailQueueManager $emailQueue
      */
-    public function __construct(mysqli $db, log $log, emailQueue $emailQueue)
+    public function __construct(mysqli $db, SystemLog $log, EmailQueueManager $emailQueue)
     {
         $this->queueUUID = parent::genUUID();
         $this->db = $db;
@@ -250,7 +250,7 @@ class userAuthorizationQueue extends user
      * @return bool
      */
     public function notifyRoleApproval($userUUID,$roleUUID){
-        $_roles = new roles($this->db,$this->log,$this->emailQueue);
+        $_roles = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         if(!$_roles->verifyRole($roleUUID)){
             $this->error = "For some reason, that role does not exist.  This is not good!";
@@ -336,7 +336,7 @@ class userAuthorizationQueue extends user
      * @return bool
      */
     public function notifyRoleRejection($userUUID,$roleUUID){
-        $_roles = new roles($this->db,$this->log,$this->emailQueue);
+        $_roles = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         if(!$_roles->verifyRole($roleUUID)){
             $this->error = "For some reason, that role does not exist.  This is not good!";

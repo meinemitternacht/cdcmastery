@@ -6,7 +6,7 @@
  * Date: 9/30/2015
  * Time: 9:31 AM
  */
-class flashCardManager extends CDCMastery
+class FlashCardManager extends CDCMastery
 {
     protected $db;
     protected $log;
@@ -35,7 +35,7 @@ class flashCardManager extends CDCMastery
     public $totalCards;
     public $cardCurrentState;
 
-    public function __construct(mysqli $db, log $log){
+    public function __construct(mysqli $db, SystemLog $log){
         $this->db = $db;
         $this->log = $log;
     }
@@ -339,7 +339,7 @@ class flashCardManager extends CDCMastery
         }
     }
 
-    public function createCategoryFromAFSC($afscUUID,afsc $afsc,$categoryCreatedBy){
+    public function createCategoryFromAFSC($afscUUID, AFSCManager $afsc, $categoryCreatedBy){
         $this->setCategoryCreatedBy($categoryCreatedBy);
 
         if($afsc->loadAFSC($afscUUID)){
@@ -486,9 +486,9 @@ class flashCardManager extends CDCMastery
     }
 
     public function loadAFSCFlashCardData($cardUUID){
-        $afsc = new afsc($this->db,$this->log);
-        $answerManager = new answerManager($this->db,$this->log);
-        $questionManager = new questionManager($this->db,$this->log,$afsc,$answerManager);
+        $afsc = new AFSCManager($this->db, $this->log);
+        $answerManager = new AnswerManager($this->db, $this->log);
+        $questionManager = new QuestionManager($this->db, $this->log, $afsc, $answerManager);
 
         if($this->categoryEncrypted){
             $answerManager->setFOUO(true);
@@ -715,9 +715,9 @@ class flashCardManager extends CDCMastery
         else{
             if($uuidOnly) {
                 if($this->categoryType == "afsc"){
-                    $afsc = new afsc($this->db,$this->log);
-                    $answerManager = new answerManager($this->db,$this->log);
-                    $questionManager = new questionManager($this->db,$this->log,$afsc,$answerManager);
+                    $afsc = new AFSCManager($this->db, $this->log);
+                    $answerManager = new AnswerManager($this->db, $this->log);
+                    $questionManager = new QuestionManager($this->db, $this->log, $afsc, $answerManager);
                     $questionManager->setAFSCUUID($this->categoryBinding);
                     $questionManager->setFOUO($this->categoryEncrypted);
 

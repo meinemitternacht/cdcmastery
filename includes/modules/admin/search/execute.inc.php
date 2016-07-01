@@ -10,12 +10,12 @@ $searchParameterJoinMethod = isset($_POST['searchParameterJoinMethod']) ? $_POST
 
 if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
     if(!$searchType){
-        $sysMsg->addMessage("Search type not specified.","danger");
+        $systemMessages->addMessage("Search type not specified.", "danger");
         $cdcMastery->redirect("/admin/search");
     }
 
     if(!$searchParameterJoinMethod){
-        $sysMsg->addMessage("Search criteria join method not specified. Please select 'Match All' or 'Match Any' Criteria.","warning");
+        $systemMessages->addMessage("Search criteria join method not specified. Please select 'Match All' or 'Match Any' Criteria.", "warning");
         $cdcMastery->redirect("/admin/search");
     }
 
@@ -81,26 +81,26 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
             }
 
             if(!checkDateParameters("userDateRegistered",$searchParameterList)){
-                $sysMsg->addMessage("The starting value for Date Registered cannot be greater than the end date.","warning");
+                $systemMessages->addMessage("The starting value for Date Registered cannot be greater than the end date.", "warning");
                 $cdcMastery->redirect("/admin/search");
             }
             elseif(!checkDateParameters("userLastLogin",$searchParameterList)){
-                $sysMsg->addMessage("The starting value for Last Login Date cannot be greater than the end date.","warning");
+                $systemMessages->addMessage("The starting value for Last Login Date cannot be greater than the end date.", "warning");
                 $cdcMastery->redirect("/admin/search");
             }
             elseif(!checkDateParameters("userLastActive",$searchParameterList)){
-                $sysMsg->addMessage("The starting value for Last Active Date cannot be greater than the end date.","warning");
+                $systemMessages->addMessage("The starting value for Last Active Date cannot be greater than the end date.", "warning");
                 $cdcMastery->redirect("/admin/search");
             }
             break;
     }
 
     if(!isset($searchParameterList)){
-        $sysMsg->addMessage("Incorrect search parameters.","warning");
+        $systemMessages->addMessage("Incorrect search parameters.", "warning");
         $cdcMastery->redirect("/admin/search");
     }
     else {
-        $searchObj = new search($db, $log);
+        $searchObj = new SearchModule($db, $systemLog);
         $searchObj->setSearchType($searchType);
         $searchObj->setSearchParameterJoinMethod($searchParameterJoinMethod);
 
@@ -118,13 +118,13 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         $_SESSION['searchData']['searchType'] = $searchObj->getSearchType();
 
         if($searchObj->getSearchType() == "AFSCassociations"){
-            $_SESSION['searchData']['searchResults'] = $user->sortUserUUIDList($_SESSION['searchData']['searchResults'],"userLastName");
+            $_SESSION['searchData']['searchResults'] = $userManager->sortUserUUIDList($_SESSION['searchData']['searchResults'], "userLastName");
         }
 
         if (!$_SESSION['searchData']['searchResults']) {
-            $sysMsg->addMessage("There were no results for that search query.","info");
-            $sysMsg->addMessage($searchObj->error,"info");
-            $sysMsg->addMessage($searchObj->searchQuery,"info");
+            $systemMessages->addMessage("There were no results for that search query.", "info");
+            $systemMessages->addMessage($searchObj->error, "info");
+            $systemMessages->addMessage($searchObj->searchQuery, "info");
 
             $cdcMastery->redirect("/admin/search");
         } else {

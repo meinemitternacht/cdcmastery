@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $testAverageByDay = $statsObj->getTestAverageByDay();
 
 if($testAverageByDay){
@@ -18,7 +18,7 @@ if($testAverageByDay){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.","info");
+    $systemMessages->addMessage("That statistic contains no data.", "info");
     $cdcMastery->redirect("/about/statistics");
 }
 

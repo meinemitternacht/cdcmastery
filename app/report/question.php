@@ -9,42 +9,42 @@
 $questionUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if(!$questionUUID){
-    $sysMsg->addMessage("You must select a question to report.","warning");
+    $systemMessages->addMessage("You must select a question to report.", "warning");
     $cdcMastery->redirect("/");
 }
 else{
-    $answerManager = new answerManager($db,$log);
-    $questionManager = new questionManager($db,$log,$afsc,$answerManager);
+    $answerManager = new AnswerManager($db, $systemLog);
+    $questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
     if(!$questionManager->loadQuestion($questionUUID)){
-        $sysMsg->addMessage("That question does not exist.","warning");
+        $systemMessages->addMessage("That question does not exist.", "warning");
         $cdcMastery->redirect("/");
     }
     else {
         if(isset($_POST['userReportComments']) && !empty($_POST['userReportComments'])){
-            if($user->reportQuestion($user->getUserEmail(),$questionManager->getAFSCUUID(),$questionUUID,$questionManager->getQuestionText(),$_POST['userReportComments'])){
-                $log->setAction("REPORT_QUESTION");
-                $log->setDetail("Question UUID",$questionUUID);
-                $log->setDetail("AFSC UUID",$questionManager->getAFSCUUID());
-                $log->setDetail("Report Reason",$_POST['userReportComments']);
-                $log->saveEntry();
+            if($userManager->reportQuestion($userManager->getUserEmail(), $questionManager->getAFSCUUID(), $questionUUID, $questionManager->getQuestionText(), $_POST['userReportComments'])){
+                $systemLog->setAction("REPORT_QUESTION");
+                $systemLog->setDetail("Question UUID", $questionUUID);
+                $systemLog->setDetail("AFSC UUID", $questionManager->getAFSCUUID());
+                $systemLog->setDetail("Report Reason", $_POST['userReportComments']);
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("Your report has been sent to the CDCMastery help desk successfully.  If we need further information, we will contact you within the next few days.","success");
+                $systemMessages->addMessage("Your report has been sent to the CDCMastery help desk successfully.  If we need further information, we will contact you within the next few days.", "success");
                 $cdcMastery->redirect("/");
             }
             else{
-                $log->setAction("ERROR_REPORT_QUESTION");
-                $log->setDetail("Question UUID",$questionUUID);
-                $log->setDetail("AFSC UUID",$questionManager->getAFSCUUID());
-                $log->setDetail("Report Reason",$_POST['userReportComments']);
-                $log->saveEntry();
+                $systemLog->setAction("ERROR_REPORT_QUESTION");
+                $systemLog->setDetail("Question UUID", $questionUUID);
+                $systemLog->setDetail("AFSC UUID", $questionManager->getAFSCUUID());
+                $systemLog->setDetail("Report Reason", $_POST['userReportComments']);
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("There was an issue sending this report to the CDCMastery help desk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket instead.","danger");
+                $systemMessages->addMessage("There was an issue sending this report to the CDCMastery help desk.  If this issue persists, go to http://helpdesk.cdcmastery.com and submit a ticket instead.", "danger");
                 $cdcMastery->redirect("/report/question/" . $questionUUID);
             }
         }
         elseif(isset($_POST['userReportComments']) && empty($_POST['userReportComments'])){
-            $sysMsg->addMessage("You must provide details on why this question has an error.","warning");
+            $systemMessages->addMessage("You must provide details on why this question has an error.", "warning");
             $cdcMastery->redirect("/report/question/" . $questionUUID);
         }
 

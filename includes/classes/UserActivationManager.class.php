@@ -1,10 +1,12 @@
 <?php
-class userActivation extends user {
+
+class UserActivationManager extends UserManager
+{
 	protected $db;
 	protected $log;
 	protected $emailQueue;
 	
-	public function __construct(mysqli $db, log $log, emailQueue $emailQueue){
+	public function __construct(mysqli $db, SystemLog $log, EmailQueueManager $emailQueue){
 		$this->db = $db;
 		$this->log = $log;
 		$this->emailQueue = $emailQueue;

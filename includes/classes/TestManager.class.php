@@ -1,6 +1,6 @@
 <?php
 
-class testManager extends CDCMastery
+class TestManager extends CDCMastery
 {
 	public $db;
 	protected $log;
@@ -47,12 +47,12 @@ class testManager extends CDCMastery
 	
 	public $testArchiveArray;			//Array for holding Test UUID's
 	
-	public function __construct(mysqli $db, log $log, afsc $afsc){
+	public function __construct(mysqli $db, SystemLog $log, AFSCManager $afsc){
 		$this->db = $db;
 		$this->log = $log;
 		$this->afsc = $afsc;
-		$this->answer = new answerManager($this->db, $this->log);
-		$this->question = new questionManager($this->db, $this->log, $this->afsc, $this->answer);
+		$this->answer = new AnswerManager($this->db, $this->log);
+		$this->question = new QuestionManager($this->db, $this->log, $this->afsc, $this->answer);
 	}
 	
 	/*

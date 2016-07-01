@@ -6,7 +6,7 @@
  * Time: 9:35 PM
  */
 
-class search extends CDCMastery
+class SearchModule extends CDCMastery
 {
     protected $db;
     protected $log;
@@ -51,7 +51,7 @@ class search extends CDCMastery
     public $orderBy;
     public $orderDirection;
 
-    public function __construct(mysqli $db, log $log){
+    public function __construct(mysqli $db, SystemLog $log){
         $this->db = $db;
         $this->log = $log;
     }

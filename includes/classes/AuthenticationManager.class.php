@@ -3,10 +3,10 @@
 /**
  * Class auth
  */
-class auth extends user
+class AuthenticationManager extends UserManager
 {
     /**
-     * @var roles
+     * @var RoleManager
      */
     protected $roles;
 
@@ -17,12 +17,12 @@ class auth extends user
 
     /**
      * @param bool $uuid
-     * @param log $log
+     * @param SystemLog $log
      * @param mysqli $db
-     * @param roles $roles
-     * @param emailQueue $emailQueue
+     * @param RoleManager $roles
+     * @param EmailQueueManager $emailQueue
      */
-    function __construct($uuid, log $log, mysqli $db, roles $roles, emailQueue $emailQueue){
+    function __construct($uuid, SystemLog $log, mysqli $db, RoleManager $roles, EmailQueueManager $emailQueue){
 		parent::__construct($db,$log,$emailQueue);
 		parent::loadUser($uuid);
 		

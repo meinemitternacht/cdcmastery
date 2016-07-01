@@ -7,7 +7,7 @@
  */
 
 $testUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 if($testManager->loadIncompleteTest($testUUID)) {
     $questionList = $testManager->getIncompleteQuestionList();
@@ -15,11 +15,11 @@ if($testManager->loadIncompleteTest($testUUID)) {
         if ($testManager->loadTestData($testUUID)) {
             $testData = $testManager->getTestData();
 
-            $answerManager = new answerManager($db, $log);
-            $questionManager = new questionManager($db, $log, $afsc, $answerManager);
+            $answerManager = new AnswerManager($db, $systemLog);
+            $questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
             ?>
             Incomplete test started by
-            <em><?php echo $user->getUserNameByUUID($testManager->getIncompleteUserUUID()); ?></em> on
+            <em><?php echo $userManager->getUserNameByUUID($testManager->getIncompleteUserUUID()); ?></em> on
             <strong><?php echo $cdcMastery->outputDateTime($testManager->getIncompleteTimeStarted(), $_SESSION['timeZone']); ?></strong>
             <table>
                 <tr>
@@ -39,10 +39,10 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         <?php
                         $afscList = $testManager->getIncompleteAFSCList();
                         if (is_array($afscList)) {
-                            array_walk($afscList, array($afsc, "getAFSCNameCallback"));
+                            array_walk($afscList, array($afscManager, "getAFSCNameCallback"));
                             echo implode(",", $afscList);
                         } else {
-                            echo $afsc->getAFSCName($afscUUID);
+                            echo $afscManager->getAFSCName($afscUUID);
                         }
                         ?>
                     </td>
@@ -73,7 +73,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
                         $answerManager->loadAnswer($testData[$questionUUID]); ?>
                         <tr>
                             <td><?php echo $i; ?></td>
-                            <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
+                            <td><?php echo $afscManager->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td><span class="<?php if ($answerManager->getAnswerCorrect()) {
                                     echo "text-success";
@@ -84,7 +84,7 @@ if($testManager->loadIncompleteTest($testUUID)) {
                     <?php else: ?>
                         <tr>
                             <td><?php echo $i; ?></td>
-                            <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
+                            <td><?php echo $afscManager->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                             <td><?php echo $questionManager->getQuestionText(); ?></td>
                             <td>Not answered.</td>
                         </tr>

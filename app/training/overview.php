@@ -14,25 +14,25 @@ else{
 }
 
 if(!$cdcMastery->verifyTrainingManager() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Training Manager Overview.","danger");
+    $systemMessages->addMessage("You are not authorized to view the Training Manager Overview.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 
-if($roles->getRoleType($user->getUserRoleByUUID($trainingManagerUUID)) != "trainingManager"){
-    $sysMsg->addMessage("That user is not a Training Manager.","warning");
+if($roleManager->getRoleType($userManager->getUserRoleByUUID($trainingManagerUUID)) != "trainingManager"){
+    $systemMessages->addMessage("That user is not a Training Manager.", "warning");
     $cdcMastery->redirect("/errors/500");
 }
 
-$tmUser = new user($db,$log,$emailQueue);
-$tmOverview = new trainingManagerOverview($db,$log,$userStatistics,$tmUser,$roles);
+$tmUser = new UserManager($db, $systemLog, $emailQueue);
+$tmOverview = new TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
 
 $tmOverview->loadTrainingManager($trainingManagerUUID);
 
-$subordinateUsers = $user->sortUserUUIDList($tmOverview->getSubordinateUserList(),"userLastName");
-$subordinateSupervisors = $user->sortUserUUIDList($tmOverview->getSubordinateSupervisorList(),"userLastName");
+$subordinateUsers = $userManager->sortUserUUIDList($tmOverview->getSubordinateUserList(), "userLastName");
+$subordinateSupervisors = $userManager->sortUserUUIDList($tmOverview->getSubordinateSupervisorList(), "userLastName");
 
 if(empty($subordinateSupervisors) && empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account by using the form below.","info");
+    $systemMessages->addMessage("You do not have any subordinate users.  Please associate users with your account by using the form below.", "info");
     $cdcMastery->redirect("/admin/users/".$_SESSION['userUUID']."/associations/subordinate");
 endif;
 
@@ -162,7 +162,7 @@ $totalSupervisorTestCount = $tmOverview->getTotalSupervisorTests();
                 <h2>Top Questions Missed</h2>
                 <ul>
                     <?php foreach($tmAFSCUUIDArray as $tmAFSCUUID): ?>
-                    <li><a href="/training/top-missed/<?php echo $tmAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afsc->getAFSCName($tmAFSCUUID); ?></a></li>
+                    <li><a href="/training/top-missed/<?php echo $tmAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afscManager->getAFSCName($tmAFSCUUID); ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </section>

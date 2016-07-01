@@ -7,11 +7,11 @@
  */
 if(isset($_POST['confirmCategoryDelete'])){
     if($flashCardManager->deleteFlashCardCategory($workingChild)){
-        $sysMsg->addMessage("Category deleted successfully.","success");
+        $systemMessages->addMessage("Category deleted successfully.", "success");
         $cdcMastery->redirect("/cards/categories");
     }
     else{
-        $sysMsg->addMessage("Category could not be deleted. Contact the support help desk for assistance.","danger");
+        $systemMessages->addMessage("Category could not be deleted. Contact the support help desk for assistance.", "danger");
     }
 }
 ?>

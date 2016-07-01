@@ -6,7 +6,7 @@
  * Time: 3:08 PM
  */
 
-$flashCardManager = new flashCardManager($db,$log);
+$flashCardManager = new FlashCardManager($db, $systemLog);
 $categoryUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $sessionAction = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
@@ -24,9 +24,9 @@ if($sessionAction){
             $flashCardManager->cardCurrentState = "front";
             $flashCardManager->saveSession();
 
-            $log->setAction("NEW_FLASH_CARD_SESSION");
-            $log->setDetail("Category UUID",$categoryUUID);
-            $log->saveEntry();
+            $systemLog->setAction("NEW_FLASH_CARD_SESSION");
+            $systemLog->setDetail("Category UUID", $categoryUUID);
+            $systemLog->saveEntry();
 
             $cdcMastery->redirect("/cards/study/".$categoryUUID);
             break;
@@ -41,9 +41,9 @@ if($sessionAction){
             }
             $flashCardManager->saveSession();
 
-            $log->setAction("NEW_FLASH_CARD_SESSION");
-            $log->setDetail("Category UUID",$categoryUUID);
-            $log->saveEntry();
+            $systemLog->setAction("NEW_FLASH_CARD_SESSION");
+            $systemLog->setDetail("Category UUID", $categoryUUID);
+            $systemLog->saveEntry();
 
             $cdcMastery->redirect("/cards/study/".$categoryUUID);
             break;
@@ -54,11 +54,11 @@ if($sessionAction){
 }
 
 if(!$categoryUUID){
-    $sysMsg->addMessage("Category must be specified.","warning");
+    $systemMessages->addMessage("Category must be specified.", "warning");
     $cdcMastery->redirect("/cards");
 }
 elseif(!$flashCardManager->loadCardCategory($categoryUUID)){
-    $sysMsg->addMessage("That card category does not exist!","warning");
+    $systemMessages->addMessage("That card category does not exist!", "warning");
     $cdcMastery->redirect("/cards");
 }
 ?>

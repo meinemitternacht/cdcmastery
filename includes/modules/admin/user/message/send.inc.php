@@ -2,11 +2,11 @@
 if(isset($_POST['messageBody'])){
     $messageSender      = $_SESSION['userEmail'];
     $messageRecipient   = $objUser->getUserEmail();
-    $messageSubject     = "New Message from " . $user->getFullName() . " at CDCMastery.com";
+    $messageSubject     = "New Message from " . $userManager->getFullName() . " at CDCMastery.com";
     $messageQueueUser   = $_SESSION['userUUID'];
     $messageBody        = $_POST['messageBody'];
 
-    $emailBodyHTML	= "<html><head><title>New Message from " . $user->getFullName() . " at CDCMastery.com</title></head><body>";
+    $emailBodyHTML	= "<html><head><title>New Message from " . $userManager->getFullName() . " at CDCMastery.com</title></head><body>";
     $emailBodyHTML .= $objUser->getFullName().",";
     $emailBodyHTML .= "<br /><br />";
     $emailBodyHTML .= "You have a new message from a manager at CDCMastery.com:";
@@ -15,7 +15,7 @@ if(isset($_POST['messageBody'])){
     $emailBodyHTML .= "<br /><br />";
     $emailBodyHTML .= "Regards,";
     $emailBodyHTML .= "<br /><br />";
-    $emailBodyHTML .= $user->getUserNameByUUID($_SESSION['userUUID']);
+    $emailBodyHTML .= $userManager->getUserNameByUUID($_SESSION['userUUID']);
     $emailBodyHTML .= "<br /><br />";
     $emailBodyHTML .= "<i>Note: If you do not know the person who sent this message, or the contents are unprofessional, please forward this e-mail to admin@cdcmastery.com</i>";
     $emailBodyHTML .= "</body></html>";
@@ -28,35 +28,35 @@ if(isset($_POST['messageBody'])){
     $emailBodyText .= "\r\n\r\n";
     $emailBodyText .= "Regards,";
     $emailBodyText .= "\r\n\r\n";
-    $emailBodyText .= $user->getUserNameByUUID($_SESSION['userUUID']);
+    $emailBodyText .= $userManager->getUserNameByUUID($_SESSION['userUUID']);
     $emailBodyText .= "\r\n\r\n";
     $emailBodyText .= "Note: If you do not know the person who sent this message, or the contents are unprofessional, please forward this e-mail to admin@cdcmastery.com";
 
     if(!$emailQueue->queueEmail($messageSender,$messageRecipient,$messageSubject,$emailBodyHTML,$emailBodyText,$messageQueueUser)){
-        $log->setAction("ERROR_EMAIL_QUEUE_ADD");
-        $log->setDetail("Calling Script","user/".$objUser->getUUID()."/message/send");
-        $log->setDetail("Message Sender",$messageSender);
-        $log->setDetail("Message Recipient",$messageRecipient);
-        $log->setDetail("Message Subject",$messageSubject);
-        $log->setDetail("HTML Body",$emailBodyHTML);
-        $log->setDetail("Text Body",$emailBodyText);
-        $log->setDetail("Queue User",$messageQueueUser);
-        $log->saveEntry();
+        $systemLog->setAction("ERROR_EMAIL_QUEUE_ADD");
+        $systemLog->setDetail("Calling Script", "user/".$objUser->getUUID()."/message/send");
+        $systemLog->setDetail("Message Sender", $messageSender);
+        $systemLog->setDetail("Message Recipient", $messageRecipient);
+        $systemLog->setDetail("Message Subject", $messageSubject);
+        $systemLog->setDetail("HTML Body", $emailBodyHTML);
+        $systemLog->setDetail("Text Body", $emailBodyText);
+        $systemLog->setDetail("Queue User", $messageQueueUser);
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("There was a problem queueing the message for delivery.  Contact the Help Desk for assistance.","danger");
+        $systemMessages->addMessage("There was a problem queueing the message for delivery.  Contact the Help Desk for assistance.", "danger");
     }
     else{
-        $log->setAction("SEND_USER_MESSAGE");
-        $log->setDetail("Calling Script","user/".$objUser->getUUID()."/message/send");
-        $log->setDetail("Message Sender",$messageSender);
-        $log->setDetail("Message Recipient",$messageRecipient);
-        $log->setDetail("Message Subject",$messageSubject);
-        $log->setDetail("HTML Body",$emailBodyHTML);
-        $log->setDetail("Text Body",$emailBodyText);
-        $log->setDetail("Queue User",$messageQueueUser);
-        $log->saveEntry();
+        $systemLog->setAction("SEND_USER_MESSAGE");
+        $systemLog->setDetail("Calling Script", "user/".$objUser->getUUID()."/message/send");
+        $systemLog->setDetail("Message Sender", $messageSender);
+        $systemLog->setDetail("Message Recipient", $messageRecipient);
+        $systemLog->setDetail("Message Subject", $messageSubject);
+        $systemLog->setDetail("HTML Body", $emailBodyHTML);
+        $systemLog->setDetail("Text Body", $emailBodyText);
+        $systemLog->setDetail("Queue User", $messageQueueUser);
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("Message queued for delivery.","success");
+        $systemMessages->addMessage("Message queued for delivery.", "success");
     }
 }
 ?>
@@ -93,7 +93,7 @@ if(isset($_POST['messageBody'])){
                         <li>
                             <label for="messageSubject">Subject</label>
                             <br>
-                            <input class="input_full" type="text" id="messageSubject" name="messageSubject" value="New Message from <?php echo $user->getFullName(); ?> at CDCMastery.com" DISABLED="true">
+                            <input class="input_full" type="text" id="messageSubject" name="messageSubject" value="New Message from <?php echo $userManager->getFullName(); ?> at CDCMastery.com" DISABLED="true">
                         </li>
                         <li>
                             <label for="messageBody">Body</label>

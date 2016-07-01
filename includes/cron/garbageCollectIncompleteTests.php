@@ -12,7 +12,7 @@
 define('BASE_PATH', realpath(__DIR__) . "/../..");
 require BASE_PATH . '/includes/bootstrap.inc.php';
 
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 $res = $db->query("SELECT testUUID FROM `testManager` WHERE timeStarted <= (NOW() - INTERVAL 30 DAY)");
 
@@ -38,19 +38,19 @@ if($res->num_rows > 0){
     }
 
     if(isset($successUUIDList) && !empty($successUUIDList)){
-        $log->setAction("CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS");
+        $systemLog->setAction("CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS");
         foreach($successUUIDList as $successUUID){
-            $log->setDetail("Test UUID",$successUUID);
+            $systemLog->setDetail("Test UUID", $successUUID);
         }
-        $log->saveEntry();
+        $systemLog->saveEntry();
     }
 
     if(isset($errorUUIDList) && !empty($errorUUIDList)){
-        $log->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS");
+        $systemLog->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS");
         foreach($errorUUIDList as $errorUUID){
-            $log->setDetail("Test UUID",$errorUUID);
+            $systemLog->setDetail("Test UUID", $errorUUID);
         }
-        $log->saveEntry();
+        $systemLog->saveEntry();
     }
 
     $res->close();

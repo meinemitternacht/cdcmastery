@@ -7,7 +7,7 @@
  */
 
 if(!$qManager->verifyQuestion($workingChild)){
-    $sysMsg->addMessage("That question does not exist.","warning");
+    $systemMessages->addMessage("That question does not exist.", "warning");
     $cdcMastery->redirect("/admin/cdc-data/" . $workingAFSC);
 }
 else{
@@ -20,7 +20,7 @@ else{
 if(!empty($_POST)){
     if(isset($_POST['confirmQuestionArchive'])){
         if($qManager->archiveQuestion($workingChild)){
-            $sysMsg->addMessage("Question archived.","success");
+            $systemMessages->addMessage("Question archived.", "success");
             $cdcMastery->redirect("/admin/cdc-data/". $workingAFSC);
         }
     }
@@ -49,7 +49,7 @@ if(!empty($_POST)){
                 <div class="clearfix"><br></div>
             </div>
             <br>
-            If you wish to archive this question, please press confirm. Otherwise, return to the <a href="/admin/cdc-data/<?php echo $workingAFSC; ?>"><?php echo $afsc->getAFSCName($workingAFSC); ?> overview</a>.
+            If you wish to archive this question, please press confirm. Otherwise, return to the <a href="/admin/cdc-data/<?php echo $workingAFSC; ?>"><?php echo $afscManager->getAFSCName($workingAFSC); ?> overview</a>.
             <br>
             <br>
             <form action="/admin/cdc-data/<?php echo $workingAFSC; ?>/<?php echo $subsection; ?>/<?php echo $workingChild; ?>/<?php echo $action; ?>" method="POST">

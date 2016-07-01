@@ -6,7 +6,7 @@
  * Time: 7:25 AM
  */
 
-$flashCardManager = new flashCardManager($db,$log);
+$flashCardManager = new FlashCardManager($db, $systemLog);
 $action = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 ?>
@@ -69,18 +69,18 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                             <?php
                             switch($categoryData['categoryType']){
                                 case "afsc":
-                                    $titleText = "This category is shown to all users associated with ".$afsc->getAFSCName($categoryData['categoryBinding']);
+                                    $titleText = "This category is shown to all users associated with ".$afscManager->getAFSCName($categoryData['categoryBinding']);
                                     break;
                                 case "global":
                                     if(!empty($categoryData['categoryBinding'])){
-                                        $titleText = "This category is shown to all users associated with ".$afsc->getAFSCName($categoryData['categoryBinding']);
+                                        $titleText = "This category is shown to all users associated with ".$afscManager->getAFSCName($categoryData['categoryBinding']);
                                     }
                                     else{
                                         $titleText = "This category is shown to all users.";
                                     }
                                     break;
                                 case "private":
-                                    $titleText = "This category is only shown to ".$user->getUserNameByUUID($categoryData['categoryBinding']);
+                                    $titleText = "This category is only shown to ".$userManager->getUserNameByUUID($categoryData['categoryBinding']);
                                     break;
                                 default:
                                     $titleText = "Undefined";
@@ -123,12 +123,12 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                             include_once BASE_PATH . "/includes/modules/admin/flash-cards/categories/edit.inc.php";
                         }
                         else{
-                            $sysMsg->addMessage("That flash card category does not exist.","danger");
+                            $systemMessages->addMessage("That flash card category does not exist.", "danger");
                             $cdcMastery->redirect("/errors/404");
                         }
                     }
                     else{
-                        $sysMsg->addMessage("You must specify a card category to edit.","warning");
+                        $systemMessages->addMessage("You must specify a card category to edit.", "warning");
                         $cdcMastery->redirect("/errors/500");
                     }
                     break;

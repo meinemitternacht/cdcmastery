@@ -22,20 +22,20 @@ if($userHandleString){
         $sqlError = $stmt->error;
         $stmt->close();
 
-        $log->setAction("ERROR_AJAX_CHECK_USER_HANDLE");
-        $log->setDetail("CALLING SCRIPT", "/ajax/registration/checkHandle");
-        $log->setDetail("User Handle String", $userHandleString);
-        $log->setDetail("MySQL Error", $sqlError);
-        $log->saveEntry();
+        $systemLog->setAction("ERROR_AJAX_CHECK_USER_HANDLE");
+        $systemLog->setDetail("CALLING SCRIPT", "/ajax/registration/checkHandle");
+        $systemLog->setDetail("User Handle String", $userHandleString);
+        $systemLog->setDetail("MySQL Error", $sqlError);
+        $systemLog->saveEntry();
 
         echo "0";
     }
 }
 elseif(!isset($_POST['userHandle'])){
-    $log->setAction("AJAX_DIRECT_ACCESS");
-    $log->setDetail("CALLING SCRIPT","/ajax/registration/checkEmail");
-    $log->saveEntry();
+    $systemLog->setAction("AJAX_DIRECT_ACCESS");
+    $systemLog->setDetail("CALLING SCRIPT", "/ajax/registration/checkEmail");
+    $systemLog->saveEntry();
 
-    $sysMsg->addMessage("Direct access to this script is not authorized.","danger");
+    $systemMessages->addMessage("Direct access to this script is not authorized.", "danger");
     $cdcMastery->redirect("/errors/403");
 }

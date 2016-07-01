@@ -3,14 +3,14 @@
 /**
  * Class afsc
  */
-class afsc extends CDCMastery
+class AFSCManager extends CDCMastery
 {
 	/**
 	 * @var mysqli
      */
 	protected $db;
 	/**
-	 * @var log
+	 * @var SystemLog
      */
 	protected $log;
 
@@ -50,9 +50,9 @@ class afsc extends CDCMastery
 
 	/**
 	 * @param mysqli $db
-	 * @param log $log
+	 * @param SystemLog $log
      */
-	public function __construct(mysqli $db, log $log){
+	public function __construct(mysqli $db, SystemLog $log){
 		$this->db = $db;
 		$this->log = $log;
 	}
@@ -318,8 +318,8 @@ class afsc extends CDCMastery
 	 * @return bool
 	 */
 	public function toggleFOUO($targetStatus){
-		$answerManager = new answerManager($this->db,$this->log);
-		$questionManager = new questionManager($this->db,$this->log,$this,$answerManager);
+		$answerManager = new AnswerManager($this->db, $this->log);
+		$questionManager = new QuestionManager($this->db, $this->log, $this, $answerManager);
 
 		if($this->afscFOUO === $targetStatus){
 			return true;
@@ -390,7 +390,7 @@ class afsc extends CDCMastery
      */
 	public function getTotalQuestions($uuid = false){
 		if($uuid) {
-			$tempAFSC = new afsc($this->db, $this->log);
+			$tempAFSC = new AFSCManager($this->db, $this->log);
 			if(!$tempAFSC->loadAFSC($uuid)){
 				return false;
 			}
@@ -445,7 +445,7 @@ class afsc extends CDCMastery
      */
 	public function getAFSCName($uuid=false){
 		if(!empty($uuid)){
-			$_afsc = new afsc($this->db, $this->log);
+			$_afsc = new AFSCManager($this->db, $this->log);
 			
 			if(!$_afsc->loadAFSC($uuid)){
 				$this->error = $_afsc->error;

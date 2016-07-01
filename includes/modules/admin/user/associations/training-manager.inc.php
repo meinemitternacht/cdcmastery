@@ -5,7 +5,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 				
 			foreach($_POST['userUUID'] as $trainingManagerUUID):
-				if(!$assoc->addTrainingManagerAssociation($trainingManagerUUID,$userUUID)):
+				if(!$associationManager->addTrainingManagerAssociation($trainingManagerUUID, $userUUID)):
 					$error = true;
 				endif;
 			endforeach;
@@ -21,7 +21,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 				
 			foreach($_POST['userUUID'] as $trainingManagerUUID):
-				if(!$assoc->deleteTrainingManagerAssociation($trainingManagerUUID,$userUUID)):
+				if(!$associationManager->deleteTrainingManagerAssociation($trainingManagerUUID, $userUUID)):
 					$error = true;
 				endif;
 			endforeach;
@@ -37,8 +37,8 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 }
 
 $userStatistics->setUserUUID($userUUID);
-$assocTrainingManagerList = $user->sortUserList($userStatistics->getUserTrainingManagers(),"userLastName");
-$trainingManagerList = $user->sortUserList($roles->listTrainingManagers(),"userLastName");
+$assocTrainingManagerList = $userManager->sortUserList($userStatistics->getUserTrainingManagers(), "userLastName");
+$trainingManagerList = $userManager->sortUserList($roleManager->listTrainingManagers(), "userLastName");
 $trainingManagerCount = $userStatistics->getUserTrainingManagerCount();
 ?>
 <script type="text/javascript">

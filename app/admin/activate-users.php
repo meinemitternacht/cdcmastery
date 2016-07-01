@@ -3,11 +3,11 @@
  * To discourage activating accounts that entered an invalid e-mail address, limit this functionality to administrators
  */
 if(!$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("Only site administrators can manually activate users.","info");
+    $systemMessages->addMessage("Only site administrators can manually activate users.", "info");
     $cdcMastery->redirect("/errors/403");
 }
 
-$userActivation = new userActivation($db,$log,$emailQueue);
+$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
 
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
@@ -15,7 +15,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 
 			if(empty($_POST['activationCodeList']) || !isset($_POST['activationCodeList'])){
-				$sysMsg->addMessage("You must select users to activate.","warning");
+				$systemMessages->addMessage("You must select users to activate.", "warning");
 			}
 			else{
 				foreach($_POST['activationCodeList'] as $activationCode){
@@ -25,10 +25,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 				}
 
 				if($error){
-					$sysMsg->addMessage("There were errors while activating those user(s).  Check the site log for details.","danger");
+					$systemMessages->addMessage("There were errors while activating those user(s).  Check the site log for details.", "danger");
 				}
 				else{
-					$sysMsg->addMessage("User(s) activated successfully.","success");
+					$systemMessages->addMessage("User(s) activated successfully.", "success");
 				}
 			}
 			break;
@@ -82,7 +82,7 @@ if($unactivatedUsersList): ?>
                                 <th>Reminder Sent</th>
 							</tr>
 							<?php foreach($unactivatedUsersList as $activationCode => $activationData): ?>
-                            <?php $actUserObj = new user($db,$log,$emailQueue); ?>
+                            <?php $actUserObj = new UserManager($db, $systemLog, $emailQueue); ?>
                             <?php $actUserObj->loadUser($activationData['userUUID']); ?>
 							<tr>
 								<td><input type="checkbox" class="selectUser" name="activationCodeList[]" value="<?php echo $activationCode; ?>"></td>
@@ -110,6 +110,6 @@ if($unactivatedUsersList): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no unactivated users.","info");
+	$systemMessages->addMessage("There are no unactivated users.", "info");
 	$cdcMastery->redirect("/admin");
 endif;

@@ -23,8 +23,8 @@ if($migrationArrayCount > 0){
 	$buildTotal=1;
 	while($row = $res->fetch_assoc()){
 		$uuid = $cdcMastery->genUUID();
-		$supervisorUUID = $user->getUUIDByHandle($row['supervisorHandle']);
-		$userUUID = $user->getUUIDByHandle($row['userHandle']);
+		$supervisorUUID = $userManager->getUUIDByHandle($row['supervisorHandle']);
+		$userUUID = $userManager->getUUIDByHandle($row['userHandle']);
 		
 		if(!empty($supervisorUUID) && !empty($userUUID)){
 			$assocArray[$uuid]['supervisorUUID'] = $supervisorUUID; 

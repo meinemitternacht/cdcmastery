@@ -2,14 +2,14 @@
 <html>
 	<head>
 		<?php if($router->getRoute() == "about/afsc"): ?>
-		<title>CDCMastery - <?php $afsc->loadAFSC($_SESSION['vars'][0]); echo $afsc->getAFSCName(); ?> Practice Test</title>
+		<title>CDCMastery - <?php $afscManager->loadAFSC($_SESSION['vars'][0]); echo $afscManager->getAFSCName(); ?> Practice Test</title>
 		<?php else: ?>
 		<title>CDCMastery<?php if(isset($pageTitleArray[$router->getRoute()])) { echo " - ".$pageTitleArray[$router->getRoute()]; } ?></title>
 		<?php endif; ?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="description" content="CDCMastery is a tool to help you succeed on the Air Force CDC EOC tests, Promotion Tests and other assessments of your career knowledge by answering questions and studying flash cards." />
 		<?php
-		$metaAFSCList = $afsc->listAFSC(true);
+		$metaAFSCList = $afscManager->listAFSC(true);
 		foreach($metaAFSCList as $metaAFSCData){
 			$afscNameArray[] = $metaAFSCData['afscName'];
 		}

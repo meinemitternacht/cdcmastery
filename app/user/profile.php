@@ -1,7 +1,7 @@
 <?php
 $targetUUID = $_SESSION['userUUID'];
-$userProfile = new user($db, $log, $emailQueue);
-$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
+$userProfile = new UserManager($db, $systemLog, $emailQueue);
+$userProfileStatistics = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 
 if(!$userProfile->loadUser($targetUUID)){
 	echo "That user does not exist.";
@@ -119,11 +119,11 @@ else{
 						</tr>
 						<tr>
 							<th class="th-child">Base</th>
-							<td><?php echo $bases->getBaseName($userProfile->getUserBase()); ?></td>
+							<td><?php echo $baseManager->getBaseName($userProfile->getUserBase()); ?></td>
 						</tr>
 						<tr>
 							<th class="th-child">Office Symbol</th>
-							<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbol->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
+							<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbolManager->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
 						</tr>
 						<tr>
 							<th class="th-child">Date Registered</th>
@@ -140,8 +140,8 @@ else{
 						<tr>
 							<th class="th-child">Role</th>
 							<td>
-								<?php echo $roles->getRoleName($userProfile->getUserRole()); ?>
-								<?php if($userProfile->getUserRole() == $roles->getRoleUUIDByName("Users") || $userProfile->getUserRole() == $roles->getRoleUUIDByName("Supervisors")): ?>
+								<?php echo $roleManager->getRoleName($userProfile->getUserRole()); ?>
+								<?php if($userProfile->getUserRole() == $roleManager->getRoleUUIDByName("Users") || $userProfile->getUserRole() == $roleManager->getRoleUUIDByName("Supervisors")): ?>
 								&nbsp;<span class="text-warning"><a href="/user/request-role">Change Role &raquo;</a></span>
 								<?php endif; ?>
 							</td>
@@ -187,7 +187,7 @@ else{
                                 }
                                 else{
                                     foreach($userPendingAFSCList as $userAFSCuuid => $afscData){
-                                        echo $afsc->getAFSCName($userAFSCuuid)."<br />";
+                                        echo $afscManager->getAFSCName($userAFSCuuid)."<br />";
                                     }
                                 }
 								?>
@@ -238,7 +238,7 @@ else{
 							<th colspan="2">User Associations</th>
 						</tr>
 						<?php
-						$userRole = $roles->verifyUserRole($targetUUID);
+						$userRole = $roleManager->verifyUserRole($targetUUID);
 						if($userRole == "supervisor"): ?>
 						<tr>
 							<th class="th-child">Supervisor For</th>
@@ -369,7 +369,7 @@ else{
 						</ul>
 						<div id="history-tabs-1">
 						<?php 
-						$testManager = new testManager($db, $log, $afsc);
+						$testManager = new TestManager($db, $systemLog, $afscManager);
 						$userTestArray = $testManager->listUserTests($targetUUID,10);
 						
 						if($userTestArray): ?>
@@ -386,7 +386,7 @@ else{
 								<?php foreach($userTestArray as $testUUID => $testData): ?>
 									<tr>
 										<td><?php echo $cdcMastery->outputDateTime($testData['testTimeCompleted'],$_SESSION['timeZone']); ?></td>
-										<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+										<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 										<td><?php echo $testData['testScore']; ?></td>
 										<td>
 											<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -420,7 +420,7 @@ else{
 										<td><?php echo $cdcMastery->outputDateTime($testData['timeStarted'],$_SESSION['timeZone']); ?></td>
 										<td><?php echo $testData['questionsAnswered']; ?></td>
 										<td><?php echo $testData['totalQuestions']; ?></td>
-										<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+										<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 										<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
 									</tr>
 								<?php endforeach; ?>
@@ -442,7 +442,7 @@ else{
 								</thead>
 								<tbody>
 									<?php 
-									$logFilter = new logFilter($db, $user);
+									$logFilter = new SystemLogFilter($db, $userManager);
 									$logFilter->setFilterUserUUID($targetUUID);
 									$logFilter->setPageRows(10);
 									$logFilter->setRowOffset(0);

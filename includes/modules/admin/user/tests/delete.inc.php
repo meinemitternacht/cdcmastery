@@ -1,20 +1,20 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserTests($userUUID);
 
 if(!empty($testList)):
     if(isset($_POST['confirmTestDelete'])):
         if(!isset($_POST['testUUIDList']) || empty($_POST['testUUIDList'])){
-            $sysMsg->addMessage("You must specify at least one test to delete.","warning");
+            $systemMessages->addMessage("You must specify at least one test to delete.", "warning");
             $cdcMastery->redirect("/admin/users/" . $userUUID);
         }
         else {
             $testList = $_POST['testUUIDList'];
             if ($testManager->deleteTests($testList)) {
-                $sysMsg->addMessage("Selected tests deleted successfully.","success");
+                $systemMessages->addMessage("Selected tests deleted successfully.", "success");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/tests/delete");
             } else {
-                $sysMsg->addMessage("We could not delete the selected tests, please contact the support helpdesk.","danger");
+                $systemMessages->addMessage("We could not delete the selected tests, please contact the support helpdesk.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/tests/delete");
             }
         }
@@ -133,7 +133,7 @@ if(!empty($testList)):
                                     $rawAFSCList = $testDetails['afscList'];
 
                                     foreach($rawAFSCList as $key => $val){
-                                        $rawAFSCList[$key] = $afsc->getAFSCName($val);
+                                        $rawAFSCList[$key] = $afscManager->getAFSCName($val);
                                     }
 
                                     if(count($rawAFSCList) > 1){
@@ -170,6 +170,6 @@ if(!empty($testList)):
     <?php
     endif;
 else:
-    $sysMsg->addMessage("This user has not completed any tests.","info");
+    $systemMessages->addMessage("This user has not completed any tests.", "info");
     $cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

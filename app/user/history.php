@@ -1,5 +1,5 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserTests($_SESSION['userUUID']);
 
 if(!empty($testList)): ?>
@@ -81,7 +81,7 @@ and (max-device-width : 480px) {
 		<div class="12u">
 			<section>
 				<header>
-					<h2>Test History For <?php echo $user->getUserNameByUUID($_SESSION['userUUID']); ?></h2>
+					<h2>Test History For <?php echo $userManager->getUserNameByUUID($_SESSION['userUUID']); ?></h2>
 				</header>
 				<br>
 				<a href="/user/history-split" title="View Split History">View Split History</a>
@@ -104,7 +104,7 @@ and (max-device-width : 480px) {
 							$rawAFSCList = $testDetails['afscList'];
 
 							foreach($rawAFSCList as $key => $val){
-								$rawAFSCList[$key] = $afsc->getAFSCName($val);
+								$rawAFSCList[$key] = $afscManager->getAFSCName($val);
 							}
 
 							if(count($rawAFSCList) > 1){
@@ -180,6 +180,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-	$sysMsg->addMessage("You have not completed any tests.","info");
+	$systemMessages->addMessage("You have not completed any tests.", "info");
 	$cdcMastery->redirect("/");
 endif;

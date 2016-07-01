@@ -6,7 +6,7 @@
  * Time: 8:10 PM
  */
 
-class statistics extends CDCMastery {
+class StatisticsModule extends CDCMastery {
 
     protected $db;
     protected $log;
@@ -110,7 +110,7 @@ class statistics extends CDCMastery {
     public $totalGlobalFlashCardCategories;
     public $totalPrivateFlashCardCategories;
 
-    public function __construct(mysqli $db, log $log, emailQueue $emailQueue, Memcache $memcache){
+    public function __construct(mysqli $db, SystemLog $log, EmailQueueManager $emailQueue, Memcache $memcache){
         $this->db = $db;
         $this->log = $log;
         $this->emailQueue = $emailQueue;
@@ -2133,7 +2133,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleUser(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Users");
 
@@ -2178,7 +2178,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleTrainingManager(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Training Managers");
 
@@ -2223,7 +2223,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleSupervisor(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Supervisors");
 
@@ -2268,7 +2268,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleAdministrator(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Administrators");
 
@@ -2313,7 +2313,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleSuperAdministrator(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Super Administrators");
 
@@ -2358,7 +2358,7 @@ class statistics extends CDCMastery {
     }
 
     public function queryTotalRoleEditor(){
-        $roleManager = new roles($this->db,$this->log,$this->emailQueue);
+        $roleManager = new RoleManager($this->db, $this->log, $this->emailQueue);
 
         $roleUUID = $roleManager->getRoleUUIDByName("Question Editors");
 

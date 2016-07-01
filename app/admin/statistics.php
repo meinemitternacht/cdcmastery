@@ -5,8 +5,8 @@
  * Date: 9/23/2015
  * Time: 8:01 PM
  */
-$statisticsObj = new statistics($db,$log,$emailQueue,$memcache);
-$userObj = new user($db,$log,$emailQueue);
+$statisticsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$userObj = new UserManager($db, $systemLog, $emailQueue);
 ?>
 <script>
     $(document).ready(function()
@@ -365,7 +365,7 @@ $userObj = new user($db,$log,$emailQueue);
                 $weekStart = new DateTime("this week 00:00:00");
                 $weekEnd = new DateTime("this week 23:59:59 +6 days");
 
-                /*
+                /**
                  * Make week start on Sunday
                  */
                 $weekStart->modify("-1 day");
@@ -409,15 +409,39 @@ $userObj = new user($db,$log,$emailQueue);
                 $averageLastMonth = $statisticsObj->getTestAverageByTimespan($lastMonthStart,$lastMonthEnd);
                 $averageLastYear = $statisticsObj->getTestAverageByTimespan($lastYearStart,$lastYearEnd);
 
-                $percentIncreaseTests['today'] = number_format(((($testsToday - $testsYesterday) / $testsYesterday) * 100),2) . "%";
-                $percentIncreaseTests['week'] = number_format(((($testsThisWeek - $testsLastWeek) / $testsLastWeek) * 100),2) . "%";
-                $percentIncreaseTests['month'] = number_format(((($testsThisMonth - $testsLastMonth) / $testsLastMonth) * 100),2) . "%";
-                $percentIncreaseTests['year'] = number_format(((($testsThisYear - $testsLastYear) / $testsLastYear) * 100),2) . "%";
+                $percentIncreaseTests['today'] = "0%";
+                $percentIncreaseTests['week'] = "0%";
+                $percentIncreaseTests['month'] = "0%";
+                $percentIncreaseTests['year'] = "0%";
 
-                $percentIncreaseAverage['today'] = number_format(((($averageToday - $averageYesterday) / $averageYesterday) * 100),2) . "%";
-                $percentIncreaseAverage['week'] = number_format(((($averageThisWeek - $averageLastWeek) / $averageLastWeek) * 100),2) . "%";
-                $percentIncreaseAverage['month'] = number_format(((($averageThisMonth - $averageLastMonth) / $averageLastMonth) * 100),2) . "%";
-                $percentIncreaseAverage['year'] = number_format(((($averageThisYear - $averageLastYear) / $averageLastYear) * 100),2) . "%";
+                if($testsYesterday > 0)
+                    $percentIncreaseTests['today'] = number_format(((($testsToday - $testsYesterday) / $testsYesterday) * 100), 2) . "%";
+
+                if($testsLastWeek > 0)
+                    $percentIncreaseTests['week'] = number_format(((($testsThisWeek - $testsLastWeek) / $testsLastWeek) * 100), 2) . "%";
+
+                if($testsLastMonth > 0)
+                    $percentIncreaseTests['month'] = number_format(((($testsThisMonth - $testsLastMonth) / $testsLastMonth) * 100),2) . "%";
+
+                if($testsLastYear > 0)
+                    $percentIncreaseTests['year'] = number_format(((($testsThisYear - $testsLastYear) / $testsLastYear) * 100),2) . "%";
+
+                $percentIncreaseAverage['today'] = "0%";
+                $percentIncreaseAverage['week'] = "0%";
+                $percentIncreaseAverage['month'] = "0%";
+                $percentIncreaseAverage['year'] = "0%";
+
+                if($averageYesterday > 0)
+                    $percentIncreaseAverage['today'] = number_format(((($averageToday - $averageYesterday) / $averageYesterday) * 100),2) . "%";
+
+                if($averageLastWeek > 0)
+                    $percentIncreaseAverage['week'] = number_format(((($averageThisWeek - $averageLastWeek) / $averageLastWeek) * 100),2) . "%";
+
+                if($averageLastMonth > 0)
+                    $percentIncreaseAverage['month'] = number_format(((($averageThisMonth - $averageLastMonth) / $averageLastMonth) * 100),2) . "%";
+
+                if($averageLastYear > 0)
+                    $percentIncreaseAverage['year'] = number_format(((($averageThisYear - $averageLastYear) / $averageLastYear) * 100),2) . "%";
                 ?>
                 <table>
                     <tr>
@@ -538,7 +562,7 @@ $userObj = new user($db,$log,$emailQueue);
                     </tbody>
                 </table>
                 <?php else: ?>
-                    <p>No users have tested today.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -568,7 +592,7 @@ $userObj = new user($db,$log,$emailQueue);
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>No users have tested this month.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -598,7 +622,7 @@ $userObj = new user($db,$log,$emailQueue);
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>No users have tested this year.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -632,7 +656,7 @@ $userObj = new user($db,$log,$emailQueue);
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>No users have tested today.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -664,7 +688,7 @@ $userObj = new user($db,$log,$emailQueue);
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>No users have tested this month.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -696,7 +720,7 @@ $userObj = new user($db,$log,$emailQueue);
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p>No users have tested this year.</p>
+                    <p>Not enough data.</p>
                 <?php endif; ?>
             </section>
         </div>
@@ -722,7 +746,7 @@ $userObj = new user($db,$log,$emailQueue);
                     <tbody>
                         <?php foreach($groupedLogActionCountArray as $groupedLogActionCountKey => $groupedLogActionCountValue): ?>
                         <tr>
-                            <td title="<?php echo $groupedLogActionCountKey; ?>"><span class="<?php echo $log->getRowStyle($groupedLogActionCountKey); ?>"><?php echo $groupedLogActionCountKey; ?></span></td>
+                            <td title="<?php echo $groupedLogActionCountKey; ?>"><span class="<?php echo $systemLog->getRowStyle($groupedLogActionCountKey); ?>"><?php echo $groupedLogActionCountKey; ?></span></td>
                             <td><?php echo number_format($groupedLogActionCountValue); ?></td>
                         </tr>
                         <?php endforeach; ?>

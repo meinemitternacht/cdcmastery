@@ -1,12 +1,12 @@
 <?php
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new TestManager($db, $systemLog, $afscManager);
 
 $logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $returnPath = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : "log";
 
 if($logUUID):
-	if($log->verifyLogUUID($logUUID)): 
-		$logData = new log($db);
+	if($systemLog->verifyLogUUID($logUUID)): 
+		$logData = new SystemLog($db);
 		$logData->loadEntry($logUUID);
 		$logDetails = $logData->fetchDetails($logUUID); ?>
 		<div class="container">
@@ -42,7 +42,7 @@ if($logUUID):
 								<?php if($logData->getUserUUID() == "ANONYMOUS" || $logData->getUserUUID() == "SYSTEM"): ?>
 								<td><?php echo $logData->getUserUUID(); ?></td>
 								<?php else: ?>
-								<td><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="View Profile"><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></a></td>
+								<td><a href="/admin/profile/<?php echo $logData->getUserUUID(); ?>" title="View Profile"><?php echo $userManager->getUserByUUID($logData->getUserUUID()); ?></a></td>
 								<?php endif; ?>
 							</tr>
 							<tr>
@@ -95,7 +95,7 @@ if($logUUID):
                                         $dataCount = count($data);
                                         $i = 1;
                                         foreach($data as $dataVal){
-                                            $linkStr = $log->formatDetailData($dataVal);
+                                            $linkStr = $systemLog->formatDetailData($dataVal);
 
                                             if($i < $dataCount){
                                                 echo $linkStr . ", " . PHP_EOL;
@@ -111,7 +111,7 @@ if($logUUID):
                                     </tr>
                                     <?php
                                 else:
-                                    $linkStr = $log->formatDetailData($detailData['data']);
+                                    $linkStr = $systemLog->formatDetailData($detailData['data']);
                                     ?>
                                     <tr>
                                         <td><?php echo $detailData['dataType']; ?></td>

@@ -14,5 +14,5 @@ require BASE_PATH . '/includes/bootstrap.inc.php';
 
 $session->gc();
 
-$log->setAction("CRON_RUN_GARBAGE_COLLECT_SESSIONS");
-$log->saveEntry();
+$systemLog->setAction("CRON_RUN_GARBAGE_COLLECT_SESSIONS");
+$systemLog->saveEntry();

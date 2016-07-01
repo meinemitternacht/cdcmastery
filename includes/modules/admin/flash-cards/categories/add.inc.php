@@ -17,21 +17,21 @@ if(isset($_POST['confirmCategoryAdd'])){
     $addError = false;
 
     if(!$categoryName){
-        $sysMsg->addMessage("Category name cannot be empty.","warning");
+        $systemMessages->addMessage("Category name cannot be empty.", "warning");
         $addError = true;
     }
 
     if(!isset($_POST['categoryEncrypted'])){
-        $sysMsg->addMessage("You must choose a category encryption value (Yes/No).","warning");
+        $systemMessages->addMessage("You must choose a category encryption value (Yes/No).", "warning");
         $addError = true;
     }
 
     if(!$categoryType){
-        $sysMsg->addMessage("You must choose a category type. (Global/Private)","warning");
+        $systemMessages->addMessage("You must choose a category type. (Global/Private)", "warning");
         $addError = true;
     }
     elseif($categoryType == "private" && !$categoryBindingUser){
-        $sysMsg->addMessage("This category was marked private. You must choose a user to bind the category to.","warning");
+        $systemMessages->addMessage("This category was marked private. You must choose a user to bind the category to.", "warning");
         $addError = true;
     }
 
@@ -54,16 +54,16 @@ if(isset($_POST['confirmCategoryAdd'])){
         $flashCardManager->setCategoryCreatedBy($_SESSION['userUUID']);
 
         if($flashCardManager->saveFlashCardCategory()){
-            $log->setAction("FLASH_CARD_CATEGORY_ADD");
-            $log->setDetail("Category UUID",$flashCardManager->getCategoryUUID());
-            $log->setDetail("Category Name",$flashCardManager->getCategoryName());
-            $log->setDetail("Category Type",$flashCardManager->getCategoryType());
-            $log->setDetail("Category Encrypted",$flashCardManager->getCategoryEncrypted());
-            $log->setDetail("Category Private",$flashCardManager->getCategoryPrivate());
-            $log->setDetail("Category Binding",$flashCardManager->getCategoryBinding());
-            $log->saveEntry();
+            $systemLog->setAction("FLASH_CARD_CATEGORY_ADD");
+            $systemLog->setDetail("Category UUID", $flashCardManager->getCategoryUUID());
+            $systemLog->setDetail("Category Name", $flashCardManager->getCategoryName());
+            $systemLog->setDetail("Category Type", $flashCardManager->getCategoryType());
+            $systemLog->setDetail("Category Encrypted", $flashCardManager->getCategoryEncrypted());
+            $systemLog->setDetail("Category Private", $flashCardManager->getCategoryPrivate());
+            $systemLog->setDetail("Category Binding", $flashCardManager->getCategoryBinding());
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Flash card category added successfully.","success");
+            $systemMessages->addMessage("Flash card category added successfully.", "success");
 
             unset($categoryName);
             unset($categoryEncrypted);
@@ -73,7 +73,7 @@ if(isset($_POST['confirmCategoryAdd'])){
             unset($categoryComments);
         }
         else{
-            $sysMsg->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage("The flash card category could not be added.  Contact the support help desk for assistance.", "danger");
         }
     }
 }
@@ -142,7 +142,7 @@ if(isset($_POST['confirmCategoryAdd'])){
                         size="1">
                     <option value="">Select a user...</option>
                     <?php
-                    $userList = $user->listUsers();
+                    $userList = $userManager->listUsers();
                     foreach($userList as $userUUID => $userDetails): ?>
                         <?php if(isset($categoryBindingUser) && $categoryBindingUser == $userUUID): ?>
                         <option value="<?php echo $userUUID; ?>" SELECTED>
@@ -170,7 +170,7 @@ if(isset($_POST['confirmCategoryAdd'])){
                         size="1">
                     <option value="">Select an AFSC...</option>
                     <?php
-                    $afscList = $afsc->listAFSC(false);
+                    $afscList = $afscManager->listAFSC(false);
                     foreach($afscList as $afscUUID => $afscData): ?>
                         <?php if(isset($categoryBindingAFSC) && $categoryBindingAFSC == $afscUUID): ?>
                             <option value="<?php echo $afscUUID; ?>" SELECTED>

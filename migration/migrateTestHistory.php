@@ -23,7 +23,7 @@ $i=1;
 $j=1;
 if($res->num_rows > 0){
 	while($row = $res->fetch_assoc()){
-		$userUUID = $user->getUUIDByHandle($row['username']);
+		$userUUID = $userManager->getUUIDByHandle($row['username']);
 		
 		if($userUUID){
 			$uuid = $cdcMastery->genUUID();
@@ -66,7 +66,7 @@ if($res->num_rows > 0){
 					$stmt->bind_param("sssiiisss", $key, $test['userUUID'], $test['afscList'], $test['totalQuestions'], $test['questionsMissed'], $test['testScore'], $test['testTimeStarted'], $test['testTimeCompleted'], $test['oldTestID']);
 				
 					if(!$stmt->execute()){
-						echo "Error inserting test: ".$key." (taken on ".$test['testTimeStarted']." by user ".$user->getFullName()."). MySQL error: ".$stmt->error.".\n\nMigration aborted.";
+						echo "Error inserting test: ".$key." (taken on ".$test['testTimeStarted']." by user ".$userManager->getFullName()."). MySQL error: ".$stmt->error.".\n\nMigration aborted.";
 						$error = true;
 						$stmt->close();
 						$res->close();

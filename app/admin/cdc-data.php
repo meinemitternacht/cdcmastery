@@ -17,15 +17,15 @@ if (isset($_SESSION['deleteUUIDList']) && $subsection != "delete-questions") {
 }
 
 if ($workingAFSC):
-    if (!$afsc->loadAFSC($workingAFSC)) {
-        $sysMsg->addMessage("That AFSC does not exist.","danger");
+    if (!$afscManager->loadAFSC($workingAFSC)) {
+        $systemMessages->addMessage("That AFSC does not exist.", "danger");
         $cdcMastery->redirect("/admin/cdc-data");
     }
 
-    $aManager = new answerManager($db, $log);
-    $qManager = new questionManager($db, $log, $afsc, $aManager);
+    $aManager = new AnswerManager($db, $systemLog);
+    $qManager = new QuestionManager($db, $systemLog, $afscManager, $aManager);
 
-    if($afsc->getAFSCFOUO()){
+    if($afscManager->getAFSCFOUO()){
         $aManager->setFOUO(true);
         $qManager->setFOUO(true);
     }
@@ -48,23 +48,23 @@ if ($workingAFSC):
                     <br>
                     <ul>
                         <li><strong>AFSC:</strong> <a
-                                href="/admin/cdc-data/<?php echo $workingAFSC; ?>"><?php echo $afsc->getAFSCName(); ?></a>
+                                href="/admin/cdc-data/<?php echo $workingAFSC; ?>"><?php echo $afscManager->getAFSCName(); ?></a>
                         </li>
                         <li>
-                            <strong>Version:</strong> <?php echo $cdcMastery->formatOutputString($afsc->getAFSCVersion()); ?>
+                            <strong>Version:</strong> <?php echo $cdcMastery->formatOutputString($afscManager->getAFSCVersion()); ?>
                         </li>
-                        <li><strong>FOUO:</strong> <?php echo $afsc->getAFSCFOUO() ? "Yes" : "No"; ?></li>
-                        <li><strong>Hidden:</strong> <?php echo $afsc->getAFSCHidden() ? "Yes" : "No"; ?></li>
+                        <li><strong>FOUO:</strong> <?php echo $afscManager->getAFSCFOUO() ? "Yes" : "No"; ?></li>
+                        <li><strong>Hidden:</strong> <?php echo $afscManager->getAFSCHidden() ? "Yes" : "No"; ?></li>
                         <li>
-                            <strong>Description:</strong> <?php echo $cdcMastery->formatOutputString($afsc->getAFSCDescription()); ?>
+                            <strong>Description:</strong> <?php echo $cdcMastery->formatOutputString($afscManager->getAFSCDescription()); ?>
                         </li>
-                        <li><strong>Questions:</strong> <?php if ($afsc->getTotalQuestions()) {
-                                echo $afsc->getTotalQuestions();
+                        <li><strong>Questions:</strong> <?php if ($afscManager->getTotalQuestions()) {
+                                echo $afscManager->getTotalQuestions();
                             } else {
                                 echo "0";
                             } ?></li>
                     </ul>
-                    <a href="/admin/afsc/edit/<?php echo $afsc->getUUID(); ?>">Edit AFSC</a>
+                    <a href="/admin/afsc/edit/<?php echo $afscManager->getUUID(); ?>">Edit AFSC</a>
                 </section>
             </div>
             <?php if (!$subsection): ?>
@@ -167,7 +167,7 @@ if ($workingAFSC):
                         <h2>Choose AFSC to Manage</h2>
                     </header>
                     <br>
-                    <?php $afscList = $afsc->listAFSC(); ?>
+                    <?php $afscList = $afscManager->listAFSC(); ?>
                     <div
                         style="-webkit-column-count: 3; /* Chrome, Safari, Opera */ -moz-column-count: 3; /* Firefox */ column-count: 3;">
                         <?php foreach ($afscList as $afscUUID => $afscDetails): ?>
