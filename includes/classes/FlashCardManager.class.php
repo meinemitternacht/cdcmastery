@@ -1008,19 +1008,26 @@ class FlashCardManager extends CDCMastery
                 }
             }
             else{
-                if (!$this->loadFlashCardData($this->flashCardArray[$this->currentCard]['uuid'])) {
-                    $output = "We could not load that flash card.";
-                } else {
-                    if ($this->cardCurrentState == "front") {
-                        $output = '<div id="cardFront" class="cardData">';
-                        $output .= '<span class="text-success">card front</span><br>';
-                        $output .= $this->getFrontText();
-                        $output .= '</div>';
-                    } else {
-                        $output = '<div id="cardBack" class="cardData">';
-                        $output .= '<span class="text-caution">card back</span><br>';
-                        $output .= $this->getBackText();
-                        $output .= '</div>';
+                if(!isset($this->flashCardArray[$this->currentCard]['uuid'])){
+                    $output = "We could not load that flash card.  Try refreshing the page.";
+                }
+                else {
+                    if (!$this->loadFlashCardData($this->flashCardArray[$this->currentCard]['uuid'])) {
+                        $output = "We could not load that flash card.";
+                    }
+                    else {
+                        if ($this->cardCurrentState == "front") {
+                            $output = '<div id="cardFront" class="cardData">';
+                            $output .= '<span class="text-success">card front</span><br>';
+                            $output .= $this->getFrontText();
+                            $output .= '</div>';
+                        }
+                        else {
+                            $output = '<div id="cardBack" class="cardData">';
+                            $output .= '<span class="text-caution">card back</span><br>';
+                            $output .= $this->getBackText();
+                            $output .= '</div>';
+                        }
                     }
                 }
             }
