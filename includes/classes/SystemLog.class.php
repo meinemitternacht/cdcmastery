@@ -1,9 +1,5 @@
 <?php
 
-/*
-This script provides a class interface for the site logging function.
-*/
-
 class SystemLog extends CDCMastery
 {
 	protected $db;				//holds database object
@@ -26,11 +22,11 @@ class SystemLog extends CDCMastery
 	public $detailCount;		//count of detail array
 
     /**
+	 * @var $warningArray
      * Warnings (Administrative functions, errors)
      * Class Name: text-warning
      */
-    public $warningArray = Array(
-                                'ACCESS_DENIED',
+    public $warningArray =     ['ACCESS_DENIED',
                                 'ADMIN_ACTIVATE_USER',
                                 'AFSC_DELETE',
                                 'AFSC_EDIT',
@@ -177,7 +173,6 @@ class SystemLog extends CDCMastery
                                 'REPORT_QUESTION',
                                 'ROLE_EDIT',
                                 'ROLE_MIGRATE',
-                                'SET_DELETE',
                                 'TOGGLE_AFSC_FOUO',
                                 'USER_ACCOUNT_DISABLE_SELF',
                                 'USER_BAN',
@@ -190,16 +185,13 @@ class SystemLog extends CDCMastery
                                 'USER_REMOVE_SUPERVISOR_ASSOCIATIONS_ALL',
                                 'USER_REMOVE_TRAINING_MANAGER_ASSOCIATION',
                                 'USER_REMOVE_TRAINING_MANAGER_ASSOCIATIONS_ALL',
-                                'USER_UNBAN',
-                                'VOLUME_DELETE'
-                                );
+                                'USER_UNBAN'];
 
     /**
      * Could possibly be damaging, general caution
      * .text-caution
      */
-    public $cautionArray = Array(
-                                'FILE_UPLOAD',
+    public $cautionArray =     ['FILE_UPLOAD',
                                 'FLASH_CARD_CATEGORY_DELETE',
                                 'FLASH_CARD_CATEGORY_EDIT',
                                 'FLASH_CARD_DATA_DELETE',
@@ -210,7 +202,6 @@ class SystemLog extends CDCMastery
                                 'QUESTION_EDIT',
                                 'ROLE_SAVE',
                                 'SEND_USER_MESSAGE',
-                                'SET_EDIT',
                                 'TEST_ARCHIVE',
                                 'TEST_DATA_DELETE',
                                 'TEST_DELETE',
@@ -219,17 +210,14 @@ class SystemLog extends CDCMastery
                                 'USER_APPROVE_PENDING_AFSC_ASSOCIATION',
                                 'USER_DELETE_AFSC_ASSOCIATION',
                                 'USER_DELETE_AFSC_ASSOCIATIONS_ALL',
-                                'USER_EDIT_PROFILE',
-                                'VOLUME_EDIT'
-                                );
+                                'USER_EDIT_PROFILE'];
 
     /**
 	 * @var
      * Normal entries
      * .text-success
      */
-    public $generalArray = Array(
-                                'AFSC_ADD',
+    public $generalArray = 	   ['AFSC_ADD',
                                 'BASE_ADD',
                                 'BASE_EDIT',
                                 'EMAIL_QUEUE_ADD',
@@ -251,7 +239,6 @@ class SystemLog extends CDCMastery
                                 'QUESTION_ADD',
                                 'SAVE_TEST',
                                 'SCORE_TEST',
-                                'SET_ADD',
                                 'TEST_COMPLETED',
                                 'TEST_START',
                                 'USER_ACTIVATE',
@@ -260,21 +247,18 @@ class SystemLog extends CDCMastery
                                 'USER_ADD_TRAINING_MANAGER_ASSOCIATION',
                                 'USER_PASSWORD_RESET_COMPLETE',
                                 'USER_QUEUE_ACTIVATION',
-                                'USER_REGISTER',
-                                'VOLUME_ADD'
-                                );
+                                'USER_REGISTER'];
 	/**
 	 * Info Array
 	 * .text-info
 	 */
-	public $infoArray = Array(	'CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS',
+	public $infoArray = 	   ['CRON_RUN_GARBAGE_COLLECT_INCOMPLETE_TESTS',
 								'CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS',
 								'CRON_RUN_GARBAGE_COLLECT_SESSIONS',
 								'CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS',
 								'CRON_RUN_GARBAGE_COLLECT_XML_ARCHIVES',
 								'CRON_RUN_REMIND_UNUSED_ACCOUNTS',
-								'ROUTING_ERROR'
-								);
+								'ROUTING_ERROR'];
 
 	/**
 	 * log constructor.
@@ -308,7 +292,6 @@ class SystemLog extends CDCMastery
     public function cleanEntry(){
 		$this->uuid				= NULL;
 		$this->timestamp		= NULL;
-		$this->microtime		= microtime(true);
 		$this->action			= NULL;
 		$this->userUUID			= NULL;
 		$this->ip				= NULL;
@@ -456,7 +439,7 @@ class SystemLog extends CDCMastery
 	}
 
     public function printEntry() {
-		$string = "UUID: " . $this->uuid . " Timestamp: " . $this->timestamp . " Microtime: " . $this->microtime . " Action: " . $this->action . " User ID: " . $this->userUUID . " IP: " . $this->ip;
+		$string = "CDCMastery|" . $this->uuid . "|" . $this->microtime . "|" . $this->action . "|USER=" . $this->userUUID . "|IP=" . $this->ip;
 
 		if(isset($this->detailArray) && !empty($this->detailArray))
 		{
@@ -464,7 +447,7 @@ class SystemLog extends CDCMastery
 			{
 				foreach($row as $key => $var)
 				{
-					$string .= " ".htmlspecialchars($key).": ".htmlspecialchars($var);
+					$string .= "|".htmlspecialchars($key)."=".htmlspecialchars($var);
 				}
 			}
 		}
@@ -478,6 +461,8 @@ class SystemLog extends CDCMastery
 	}
 
     public function saveEntry() {
+		$this->microtime = microtime(true);
+		
 		if(!empty($this->timestamp)) {
 			$stmt = $this->db->prepare('INSERT INTO systemLog 
 											(uuid, timestamp, microtime, userUUID, action, ip, user_agent) 
@@ -499,7 +484,11 @@ class SystemLog extends CDCMastery
 
 		if(!$stmt->execute()) {
 			$this->error[] = $stmt->error;
+			$this->sendEntryToSyslog();
 			return false;
+		}
+		else{
+			$stmt->close();
 		}
 
 		if(isset($this->detailArray) && !empty($this->detailArray)) {
@@ -515,11 +504,13 @@ class SystemLog extends CDCMastery
 
 				if(!$stmt->execute()) {
 					$this->error[] = $stmt->error;
+					$this->sendEntryToSyslog();
 					return false;
 				}
 			}
 		}
 
+		$stmt->close();
 		$this->cleanEntry();
 		$this->regenerateUUID();
 
@@ -721,6 +712,15 @@ class SystemLog extends CDCMastery
         //We didn't find anything
         return $detailData;
     }
+
+	public function sendEntryToSyslog(){
+		if(syslog(LOG_SYSLOG,$this->printEntry())){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 	public function setUserAgent($userAgent){
 		$this->userAgent = htmlspecialchars_decode($userAgent);
