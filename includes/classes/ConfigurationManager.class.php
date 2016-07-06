@@ -6,7 +6,7 @@
  * Date: 7/1/16
  * Time: 4:18 AM
  */
-class configurationManager
+class ConfigurationManager
 {
     protected $encryptionKey;
     protected $databaseConfiguration = [];

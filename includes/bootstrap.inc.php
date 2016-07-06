@@ -16,7 +16,7 @@ require __DIR__ . '/../includes/classes/AuthenticationManager.class.php';
 require __DIR__ . '/../includes/classes/AnswerManager.class.php';
 require __DIR__ . '/../includes/classes/AssociationManager.class.php';
 require __DIR__ . '/../includes/classes/BaseManager.class.php';
-require __DIR__ . '/../includes/classes/configurationManager.class.php';
+require __DIR__ . '/../includes/classes/ConfigurationManager.class.php';
 require __DIR__ . '/../includes/classes/ZebraSessions.class.php';
 require __DIR__ . '/../includes/classes/EmailQueueManager.class.php';
 require __DIR__ . '/../includes/classes/SystemLog.class.php';
