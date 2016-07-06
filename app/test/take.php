@@ -2,12 +2,12 @@
 $testManager = new TestManager($db, $systemLog, $afscManager);
 
 if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
-    /*
+    /**
      * Entry point for test in progress, or after resuming a test
      */
     $testUUID = $_SESSION['vars'][0];
 
-    /*
+    /**
      * Ensure test is valid
      */
     if ($testManager->loadIncompleteTest($testUUID)) {
@@ -15,7 +15,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
             $cdcMastery->redirect("/test/take");
         }
         if($_SESSION['userUUID'] != $testManager->getIncompleteUserUUID()) {
-            /*
+            /**
              * Not this user's test!!  Oh boy...
              */
             $systemLog->setAction("ERROR_TEST_USER_UUID_NOT_EQUAL");
@@ -267,12 +267,12 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
         </div>
     <?php
     } elseif ($testManager->loadTest($testUUID)) {
-        /*
+        /**
          * Test has already been scored
          */
         $cdcMastery->redirect("/test/view/" . $testUUID);
     } else {
-        /*
+        /**
          * Test does not exist.
          */
         $systemMessages->addMessage("Sorry, that test does not exist.", "warning");
@@ -280,7 +280,7 @@ if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
     }
 }
 else {
-    /*
+    /**
      * Entry point for starting a new test
      */
 
@@ -311,7 +311,8 @@ else {
                 $cdcMastery->redirect("/test/take");
             }
         } else {
-            echo $testManager->error;
+            $systemMessages->addMessage("Sorry, we were unable to generate a pool of questions for that test.  Choose another AFSC or contact the support helpdesk.","info");
+            $cdcMastery->redirect("/test/take");
         }
     } else {
         ?>
