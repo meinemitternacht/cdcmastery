@@ -3217,31 +3217,16 @@ class StatisticsModule extends CDCMastery {
     }
 
     public function getUsersActiveFifteenMinutes(){
-        if($this->getStatsCacheVal(__FUNCTION__)){
-            return $this->getStatsCacheVal(__FUNCTION__);
+        if(!$this->queryUsersActiveFifteenMinutes()){
+            return false;
         }
         else{
-            if(!$this->queryUsersActiveFifteenMinutes()){
-                return 0;
-            }
-            else{
-                $this->setStatsCacheVal(__FUNCTION__,$this->usersActiveFifteenMinutes,$this->getCacheTTL(1));
-                return $this->usersActiveFifteenMinutes;
-            }
+            return $this->usersActiveFifteenMinutes;
         }
     }
 
     public function queryUsersActiveFifteenMinutes(){
-        $dateTimeStartObj = new DateTime("now");
-        $dateTimeEndObj = new DateTime("now");
-
-        $dateTimeStartObj->modify("-15 minutes");
-
-        $dateTimeStart = $dateTimeStartObj->format("Y-m-d H:i:s");
-        $dateTimeEnd = $dateTimeEndObj->format("Y-m-d H:i:s");
-
-        $stmt = $this->db->prepare("SELECT uuid FROM userData WHERE (userLastActive BETWEEN ? AND ?) OR (userLastLogin BETWEEN ? AND ?) ORDER BY userLastActive DESC");
-        $stmt->bind_param("ssss",$dateTimeStart,$dateTimeEnd,$dateTimeStart,$dateTimeEnd);
+        $stmt = $this->db->prepare("SELECT uuid FROM userData WHERE (userLastActive > NOW() - INTERVAL 15 MINUTE) OR (userLastLogin > NOW() - INTERVAL 15 MINUTE) ORDER BY userLastActive DESC");
 
         if($stmt->execute()){
             $stmt->bind_result($uuid);
