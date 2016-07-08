@@ -22,6 +22,7 @@ if(isset($_POST['userEmail'])){
         else{
             $systemLog->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
             $systemLog->setDetail("Provided E-mail", $userEmail);
+            $systemLog->setDetail("Error","Could not save the user information.");
             $systemLog->saveEntry();
 
             $systemMessages->addMessage("There was a problem updating your e-mail address. If you still cannot updated your e-mail address, please contact the help desk.", "danger");
@@ -30,9 +31,10 @@ if(isset($_POST['userEmail'])){
     else{
         $systemLog->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
         $systemLog->setDetail("Provided E-mail", $userEmail);
+        $systemLog->setDetail("Error","Invalid e-mail address provided.");
         $systemLog->saveEntry();
 
-        $systemMessages->addMessage("You provided an invalid e-mail address.  Please use your official government e-mail address ending in af.mil or mail.mil.", "warning");
+        $systemMessages->addMessage("You provided an invalid e-mail address.  Please use your official government e-mail address ending in af.mil or mail.mil.  Example:  sample.user.10@us.af.mil  or  sample.user.mil@mail.mil", "warning");
     }
 }
 ?>
