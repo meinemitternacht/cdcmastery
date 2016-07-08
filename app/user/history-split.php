@@ -5,7 +5,7 @@
  * Date: 10/2/2015
  * Time: 11:08 PM
  */
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserTests($_SESSION['userUUID'],false,true);
 
 if(!empty($testList)): ?>

@@ -41,7 +41,7 @@
 								<li>Rendered in 
 									<?php
 									$time_end = microtime(true);
-									$time = $time_end - $time_start;
+									$time = $time_end - $app->getTimeStart();
 									echo round($time,5);
 									?>s using <?php echo round((memory_get_usage(true) / 1048576),2); ?> MB
 								</li>

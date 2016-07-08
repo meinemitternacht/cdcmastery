@@ -7,7 +7,7 @@ else{
     $pendingAssociationsCount = 0;
 }
 
-$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
+$userActivation = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 $unactivatedUsers = $userActivation->listUnactivatedUsers();
 if(is_array($unactivatedUsers)){
     $unactivatedUsersCount = count($unactivatedUsers);
@@ -16,7 +16,7 @@ else{
     $unactivatedUsersCount = 0;
 }
 
-$userAuthorization = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+$userAuthorization = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 $authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 if(is_array($authorizationQueue)){
     $authorizationQueueCount = count($authorizationQueue);

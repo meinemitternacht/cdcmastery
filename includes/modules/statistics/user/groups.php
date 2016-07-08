@@ -6,7 +6,7 @@
  * Time: 8:15 PM
  */
 
-$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $userCountData = "{ label: \"Normal Users\", y: " . $statsObj->getTotalRoleUser() . " }";
 $userCountData .= ",{ label: \"Supervisors\", y: " . $statsObj->getTotalRoleSupervisor() . " }";

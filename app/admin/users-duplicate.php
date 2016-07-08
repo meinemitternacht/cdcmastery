@@ -95,7 +95,7 @@ if($res->num_rows > 0){
                                                 ORDER BY userData.userLastName, userData.userFirstName ASC");
 
                         if($res->num_rows > 0){
-                            $userObj = new UserManager($db, $systemLog, $emailQueue);
+                            $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             while($row = $res->fetch_assoc()){
                                 $userObj->loadUser($row['uuid']);
                                 $userStatistics->setUserUUID($row['uuid']);

@@ -5,8 +5,8 @@
  * Date: 9/23/2015
  * Time: 8:01 PM
  */
-$statisticsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
-$userObj = new UserManager($db, $systemLog, $emailQueue);
+$statisticsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 ?>
 <script>
     $(document).ready(function()

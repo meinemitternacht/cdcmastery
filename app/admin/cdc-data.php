@@ -22,8 +22,8 @@ if ($workingAFSC):
         $cdcMastery->redirect("/admin/cdc-data");
     }
 
-    $aManager = new AnswerManager($db, $systemLog);
-    $qManager = new QuestionManager($db, $systemLog, $afscManager, $aManager);
+    $aManager = new CDCMastery\AnswerManager($db, $systemLog);
+    $qManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $aManager);
 
     if($afscManager->getAFSCFOUO()){
         $aManager->setFOUO(true);

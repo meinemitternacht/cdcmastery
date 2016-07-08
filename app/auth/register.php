@@ -113,7 +113,7 @@ if(isset($_POST['registrationFormStep'])):
             $cdcMastery->redirect("/auth/register/" . $accountType . "/2");
         }
 
-        $registerUser = new UserManager($db, $systemLog, $emailQueue);
+        $registerUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         $registerUser->setUserHandle($_SESSION['registrationArray']['userHandle']['data']);
         $registerUser->setUserPassword($_SESSION['registrationArray']['userPassword']['data']);
@@ -130,7 +130,7 @@ if(isset($_POST['registrationFormStep'])):
 
         $_SESSION['timeZone'] = $registerUser->getUserTimeZone();
 
-        $authorizationQueue = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+        $authorizationQueue = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
         if($registerUser->saveUser()) {
 
@@ -168,7 +168,7 @@ if(isset($_POST['registrationFormStep'])):
                 $associationManager->addTrainingManagerAssociation($userTrainingManager, $registerUser->getUUID());
             }
 
-            $userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
+            $userActivation = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
             if($userActivation->queueActivation($registerUser->getUUID())){
                 $systemLog->setAction("USER_REGISTER");

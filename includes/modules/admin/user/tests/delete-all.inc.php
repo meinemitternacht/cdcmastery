@@ -1,5 +1,5 @@
 <?php
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->getTestUUIDList($userUUID);
 
 if(!empty($testList)):

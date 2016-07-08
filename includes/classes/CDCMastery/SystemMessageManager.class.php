@@ -1,4 +1,7 @@
 <?php
+
+namespace CDCMastery;
+
 class SystemMessageManager extends CDCMastery
 {
     public $validMessageTypes = ['success','info','warning','danger'];

@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 /**
  * Created by PhpStorm.
  * User: claude

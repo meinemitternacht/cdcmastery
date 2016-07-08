@@ -1,5 +1,5 @@
 <?php if(!$cdcMastery->loggedIn()): ?>
-	<?php $statisticsModule = new StatisticsModule($db,$systemLog,$emailQueue,$memcache); ?>
+	<?php $statisticsModule = new CDCMastery\StatisticsModule($db,$systemLog,$emailQueue,$memcache); ?>
 	<!--suppress ALL -->
 	<div class="container">
 		<div id="mobile-login">
@@ -128,7 +128,7 @@
 			$pendingAssociationsCount = 0;
 		}
 	
-		$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
+		$userActivation = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 		$unactivatedUsers = $userActivation->listUnactivatedUsers();
 		if (is_array($unactivatedUsers)) {
 			$unactivatedUsersCount = count($unactivatedUsers);
@@ -136,7 +136,7 @@
 			$unactivatedUsersCount = 0;
 		}
 	
-		$userAuthorization = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+		$userAuthorization = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 		$authorizationQueue = $userAuthorization->listUserAuthorizeQueue();
 		if (is_array($authorizationQueue)) {
 			$authorizationQueueCount = count($authorizationQueue);
@@ -237,7 +237,7 @@
 						<h2>Overview</h2>
 					</header>
 					<?php
-					$testManager = new TestManager($db, $systemLog, $afscManager);
+					$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 					$userTestArray = $testManager->listUserTests($_SESSION['userUUID'],10);
 					
 					if($userTestArray): ?>

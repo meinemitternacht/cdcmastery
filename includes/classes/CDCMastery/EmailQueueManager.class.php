@@ -1,4 +1,10 @@
 <?php
+namespace CDCMastery;
+use mysqli;
+use Mail_mime;
+use Mail;
+use PEAR;
+
 class EmailQueueManager extends CDCMastery {
 	protected $db;
 	protected $log;

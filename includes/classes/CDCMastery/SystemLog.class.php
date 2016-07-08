@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 class SystemLog extends CDCMastery
 {
 	protected $db;				//holds database object
@@ -508,9 +511,10 @@ class SystemLog extends CDCMastery
 					return false;
 				}
 			}
+			
+			$stmt->close();
 		}
 
-		$stmt->close();
 		$this->cleanEntry();
 		$this->regenerateUUID();
 

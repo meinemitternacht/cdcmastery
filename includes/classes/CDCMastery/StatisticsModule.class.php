@@ -6,6 +6,12 @@
  * Time: 8:10 PM
  */
 
+namespace CDCMastery;
+use mysqli;
+use DateTime;
+use Memcache;
+
+
 class StatisticsModule extends CDCMastery {
 
     protected $db;
@@ -225,6 +231,9 @@ class StatisticsModule extends CDCMastery {
     public function getActiveSessions(){
         if($this->queryActiveSessions()){
             return $this->activeSessions;
+        }
+        else{
+            return false;
         }
     }
     

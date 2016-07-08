@@ -7,18 +7,18 @@ if(isset($_POST['confirmUserDelete'])){
 
     if($userUUID){
         $error = false;
-        $delUserObj = new UserManager($db, $systemLog, $emailQueue);
+        $delUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         if($delUserObj->loadUser($userUUID)){
             $userFullName = $delUserObj->getFullName();
 
             if($roleManager->getRoleType($delUserObj->getUserRole()) != "admin") {
-                $authObj = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
-                $testManager = new TestManager($db, $systemLog, $afscManager);
+                $authObj = new CDCMastery\AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
+                $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
                 $userTestList = $testManager->getTestUUIDList($userUUID);
 
                 if(!$authObj->getActivationStatus()){
-                    $activateObj = new UserActivationManager($db, $systemLog, $emailQueue);
+                    $activateObj = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
                     if(!$activateObj->deleteUserActivationToken($userUUID)){
                         $systemMessages->addMessage("User activation token not cleared.", "danger");
                     }

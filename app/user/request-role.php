@@ -5,7 +5,7 @@
  * Date: 6/16/16
  * Time: 1:04 AM
  */
-$roleAuth = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+$roleAuth = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
 if($roleAuth->checkUserRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("Supervisors")) || $roleAuth->checkUserRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("TrainingManagers"))){
     $systemMessages->addMessage("You are already awaiting approval for a role request.  Please wait until that has been approved or disapproved before requesting a new role.", "caution");
@@ -32,7 +32,7 @@ if($requestedRole){
             break;
         case "training-manager":
             if($userManager->getUserRole() == $roleManager->getRoleUUIDByName("Users") || $userManager->getUserRole() == $roleManager->getRoleUUIDByName("Supervisors")){
-                $roleAuth = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+                $roleAuth = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
                 if($roleAuth->queueRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("Training Managers"))){
                     $systemMessages->addMessage("Your request has been received and queued.  When your request is approved, you should receive a confirmation e-mail.", "success");

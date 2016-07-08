@@ -10,9 +10,9 @@ define('APP_BASE', realpath(__DIR__ . '/../app'));
 
 include "../includes/bootstrap.inc.php";
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $testArray = $testManager->listArchivableTests();
 $totalTests = count($testArray);

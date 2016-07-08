@@ -6,7 +6,7 @@
  * Time: 3:08 PM
  */
 
-$flashCardManager = new FlashCardManager($db, $systemLog);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 $categoryUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $sessionAction = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 

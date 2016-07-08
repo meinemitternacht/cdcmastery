@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['confirmPasswordReset'])){
 	if($userUUID){
-		$pwReset = new UserPasswordResetManager($db, $systemLog, $emailQueue);
+		$pwReset = new CDCMastery\UserPasswordResetManager($db, $systemLog, $emailQueue);
 		
 		if($pwReset->sendPasswordReset($userUUID)){
             $systemMessages->addMessage("A password reset link has been sent to " . $objUser->getFullName(), "success");

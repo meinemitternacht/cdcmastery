@@ -1,11 +1,13 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: Claude Bing
  * Date: 9/30/2015
  * Time: 9:31 AM
  */
+namespace CDCMastery;
+use mysqli;
+
 class FlashCardManager extends CDCMastery
 {
     protected $db;

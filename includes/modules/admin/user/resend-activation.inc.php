@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['confirmActivationResend'])){
 	if($userUUID){
-		$userActivate = new UserActivationManager($db, $systemLog, $emailQueue);
+		$userActivate = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 		
 		if($userActivate->queueActivation($userUUID)){
 			$systemMessages->addMessage("Activation code sent to " . $objUser->getFullName(), "success");

@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 class TestGenerator extends CDCMastery
 {
 	public $db;

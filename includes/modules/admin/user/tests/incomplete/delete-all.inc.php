@@ -1,5 +1,5 @@
 <?php
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 	if($testManager->deleteIncompleteTest(true,false,$userUUID)){

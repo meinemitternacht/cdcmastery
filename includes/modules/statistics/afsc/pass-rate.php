@@ -6,7 +6,7 @@
  * Time: 8:13 PM
  */
 
-$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $afscList = $afscManager->listAFSCUUID(false);
 

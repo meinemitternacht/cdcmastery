@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 /**
  * Class roles
  */

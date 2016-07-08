@@ -77,7 +77,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserRank($_POST['userRank']);
     $objUser->setUserTimeZone($_POST['timeZone']);
 
-    $objUserStatistics = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+    $objUserStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
     $objUserStatistics->setUserUUID($objUser->getUUID());
 
     /**

@@ -6,11 +6,11 @@
  * Time: 2:29 AM
  */
 
-$statistics = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
-$tmUser = new UserManager($db, $systemLog, $emailQueue);
-$tmOverview = new TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$tmUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$tmOverview = new CDCMastery\TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
 
 $workingAFSC = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 if(!$afscManager->loadAFSC($workingAFSC)){

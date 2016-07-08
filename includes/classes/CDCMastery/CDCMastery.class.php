@@ -1,5 +1,9 @@
 <?php
-class CDCMastery 
+namespace CDCMastery;
+use DateTime;
+use DateTimeZone;
+
+class CDCMastery
 {
 	public $aesKey;
 	public $maxQuestions = 100;
@@ -7,12 +11,14 @@ class CDCMastery
 	public $staticUserArray = Array('SYSTEM','ANONYMOUS');
 	public $publicCacheTTL = 10800; /* Cache objects for three hours if not logged in */
 	public $privateCacheTTL = 300; /* Cache objects for five minutes if logged in */
+	public $timeStart;
+	public $timeEnd;
 	
-	public function __construct(){
-
+	public function __construct() {
+		
 	}
 
-    public function checkEmailAddress($emailAddress){
+	public function checkEmailAddress($emailAddress){
 		if(strpos($emailAddress,"@") !== false) {
 			if (!preg_match("/(([A-Za-z_-])+\.([A-Za-z_-])+(\.[0-9A-Za-z]+)?\@(([A-Za-z]+\.afcent\.af)|([A-Za-z]+)\.af|us\.af|mail)(\.mil))$|(([A-Za-z_-])+\.([A-Za-z_-])+\.([A-Za-z0-9_-])+(\.mil)\@(mail)(\.mil))$/", $emailAddress)) {
 				return false;
@@ -359,6 +365,8 @@ class CDCMastery
 				'Indian' => DateTimeZone::INDIAN,
 				'Pacific' => DateTimeZone::PACIFIC
 		);
+		
+		$tzlist = [];
 	
 		foreach ($regions as $name => $mask) {
 			$tzlist[] = DateTimeZone::listIdentifiers($mask);
@@ -491,7 +499,7 @@ class CDCMastery
 		}
 	}
 	
-	function __destruct(){
-		//nada
+	public function __destruct(){
+
 	}
 }

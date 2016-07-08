@@ -2,9 +2,9 @@
 $testUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $showAnswers = isset($_SESSION['vars'][1]) ? ($_SESSION['vars'][1] == "show-all") ? true : false : false;
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 $userManager->loadUser($_SESSION['userUUID']);
 
 /*
@@ -36,8 +36,8 @@ if($roleManager->getRoleType($userManager->getUserRole()) == "user" && $testMana
  */
 
 if($cdcMastery->verifySupervisor() && $testManager->getUserUUID() != $_SESSION['userUUID']){
-	$supUser = new UserManager($db, $systemLog, $emailQueue);
-	$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
+	$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 

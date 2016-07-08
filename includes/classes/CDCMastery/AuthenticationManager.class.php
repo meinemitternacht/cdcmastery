@@ -1,5 +1,6 @@
 <?php
-
+namespace CDCMastery;
+use mysqli;
 /**
  * Class auth
  */

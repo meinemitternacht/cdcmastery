@@ -1,7 +1,7 @@
 <?php
-$statistics = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
     $systemMessages->addMessage($questionManager->error, "warning");

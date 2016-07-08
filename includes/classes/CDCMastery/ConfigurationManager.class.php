@@ -1,11 +1,12 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: claude
  * Date: 7/1/16
  * Time: 4:18 AM
  */
+namespace CDCMastery;
+
 class ConfigurationManager
 {
     protected $encryptionKey;
@@ -14,87 +15,106 @@ class ConfigurationManager
     protected $memcachedConfiguration = [];
     protected $nginxConfiguration = [];
     protected $xmlArchiveConfiguration = [];
-    
-    public function __construct() {
-        
+
+    public function __construct()
+    {
+
     }
 
-    public function getEncryptionKey() {
+    public function getEncryptionKey()
+    {
         return $this->encryptionKey;
     }
-    
-    public function setEncryptionKey($encryptionKey) {
+
+    public function setEncryptionKey($encryptionKey)
+    {
         $this->encryptionKey = $encryptionKey;
+
         return true;
     }
-    
-    public function getDatabaseConfiguration($arrayKey) {
-        if(isset($this->databaseConfiguration[$arrayKey])){
+
+    public function getDatabaseConfiguration($arrayKey)
+    {
+        if (isset($this->databaseConfiguration[$arrayKey])) {
             return $this->databaseConfiguration[$arrayKey];
         }
-        else{
+        else {
             return false;
         }
     }
-    
-    public function setDatabaseConfiguration($arrayKey,$value) {
+
+    public function setDatabaseConfiguration($arrayKey, $value)
+    {
         $this->databaseConfiguration[$arrayKey] = $value;
+
         return true;
     }
-    
-    public function getMailServerConfiguration($arrayKey) {
-        if(isset($this->mailServerConfiguration[$arrayKey])){
+
+    public function getMailServerConfiguration($arrayKey)
+    {
+        if (isset($this->mailServerConfiguration[$arrayKey])) {
             return $this->mailServerConfiguration[$arrayKey];
         }
-        else{
+        else {
             return false;
         }
     }
-    
-    public function setMailServerConfiguration($arrayKey,$value) {
+
+    public function setMailServerConfiguration($arrayKey, $value)
+    {
         $this->mailServerConfiguration[$arrayKey] = $value;
+
         return true;
     }
-    
-    public function getMemcachedConfiguration($arrayKey) {
-        if(isset($this->memcachedConfiguration[$arrayKey])){
+
+    public function getMemcachedConfiguration($arrayKey)
+    {
+        if (isset($this->memcachedConfiguration[$arrayKey])) {
             return $this->memcachedConfiguration[$arrayKey];
         }
-        else{
+        else {
             return false;
         }
     }
-    
-    public function setMemcachedConfiguration($arrayKey,$value) {
+
+    public function setMemcachedConfiguration($arrayKey, $value)
+    {
         $this->memcachedConfiguration[$arrayKey] = $value;
+
         return true;
     }
-    
-    public function getNGINXConfiguration($arrayKey) {
-        if(isset($this->nginxConfiguration[$arrayKey])){
+
+    public function getNGINXConfiguration($arrayKey)
+    {
+        if (isset($this->nginxConfiguration[$arrayKey])) {
             return $this->nginxConfiguration[$arrayKey];
         }
-        else{
+        else {
             return false;
         }
     }
-    
-    public function setNGINXConfiguration($arrayKey,$value) {
+
+    public function setNGINXConfiguration($arrayKey, $value)
+    {
         $this->nginxConfiguration[$arrayKey] = $value;
+
         return true;
     }
-    
-    public function getXMLArchiveConfiguration($arrayKey) {
-        if(isset($this->xmlArchiveConfiguration[$arrayKey])){
+
+    public function getXMLArchiveConfiguration($arrayKey)
+    {
+        if (isset($this->xmlArchiveConfiguration[$arrayKey])) {
             return $this->xmlArchiveConfiguration[$arrayKey];
         }
-        else{
+        else {
             return false;
         }
     }
-    
-    public function setXMLArchiveConfiguration($arrayKey,$value) {
+
+    public function setXMLArchiveConfiguration($arrayKey, $value)
+    {
         $this->xmlArchiveConfiguration[$arrayKey] = $value;
+
         return true;
     }
 }

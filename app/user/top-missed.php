@@ -1,6 +1,6 @@
 <?php
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $userStatistics->setUserUUID($_SESSION['userUUID']);
 $topMissedQuestionArray = $userStatistics->getQuestionsMissedAcrossTests();

@@ -70,7 +70,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $userObj = new UserManager($db, $systemLog, $emailQueue);
+                            $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             $userObj->loadUser($result);
                             ?>
                             <tr>
@@ -108,7 +108,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                             </tr>
                         </table>
                         <?php if($logDetails): ?>
-                            <?php $testManager = new TestManager($db, $systemLog, $afscManager); ?>
+                            <?php $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager); ?>
                             <table class="logSearchTable" style="width:auto;">
                                 <tr style="background-color:<?php echo $bgColor; ?>">
                                     <td style="min-width: 8em;"><strong>Key</strong></td>
@@ -169,7 +169,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $userObj = new UserManager($db, $systemLog, $emailQueue);
+                            $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             $userObj->loadUser($result);
                             ?>
                             <tr>
@@ -195,7 +195,7 @@ $paginatedResults = array_slice($searchResults,$rowOffset,$pageRows);
                         </tr>
                         <?php foreach($paginatedResults as $result): ?>
                             <?php
-                            $testManager = new TestManager($db, $systemLog, $afscManager);
+                            $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
                             $testManager->loadTest($result);
                             ?>
                             <tr>

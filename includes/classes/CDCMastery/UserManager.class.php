@@ -1,8 +1,7 @@
 <?php
 
-/*
-This script provides a class interface for the site users
-*/
+namespace CDCMastery;
+use mysqli;
 
 class UserManager extends CDCMastery {
 	protected $db;
@@ -950,36 +949,45 @@ class UserManager extends CDCMastery {
          */
 
         if(is_array($userArray) && !empty($userArray)){
+			$implodeArray = [];
+			
             foreach($userArray as $userUUID){
                 if($this->verifyUser($userUUID)){
                     $implodeArray[] = $userUUID;
                 }
             }
 
-            $userList = implode("','",$implodeArray);
+			if(is_array($implodeArray) && !empty($implodeArray)) {
+				$userList = implode("','", $implodeArray);
 
-            $res = $this->db->query("SELECT uuid
+				$res = $this->db->query("SELECT uuid
 										FROM userData
-										WHERE uuid IN ('".$userList."')
-										ORDER BY ".$sortColumn." ".$sortDirection);
+										WHERE uuid IN ('" . $userList . "')
+										ORDER BY " . $sortColumn . " " . $sortDirection);
 
-            if($res->num_rows > 0){
-                while($row = $res->fetch_assoc()){
-                    $returnArray[] = $row['uuid'];
-                }
+				if ($res->num_rows > 0) {
+					while ($row = $res->fetch_assoc()) {
+						$returnArray[] = $row['uuid'];
+					}
 
-                if(isset($returnArray) && !empty($returnArray)){
-                    return $returnArray;
-                }
-                else{
-                    $this->error = "returnArray was empty.";
-                    return false;
-                }
-            }
-            else{
-                $this->error = $this->db->error;
-                return false;
-            }
+					if (isset($returnArray) && !empty($returnArray)) {
+						return $returnArray;
+					}
+					else {
+						$this->error = "returnArray was empty.";
+
+						return false;
+					}
+				}
+				else {
+					$this->error = $this->db->error;
+
+					return false;
+				}
+			}
+			else{
+				return false;
+			}
         }
         else{
             $this->error = "User list must be an array of values.";

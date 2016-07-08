@@ -34,6 +34,9 @@
  *  @package    Zebra_Session
  */
 
+namespace CDCMastery;
+use mysqli;
+
 class ZebraSessions
 {
 

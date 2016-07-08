@@ -1,15 +1,12 @@
 <?php
 
-class TrainingManagerOverview extends CDCMastery
+namespace CDCMastery;
+use mysqli;
+
+class SupervisorOverview extends CDCMastery
 {
     public $error;
-    public $trainingManagerUUID;
-
-    public $totalUserTests;
-    public $totalSupervisorTests;
-
-    public $averageUserTestScore;
-    public $averageSupervisorTestScore;
+    public $supervisorUUID;
 
     protected $db;
     protected $log;
@@ -18,7 +15,8 @@ class TrainingManagerOverview extends CDCMastery
     protected $roles;
 
     protected $subordinateUserList = Array();
-    protected $subordinateSupervisorList = Array();
+    protected $averageUserTestScore;
+    protected $totalUserTests;
 
     public function __construct(mysqli $db, SystemLog $log, UserStatisticsModule $userStatistics, UserManager $user, RoleManager $roles)
     {
@@ -29,11 +27,11 @@ class TrainingManagerOverview extends CDCMastery
         $this->roles = $roles;
     }
 
-    public function loadTrainingManager($userUUID)
+    public function loadSupervisor($userUUID)
     {
         if(!empty($userUUID)) {
-            $this->trainingManagerUUID = $userUUID;
-            $this->loadSubordinateUsers($this->trainingManagerUUID);
+            $this->supervisorUUID = $userUUID;
+            $this->loadSubordinateUsers($this->supervisorUUID);
             return true;
         }
         else{
@@ -41,10 +39,10 @@ class TrainingManagerOverview extends CDCMastery
         }
     }
 
-    public function loadSubordinateUsers($trainingManagerUUID)
+    public function loadSubordinateUsers($supervisorUUID)
     {
-        $stmt = $this->db->prepare("SELECT userUUID FROM userTrainingManagerAssociations WHERE trainingManagerUUID = ?");
-        $stmt->bind_param("s",$trainingManagerUUID);
+        $stmt = $this->db->prepare("SELECT userUUID FROM userSupervisorAssociations WHERE supervisorUUID = ?");
+        $stmt->bind_param("s",$supervisorUUID);
 
         if($stmt->execute()) {
             $stmt->bind_result($userUUID);
@@ -55,13 +53,9 @@ class TrainingManagerOverview extends CDCMastery
 
             $stmt->close();
 
-            if(isset($tempList) && !empty($tempList) && is_array($tempList)){
+            if(isset($tempList) && is_array($tempList)){
                 foreach($tempList as $userUUID) {
-                    if ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "user") {
-                        $this->subordinateUserList[] = $userUUID;
-                    } elseif ($this->roles->getRoleType($this->user->getUserRoleByUUID($userUUID)) == "supervisor") {
-                        $this->subordinateSupervisorList[] = $userUUID;
-                    }
+                    $this->subordinateUserList[] = $userUUID;
                 }
 
                 return true;
@@ -81,35 +75,29 @@ class TrainingManagerOverview extends CDCMastery
     }
 
     public function getUserAFSCAssociations(){
-        if(!empty($this->subordinateSupervisorList) && !empty($this->subordinateUserList)){
-            $masterArray = array_merge($this->subordinateSupervisorList,$this->subordinateUserList);
-        }
-        elseif(empty($this->subordinateSupervisorList)){
-            $masterArray = $this->subordinateUserList;
-        }
-        else{
-            $masterArray = $this->subordinateSupervisorList;
-        }
+        if(is_array($this->subordinateUserList) && !empty($this->subordinateUserList)) {
+            $userConstraint = "('" . implode("','", $this->subordinateUserList) . "')";
+            $query = "SELECT DISTINCT(afscUUID) FROM userAFSCAssociations LEFT JOIN afscList ON userAFSCAssociations.afscUUID=afscList.uuid WHERE userUUID IN " . $userConstraint . " ORDER BY afscList.afscName ASC";
+            $res = $this->db->query($query);
 
-        $userConstraint = "('".implode("','",$masterArray)."')";
-        $query = "SELECT DISTINCT(afscUUID) FROM userAFSCAssociations LEFT JOIN afscList ON userAFSCAssociations.afscUUID=afscList.uuid WHERE userUUID IN ".$userConstraint." ORDER BY afscList.afscName ASC";
-        $res = $this->db->query($query);
+            if ($res->num_rows > 0) {
+                while ($row = $res->fetch_assoc()) {
+                    $afscArray[] = $row['afscUUID'];
+                }
 
-        if($res->num_rows > 0){
-            while($row = $res->fetch_assoc()){
-                $afscArray[] = $row['afscUUID'];
-            }
-
-            if(isset($afscArray) && is_array($afscArray) && !empty($afscArray)){
-                return $afscArray;
-            }
-            else{
+                if (is_array($afscArray) && !empty($afscArray)) {
+                    return $afscArray;
+                } else {
+                    $this->error = "No results found.";
+                    return false;
+                }
+            } else {
                 $this->error = "No results found.";
                 return false;
             }
         }
         else{
-            $this->error = "No results found.";
+            $this->error = "No subordinate users.";
             return false;
         }
     }
@@ -138,7 +126,7 @@ class TrainingManagerOverview extends CDCMastery
                 $questionCountArray[$row['questionUUID']] = $row['count'];
             }
 
-            if(isset($questionCountArray) && count($questionCountArray) > 0){
+            if(count($questionCountArray) > 0){
                 return $questionCountArray;
             }
             else{
@@ -175,7 +163,7 @@ class TrainingManagerOverview extends CDCMastery
                 $missedQuestionsArray[$row['questionUUID']] = $row['count'];
             }
 
-            if(isset($missedQuestionsArray) && count($missedQuestionsArray) > 0){
+            if(count($missedQuestionsArray) > 0){
                 return $missedQuestionsArray;
             }
             else{
@@ -196,21 +184,6 @@ class TrainingManagerOverview extends CDCMastery
             }
 
             return $this->totalUserTests;
-        }
-        else{
-            return false;
-        }
-    }
-
-    public function getTotalSupervisorTests(){
-        if(!empty($this->subordinateSupervisorList)){
-            foreach($this->subordinateSupervisorList as $subordinateSupervisor){
-                if($this->userStatistics->setUserUUID($subordinateSupervisor)) {
-                    $this->totalSupervisorTests += $this->userStatistics->getTotalTests();
-                }
-            }
-
-            return $this->totalSupervisorTests;
         }
         else{
             return false;
@@ -247,42 +220,8 @@ class TrainingManagerOverview extends CDCMastery
         }
     }
 
-    public function getAverageSupervisorTestScore(){
-        if(!empty($this->subordinateSupervisorList)){
-            $runningAverage = 0;
-            $runningDataPoints = 0;
-
-            foreach($this->subordinateSupervisorList as $subordinateSupervisor){
-                if($this->userStatistics->setUserUUID($subordinateSupervisor)) {
-                    $averageScore = $this->userStatistics->getAverageScore();
-
-                    if($averageScore > 0) {
-                        $runningAverage += $averageScore;
-                        $runningDataPoints++;
-                    }
-                }
-            }
-
-            if($runningAverage > 0 && $runningDataPoints > 0) {
-                $this->averageSupervisorTestScore = round(($runningAverage / $runningDataPoints),2);
-            }
-            else{
-                $this->averageSupervisorTestScore = 0;
-            }
-
-            return $this->averageSupervisorTestScore;
-        }
-        else{
-            return false;
-        }
-    }
-
     public function getSubordinateUserList(){
         return $this->subordinateUserList;
-    }
-
-    public function getSubordinateSupervisorList(){
-        return $this->subordinateSupervisorList;
     }
 
     public function __destruct()

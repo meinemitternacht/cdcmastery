@@ -3,7 +3,7 @@ $logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if($logUUID):
 	if($systemLog->verifyLogUUID($logUUID)): 
-		$logData = new SystemLog($db);
+		$logData = new CDCMastery\SystemLog($db);
 		$logData->loadEntry($logUUID);
 		$logDetails = $logData->fetchDetails($logUUID); ?>
 		<div class="container">

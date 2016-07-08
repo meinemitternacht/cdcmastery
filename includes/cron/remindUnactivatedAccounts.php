@@ -26,9 +26,9 @@ $res = $db->query("SELECT uuid FROM `userData`
 if($res->num_rows > 0){
     echo "There are ".$res->num_rows." user(s) eligible for reminder.  Processing...".PHP_EOL;
 
-    $remUserObj = new UserManager($db, $systemLog, $emailQueue);
-    $testManager = new TestManager($db, $systemLog, $afscManager);
-    $activateObj = new UserActivationManager($db, $systemLog, $emailQueue);
+    $remUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+    $activateObj = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
     $remindedUserList = Array();
 

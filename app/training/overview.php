@@ -23,8 +23,8 @@ if($roleManager->getRoleType($userManager->getUserRoleByUUID($trainingManagerUUI
     $cdcMastery->redirect("/errors/500");
 }
 
-$tmUser = new UserManager($db, $systemLog, $emailQueue);
-$tmOverview = new TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
+$tmUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$tmOverview = new CDCMastery\TrainingManagerOverview($db, $systemLog, $userStatistics, $tmUser, $roleManager);
 
 $tmOverview->loadTrainingManager($trainingManagerUUID);
 

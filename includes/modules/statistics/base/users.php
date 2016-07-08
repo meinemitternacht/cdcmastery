@@ -5,7 +5,7 @@
  * Date: 1/9/2016
  * Time: 6:51 PM
  */
-$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $baseList = $baseManager->listBases();
 

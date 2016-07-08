@@ -1,4 +1,6 @@
 <?php
+namespace CDCMastery;
+use mysqli;
 
 class AssociationManager extends CDCMastery
 {

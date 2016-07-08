@@ -6,7 +6,7 @@
  * Time: 1:32 AM
  */
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 $incompleteTestList = $testManager->listIncompleteTests(true);
 

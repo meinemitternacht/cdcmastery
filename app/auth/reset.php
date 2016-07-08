@@ -1,5 +1,5 @@
 <?php
-$pwReset = new UserPasswordResetManager($db, $systemLog, $emailQueue);
+$pwReset = new CDCMastery\UserPasswordResetManager($db, $systemLog, $emailQueue);
 
 if(isset($_SESSION['vars'][0]) && isset($_SESSION['vars'][1])){
 	$passwordToken = $_SESSION['vars'][0];
@@ -50,7 +50,7 @@ if(!empty($_POST) && isset($_POST['userEmail'])){
 	$userUUID = $pwReset->getUUIDByEmail($userEmail);
 	
 	if($userUUID){
-        $auth = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
+        $auth = new CDCMastery\AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
 
         if($auth->getActivationStatus()) {
             if ($pwReset->sendPasswordReset($userUUID)) {

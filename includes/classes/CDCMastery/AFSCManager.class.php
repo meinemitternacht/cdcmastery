@@ -1,51 +1,20 @@
 <?php
+namespace CDCMastery;
+use mysqli;
 
-/**
- * Class afsc
- */
 class AFSCManager extends CDCMastery
 {
-	/**
-	 * @var mysqli
-     */
 	protected $db;
-	/**
-	 * @var SystemLog
-     */
 	protected $log;
-
-	/**
-	 * @var
-     */
+	
 	public $error;
 
-	/**
-	 * @var
-     */
 	public $uuid;
-	/**
-	 * @var
-     */
 	public $afscName;
-	/**
-	 * @var
-     */
 	public $afscDescription;
-	/**
-	 * @var
-     */
 	public $afscVersion;
-	/**
-	 * @var
-     */
 	public $afscFOUO;
-	/**
-	 * @var
-     */
 	public $afscHidden;
-	/**
-	 * @var
-     */
 	public $oldID;
 
 	/**

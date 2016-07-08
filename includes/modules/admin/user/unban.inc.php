@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['confirmUserUnban'])){
     if($userUUID){
-        $unbanUserObj = new UserManager($db, $systemLog, $emailQueue);
+        $unbanUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         if($unbanUserObj->loadUser($userUUID)){
             $unbanUserObj->setUserDisabled(false);

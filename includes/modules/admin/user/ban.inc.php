@@ -6,7 +6,7 @@ if($objUser->getUserDisabled()){
 
 if(isset($_POST['confirmUserBan'])){
     if($userUUID){
-        $banUserObj = new UserManager($db, $systemLog, $emailQueue);
+        $banUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         if($banUserObj->loadUser($userUUID)){
             if($roleManager->getRoleType($banUserObj->getUserRole()) != "admin") {

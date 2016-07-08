@@ -6,7 +6,7 @@
  * Time: 7:25 AM
  */
 
-$flashCardManager = new FlashCardManager($db, $systemLog);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 $action = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 ?>

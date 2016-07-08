@@ -6,7 +6,7 @@
  * Time: 9:52 AM
  */
 
-$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $errorsByDay = $statsObj->getSystemErrorsByDay();
 
 if($errorsByDay){

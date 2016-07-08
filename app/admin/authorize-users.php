@@ -1,5 +1,5 @@
 <?php
-$userAuthorization = new UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
+$userAuthorization = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
@@ -10,14 +10,14 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			foreach($_POST['authorizeList'] as $authUUID){
 				if($_POST['authReject'] == "authorize"){
-					$userObj = new UserManager($db, $systemLog, $emailQueue);
+					$userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
 					if($userObj->loadUser($authorizationQueue[$authUUID]['userUUID'])){
 						if($userObj->getUserRole() == $roleManager->getRoleUUIDByName("Supervisors") && $authorizationQueue[$authUUID]['roleUUID'] == $roleManager->getRoleUUIDByName("TrainingManagers")){
 							/***
 							 * Migrate Supervisor Subordinates to Training Manager if the user requested a role change themselves
 							 */
-							$objUserStatistics = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+							$objUserStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 							if($roleManager->getRoleType($userObj->getUserRole()) == "supervisor" && $roleManager->getRoleType($_POST['userRole']) == "trainingManager"){
 								if($objUserStatistics->getSupervisorSubordinateCount() > 0){
 									$subordinateList = $objUserStatistics->getSupervisorAssociations();

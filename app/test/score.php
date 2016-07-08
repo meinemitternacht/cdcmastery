@@ -7,8 +7,8 @@
  */
 
 $testUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
-$testManager = new TestManager($db, $systemLog, $afscManager);
-$answerManager = new AnswerManager($db, $systemLog);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
 
 $incorrectTotal = 0;
 $correctTotal = 0;

@@ -1,8 +1,11 @@
 <?php
 
+namespace CDCMastery;
+
 class Router extends CDCMastery
 {
 	protected $log;
+	protected $systemMessageManager;
 	
 	public $error;
 	public $errorNumber;
@@ -16,9 +19,66 @@ class Router extends CDCMastery
 
     public $publicRoutes = ['index','about','auth','register','errors','ajax/registration'];
 	
-	public function __construct(SystemLog $log){
+	public function __construct(SystemLog $log, SystemMessageManager $systemMessageManager){
 		$this->showTheme = true;
 		$this->log = $log;
+		$this->systemMessageManager = $systemMessageManager;
+
+		/**
+		 * Parse the URI passed from the web server
+		 */
+		if($this->parseURI()){
+			/**
+			 * Ensure the file path is valid, and that the page exists.  Additionally, this function checks permissions for
+			 * protected areas of the site (/admin, etc)
+			 */
+			if(!$this->verifyFilePath()){
+				if(isset($this->error) && !empty($this->error)){
+					$this->systemMessageManager->addMessage($this->error, "danger");
+				}
+
+				if($this->route == "ajax/testPlatform"){
+					$_SESSION['nextPage'] = $_SERVER['HTTP_REFERER'];
+				}
+				else {
+					/**
+					 * After logging in, redirect user to where they attempted to go before
+					 */
+					$_SESSION['nextPage'] = $this->request;
+				}
+
+				/**
+				 * Handle HTTP error codes and redirect as required
+				 */
+				if($this->route == "errors/403"){
+					$this->errorNumber = 403;
+					http_response_code(403);
+				}
+				elseif($this->route == "errors/404"){
+					$this->errorNumber = 404;
+					http_response_code(404);
+				}
+				elseif($this->route == "errors/500"){
+					$this->errorNumber = 500;
+					http_response_code(500);
+				}
+				elseif($this->route == "errors/dbError"){
+					$this->errorNumber = 500;
+					http_response_code(500);
+				}
+
+				if(!empty($this->errorNumber)) {
+					$this->redirect("/errors/" . $this->errorNumber);
+				}
+				else {
+					$this->redirect("/auth/login");
+				}
+			}
+		}
+		else{
+			$this->systemMessageManager->addMessage("We could not find what you were looking for.","info");
+			$this->errorNumber = 500;
+		}
 	}
 
 	/**
@@ -409,6 +469,5 @@ class Router extends CDCMastery
 		 */
 		unset($_SESSION['vars']);
 		session_write_close();
-		parent::__destruct();
 	}
 }

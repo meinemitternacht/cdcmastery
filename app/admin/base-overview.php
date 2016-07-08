@@ -27,9 +27,9 @@ if(isset($_POST['baseUUID']) && !empty($_POST['baseUUID'])){
 $filterDateObj = new DateTime();
 $filterDateObj->modify("-6 month");
 
-$statistics = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
-$baseUserObj = new UserManager($db, $systemLog, $emailQueue);
-$userStatisticsObj = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$baseUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$userStatisticsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 $baseUsersUUIDList = $userManager->listUserUUIDByBase($baseUUID);
 $filteredBaseUsersUUIDList = $userManager->filterUserUUIDList($baseUsersUUIDList, "userLastActive", ">", $filterDateObj->format("Y-m-d H:i:s"));
 $baseUsers = $userManager->sortUserUUIDList($filteredBaseUsersUUIDList, "userLastName");

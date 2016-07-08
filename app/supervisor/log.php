@@ -7,8 +7,8 @@ if(isset($_SESSION['vars'][0])):
 		$cdcMastery->redirect("/errors/403");
 	}
 
-	$supUser = new UserManager($db, $systemLog, $emailQueue);
-	$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
+	$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
@@ -24,7 +24,7 @@ if(isset($_SESSION['vars'][0])):
 		$cdcMastery->redirect("/supervisor/overview");
 	}
 
-	$logFilter = new SystemLogFilter($db, $userManager);
+	$logFilter = new CDCMastery\SystemLogFilter($db, $userManager);
 
 	$pageNumber = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 0;
 	$pageRows = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : 15;

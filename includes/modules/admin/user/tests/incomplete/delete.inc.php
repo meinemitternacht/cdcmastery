@@ -4,7 +4,7 @@ if(!$finalChild){
     $cdcMastery->redirect("/admin/users/".$userUUID."/tests/incomplete");
 }
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_POST['confirmIncompleteTestDelete'])){
 	if($testManager->deleteIncompleteTest(false,$finalChild)){

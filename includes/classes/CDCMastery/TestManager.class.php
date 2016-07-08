@@ -1,4 +1,7 @@
 <?php
+namespace CDCMastery;
+use mysqli;
+use DateTime;
 
 class TestManager extends CDCMastery
 {

@@ -7,7 +7,7 @@
  */
 
 $testUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if($testManager->loadIncompleteTest($testUUID)) {
     $questionList = $testManager->getIncompleteQuestionList();
@@ -15,8 +15,8 @@ if($testManager->loadIncompleteTest($testUUID)) {
         if ($testManager->loadTestData($testUUID)) {
             $testData = $testManager->getTestData();
 
-            $answerManager = new AnswerManager($db, $systemLog);
-            $questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+            $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+            $questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
             ?>
             Incomplete test started by
             <em><?php echo $userManager->getUserNameByUUID($testManager->getIncompleteUserUUID()); ?></em> on

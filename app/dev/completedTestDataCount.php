@@ -6,7 +6,7 @@
  * Time: 3:20 AM
  */
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 $stmt = $db->prepare("SELECT uuid FROM `testHistory` WHERE (testScore + questionsMissed) != totalQuestions ORDER BY `testHistory`.`testTimeStarted` DESC");
 $stmt->execute();

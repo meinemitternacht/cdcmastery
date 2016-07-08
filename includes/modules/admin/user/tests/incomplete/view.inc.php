@@ -6,7 +6,7 @@
  * Time: 3:46 AM
  */
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(!$testManager->loadIncompleteTest($finalChild)){
     $systemMessages->addMessage("That test does not exist.", "warning");

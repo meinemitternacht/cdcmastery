@@ -1,7 +1,7 @@
 <?php
 if(isset($_SESSION['vars'][0])){
 	$userUUID = $_SESSION['vars'][0];
-	$objUser = new UserManager($db, $systemLog, $emailQueue);
+	$objUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 	
 	if(!$objUser->loadUser($userUUID)){
 		$systemMessages->addMessage("That user does not exist.", "warning");

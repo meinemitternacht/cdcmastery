@@ -25,9 +25,9 @@ $res = $db->query("SELECT uuid FROM `userData`
 if($res->num_rows > 0){
     echo "There are ".$res->num_rows." user(s) eligible for deletion.  Processing...".PHP_EOL;
     
-    $delUserObj = new UserManager($db, $systemLog, $emailQueue);
-    $testManager = new TestManager($db, $systemLog, $afscManager);
-    $activateObj = new UserActivationManager($db, $systemLog, $emailQueue);
+    $delUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+    $activateObj = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
     $deletedUserList = Array();
 
@@ -39,7 +39,7 @@ if($res->num_rows > 0){
 
             echo "Deleting user " . $userFullName . "...";
 
-            $authObj = new AuthenticationManager($userObjRow['uuid'], $systemLog, $db, $roleManager, $emailQueue);
+            $authObj = new CDCMastery\AuthenticationManager($userObjRow['uuid'], $systemLog, $db, $roleManager, $emailQueue);
             $userTestList = $testManager->getTestUUIDList($userObjRow['uuid']);
 
             if (!$authObj->getActivationStatus()) {

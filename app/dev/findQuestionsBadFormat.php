@@ -5,8 +5,8 @@
  * Date: 10/3/2015
  * Time: 2:13 AM
  */
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $afscList = $afscManager->listAFSCUUID(true);
 ?>

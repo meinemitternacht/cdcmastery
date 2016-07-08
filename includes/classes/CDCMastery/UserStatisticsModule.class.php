@@ -1,5 +1,9 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+use Memcache;
+
 class UserStatisticsModule extends CDCMastery
 {
 	protected $db;

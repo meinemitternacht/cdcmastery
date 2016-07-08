@@ -5,7 +5,7 @@
 $testType = isset($_SESSION['vars'][0]) ? strtolower($_SESSION['vars'][0]) : false;
 $target	  = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : false;
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(!$testType){
     $systemMessages->addMessage("You must specify a type of test to delete.", "warning");

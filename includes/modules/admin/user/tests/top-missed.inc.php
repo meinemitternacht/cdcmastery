@@ -1,7 +1,7 @@
 <?php
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
-$userStatsObj = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$userStatsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 
 $userStatsObj->setUserUUID($userUUID);
 $topMissedQuestionArray = $userStatsObj->getQuestionsMissedAcrossTests();

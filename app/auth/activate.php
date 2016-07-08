@@ -1,5 +1,5 @@
 <?php
-$userActivate = new UserActivationManager($db, $systemLog, $emailQueue);
+$userActivate = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
 if(isset($_SESSION['vars'][0]))
 	$activationToken = $_SESSION['vars'][0];

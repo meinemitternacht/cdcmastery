@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 class AnswerManager extends CDCMastery
 {
 	protected $db;

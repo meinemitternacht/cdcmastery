@@ -1,3 +1,4 @@
+<?php require BASE_PATH . 'includes/pageTitles.inc.php'; ?>
 <!DOCTYPE HTML>
 <html>
 	<head>

@@ -7,7 +7,7 @@
  * Data is requested and sent through POST method.
  */
 
-$flashCardManager = new FlashCardManager($db, $systemLog);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 
 if(isset($_SESSION['vars'][0]))
     $categoryUUID = $_SESSION['vars'][0];

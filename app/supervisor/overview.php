@@ -23,8 +23,8 @@ if($roleManager->getRoleType($userManager->getUserRoleByUUID($supervisorUUID)) !
     $cdcMastery->redirect("/errors/500");
 }
 
-$supUser = new UserManager($db, $systemLog, $emailQueue);
-$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
+$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 $supOverview->loadSupervisor($supervisorUUID);
 

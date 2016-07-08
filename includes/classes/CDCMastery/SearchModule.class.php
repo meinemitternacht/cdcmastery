@@ -6,6 +6,9 @@
  * Time: 9:35 PM
  */
 
+namespace CDCMastery;
+use mysqli;
+
 class SearchModule extends CDCMastery
 {
     protected $db;

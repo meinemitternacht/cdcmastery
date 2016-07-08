@@ -11,12 +11,12 @@
  * records for the user in the rest of the database.
  */
 
-$roleObj = new RoleManager($db, $systemLog, $emailQueue);
-$officeSymbolObj = new OfficeSymbolManager($db, $systemLog);
-$userStatisticsObj = new UserStatisticsModule($db, $systemLog, $roleObj, $memcache);
-$afscObj = new AFSCManager($db, $systemLog);
-$userObj = new UserManager($db, $systemLog, $emailQueue);
-$associationsObj = new AssociationManager($db, $systemLog, $userObj, $afscObj, $emailQueue);
+$roleObj = new CDCMastery\RoleManager($db, $systemLog, $emailQueue);
+$officeSymbolObj = new CDCMastery\OfficeSymbolManager($db, $systemLog);
+$userStatisticsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleObj, $memcache);
+$afscObj = new CDCMastery\AFSCManager($db, $systemLog);
+$userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$associationsObj = new CDCMastery\AssociationManager($db, $systemLog, $userObj, $afscObj, $emailQueue);
 
 $userObj->setUserFirstName("Sample");
 $userObj->setUserLastName("User");

@@ -12,7 +12,7 @@
 define('BASE_PATH', realpath(__DIR__) . "/../..");
 require BASE_PATH . '/includes/bootstrap.inc.php';
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 $res = $db->query("SELECT testUUID FROM `testManager` WHERE timeStarted <= (NOW() - INTERVAL 30 DAY)");
 

@@ -1,5 +1,8 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+
 class OfficeSymbolManager extends CDCMastery
 {
     public $error;

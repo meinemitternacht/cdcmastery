@@ -1,12 +1,12 @@
 <?php
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 $logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $returnPath = isset($_SESSION['vars'][1]) ? strtolower($_SESSION['vars'][1]) : "log";
 
 if($logUUID):
 	if($systemLog->verifyLogUUID($logUUID)): 
-		$logData = new SystemLog($db);
+		$logData = new CDCMastery\SystemLog($db);
 		$logData->loadEntry($logUUID);
 		$logDetails = $logData->fetchDetails($logUUID); ?>
 		<div class="container">

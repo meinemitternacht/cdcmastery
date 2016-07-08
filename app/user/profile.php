@@ -1,7 +1,7 @@
 <?php
 $targetUUID = $_SESSION['userUUID'];
-$userProfile = new UserManager($db, $systemLog, $emailQueue);
-$userProfileStatistics = new UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+$userProfile = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$userProfileStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 
 if(!$userProfile->loadUser($targetUUID)){
 	echo "That user does not exist.";
@@ -369,7 +369,7 @@ else{
 						</ul>
 						<div id="history-tabs-1">
 						<?php 
-						$testManager = new TestManager($db, $systemLog, $afscManager);
+						$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 						$userTestArray = $testManager->listUserTests($targetUUID,10);
 						
 						if($userTestArray): ?>
@@ -442,7 +442,7 @@ else{
 								</thead>
 								<tbody>
 									<?php 
-									$logFilter = new SystemLogFilter($db, $userManager);
+									$logFilter = new CDCMastery\SystemLogFilter($db, $userManager);
 									$logFilter->setFilterUserUUID($targetUUID);
 									$logFilter->setPageRows(10);
 									$logFilter->setRowOffset(0);

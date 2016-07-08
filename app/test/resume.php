@@ -2,7 +2,7 @@
 if(isset($_SESSION['vars'][0])){
 	$testUUID = $_SESSION['vars'][0];
 	
-	$testManager = new TestManager($db, $systemLog, $afscManager);
+	$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 	
 	if(!$testManager->resumeTest($testUUID)){
 		$systemLog->setAction("ERROR_TEST_RESUME");

@@ -1,4 +1,8 @@
 <?php
+
+namespace CDCMastery;
+use mysqli;
+
 class SystemLogFilter extends SystemLog {
 	protected $user;
 

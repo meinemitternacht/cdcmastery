@@ -6,7 +6,7 @@
  * Time: 8:26 AM
  */
 
-$statsObj = new StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
 $testCountByHour = $statsObj->getTestsByHourOfDay();
 

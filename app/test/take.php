@@ -1,5 +1,5 @@
 <?php
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_SESSION['vars'][0]) && !empty($_SESSION['vars'][0])) {
     /**

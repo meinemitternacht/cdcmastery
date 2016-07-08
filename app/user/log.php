@@ -1,5 +1,5 @@
 <?php
-$logFilter = new SystemLogFilter($db, $userManager);
+$logFilter = new CDCMastery\SystemLogFilter($db, $userManager);
 
 $pageNumber = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : 0;
 $pageRows = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 15;

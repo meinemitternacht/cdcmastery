@@ -1,5 +1,9 @@
 <?php
 
+namespace CDCMastery;
+use mysqli;
+use DateTime;
+
 class UserActivationManager extends UserManager
 {
 	protected $db;

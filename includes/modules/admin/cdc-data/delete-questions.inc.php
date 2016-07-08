@@ -6,8 +6,8 @@
  * Time: 7:48 AM
  */
 
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] == true){
     if(!isset($_SESSION['deleteUUIDList'])){

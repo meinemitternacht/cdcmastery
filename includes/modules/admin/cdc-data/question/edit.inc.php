@@ -6,8 +6,8 @@
  * Time: 02:35 PM
  */
 
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!$questionManager->loadQuestion($workingChild)){
     $systemMessages->addMessage($questionManager->error, "warning");

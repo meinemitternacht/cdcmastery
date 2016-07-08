@@ -34,7 +34,7 @@ if(!isset($_SESSION['auth'])):
             $systemLog->saveEntry();
 		}
 		else{
-			$a = new AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
+			$a = new CDCMastery\AuthenticationManager($userUUID, $systemLog, $db, $roleManager, $emailQueue);
 	
 			if(!$a->login($_POST['password'])){
                 $systemMessages->addMessage($a->getError());

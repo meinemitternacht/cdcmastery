@@ -5,7 +5,7 @@
  * Date: 10/5/2015
  * Time: 3:08 PM
  */
-$flashCardManager = new FlashCardManager($db, $systemLog);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 $cardCategoryList = $flashCardManager->listCardCategories(true);
 $privateCardCategoryList = $flashCardManager->listPrivateCardCategories($_SESSION['userUUID']);
 $userAFSCList = $userStatistics->getAFSCAssociations();

@@ -5,8 +5,8 @@ if(isset($_SESSION['vars'][0])):
 		$cdcMastery->redirect("/errors/403");
 	}
 
-	$supUser = new UserManager($db, $systemLog, $emailQueue);
-	$supOverview = new SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
+	$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
@@ -21,7 +21,7 @@ if(isset($_SESSION['vars'][0])):
 
 	if($logUUID):
 		if($systemLog->verifyLogUUID($logUUID)):
-			$logData = new SystemLog($db);
+			$logData = new CDCMastery\SystemLog($db);
 			$logData->loadEntry($logUUID);
 
 			if(!in_array($logData->getUserUUID(),$subordinateUsers)){

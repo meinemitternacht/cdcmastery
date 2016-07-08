@@ -6,8 +6,8 @@
  * Time: 10:01 PM
  */
 
-$answerManager = new AnswerManager($db, $systemLog);
-$questionManager = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $questionData = !empty($_POST['questionData']) ? $_POST['questionData'] : false;

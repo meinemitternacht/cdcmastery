@@ -100,7 +100,7 @@ if(isset($_POST['doSearch']) && $_POST['doSearch'] == true) {
         $cdcMastery->redirect("/admin/search");
     }
     else {
-        $searchObj = new SearchModule($db, $systemLog);
+        $searchObj = new CDCMastery\SearchModule($db, $systemLog);
         $searchObj->setSearchType($searchType);
         $searchObj->setSearchParameterJoinMethod($searchParameterJoinMethod);
 

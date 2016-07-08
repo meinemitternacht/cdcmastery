@@ -7,7 +7,7 @@
  * Data is requested and sent through POST method.
  */
 
-$testManager = new TestManager($db, $systemLog, $afscManager);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_SESSION['vars'][0]))
 	$testUUID = $_SESSION['vars'][0];

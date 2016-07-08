@@ -7,7 +7,7 @@ if(!$cdcMastery->verifyAdmin()){
     $cdcMastery->redirect("/errors/403");
 }
 
-$userActivation = new UserActivationManager($db, $systemLog, $emailQueue);
+$userActivation = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
@@ -82,7 +82,7 @@ if($unactivatedUsersList): ?>
                                 <th>Reminder Sent</th>
 							</tr>
 							<?php foreach($unactivatedUsersList as $activationCode => $activationData): ?>
-                            <?php $actUserObj = new UserManager($db, $systemLog, $emailQueue); ?>
+                            <?php $actUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue); ?>
                             <?php $actUserObj->loadUser($activationData['userUUID']); ?>
 							<tr>
 								<td><input type="checkbox" class="selectUser" name="activationCodeList[]" value="<?php echo $activationCode; ?>"></td>

@@ -9,7 +9,7 @@
 $pageSection = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $genTestUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
-$genTestManager = new TestGenerator($db, $systemLog, $afscManager);
+$genTestManager = new CDCMastery\TestGenerator($db, $systemLog, $afscManager);
 
 if(!empty($_POST)){
     $afscUUID = isset($_POST['afscUUID']) ? $_POST['afscUUID'] : false;
@@ -59,8 +59,8 @@ if($pageSection == "print"){
 
     $questionList = $genTestManager->getQuestionList();
 
-    $answerManager = new AnswerManager($db, $systemLog);
-    $question = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+    $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+    $question = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
     foreach($questionList as $questionUUID):
         $j = 1;
@@ -164,8 +164,8 @@ else {
 
                     $questionList = $genTestManager->getQuestionList();
 
-                    $answerManager = new AnswerManager($db, $systemLog);
-                    $question = new QuestionManager($db, $systemLog, $afscManager, $answerManager);
+                    $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+                    $question = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
                     foreach($questionList as $questionUUID):
                         $j = 1;

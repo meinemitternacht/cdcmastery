@@ -56,7 +56,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 }
 
 $userStatistics->setUserUUID($_SESSION['userUUID']);
-$userInfo = new UserManager($db, $systemLog, $emailQueue);
+$userInfo = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 $userList = $userManager->listUsersByBase($userManager->getUserBase());
 
 if($userRole == "trainingManager"):
