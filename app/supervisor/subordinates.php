@@ -60,11 +60,25 @@ $userInfo = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 $userList = $userManager->listUsersByBase($userManager->getUserBase());
 
 if($userRole == "trainingManager"):
-	$subordinateList = $userManager->sortUserList($userStatistics->getTrainingManagerAssociations(), "userLastName");
-	$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	$associationArray = $userStatistics->getTrainingManagerAssociations();
+
+	if(is_array($associationArray) && count($associationArray) > 0):
+		$subordinateList = $userManager->sortUserList($associationArray,"userLastName");
+		$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	else:
+		$subordinateList = false;
+		$subordinateCount = 0;
+	endif;
 elseif($userRole == "supervisor"):
-	$subordinateList = $userManager->sortUserList($userStatistics->getSupervisorAssociations(), "userLastName");
-	$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	$associationArray = $userStatistics->getSupervisorAssociations();
+
+	if(is_array($associationArray) && count($associationArray) > 0):
+		$subordinateList = $userManager->sortUserList($associationArray,"userLastName");
+		$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	else:
+		$subordinateList = false;
+		$subordinateCount = 0;
+	endif;
 else:
 	$cdcMastery->redirect("/admin/users/".$userUUID);
 endif;
