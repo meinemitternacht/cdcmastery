@@ -1,46 +1,23 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: claude
- * Date: 6/10/16
- * Time: 9:00 PM
- */
+$configurationManager = new CDCMastery\ConfigurationManager();
 
-/**
- * Memcache configuration
- */
-$cfg['memcache']['host'] = "127.0.0.1";
-$cfg['memcache']['port'] = "11211";
+$configurationManager->setMemcachedConfiguration('host','127.0.0.1');
+$configurationManager->setMemcachedConfiguration('port','11211');
 
-/**
- * Encryption Key for FOUO Content
- */
-$cfg['encryption']['key'] = "AbCdEfCHANGEMEFeDcBa";
+$configurationManager->setEncryptionKey('***CHANGE ME***');  /* Enter a long string of hexadecimal characters */
 
-/**
- * Database configuration
- */
-$cfg['db']['name'] = "cdcmastery_main";
-$cfg['db']['host'] = "127.0.0.1";
-$cfg['db']['port'] = "3306";
-$cfg['db']['socket'] = "unix:/var/run/mysqld/mysqld.sock";
-$cfg['db']['user'] = "<username>";
-$cfg['db']['pass'] = "<password>";
+$configurationManager->setDatabaseConfiguration('host','127.0.0.1');
+$configurationManager->setDatabaseConfiguration('port','3306');
+$configurationManager->setDatabaseConfiguration('socket','unix:/var/run/mysqld/mysqld.sock');
+$configurationManager->setDatabaseConfiguration('name','<database name>');
+$configurationManager->setDatabaseConfiguration('username','<username>');
+$configurationManager->setDatabaseConfiguration('password','<password>');
 
-/**
- * SMTP E-mail configuration
- */
-$cfg['smtp']['host'] = "<host>";
-$cfg['smtp']['port'] = "<port>";
-$cfg['smtp']['user'] = "<username>";
-$cfg['smtp']['pass'] = "<password>";
+$configurationManager->setMailServerConfiguration('host','<host>');
+$configurationManager->setMailServerConfiguration('port','<port>');
+$configurationManager->setMailServerConfiguration('username','<username>');
+$configurationManager->setMailServerConfiguration('password','<password>');
 
-/**
- * Path to save archived tests to (XML format)
- */
-$cfg['xml']['directory'] = "/home/cdcmastery/xml-archives";
+$configurationManager->setXMLArchiveConfiguration('directory','<directory>'); /* Directory to save archived tests to, with a trailing slash */
 
-/**
- * Path to nginx error log
- */
-$cfg['log']['error_log'] = "/home/cdcmastery/logs/cdcmastery.com.ssl.error.log";
+$configurationManager->setNGINXConfiguration('error_log','<path>'); /* Path to the web server error log */
