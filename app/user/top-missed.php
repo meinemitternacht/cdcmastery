@@ -1,6 +1,6 @@
 <?php
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 $userStatistics->setUserUUID($_SESSION['userUUID']);
 $topMissedQuestionArray = $userStatistics->getQuestionsMissedAcrossTests();
@@ -81,7 +81,7 @@ and (max-device-width : 480px) {
 		<div class="12u">
 			<section>
 				<header>
-					<h2>Top 20 Missed Questions For <?php echo $user->getUserNameByUUID($_SESSION['userUUID']); ?></h2>
+					<h2>Top 20 Missed Questions For <?php echo $userManager->getUserNameByUUID($_SESSION['userUUID']); ?></h2>
 				</header>
 				<a href="/user/profile">&laquo; Return to Profile</a>
 				<br>
@@ -109,7 +109,7 @@ and (max-device-width : 480px) {
 							<strong>Q:</strong> &nbsp;<?php echo $questionManager->getQuestionText();  ?><br>
 							<strong>A:</strong> &nbsp;<?php echo $answerManager->getAnswerText(); ?>
 						</td>
-						<td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
+						<td><?php echo $afscManager->getAFSCName($questionManager->getAFSCUUID()); ?></td>
 						<td><?php echo $timesMissed; ?></td>
 					</tr>
 					<?php endforeach; ?>
@@ -120,6 +120,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-	$sysMsg->addMessage("There is not enough data in the database to build the Top Missed Questions report.  Check back after you have completed more tests.","info");
+	$systemMessages->addMessage("There is not enough data in the database to build the Top Missed Questions report.  Check back after you have completed more tests.", "info");
 	$cdcMastery->redirect("/user/profile");
 endif;

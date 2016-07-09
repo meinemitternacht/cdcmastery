@@ -6,21 +6,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if (isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->addAFSCAssociation($userUUID, $afscUUID)) {
+					if (!$associationManager->addAFSCAssociation($userUUID, $afscUUID)) {
 						$error = true;
 					}
 				}
 
 				if ($error) {
-					$sysMsg->addMessage("There were errors while adding AFSC association(s) for this user.  Check the site log for details.", "danger");
+					$systemMessages->addMessage("There were errors while adding AFSC association(s) for this user.  Check the site log for details.", "danger");
 				}
 				else {
-					$sysMsg->addMessage("AFSC association(s) added successfully.", "success");
+					$systemMessages->addMessage("AFSC association(s) added successfully.", "success");
 				}
 			}
 			else{
 				$error = true;
-				$sysMsg->addMessage("You did not provide any AFSC's to associate.","warning");
+				$systemMessages->addMessage("You did not provide any AFSC's to associate.", "warning");
 			}
 			break;
 		case "removeAssociation":
@@ -28,21 +28,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if (isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->deleteAFSCAssociation($userUUID, $afscUUID)) {
+					if (!$associationManager->deleteAFSCAssociation($userUUID, $afscUUID)) {
 						$error = true;
 					}
 				}
 
 				if ($error) {
-					$sysMsg->addMessage("There were errors while removing AFSC association(s) for this user.  Check the site log for details.", "danger");
+					$systemMessages->addMessage("There were errors while removing AFSC association(s) for this user.  Check the site log for details.", "danger");
 				}
 				else {
-					$sysMsg->addMessage("AFSC association(s) removed successfully.", "success");
+					$systemMessages->addMessage("AFSC association(s) removed successfully.", "success");
 				}
 			}
 			else{
 				$error = true;
-				$sysMsg->addMessage("You did not provide any AFSC's to unassociate.","warning");
+				$systemMessages->addMessage("You did not provide any AFSC's to unassociate.", "warning");
 			}
 			break;
 		case "approvePendingAssociation":
@@ -50,21 +50,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if (isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->approvePendingAFSCAssociation($userUUID, $afscUUID)) {
+					if (!$associationManager->approvePendingAFSCAssociation($userUUID, $afscUUID)) {
 						$error = true;
 					}
 				}
 
 				if ($error) {
-					$sysMsg->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.", "danger");
+					$systemMessages->addMessage("There were errors while approving pending AFSC association(s) for this user.  Check the site log for details.", "danger");
 				}
 				else {
-					$sysMsg->addMessage("Pending AFSC association(s) approved successfully.", "success");
+					$systemMessages->addMessage("Pending AFSC association(s) approved successfully.", "success");
 				}
 			}
 			else{
 				$error = true;
-				$sysMsg->addMessage("You did not provide any AFSC's to approve.","warning");
+				$systemMessages->addMessage("You did not provide any AFSC's to approve.", "warning");
 			}
 			break;
 		case "removePendingAssociation":
@@ -72,21 +72,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			if(isset($_POST['afscUUID'])) {
 				foreach ($_POST['afscUUID'] as $afscUUID) {
-					if (!$assoc->deletePendingAFSCAssociation($userUUID, $afscUUID)) {
+					if (!$associationManager->deletePendingAFSCAssociation($userUUID, $afscUUID)) {
 						$error = true;
 					}
 				}
 
 				if ($error) {
-					$sysMsg->addMessage("There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.", "danger");
+					$systemMessages->addMessage("There were errors while removing pending AFSC association(s) for this user.  Check the site log for details.", "danger");
 				}
 				else {
-					$sysMsg->addMessage("Pending AFSC association(s) removed successfully.", "success");
+					$systemMessages->addMessage("Pending AFSC association(s) removed successfully.", "success");
 				}
 			}
 			else{
 				$error = true;
-				$sysMsg->addMessage("You did not provide any AFSC's to remove.","warning");
+				$systemMessages->addMessage("You did not provide any AFSC's to remove.", "warning");
 			}
 			break;
 	}
@@ -156,7 +156,7 @@ $userPendingAFSCList = $userStatistics->getPendingAFSCAssociations();
 			<form action="/admin/users/<?php echo $userUUID; ?>/associations/afsc" method="POST">
 				<input type="hidden" name="formAction" value="addAssociation">
 				<?php
-				$afscList = $afsc->listAFSC(false);
+				$afscList = $afscManager->listAFSC(false);
 				if(!empty($userAFSCList)) {
                     foreach ($userAFSCList as $userAFSC) {
                         if (isset($afscList[$userAFSC])) {

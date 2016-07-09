@@ -1,19 +1,19 @@
 <?php
 if(isset($_POST['confirmActivationResend'])){
 	if($userUUID){
-		$userActivate = new userActivation($db, $log, $emailQueue);
+		$userActivate = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 		
 		if($userActivate->queueActivation($userUUID)){
-			$sysMsg->addMessage("Activation code sent to " . $objUser->getFullName(),"success");
+			$systemMessages->addMessage("Activation code sent to " . $objUser->getFullName(), "success");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 		else{
-            $sysMsg->addMessage("Sorry, we could not send an activation code to " . $objUser->getFullName(),"danger");
+            $systemMessages->addMessage("Sorry, we could not send an activation code to " . $objUser->getFullName(), "danger");
 			$cdcMastery->redirect("/admin/users/" . $userUUID);
 		}
 	}
 	else{
-        $sysMsg->addMessage("No User UUID was provided.","warning");
+        $systemMessages->addMessage("No User UUID was provided.", "warning");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }

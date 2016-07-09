@@ -3,28 +3,28 @@ if(isset($_SESSION['vars'][0])):
 	$targetUUID = $_SESSION['vars'][0];
 
 	if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-		$sysMsg->addMessage("You are not authorized to use the Supervisor log page.","danger");
+		$systemMessages->addMessage("You are not authorized to use the Supervisor log page.", "danger");
 		$cdcMastery->redirect("/errors/403");
 	}
 
-	$supUser = new user($db,$log,$emailQueue);
-	$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+	$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+	$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 	$supOverview->loadSupervisor($_SESSION['userUUID']);
 
-	$subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
+	$subordinateUsers = $userManager->sortUserUUIDList($supOverview->getSubordinateUserList(), "userLastName");
 
 	if(empty($subordinateUsers)):
-		$sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
+		$systemMessages->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.", "info");
 		$cdcMastery->redirect("/supervisor/subordinates");
 	endif;
 
 	if(!in_array($targetUUID,$subordinateUsers)){
-		$sysMsg->addMessage("That user is not associated with your account.","danger");
+		$systemMessages->addMessage("That user is not associated with your account.", "danger");
 		$cdcMastery->redirect("/supervisor/overview");
 	}
 
-	$logFilter = new logFilter($db, $user);
+	$logFilter = new CDCMastery\SystemLogFilter($db, $userManager);
 
 	$pageNumber = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : 0;
 	$pageRows = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : 15;
@@ -195,7 +195,7 @@ if(isset($_SESSION['vars'][0])):
 			<div class="9u">
 				<section>
 					<header>
-						<h2>Log Data For <?php echo $user->getUserNameByUUID($targetUUID); ?></h2>
+						<h2>Log Data For <?php echo $userManager->getUserNameByUUID($targetUUID); ?></h2>
 					</header>
 					<div class="tableSmallText">
 						<table id="log-table-1">
@@ -210,9 +210,9 @@ if(isset($_SESSION['vars'][0])):
 								<td><?php echo $cdcMastery->outputDateTime($logData['timestamp'], $_SESSION['timeZone']); ?></td>
 								<td><?php echo $logData['action']; ?></td>
 								<?php if(!in_array($logData['userUUID'],$cdcMastery->getStaticUserArray())): ?>
-									<td><a href="/supervisor/profile/<?php echo $logData['userUUID']; ?>"><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></a></td>
+									<td><a href="/supervisor/profile/<?php echo $logData['userUUID']; ?>"><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></a></td>
 								<?php else: ?>
-									<td><?php echo $user->getUserNameByUUID($logData['userUUID']); ?></td>
+									<td><?php echo $userManager->getUserNameByUUID($logData['userUUID']); ?></td>
 								<?php endif; ?>
 								<td><a href="/supervisor/log-detail/<?php echo $targetUUID; ?>/<?php echo $logUUID; ?>"><i class="icon-inline icon-20 ic-arrow-right"></i>details</a></td>
 							</tr>
@@ -227,6 +227,6 @@ if(isset($_SESSION['vars'][0])):
 	This user has no log entries in the database.
 	<?php endif; ?>
 <?php else:
-	$sysMsg->addMessage("You must select a user to view.","warning");
+	$systemMessages->addMessage("You must select a user to view.", "warning");
 	$cdcMastery->redirect("/supervisor/overview");
 endif; ?>

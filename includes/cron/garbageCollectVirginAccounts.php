@@ -25,9 +25,9 @@ $res = $db->query("SELECT uuid FROM `userData`
 if($res->num_rows > 0){
     echo "There are ".$res->num_rows." user(s) eligible for deletion.  Processing...".PHP_EOL;
     
-    $delUserObj = new user($db,$log,$emailQueue);
-    $testManager = new testManager($db, $log, $afsc);
-    $activateObj = new userActivation($db, $log, $emailQueue);
+    $delUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+    $activateObj = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
     $deletedUserList = Array();
 
@@ -39,7 +39,7 @@ if($res->num_rows > 0){
 
             echo "Deleting user " . $userFullName . "...";
 
-            $authObj = new auth($userObjRow['uuid'], $log, $db, $roles, $emailQueue);
+            $authObj = new CDCMastery\AuthenticationManager($userObjRow['uuid'], $systemLog, $db, $roleManager, $emailQueue);
             $userTestList = $testManager->getTestUUIDList($userObjRow['uuid']);
 
             if (!$authObj->getActivationStatus()) {
@@ -49,7 +49,7 @@ if($res->num_rows > 0){
                 }
             }
 
-            if (!$log->clearLogEntries($userObjRow['uuid'], true)) {
+            if (!$systemLog->clearLogEntries($userObjRow['uuid'], true)) {
                 $errors[] = "Log Entries not cleared.";
                 $error = true;
             }
@@ -61,17 +61,17 @@ if($res->num_rows > 0){
                 }
             }
 
-            if (!$assoc->deleteUserAFSCAssociations($userObjRow['uuid'], true)) {
+            if (!$associationManager->deleteUserAFSCAssociations($userObjRow['uuid'], true)) {
                 $errors[] = "AFSC Associations not cleared.";
                 $error = true;
             }
 
-            if (!$assoc->deleteUserSupervisorAssociations($userObjRow['uuid'], true)) {
+            if (!$associationManager->deleteUserSupervisorAssociations($userObjRow['uuid'], true)) {
                 $errors[] = "Supervisor Associations not cleared.";
                 $error = true;
             }
 
-            if (!$assoc->deleteUserTrainingManagerAssociations($userObjRow['uuid'], true)) {
+            if (!$associationManager->deleteUserTrainingManagerAssociations($userObjRow['uuid'], true)) {
                 $errors[] = "Training Manager Associations not cleared.";
                 $error = true;
             }
@@ -82,16 +82,16 @@ if($res->num_rows > 0){
             }
 
             if($error){
-                $log->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS");
-                $log->setDetail("User Name",$userFullName);
-                $log->setDetail("User UUID",$userObjRow['uuid']);
+                $systemLog->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS");
+                $systemLog->setDetail("User Name", $userFullName);
+                $systemLog->setDetail("User UUID", $userObjRow['uuid']);
 
                 foreach($errors as $errorMsg){
                     echo $errorMsg . PHP_EOL;
-                    $log->setDetail("Error",$errorMsg);
+                    $systemLog->setDetail("Error", $errorMsg);
                 }
 
-                $log->saveEntry();
+                $systemLog->saveEntry();
 
                 echo "We could not fully delete the following user: " . $userFullName . PHP_EOL;
 
@@ -103,16 +103,16 @@ if($res->num_rows > 0){
         }
     }
 
-    $log->setAction("CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS");
-    $log->setDetail("Users Deleted",$res->num_rows);
+    $systemLog->setAction("CRON_RUN_GARBAGE_COLLECT_VIRGIN_ACCOUNTS");
+    $systemLog->setDetail("Users Deleted", $res->num_rows);
 
     if(!empty($deletedUserList)){
         foreach($deletedUserList as $deletedUserUUID => $deletedUserName){
-            $log->setDetail("Deleted User","Name: ".$deletedUserName." UUID: ".$deletedUserUUID);
+            $systemLog->setDetail("Deleted User", "Name: ".$deletedUserName." UUID: ".$deletedUserUUID);
         }
     }
 
-    $log->saveEntry();
+    $systemLog->saveEntry();
 
     echo "Done deleting virgin user accounts." . PHP_EOL;
 }

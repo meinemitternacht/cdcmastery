@@ -6,16 +6,16 @@
  * Time: 10:01 PM
  */
 
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $questionData = !empty($_POST['questionData']) ? $_POST['questionData'] : false;
     $correctAnswer = !empty($_POST['correctAnswer']) ? $_POST['correctAnswer'] : false;
 
     if(!$questionData){
-        $sysMsg->addMessage("You must provide question and answer data.","warning");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+        $systemMessages->addMessage("You must provide question and answer data.", "warning");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/add-questions");
     }
 
     $questionDataSplit = preg_split("/\r\n(.)\. /",$questionData);
@@ -40,8 +40,8 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     }
 
     if(isset($emptyAnswer)){
-        $sysMsg->addMessage("You must provide four answers.  Make sure that each answer has a letter and a period followed by a space at the beginning: e.g., A._ where the underscore is a space.","warning");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+        $systemMessages->addMessage("You must provide four answers.  Make sure that each answer has a letter and a period followed by a space at the beginning: e.g., A._ where the underscore is a space.", "warning");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/add-questions");
     }
 
     function replaceLastDot(&$answerItem,$key){
@@ -63,13 +63,13 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
     $questionUUID = $cdcMastery->genUUID();
     $questionManager->setUUID($questionUUID);
     $questionManager->setQuestionText($questionText);
-    $questionManager->setAFSCUUID($afsc->getUUID());
-    $questionManager->setFOUO($afsc->getAFSCFOUO());
+    $questionManager->setAFSCUUID($afscManager->getUUID());
+    $questionManager->setFOUO($afscManager->getAFSCFOUO());
 
     if(!$questionManager->saveQuestion()){
-        $sysMsg->addMessage("We could not save that question.  Please contact the Help Desk.","danger");
-        $sysMsg->addMessage($questionManager->error,"danger");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+        $systemMessages->addMessage("We could not save that question.  Please contact the Help Desk.", "danger");
+        $systemMessages->addMessage($questionManager->error, "danger");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/add-questions");
     }
     else{
         /*
@@ -77,7 +77,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
          */
         for($i=0;$i<4;$i++){
             $answerManager->newAnswer();
-            $answerManager->setFOUO($afsc->getAFSCFOUO());
+            $answerManager->setFOUO($afscManager->getAFSCFOUO());
             $answerManager->setQuestionUUID($questionUUID);
             $answerManager->setAnswerText($answerData[$i]);
 
@@ -86,20 +86,20 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
             }
 
             if(!$answerManager->saveAnswer()){
-                $sysMsg->addMessage($answerManager->error,"danger");
-                $sysMsg->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.","danger");
-                $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+                $systemMessages->addMessage($answerManager->error, "danger");
+                $systemMessages->addMessage("There may be incomplete data for this question in the database.  Either delete the question or contact the helpdesk.", "danger");
+                $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/add-questions");
             }
         }
 
-        $log->setAction("QUESTION_ADD");
-        $log->setDetail("Question UUID",$questionUUID);
-        $log->setDetail("AFSC UUID",$afsc->getUUID());
-        $log->setDetail("Question Text",$questionText);
-        $log->saveEntry();
+        $systemLog->setAction("QUESTION_ADD");
+        $systemLog->setDetail("Question UUID", $questionUUID);
+        $systemLog->setDetail("AFSC UUID", $afscManager->getUUID());
+        $systemLog->setDetail("Question Text", $questionText);
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("Question added successfully.","success");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/add-questions");
+        $systemMessages->addMessage("Question added successfully.", "success");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/add-questions");
     }
 }
 ?>
@@ -108,7 +108,7 @@ if(!empty($_POST) && $_POST['confirmQuestionAdd'] == true){
         <header>
             <h2>Add Question</h2>
         </header>
-        <form action="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/add-questions" method="POST">
+        <form action="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/add-questions" method="POST">
             <input type="hidden" name="confirmQuestionAdd" value="1">
             <div class="informationMessages">
                 To add questions, enter the entire question and answer block in the text area below.  You may only add one question at a time.  For any issues, please contact the helpdesk.

@@ -1,5 +1,5 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserTests($userUUID);
 
 if(!empty($testList)): ?>
@@ -118,7 +118,7 @@ and (max-device-width : 480px) {
 							$rawAFSCList = $testDetails['afscList'];
 
 							foreach($rawAFSCList as $key => $val){
-								$rawAFSCList[$key] = $afsc->getAFSCName($val);
+								$rawAFSCList[$key] = $afscManager->getAFSCName($val);
 							}
 
 							if(count($rawAFSCList) > 1){
@@ -194,6 +194,6 @@ and (max-device-width : 480px) {
 </div>
 <?php
 else:
-    $sysMsg->addMessage("This user has not completed any tests.","info");
+    $systemMessages->addMessage("This user has not completed any tests.", "info");
 	$cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

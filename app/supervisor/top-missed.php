@@ -6,15 +6,15 @@
  * Time: 2:29 AM
  */
 
-$statistics = new statistics($db,$log,$emailQueue,$memcache);
-$answerManager = new answerManager($db, $log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
-$superUser = new user($db,$log,$emailQueue);
-$superOverview = new supervisorOverview($db,$log,$userStatistics,$superUser,$roles);
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$superUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$superOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $superUser, $roleManager);
 
 $workingAFSC = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
-if(!$afsc->loadAFSC($workingAFSC)){
-    $sysMsg->addMessage("That AFSC does not exist.","warning");
+if(!$afscManager->loadAFSC($workingAFSC)){
+    $systemMessages->addMessage("That AFSC does not exist.", "warning");
     $cdcMastery->redirect("/errors/404");
 }
 
@@ -26,12 +26,12 @@ else{
 }
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view the Supervisor Missed Questions Overview.","danger");
+    $systemMessages->addMessage("You are not authorized to view the Supervisor Missed Questions Overview.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 
-if($roles->getRoleType($user->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
-    $sysMsg->addMessage("That user is not a Supervisor.","warning");
+if($roleManager->getRoleType($userManager->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
+    $systemMessages->addMessage("That user is not a Supervisor.", "warning");
     $cdcMastery->redirect("/errors/500");
 }
 
@@ -41,7 +41,7 @@ $superOverview->loadSupervisor($supervisorUUID);
 $userList = $superOverview->getSubordinateUserList();
 
 if(!$userList){
-    $sysMsg->addMessage("You have no subordinate users. Please associate users with your account by using the form below.","info");
+    $systemMessages->addMessage("You have no subordinate users. Please associate users with your account by using the form below.", "info");
     $cdcMastery->redirect("/supervisor/subordinates");
 }
 
@@ -99,7 +99,7 @@ $questionShownList = $superOverview->getQuestionsShownCountByAFSC($workingAFSC,$
         <div class="12u">
             <section>
                 <header>
-                    <h2>Top Questions Missed for <?php echo $afsc->getAFSCName($workingAFSC); ?></h2>
+                    <h2>Top Questions Missed for <?php echo $afscManager->getAFSCName($workingAFSC); ?></h2>
                 </header>
                 <a href="/supervisor/overview<?php echo (isset($_SESSION['vars'][1])) ? "/".$_SESSION['vars'][1] : ""; ?>" class="button">&laquo; Back</a>
             </section>

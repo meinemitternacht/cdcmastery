@@ -26,9 +26,9 @@ $res = $db->query("SELECT uuid FROM `userData`
 if($res->num_rows > 0){
     echo "There are ".$res->num_rows." user(s) eligible for reminder.  Processing...".PHP_EOL;
 
-    $remUserObj = new user($db,$log,$emailQueue);
-    $testManager = new testManager($db, $log, $afsc);
-    $activateObj = new userActivation($db, $log, $emailQueue);
+    $remUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+    $activateObj = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
     $remindedUserList = Array();
 
@@ -92,10 +92,10 @@ TXT;
             $queueUser = isset($_SESSION['userUUID']) ? $_SESSION['userUUID'] : "SYSTEM";
 
             if(!$emailQueue->queueEmail($emailSender, $emailRecipient, $emailSubject, $emailBodyHTML, $emailBodyText, $queueUser)){
-                $log->setAction("ERROR_CRON_RUN_REMIND_UNUSED_ACCOUNTS");
-                $log->setDetail("User Name",$userFullName);
-                $log->setDetail("User UUID",$userObjRow['uuid']);
-                $log->saveEntry();
+                $systemLog->setAction("ERROR_CRON_RUN_REMIND_UNUSED_ACCOUNTS");
+                $systemLog->setDetail("User Name", $userFullName);
+                $systemLog->setDetail("User UUID", $userObjRow['uuid']);
+                $systemLog->saveEntry();
 
                 echo "We could not remind the following user: " . $userFullName . PHP_EOL;
 
@@ -110,9 +110,9 @@ TXT;
         }
     }
 
-    $log->setAction("CRON_RUN_REMIND_UNUSED_ACCOUNTS");
-    $log->setDetail("Users Reminded",$res->num_rows);
-    $log->saveEntry();
+    $systemLog->setAction("CRON_RUN_REMIND_UNUSED_ACCOUNTS");
+    $systemLog->setDetail("Users Reminded", $res->num_rows);
+    $systemLog->saveEntry();
 
     echo "Done reminding unused user accounts." . PHP_EOL;
 }

@@ -9,42 +9,42 @@
 $pageSection = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $genTestUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 
-$genTestManager = new testGenerator($db,$log,$afsc);
+$genTestManager = new CDCMastery\TestGenerator($db, $systemLog, $afscManager);
 
 if(!empty($_POST)){
     $afscUUID = isset($_POST['afscUUID']) ? $_POST['afscUUID'] : false;
     $numQuestions = isset($_POST['numQuestions']) ? $_POST['numQuestions'] : false;
 
     if(!$afscUUID){
-        $sysMsg->addMessage("You must choose an AFSC to generate a test for.","warning");
+        $systemMessages->addMessage("You must choose an AFSC to generate a test for.", "warning");
     }
 
     if(!$numQuestions){
-        $sysMsg->addMessage("You must specify the number of desired questions.","warning");
+        $systemMessages->addMessage("You must specify the number of desired questions.", "warning");
     }
 
     $genTestManager->setAfscUUID($afscUUID);
     if($genTestManager->generateTest($numQuestions)){
-        $sysMsg->addMessage("Test generated successfully.","success");
+        $systemMessages->addMessage("Test generated successfully.", "success");
     }
     else{
-        $sysMsg->addMessage("Sorry, there was a problem generating that test.  Please contact the helpdesk for assistance.","danger");
+        $systemMessages->addMessage("Sorry, there was a problem generating that test.  Please contact the helpdesk for assistance.", "danger");
     }
 }
 
 if($genTestUUID){
     if(!$genTestManager->loadGeneratedTest($genTestUUID)){
-        $sysMsg->addMessage("Sorry, we could not load that test from the database.  Please contact the helpdesk for assistance.","danger");
+        $systemMessages->addMessage("Sorry, we could not load that test from the database.  Please contact the helpdesk for assistance.", "danger");
         $cdcMastery->redirect("/supervisor/generate-test");
     }
 }
 
 if($pageSection == "print"){
-    $afsc->loadAFSC($genTestManager->getAfscUUID());
+    $afscManager->loadAFSC($genTestManager->getAfscUUID());
     ?>
-    <h1 style="font-size: 1.8em;"><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
-    <?php if(!empty($afsc->getAFSCVersion())): ?>
-        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+    <h1 style="font-size: 1.8em;"><?php echo $afscManager->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
+    <?php if(!empty($afscManager->getAFSCVersion())): ?>
+        <em>Version: <?php echo $afscManager->getAFSCVersion(); ?></em><br>
     <?php endif; ?>
     <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
     <br>
@@ -59,8 +59,8 @@ if($pageSection == "print"){
 
     $questionList = $genTestManager->getQuestionList();
 
-    $answerManager = new answerManager($db,$log);
-    $question = new questionManager($db,$log,$afsc,$answerManager);
+    $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+    $question = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
     foreach($questionList as $questionUUID):
         $j = 1;
@@ -99,9 +99,9 @@ if($pageSection == "print"){
     endforeach; ?>
     <div style="page-break-after:always;"></div>
     <a name="answer-key"></a>
-    <h2><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
-    <?php if(!empty($afsc->getAFSCVersion())): ?>
-        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+    <h2><?php echo $afscManager->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
+    <?php if(!empty($afscManager->getAFSCVersion())): ?>
+        <em>Version: <?php echo $afscManager->getAFSCVersion(); ?></em><br>
     <?php endif; ?>
     <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
     <div class="clearfix">&nbsp;</div>
@@ -147,10 +147,10 @@ else {
                     <a href="/supervisor/generate-test/print/<?php echo $genTestUUID; ?>">Print this test</a> | <a href="#answer-key">View Answer Key</a>
                     <br>
                     <br>
-                    <?php $afsc->loadAFSC($genTestManager->getAfscUUID()); ?>
-                    <h1 style="font-size: 1.8em;"><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
-                    <?php if(!empty($afsc->getAFSCVersion())): ?>
-                        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+                    <?php $afscManager->loadAFSC($genTestManager->getAfscUUID()); ?>
+                    <h1 style="font-size: 1.8em;"><?php echo $afscManager->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test</h1>
+                    <?php if(!empty($afscManager->getAFSCVersion())): ?>
+                        <em>Version: <?php echo $afscManager->getAFSCVersion(); ?></em><br>
                     <?php endif; ?>
                     <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
                     <br>
@@ -164,8 +164,8 @@ else {
 
                     $questionList = $genTestManager->getQuestionList();
 
-                    $answerManager = new answerManager($db,$log);
-                    $question = new questionManager($db,$log,$afsc,$answerManager);
+                    $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+                    $question = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
                     foreach($questionList as $questionUUID):
                         $j = 1;
@@ -195,9 +195,9 @@ else {
                         $i++;
                     endforeach; ?>
                     <a name="answer-key"></a>
-                    <h2><?php echo $afsc->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
-                    <?php if(!empty($afsc->getAFSCVersion())): ?>
-                        <em>Version: <?php echo $afsc->getAFSCVersion(); ?></em><br>
+                    <h2><?php echo $afscManager->getAFSCName($genTestManager->getAfscUUID()); ?> Practice Test Answer Key</h2>
+                    <?php if(!empty($afscManager->getAFSCVersion())): ?>
+                        <em>Version: <?php echo $afscManager->getAFSCVersion(); ?></em><br>
                     <?php endif; ?>
                     <em>Test ID: <?php echo $genTestUUID; ?> created on <?php echo $cdcMastery->formatDateTime($genTestManager->getDateCreated()); ?></em>
                     <div class="clearfix">&nbsp;</div>
@@ -253,7 +253,7 @@ else {
                                 name="afscUUID"
                                 class="input_full">
                             <?php
-                            $afscList = $afsc->listAFSC(false);
+                            $afscList = $afscManager->listAFSC(false);
                             foreach ($afscList as $afscUUID => $afscDetails): ?>
                                 <option
                                     value="<?php echo $afscUUID; ?>"><?php echo $afscDetails['afscName']; ?></option>
@@ -289,7 +289,7 @@ else {
                             </tr>
                             <?php foreach ($userGenTestList as $genTestUUID => $genTestDetails): ?>
                                 <tr>
-                                    <td><?php echo $afsc->getAFSCName($genTestDetails['afscUUID']); ?></td>
+                                    <td><?php echo $afscManager->getAFSCName($genTestDetails['afscUUID']); ?></td>
                                     <td><?php echo number_format($genTestDetails['totalQuestions']); ?></td>
                                     <td>
                                         <?php

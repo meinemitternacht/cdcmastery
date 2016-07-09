@@ -7,7 +7,7 @@
  */
 
 if(!$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to access that page.","danger");
+    $systemMessages->addMessage("You are not authorized to access that page.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 
@@ -29,46 +29,46 @@ if($formAction){
             $error = false;
 
             if(empty($roleEditUUID)) {
-                $sysMsg->addMessage("You must specify a role UUID","warning");
+                $systemMessages->addMessage("You must specify a role UUID", "warning");
                 $error = true;
             }
 
             if(empty($roleEditName)) {
-                $sysMsg->addMessage("You must specify a role name","warning");
+                $systemMessages->addMessage("You must specify a role name", "warning");
                 $error = true;
             }
 
             if(empty($roleEditType)) {
-                $sysMsg->addMessage("You must specify a role type","warning");
+                $systemMessages->addMessage("You must specify a role type", "warning");
                 $error = true;
             }
 
             if(!$error){
-                $roles->loadRole($roleEditUUID);
-                $roles->setRoleName($roleEditName);
-                $roles->setRoleType($roleEditType);
-                $roles->setRoleDescription($roleEditDescription);
+                $roleManager->loadRole($roleEditUUID);
+                $roleManager->setRoleName($roleEditName);
+                $roleManager->setRoleType($roleEditType);
+                $roleManager->setRoleDescription($roleEditDescription);
 
-                if($roles->saveRole()){
-                    $log->setAction("ROLE_EDIT");
-                    $log->setDetail("Role UUID",$roles->getUUID());
-                    $log->setDetail("Role Name",$roles->getRoleName());
-                    $log->setDetail("Role Type",$roles->getRoleType());
-                    $log->setDetail("Role Description",$roles->getRoleDescription());
-                    $log->saveEntry();
+                if($roleManager->saveRole()){
+                    $systemLog->setAction("ROLE_EDIT");
+                    $systemLog->setDetail("Role UUID", $roleManager->getUUID());
+                    $systemLog->setDetail("Role Name", $roleManager->getRoleName());
+                    $systemLog->setDetail("Role Type", $roleManager->getRoleType());
+                    $systemLog->setDetail("Role Description", $roleManager->getRoleDescription());
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage("Role edited successfully.","success");
+                    $systemMessages->addMessage("Role edited successfully.", "success");
                     $cdcMastery->redirect("/admin/roles");
                 }
                 else{
-                    $log->setAction("ERROR_ROLE_EDIT");
-                    $log->setDetail("Role UUID",$roles->getUUID());
-                    $log->setDetail("Role Name",$roles->getRoleName());
-                    $log->setDetail("Role Type",$roles->getRoleType());
-                    $log->setDetail("Role Description",$roles->getRoleDescription());
-                    $log->saveEntry();
+                    $systemLog->setAction("ERROR_ROLE_EDIT");
+                    $systemLog->setDetail("Role UUID", $roleManager->getUUID());
+                    $systemLog->setDetail("Role Name", $roleManager->getRoleName());
+                    $systemLog->setDetail("Role Type", $roleManager->getRoleType());
+                    $systemLog->setDetail("Role Description", $roleManager->getRoleDescription());
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage("There was an issue editing that role.","danger");
+                    $systemMessages->addMessage("There was an issue editing that role.", "danger");
                     $cdcMastery->redirect("/admin/roles/edit/" . $roleEditUUID);
                 }
             }
@@ -80,29 +80,29 @@ if($formAction){
             $currentRole = isset($_POST['currentRole']) ? $_POST['currentRole'] : false;
             $targetRole = isset($_POST['targetRole']) ? $_POST['targetRole'] : false;
 
-            if($roles->verifyRole($currentRole) && $roles->verifyRole($targetRole)){
-                if($roles->migrateUserRoles($currentRole,$targetRole)) {
-                    $sysMsg->addMessage("User roles migrated successfully.","success");
+            if($roleManager->verifyRole($currentRole) && $roleManager->verifyRole($targetRole)){
+                if($roleManager->migrateUserRoles($currentRole, $targetRole)) {
+                    $systemMessages->addMessage("User roles migrated successfully.", "success");
                 }
                 else{
-                    $sysMsg->addMessage("There was an issue migrating user roles.","danger");
+                    $systemMessages->addMessage("There was an issue migrating user roles.", "danger");
                 }
             } else {
-                $sysMsg->addMessage("We couldn't verify one or more of the provided roles.","danger");
+                $systemMessages->addMessage("We couldn't verify one or more of the provided roles.", "danger");
             }
 
             $cdcMastery->redirect("/admin/roles");
         break;
         case "default":
-            $sysMsg->addMessage("Sorry, we couldn't process your request.","info");
+            $systemMessages->addMessage("Sorry, we couldn't process your request.", "info");
             $cdcMastery->redirect("/errors/500");
         break;
     }
 }
 
-$roleList = $roles->listRoles();
+$roleList = $roleManager->listRoles();
 if($pageAction == "edit"):
-    $roles->loadRole($roleUUID); ?>
+    $roleManager->loadRole($roleUUID); ?>
     <div class="container">
         <div class="row">
             <div class="3u">
@@ -124,9 +124,9 @@ if($pageAction == "edit"):
                     <form action="/admin/roles/edit/<?php echo $roleUUID; ?>" method="POST">
                         <input type="hidden" name="formAction" value="role-edit">
                         <?php
-                        $roleType = $roles->getRoleType();
-                        $roleName = $roles->getRoleName();
-                        $roleDescription = $roles->getRoleDescription();
+                        $roleType = $roleManager->getRoleType();
+                        $roleName = $roleManager->getRoleName();
+                        $roleDescription = $roleManager->getRoleDescription();
                         ?>
                         <ul>
                             <li>

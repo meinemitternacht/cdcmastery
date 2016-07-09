@@ -6,10 +6,10 @@
  * Time: 3:46 AM
  */
 
-$testManager = new testManager($db,$log,$afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(!$testManager->loadIncompleteTest($finalChild)){
-    $sysMsg->addMessage("That test does not exist.","warning");
+    $systemMessages->addMessage("That test does not exist.", "warning");
     $cdcMastery->redirect("/admin/users/".$userUUID."/tests/incomplete");
 }
 

@@ -1,5 +1,5 @@
 <?php
-$userAuthorization = new userAuthorizationQueue($db,$log,$emailQueue);
+$userAuthorization = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
@@ -10,45 +10,45 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 
 			foreach($_POST['authorizeList'] as $authUUID){
 				if($_POST['authReject'] == "authorize"){
-					$userObj = new user($db,$log,$emailQueue);
+					$userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
 					if($userObj->loadUser($authorizationQueue[$authUUID]['userUUID'])){
-						if($userObj->getUserRole() == $roles->getRoleUUIDByName("Supervisors") && $authorizationQueue[$authUUID]['roleUUID'] == $roles->getRoleUUIDByName("TrainingManagers")){
+						if($userObj->getUserRole() == $roleManager->getRoleUUIDByName("Supervisors") && $authorizationQueue[$authUUID]['roleUUID'] == $roleManager->getRoleUUIDByName("TrainingManagers")){
 							/***
 							 * Migrate Supervisor Subordinates to Training Manager if the user requested a role change themselves
 							 */
-							$objUserStatistics = new userStatistics($db,$log,$roles,$memcache);
-							if($roles->getRoleType($userObj->getUserRole()) == "supervisor" && $roles->getRoleType($_POST['userRole']) == "trainingManager"){
+							$objUserStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+							if($roleManager->getRoleType($userObj->getUserRole()) == "supervisor" && $roleManager->getRoleType($_POST['userRole']) == "trainingManager"){
 								if($objUserStatistics->getSupervisorSubordinateCount() > 0){
 									$subordinateList = $objUserStatistics->getSupervisorAssociations();
 
 									if(count($subordinateList) > 1){
 										foreach($subordinateList as $subordinateUUID){
-											$assoc->addTrainingManagerAssociation($userObj->getUUID(),$subordinateUUID);
-											$assoc->deleteSupervisorAssociation($userObj->getUUID(),$subordinateUUID);
+											$associationManager->addTrainingManagerAssociation($userObj->getUUID(), $subordinateUUID);
+											$associationManager->deleteSupervisorAssociation($userObj->getUUID(), $subordinateUUID);
 										}
 									}
 									else{
-										$assoc->addTrainingManagerAssociation($userObj->getUUID(),$subordinateList[0]);
-										$assoc->deleteSupervisorAssociation($userObj->getUUID(),$subordinateList[0]);
+										$associationManager->addTrainingManagerAssociation($userObj->getUUID(), $subordinateList[0]);
+										$associationManager->deleteSupervisorAssociation($userObj->getUUID(), $subordinateList[0]);
 									}
 
 									if($objUserStatistics->getSupervisorSubordinateCount() > 0){
-										$log->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-										$log->setDetail("Source Role",$roles->getRoleName($userObj->getUserRole()));
-										$log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-										$log->setDetail("User UUID",$userObj->getUUID());
-										$log->setDetail("Error","After migration attempt, old associations still remained in the database.");
-										$log->saveEntry();
+										$systemLog->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+										$systemLog->setDetail("Source Role", $roleManager->getRoleName($userObj->getUserRole()));
+										$systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+										$systemLog->setDetail("User UUID", $userObj->getUUID());
+										$systemLog->setDetail("Error", "After migration attempt, old associations still remained in the database.");
+										$systemLog->saveEntry();
 
-										$sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.","danger");
+										$systemMessages->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.", "danger");
 									}
 									else{
-										$log->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-										$log->setDetail("User UUID",$userObj->getUUID());
-										$log->setDetail("Source Role",$roles->getRoleName($userObj->getUserRole()));
-										$log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-										$log->saveEntry();
+										$systemLog->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+										$systemLog->setDetail("User UUID", $userObj->getUUID());
+										$systemLog->setDetail("Source Role", $roleManager->getRoleName($userObj->getUserRole()));
+										$systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+										$systemLog->saveEntry();
 									}
 								}
 							}
@@ -70,10 +70,10 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			}
 
 			if($error){
-				$sysMsg->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors while processing roles for those user(s).  Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Processed user authorization(s) successfully.","success");
+				$systemMessages->addMessage("Processed user authorization(s) successfully.", "success");
 			}
 			break;
 	}
@@ -124,8 +124,8 @@ if($authorizationQueue): ?>
 							<?php foreach($authorizationQueue as $authUUID => $authData): ?>
 							<tr>
 								<td><input type="checkbox" class="selectUser" name="authorizeList[]" value="<?php echo $authUUID; ?>"></td>
-								<td><a href="/admin/profile/<?php echo $authData['userUUID']; ?>"><?php echo $user->getUserNameByUUID($authData['userUUID']); ?></a></td>
-								<td><?php echo $roles->getRoleName($authData['roleUUID']); ?></td>
+								<td><a href="/admin/profile/<?php echo $authData['userUUID']; ?>"><?php echo $userManager->getUserNameByUUID($authData['userUUID']); ?></a></td>
+								<td><?php echo $roleManager->getRoleName($authData['roleUUID']); ?></td>
 								<td><?php echo $cdcMastery->outputDateTime($authData['dateRequested'],$_SESSION['timeZone']); ?></td>
 							</tr>
 							<?php endforeach; ?>
@@ -142,6 +142,6 @@ if($authorizationQueue): ?>
 		</div>
 	</div>
 <?php else:
-	$sysMsg->addMessage("There are no users awaiting authorization.","info");
+	$systemMessages->addMessage("There are no users awaiting authorization.", "info");
 	$cdcMastery->redirect("/admin");
 endif;

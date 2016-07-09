@@ -3,28 +3,28 @@ if(isset($_SESSION['vars'][0])):
     $targetUUID = $_SESSION['vars'][0];
 
     if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-        $sysMsg->addMessage("You are not authorized to use the Supervisor profile page.","danger");
+        $systemMessages->addMessage("You are not authorized to use the Supervisor profile page.", "danger");
         $cdcMastery->redirect("/errors/403");
     }
 
-    $supUser = new user($db,$log,$emailQueue);
-    $supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+    $supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
     $supOverview->loadSupervisor($_SESSION['userUUID']);
 
     $subordinateUsers = $supOverview->getSubordinateUserList();
 
     if(empty($subordinateUsers)):
-        $sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
+        $systemMessages->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.", "info");
         $cdcMastery->redirect("/supervisor/subordinates");
     endif;
 
     if(!in_array($targetUUID,$subordinateUsers)){
-        $sysMsg->addMessage("That user is not associated with your account.","danger");
+        $systemMessages->addMessage("That user is not associated with your account.", "danger");
         $cdcMastery->redirect("/supervisor/overview");
     }
 
-    $testManager = new testManager($db, $log, $afsc);
+    $testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
     $testList = $testManager->listUserTests($targetUUID,false,true);
 
     if(!empty($testList)): ?>
@@ -106,7 +106,7 @@ if(isset($_SESSION['vars'][0])):
                 <div class="12u">
                     <section>
                         <header>
-                            <h2>Test History For <?php echo $user->getUserNameByUUID($targetUUID); ?></h2>
+                            <h2>Test History For <?php echo $userManager->getUserNameByUUID($targetUUID); ?></h2>
                         </header>
                         <br>
                         <a href="/supervisor/history/<?php echo $targetUUID; ?>" title="View Normal History">View Normal History</a>
@@ -129,7 +129,7 @@ if(isset($_SESSION['vars'][0])):
                                     $rawAFSCList = $testDetails['afscList'];
 
                                     foreach($rawAFSCList as $key => $val){
-                                        $rawAFSCList[$key] = $afsc->getAFSCName($val);
+                                        $rawAFSCList[$key] = $afscManager->getAFSCName($val);
                                     }
 
                                     if(count($rawAFSCList) > 1){
@@ -225,10 +225,10 @@ if(isset($_SESSION['vars'][0])):
         </div>
         <?php
     else:
-        $sysMsg->addMessage("That user has not completed any tests.","warning");
+        $systemMessages->addMessage("That user has not completed any tests.", "warning");
         $cdcMastery->redirect("/supervisor/overview");
     endif;
 else:
-    $sysMsg->addMessage("You must select a user to view.","warning");
+    $systemMessages->addMessage("You must select a user to view.", "warning");
     $cdcMastery->redirect("/supervisor/overview");
 endif;

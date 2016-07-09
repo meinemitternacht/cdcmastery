@@ -10,12 +10,12 @@
  * This script removes XML archived tests for users who have been deleted.
  */
 define('BASE_PATH', realpath(__DIR__) . "/../..");
-require BASE_PATH . '/includes/bootstrap.inc.php';
+require '../bootstrap.inc.php';
 
-$userList = $user->listUsers();
+$userList = $userManager->listUsers();
 $userUUIDList = array_keys($userList);
 
-$folderList = scandir($cfg['xml']['directory']);
+$folderList = scandir($configurationManager->getXMLArchiveConfiguration('directory'));
 
 unset($folderList[0]); // .
 unset($folderList[1]); // ..
@@ -23,16 +23,16 @@ unset($folderList[1]); // ..
 foreach($folderList as $folderName){
     if (!in_array($folderName, $userUUIDList)) {
         echo "Deleting " . $folderName;
-        exec("rm -rf " . $cfg['xml']['directory'] . $folderName);
+        exec("rm -rf " . $configurationManager->getXMLArchiveConfiguration('directory') . $folderName);
         echo "...done!\n";
         $deletedUUIDList[] = $folderName;
     }
 }
 
-$log->setAction("CRON_RUN_GARBAGE_COLLECT_XML_ARCHIVES");
+$systemLog->setAction("CRON_RUN_GARBAGE_COLLECT_XML_ARCHIVES");
 if(isset($deletedUUIDList) && is_array($deletedUUIDList) && !empty($deletedUUIDList)){
     foreach($deletedUUIDList as $deletedUUID){
-        $log->setDetail("Folder Name",$deletedUUID);
+        $systemLog->setDetail("Folder Name", $deletedUUID);
     }
 }
-$log->saveEntry();
+$systemLog->saveEntry();

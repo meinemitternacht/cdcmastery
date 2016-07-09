@@ -5,7 +5,7 @@
  * Date: 10/6/2015
  * Time: 1:02 AM
  */
-$flashCardManager = new flashCardManager($db,$log);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 
 $stmt = $db->prepare("SELECT systemLogData.dataType, systemLogData.data, action, timestamp, microtime FROM systemLogData LEFT JOIN systemLog ON systemLogData.logUUID=systemLog.uuid WHERE systemLog.action='FLASH_CARD_ADD' AND systemLogData.dataType='Card UUID' AND systemLog.microtime > '1444165738' AND systemLog.microtime < '1444167120' ORDER BY systemLog.microtime DESC");
 

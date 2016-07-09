@@ -8,31 +8,31 @@
 $baseUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if(!$baseUUID){
-    $baseUUID = $user->getUserBase();
+    $baseUUID = $userManager->getUserBase();
     if(empty($baseUUID)){
-        $sysMsg->addMessage("Your account settings do not specify a base.","danger");
+        $systemMessages->addMessage("Your account settings do not specify a base.", "danger");
         $cdcMastery->redirect("/errors/500");
     }
 }
 
 if(isset($_POST['baseUUID']) && !empty($_POST['baseUUID'])){
-    if($bases->loadBase($_POST['baseUUID'])){
+    if($baseManager->loadBase($_POST['baseUUID'])){
         $baseUUID = $_POST['baseUUID'];
     }
     else{
-        $sysMsg->addMessage("Invalid base specified.","warning");
+        $systemMessages->addMessage("Invalid base specified.", "warning");
     }
 }
 
 $filterDateObj = new DateTime();
 $filterDateObj->modify("-6 month");
 
-$statistics = new statistics($db,$log,$emailQueue,$memcache);
-$baseUserObj = new user($db,$log,$emailQueue);
-$userStatisticsObj = new userStatistics($db, $log, $roles, $memcache);
-$baseUsersUUIDList = $user->listUserUUIDByBase($baseUUID);
-$filteredBaseUsersUUIDList = $user->filterUserUUIDList($baseUsersUUIDList,"userLastActive",">",$filterDateObj->format("Y-m-d H:i:s"));
-$baseUsers = $user->sortUserUUIDList($filteredBaseUsersUUIDList, "userLastName");
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$baseUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$userStatisticsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
+$baseUsersUUIDList = $userManager->listUserUUIDByBase($baseUUID);
+$filteredBaseUsersUUIDList = $userManager->filterUserUUIDList($baseUsersUUIDList, "userLastActive", ">", $filterDateObj->format("Y-m-d H:i:s"));
+$baseUsers = $userManager->sortUserUUIDList($filteredBaseUsersUUIDList, "userLastName");
 $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
 ?>
 <div class="container">
@@ -40,7 +40,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
         <div class="12u">
             <section>
                 <header>
-                    <h2>Base Overview for <?php echo $bases->getBaseName($baseUUID); ?></h2>
+                    <h2>Base Overview for <?php echo $baseManager->getBaseName($baseUUID); ?></h2>
                 </header>
                 <p>
                     <em>Note: This base overview will only display data for individuals who have been active during the previous six months.</em>
@@ -61,7 +61,7 @@ $baseTestCount = $statistics->getTotalTestsByBase($baseUUID);
                                     class="input_full"
                                     size="1">
                                 <?php
-                                $baseList = $bases->listUserBases();
+                                $baseList = $baseManager->listUserBases();
                                 foreach($baseList as $baseListUUID => $baseName): ?>
                                     <?php if($baseUUID == $baseListUUID): ?>
                                         <option value="<?php echo $baseListUUID; ?>" SELECTED><?php echo $baseName; ?></option>

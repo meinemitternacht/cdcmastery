@@ -6,13 +6,13 @@
  * Time: 7:48 AM
  */
 
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
 if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] == true){
     if(!isset($_SESSION['deleteUUIDList'])){
-        $sysMsg->addMessage("You must select questions to delete.","warning");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
+        $systemMessages->addMessage("You must select questions to delete.", "warning");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/delete-questions");
     }
 
     $questionUUIDList = &$_SESSION['deleteUUIDList'];
@@ -26,12 +26,12 @@ if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] =
     }
 
     if($loopError && !empty($errorArray)){
-        $sysMsg->addMessage("There was a problem deleting the following questions: <br><em>" . implode(" , ",$errorArray) . "</em><br>Please contact the helpdesk for assistance.","danger");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
+        $systemMessages->addMessage("There was a problem deleting the following questions: <br><em>" . implode(" , ", $errorArray) . "</em><br>Please contact the helpdesk for assistance.", "danger");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/delete-questions");
     }
     else{
-        $sysMsg->addMessage("Questions deleted successfully.","success");
-        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
+        $systemMessages->addMessage("Questions deleted successfully.", "success");
+        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID());
     }
 } elseif(isset($_POST['showDeleteConfirmMessage']) && $_POST['showDeleteConfirmMessage'] == true){
     $_SESSION['deleteUUIDList'] = $_POST['questionUUIDList'];
@@ -39,8 +39,8 @@ if(isset($_POST['confirmQuestionsDelete']) && $_POST['confirmQuestionsDelete'] =
     foreach($_SESSION['deleteUUIDList'] as $questionUUID){
         if(!$questionManager->verifyQuestion($questionUUID)){
             unset($_SESSION['deleteUUIDList']);
-            $sysMsg->addMessage("There was a problem deleting those questions. Contact the helpdesk for assistance.","danger");
-            $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID()."/delete-questions");
+            $systemMessages->addMessage("There was a problem deleting those questions. Contact the helpdesk for assistance.", "danger");
+            $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID()."/delete-questions");
         }
     }
 }
@@ -57,7 +57,7 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
                 selected?  In order to maintain database integrity, questions are archived upon deletion and will not appear in any
                 future tests.
             </p>
-            <form action="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/delete-questions" method="POST">
+            <form action="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/delete-questions" method="POST">
                 <input type="hidden" name="confirmQuestionsDelete" id="confirmQuestionsDelete" value="1">
                 <input type="submit" value="Delete Selected Questions">
             </form>
@@ -143,7 +143,7 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
 
         </style>
         <!--<![endif]-->
-        <form action="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/delete-questions" method="POST">
+        <form action="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/delete-questions" method="POST">
             <input type="hidden" name="showDeleteConfirmMessage" id="showDeleteConfirmMessage" value="1">
             <input type="submit" value="Delete Selected Questions">
             <table id="question-list-table-1">
@@ -154,8 +154,8 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
                 <?php foreach($questionList as $questionUUID): ?>
                     <?php
                     if(!$questionManager->loadQuestion($questionUUID)){
-                        $sysMsg->addMessage($questionManager->error,"danger");
-                        $cdcMastery->redirect("/admin/cdc-data/".$afsc->getUUID());
+                        $systemMessages->addMessage($questionManager->error, "danger");
+                        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID());
                     }
                     ?>
                     <tr>

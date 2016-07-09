@@ -1,5 +1,5 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->listUserIncompleteTests($userUUID);
 
 if(!empty($testList)): ?>
@@ -111,7 +111,7 @@ if(!empty($testList)): ?>
                                 $rawAFSCList = $testDetails['afscList'];
 
                                 foreach($rawAFSCList as $key => $val){
-                                    $rawAFSCList[$key] = $afsc->getAFSCName($val);
+                                    $rawAFSCList[$key] = $afscManager->getAFSCName($val);
                                 }
 
                                 if(count($rawAFSCList) > 1){
@@ -149,6 +149,6 @@ if(!empty($testList)): ?>
     </div>
 <?php
 else:
-    $sysMsg->addMessage("This user has no incomplete tests.","info");
+    $systemMessages->addMessage("This user has no incomplete tests.", "info");
     $cdcMastery->redirect("/admin/users/" . $userUUID);
 endif;

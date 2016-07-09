@@ -11,12 +11,12 @@
  * records for the user in the rest of the database.
  */
 
-$roleObj = new roles($db,$log,$emailQueue);
-$officeSymbolObj = new officeSymbol($db,$log);
-$userStatisticsObj = new userStatistics($db,$log,$roleObj,$memcache);
-$afscObj = new afsc($db,$log);
-$userObj = new user($db,$log,$emailQueue);
-$associationsObj = new associations($db,$log,$userObj,$afscObj,$emailQueue);
+$roleObj = new CDCMastery\RoleManager($db, $systemLog, $emailQueue);
+$officeSymbolObj = new CDCMastery\OfficeSymbolManager($db, $systemLog);
+$userStatisticsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleObj, $memcache);
+$afscObj = new CDCMastery\AFSCManager($db, $systemLog);
+$userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$associationsObj = new CDCMastery\AssociationManager($db, $systemLog, $userObj, $afscObj, $emailQueue);
 
 $userObj->setUserFirstName("Sample");
 $userObj->setUserLastName("User");
@@ -38,6 +38,6 @@ $associationsObj->addAFSCAssociation($userObj->getUUID(),$afscObj->getAFSCUUIDBy
 $associationsObj->addSupervisorAssociation($userObj->getUUIDByHandle("sample.supervisor"),$userObj->getUUID());
 $associationsObj->addTrainingManagerAssociation($userObj->getUUIDByHandle("unit.training.manager"),$userObj->getUUID());
 
-$log->setAction("TEST_ACTION");
-$log->setUserUUID($userObj->getUUID());
-$log->saveEntry();
+$systemLog->setAction("TEST_ACTION");
+$systemLog->setUserUUID($userObj->getUUID());
+$systemLog->saveEntry();

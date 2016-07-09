@@ -14,24 +14,24 @@ else{
 }
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to use the Supervisor Overview.","danger");
+    $systemMessages->addMessage("You are not authorized to use the Supervisor Overview.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 
-if($roles->getRoleType($user->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
-    $sysMsg->addMessage("That user is not a Supervisor.","warning");
+if($roleManager->getRoleType($userManager->getUserRoleByUUID($supervisorUUID)) != "supervisor"){
+    $systemMessages->addMessage("That user is not a Supervisor.", "warning");
     $cdcMastery->redirect("/errors/500");
 }
 
-$supUser = new user($db,$log,$emailQueue);
-$supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+$supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
 $supOverview->loadSupervisor($supervisorUUID);
 
-$subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
+$subordinateUsers = $userManager->sortUserUUIDList($supOverview->getSubordinateUserList(), "userLastName");
 
 if(empty($subordinateUsers)):
-    $sysMsg->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.","info");
+    $systemMessages->addMessage("You do not have any subordinate users.  Please associate users with your account using the form below.", "info");
     $cdcMastery->redirect("/supervisor/subordinates");
 endif;
 
@@ -187,7 +187,7 @@ $totalUserTestCount = $supOverview->getTotalUserTests();
                     <h2>Top Questions Missed</h2>
                     <ul>
                         <?php foreach($superAFSCUUIDArray as $superAFSCUUID): ?>
-                            <li><a href="/supervisor/top-missed/<?php echo $superAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afsc->getAFSCName($superAFSCUUID); ?></a></li>
+                            <li><a href="/supervisor/top-missed/<?php echo $superAFSCUUID; echo (!empty($_SESSION['vars'][0])) ? "/".$_SESSION['vars'][0] : ""; ?>"><?php echo $afscManager->getAFSCName($superAFSCUUID); ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </section>

@@ -6,9 +6,9 @@
  * Time: 8:13 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
-$afscList = $afsc->listAFSCUUID(false);
+$afscList = $afscManager->listAFSCUUID(false);
 
 $chartData = "";
 $firstRow = true;
@@ -25,7 +25,7 @@ foreach($afscPassRateArray as $afscUUID => $afscData){
             $afscPassRateData .= ",";
         }
 
-        $afscPassRateData .= "{ x: " . $i . ", toolTipContent: \"" . $afsc->getAFSCName($afscUUID) . ": {y}%\", y: " . $afscData['passRate'] . " }";
+        $afscPassRateData .= "{ x: " . $i . ", toolTipContent: \"" . $afscManager->getAFSCName($afscUUID) . ": {y}%\", y: " . $afscData['passRate'] . " }";
         $firstRow = false;
         $i++;
     }
@@ -80,7 +80,7 @@ foreach($afscPassRateArray as $afscUUID => $afscData){
                     <?php foreach($afscPassRateArray as $afscUUID => $afscData): ?>
                         <?php if($afscData['totalTests'] > 0): ?>
                         <tr>
-                            <td><?php echo $afsc->getAFSCName($afscUUID); ?></td>
+                            <td><?php echo $afscManager->getAFSCName($afscUUID); ?></td>
                             <td><?php echo $afscData['totalTests']; ?></td>
                             <td><?php echo $afscData['passingTests']; ?></td>
                             <td><?php echo $afscData['passRate']; ?>%</td>

@@ -6,7 +6,7 @@
  * Time: 7:25 AM
  */
 
-$flashCardManager = new flashCardManager($db,$log);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 $action = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 ?>
@@ -66,7 +66,7 @@ $workingChild = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
                     </section>
                     <?php
                 else:
-                    $sysMsg->addMessage("You do not have any flash card categories.  Add one below!","info");
+                    $systemMessages->addMessage("You do not have any flash card categories.  Add one below!", "info");
                     $cdcMastery->redirect("/cards/categories/add");
                 endif; ?>
                 <?php

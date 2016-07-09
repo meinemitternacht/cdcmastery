@@ -5,10 +5,10 @@
  * Date: 6/16/16
  * Time: 1:04 AM
  */
-$roleAuth = new userAuthorizationQueue($db,$log,$emailQueue);
+$roleAuth = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
-if($roleAuth->checkUserRoleAuthorization($user->getUUID(),$roles->getRoleUUIDByName("Supervisors")) || $roleAuth->checkUserRoleAuthorization($user->getUUID(),$roles->getRoleUUIDByName("TrainingManagers"))){
-    $sysMsg->addMessage("You are already awaiting approval for a role request.  Please wait until that has been approved or disapproved before requesting a new role.","caution");
+if($roleAuth->checkUserRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("Supervisors")) || $roleAuth->checkUserRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("TrainingManagers"))){
+    $systemMessages->addMessage("You are already awaiting approval for a role request.  Please wait until that has been approved or disapproved before requesting a new role.", "caution");
     $cdcMastery->redirect("/");
 }
 
@@ -17,33 +17,33 @@ $requestedRole = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 if($requestedRole){
     switch($requestedRole){
         case "supervisor":
-            if($user->getUserRole() == $roles->getRoleUUIDByName("Users")){
-                if($roleAuth->queueRoleAuthorization($user->getUUID(),$roles->getRoleUUIDByName("Supervisors"))){
-                    $sysMsg->addMessage("Your request has been received and queued.  When your request is approved, you should receive a confirmation e-mail.","success");
+            if($userManager->getUserRole() == $roleManager->getRoleUUIDByName("Users")){
+                if($roleAuth->queueRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("Supervisors"))){
+                    $systemMessages->addMessage("Your request has been received and queued.  When your request is approved, you should receive a confirmation e-mail.", "success");
                     $cdcMastery->redirect("/");
                 }
                 else{
-                    $sysMsg->addMessage("Sorry, your request could not be processed.  Please contact the help desk.","danger");
+                    $systemMessages->addMessage("Sorry, your request could not be processed.  Please contact the help desk.", "danger");
                 }
             }
             else{
-                $sysMsg->addMessage("Sorry, you cannot request the supervisor role.  Contact the help desk if you have any questions.","danger");
+                $systemMessages->addMessage("Sorry, you cannot request the supervisor role.  Contact the help desk if you have any questions.", "danger");
             }
             break;
         case "training-manager":
-            if($user->getUserRole() == $roles->getRoleUUIDByName("Users") || $user->getUserRole() == $roles->getRoleUUIDByName("Supervisors")){
-                $roleAuth = new userAuthorizationQueue($db,$log,$emailQueue);
+            if($userManager->getUserRole() == $roleManager->getRoleUUIDByName("Users") || $userManager->getUserRole() == $roleManager->getRoleUUIDByName("Supervisors")){
+                $roleAuth = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
-                if($roleAuth->queueRoleAuthorization($user->getUUID(),$roles->getRoleUUIDByName("Training Managers"))){
-                    $sysMsg->addMessage("Your request has been received and queued.  When your request is approved, you should receive a confirmation e-mail.","success");
+                if($roleAuth->queueRoleAuthorization($userManager->getUUID(), $roleManager->getRoleUUIDByName("Training Managers"))){
+                    $systemMessages->addMessage("Your request has been received and queued.  When your request is approved, you should receive a confirmation e-mail.", "success");
                     $cdcMastery->redirect("/");
                 }
                 else{
-                    $sysMsg->addMessage("Sorry, your request could not be processed.  Please contact the help desk.","danger");
+                    $systemMessages->addMessage("Sorry, your request could not be processed.  Please contact the help desk.", "danger");
                 }
             }
             else{
-                $sysMsg->addMessage("Sorry, you cannot request the supervisor role.  Contact the help desk if you have any questions.","danger");
+                $systemMessages->addMessage("Sorry, you cannot request the supervisor role.  Contact the help desk if you have any questions.", "danger");
             }
             break;
     }

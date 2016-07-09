@@ -1,7 +1,7 @@
 <?php
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
-$userStatsObj = new userStatistics($db, $log, $roles, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
+$userStatsObj = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 
 $userStatsObj->setUserUUID($userUUID);
 $topMissedQuestionArray = $userStatsObj->getQuestionsMissedAcrossTests();
@@ -113,7 +113,7 @@ if(!empty($topMissedQuestionArray)): ?>
                                     <strong>Q:</strong> &nbsp;<?php echo $questionManager->getQuestionText();  ?><br>
                                     <strong>A:</strong> &nbsp;<?php echo $answerManager->getAnswerText(); ?>
                                 </td>
-                                <td><?php echo $afsc->getAFSCName($questionManager->getAFSCUUID()); ?></td>
+                                <td><?php echo $afscManager->getAFSCName($questionManager->getAFSCUUID()); ?></td>
                                 <td><?php echo $timesMissed; ?></td>
                                 <td><a href="/admin/cdc-data/<?php echo $questionManager->getAFSCUUID(); ?>/question/<?php echo $questionUUID; ?>/view">Manage</a></td>
                             </tr>
@@ -125,6 +125,6 @@ if(!empty($topMissedQuestionArray)): ?>
     </div>
     <?php
 else:
-    $sysMsg->addMessage("There is not enough data in the database to build this page.  Check back after this user has taken more tests.","info");
+    $systemMessages->addMessage("There is not enough data in the database to build this page.  Check back after this user has taken more tests.", "info");
     $cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

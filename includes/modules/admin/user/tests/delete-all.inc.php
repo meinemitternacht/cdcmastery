@@ -1,15 +1,15 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 $testList = $testManager->getTestUUIDList($userUUID);
 
 if(!empty($testList)):
     if(isset($_POST['confirmTestDeleteAll'])){
         if($testManager->deleteTests($testList)){
-            $sysMsg->addMessage("Completed tests deleted successfully.","success");
+            $systemMessages->addMessage("Completed tests deleted successfully.", "success");
             $cdcMastery->redirect("/admin/users/" . $userUUID);
         }
         else{
-            $sysMsg->addMessage("We could not delete the completed tests taken by this user, please contact the support helpdesk.","danger");
+            $systemMessages->addMessage("We could not delete the completed tests taken by this user, please contact the support helpdesk.", "danger");
             $cdcMastery->redirect("/admin/users/" . $userUUID);
         }
     }
@@ -51,6 +51,6 @@ if(!empty($testList)):
     <?php
     }
 else:
-    $sysMsg->addMessage("This user has not completed any tests.","info");
+    $systemMessages->addMessage("This user has not completed any tests.", "info");
     $cdcMastery->redirect("/admin/users/".$userUUID);
 endif;

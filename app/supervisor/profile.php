@@ -3,31 +3,31 @@ if(isset($_SESSION['vars'][0])):
 	$targetUUID = $_SESSION['vars'][0];
 
     if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-        $sysMsg->addMessage("You are not authorized to use the Supervisor profile page.","danger");
+        $systemMessages->addMessage("You are not authorized to use the Supervisor profile page.", "danger");
         $cdcMastery->redirect("/errors/403");
     }
 
-    $supUser = new user($db,$log,$emailQueue);
-    $supOverview = new supervisorOverview($db,$log,$userStatistics,$supUser,$roles);
+    $supUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+    $supOverview = new CDCMastery\SupervisorOverview($db, $systemLog, $userStatistics, $supUser, $roleManager);
 
     $supOverview->loadSupervisor($_SESSION['userUUID']);
 
-    $subordinateUsers = $user->sortUserUUIDList($supOverview->getSubordinateUserList(),"userLastName");
+    $subordinateUsers = $userManager->sortUserUUIDList($supOverview->getSubordinateUserList(), "userLastName");
 
     if(empty($subordinateUsers)):
-        $sysMsg->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.","info");
+        $systemMessages->addMessage("You do not have any subordinate users. Please associate users with your account using the form below.", "info");
         $cdcMastery->redirect("/supervisor/subordinates");
     endif;
 
     if(!in_array($targetUUID,$subordinateUsers)){
-        $sysMsg->addMessage("That user is not associated with your account.","danger");
+        $systemMessages->addMessage("That user is not associated with your account.", "danger");
         $cdcMastery->redirect("/supervisor/overview");
     }
 
-	$userProfile = new user($db, $log, $emailQueue);
-	$userProfileStatistics = new userStatistics($db, $log, $roles, $memcache);
+	$userProfile = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+	$userProfileStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
 	if(!$userProfile->loadUser($targetUUID)){
-		$sysMsg->addMessage("That user does not exist.","warning");
+		$systemMessages->addMessage("That user does not exist.", "warning");
 	}
 	else{
 		$userProfileStatistics->setUserUUID($targetUUID);
@@ -121,11 +121,11 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Base</th>
-								<td><?php echo $bases->getBaseName($userProfile->getUserBase()); ?></td>
+								<td><?php echo $baseManager->getBaseName($userProfile->getUserBase()); ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Office Symbol</th>
-								<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbol->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
+								<td><?php if($userProfile->getUserOfficeSymbol()){ echo $officeSymbolManager->getOfficeSymbol($userProfile->getUserOfficeSymbol()); } else { echo "N/A"; } ?></td>
 							</tr>
 							<tr>
 								<th class="th-child">Date Registered</th>
@@ -141,7 +141,7 @@ if(isset($_SESSION['vars'][0])):
 							</tr>
 							<tr>
 								<th class="th-child">Role</th>
-								<td><?php echo $roles->getRoleName($userProfile->getUserRole()); ?></td>
+								<td><?php echo $roleManager->getRoleName($userProfile->getUserRole()); ?></td>
 							</tr>
 							<tr>
 								<th colspan="2">Personal Details</th>
@@ -172,7 +172,7 @@ if(isset($_SESSION['vars'][0])):
 									}
 									else{
 										foreach($userAFSCList as $userAFSCuuid => $afscData){
-											echo $afsc->getAFSCName($userAFSCuuid)."<br>";
+											echo $afscManager->getAFSCName($userAFSCuuid)."<br>";
 										}
 									}
 									?>
@@ -189,7 +189,7 @@ if(isset($_SESSION['vars'][0])):
 									}
 									else{
 										foreach($afscList as $userAFSCuuid => $afscData){
-											echo $afsc->getAFSCName($userAFSCuuid)."<br />";
+											echo $afscManager->getAFSCName($userAFSCuuid)."<br />";
 										}
 									}
 									?>
@@ -239,7 +239,7 @@ if(isset($_SESSION['vars'][0])):
 								<th colspan="2"><div class="text-float-left">User Associations</div></th>
 							</tr>
 							<?php
-							$userRole = $roles->verifyUserRole($targetUUID);
+							$userRole = $roleManager->verifyUserRole($targetUUID);
 							if($userRole == "supervisor"): ?>
 							<tr>
 								<th class="th-child">Supervisor For</th>
@@ -349,7 +349,7 @@ if(isset($_SESSION['vars'][0])):
 							</ul>
 							<div id="history-tabs-1">
 							<?php 
-							$testManager = new testManager($db, $log, $afsc);
+							$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 							$userTestArray = $testManager->listUserTests($targetUUID,10);
 							
 							if($userTestArray): ?>
@@ -366,7 +366,7 @@ if(isset($_SESSION['vars'][0])):
 									<?php foreach($userTestArray as $testUUID => $testData): ?>
 										<tr>
 											<td><?php echo $testData['testTimeCompleted']; ?></td>
-											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php echo $testData['testScore']; ?></td>
 											<td>
 												<a href="/test/view/<?php echo $testUUID; ?>">View</a>
@@ -400,7 +400,7 @@ if(isset($_SESSION['vars'][0])):
 											<td><?php echo $testData['timeStarted']; ?></td>
 											<td><?php echo $testData['questionsAnswered']; ?></td>
 											<td><?php echo $testData['totalQuestions']; ?></td>
-											<td title="<?php array_walk_recursive($testData['afscList'],array($afsc,'getAFSCNameCallback')); echo implode(", ",$testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
+											<td title="<?php array_walk_recursive($testData['afscList'],array($afscManager,'getAFSCNameCallback')); echo implode(", ", $testData['afscList']); ?>"><?php if(count($testData['afscList']) > 1){ echo "Multiple (hover to view)"; }else{ echo $testData['afscList'][0]; } ?></td>
 											<td><?php if($testData['combinedTest']){ echo "Yes"; } else { echo "No"; } ?></td>
 										</tr>
 									<?php endforeach; ?>
@@ -420,7 +420,7 @@ if(isset($_SESSION['vars'][0])):
 										<th>&nbsp;</th>
 									</tr>
 									<?php 
-									$logFilter = new logFilter($db, $user);
+									$logFilter = new CDCMastery\SystemLogFilter($db, $userManager);
 									$logFilter->setFilterUserUUID($targetUUID);
 									$logFilter->setPageRows(10);
 									$logFilter->setRowOffset(0);
@@ -471,7 +471,7 @@ if(isset($_SESSION['vars'][0])):
 		<?php
 	}
 else:
-    $sysMsg->addMessage("You must select a user profile to view.","warning");
+    $systemMessages->addMessage("You must select a user profile to view.", "warning");
     $cdcMastery->redirect("/supervisor/overview");
 endif;
 ?>

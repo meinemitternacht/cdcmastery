@@ -5,10 +5,10 @@
  * Date: 10/3/2015
  * Time: 2:13 AM
  */
-$answerManager = new answerManager($db,$log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
-$afscList = $afsc->listAFSCUUID(true);
+$afscList = $afscManager->listAFSCUUID(true);
 ?>
 <div class="container">
     <div class="row">
@@ -21,13 +21,13 @@ $afscList = $afsc->listAFSCUUID(true);
                 </tr>
             <?php
             foreach($afscList as $afscUUID){
-                $afsc->loadAFSC($afscUUID);
+                $afscManager->loadAFSC($afscUUID);
                 $questionManager->setAFSCUUID($afscUUID);
                 $questionList = $questionManager->listQuestionsForAFSC();
 
                 if(is_array($questionList)) {
                     foreach ($questionList as $questionUUID) {
-                        if($afsc->afscFOUO){
+                        if($afscManager->afscFOUO){
                             $questionManager->setFOUO(true);
                         }
                         else{
@@ -41,8 +41,8 @@ $afscList = $afsc->listAFSCUUID(true);
                             //$questionManager->setQuestionText($questionText);
                             ?>
                             <tr>
-                                <td><?php echo $afsc->getAFSCName(); ?></td>
-                                <td><a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $questionUUID; ?>/edit">Edit</a></td>
+                                <td><?php echo $afscManager->getAFSCName(); ?></td>
+                                <td><a href="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/question/<?php echo $questionUUID; ?>/edit">Edit</a></td>
                                 <td><?php echo $questionText; ?></td>
                                 <td><?php /*if($questionManager->saveQuestion()){ echo "Updated"; } else { echo "Not updated."; } */ ?></td>
                             </tr>

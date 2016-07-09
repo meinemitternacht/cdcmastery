@@ -1,8 +1,8 @@
 <?php
 if(!empty($_SESSION['userUUID'])) {
-	$log->setAction("LOGOUT_SUCCESS");
-	$log->setUserUUID($_SESSION['userUUID']);
-	$log->saveEntry();
+	$systemLog->setAction("LOGOUT_SUCCESS");
+	$systemLog->setUserUUID($_SESSION['userUUID']);
+	$systemLog->saveEntry();
 }
 
 session_destroy();

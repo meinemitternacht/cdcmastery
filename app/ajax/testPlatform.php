@@ -7,7 +7,7 @@
  * Data is requested and sent through POST method.
  */
 
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_SESSION['vars'][0]))
 	$testUUID = $_SESSION['vars'][0];
@@ -32,12 +32,12 @@ if(isset($testUUID)){
 						}
 					}
 					else{
-						$log->setAction("ERROR_TEST_AJAX_ANSWER_EMPTY");
-						$log->setDetail("Test UUID",$testUUID);
-						$log->setDetail("Action Data",$actionData);
-						$log->setDetail("Question UUID",$testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)]);
-						$log->setDetail("Questions Answered",$testManager->getIncompleteQuestionsAnswered());
-						$log->saveEntry();
+						$systemLog->setAction("ERROR_TEST_AJAX_ANSWER_EMPTY");
+						$systemLog->setDetail("Test UUID", $testUUID);
+						$systemLog->setDetail("Action Data", $actionData);
+						$systemLog->setDetail("Question UUID", $testManager->incompleteQuestionList[($testManager->incompleteCurrentQuestion - 1)]);
+						$systemLog->setDetail("Questions Answered", $testManager->getIncompleteQuestionsAnswered());
+						$systemLog->saveEntry();
 					}
 				break;
 				case "firstQuestion":
@@ -58,12 +58,12 @@ if(isset($testUUID)){
 					}
 				break;
 				default:
-					$log->setAction("AJAX_ACTION_ERROR");
-					$log->setDetail("CALLING SCRIPT","/ajax/testPlatform");
-					$log->setDetail("TEST UUID",$testUUID);
-					$log->setDetail("USER ACTION",$userAction);
-					$log->setDetail("ACTION DATA",$actionData);
-					$log->saveEntry();
+					$systemLog->setAction("AJAX_ACTION_ERROR");
+					$systemLog->setDetail("CALLING SCRIPT", "/ajax/testPlatform");
+					$systemLog->setDetail("TEST UUID", $testUUID);
+					$systemLog->setDetail("USER ACTION", $userAction);
+					$systemLog->setDetail("ACTION DATA", $actionData);
+					$systemLog->saveEntry();
 				break;
 			}
 		}
@@ -87,10 +87,10 @@ if(isset($testUUID)){
 	}
 }
 else{
-	$log->setAction("AJAX_DIRECT_ACCESS");
-	$log->setDetail("CALLING SCRIPT","/ajax/testPlatform");
-	$log->saveEntry();
+	$systemLog->setAction("AJAX_DIRECT_ACCESS");
+	$systemLog->setDetail("CALLING SCRIPT", "/ajax/testPlatform");
+	$systemLog->saveEntry();
 
-	$sysMsg->addMessage("Direct access to this script is not authorized.","danger");
+	$systemMessages->addMessage("Direct access to this script is not authorized.", "danger");
 	$cdcMastery->redirect("/errors/403");
 }

@@ -6,9 +6,9 @@
  * Time: 2:29 AM
  */
 
-$statistics = new statistics($db,$log,$emailQueue,$memcache);
-$answerManager = new answerManager($db, $log);
-$questionManager = new questionManager($db,$log,$afsc,$answerManager);
+$statistics = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
+$questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 $questionManager->setAFSCUUID($workingAFSC);
 
 $questionList = $questionManager->listQuestionsForAFSC();
@@ -103,7 +103,7 @@ else{
                 }
                 ?>
                 <tr>
-                    <td><a href="/admin/cdc-data/<?php echo $afsc->getUUID(); ?>/question/<?php echo $uuid; ?>/view"><?php echo $cdcMastery->formatOutputString($questionManager->getQuestionText(),80);  ?></a></td>
+                    <td><a href="/admin/cdc-data/<?php echo $afscManager->getUUID(); ?>/question/<?php echo $uuid; ?>/view"><?php echo $cdcMastery->formatOutputString($questionManager->getQuestionText(), 80);  ?></a></td>
                     <td><?php echo $questionOccurrences; ?></td>
                     <?php if($percentCorrect >= 80): ?>
                         <td class="text-success"><?php echo $percentCorrect; ?>%</td>

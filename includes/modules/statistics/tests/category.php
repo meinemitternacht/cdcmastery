@@ -6,9 +6,9 @@
  * Time: 8:13 PM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 
-$afscList = $afsc->listAFSCUUID(false);
+$afscList = $afscManager->listAFSCUUID(false);
 
 $chartData = "";
 $firstRow = true;
@@ -24,7 +24,7 @@ foreach($testAFSCArray as $afscUUID => $dataRow){
         $testAFSCData .= ",";
     }
 
-    $testAFSCData .= "{ x: " . $i . ", toolTipContent: \"" . $afsc->getAFSCName($afscUUID) . ": {y}\", y: " . $dataRow['count'] . " }";
+    $testAFSCData .= "{ x: " . $i . ", toolTipContent: \"" . $afscManager->getAFSCName($afscUUID) . ": {y}\", y: " . $dataRow['count'] . " }";
     $firstRow = false;
     $i++;
 }
@@ -75,7 +75,7 @@ foreach($testAFSCArray as $afscUUID => $dataRow){
                     </tr>
                     <?php foreach($testAFSCArray as $afscUUID => $afscDataRow): ?>
                         <tr>
-                            <td><?php echo $afsc->getAFSCName($afscUUID); ?></td>
+                            <td><?php echo $afscManager->getAFSCName($afscUUID); ?></td>
                             <td><?php echo number_format($afscDataRow['count']); ?></td>
                             <td><?php if($afscDataRow['average'] > 0) { echo number_format($afscDataRow['average'],2) . "%"; } else { echo "&nbsp;"; } ?></td>
                         </tr>

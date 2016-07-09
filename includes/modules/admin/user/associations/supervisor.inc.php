@@ -5,7 +5,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 				
 			foreach($_POST['userUUID'] as $supervisorUUID):
-				if(!$assoc->addSupervisorAssociation($supervisorUUID,$userUUID)):
+				if(!$associationManager->addSupervisorAssociation($supervisorUUID, $userUUID)):
 					$error = true;
 				endif;
 			endforeach;
@@ -21,7 +21,7 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			$error = false;
 				
 			foreach($_POST['userUUID'] as $supervisorUUID):
-				if(!$assoc->deleteSupervisorAssociation($supervisorUUID,$userUUID)):
+				if(!$associationManager->deleteSupervisorAssociation($supervisorUUID, $userUUID)):
 					$error = true;
 				endif;
 			endforeach;
@@ -37,8 +37,8 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 }
 
 $userStatistics->setUserUUID($userUUID);
-$assocSupervisorList = $user->sortUserList($userStatistics->getUserSupervisors(),"userLastName");
-$supervisorList = $user->sortUserList($roles->listSupervisors(),"userLastName");
+$assocSupervisorList = $userManager->sortUserList($userStatistics->getUserSupervisors(), "userLastName");
+$supervisorList = $userManager->sortUserList($roleManager->listSupervisors(), "userLastName");
 $supervisorCount = $userStatistics->getUserSupervisorCount();
 ?>
 <script type="text/javascript">

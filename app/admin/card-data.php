@@ -6,7 +6,7 @@
  * Time: 1:59 PM
  */
 
-$flashCardManager = new flashCardManager($db,$log);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 $workingChild = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 $action = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
@@ -77,7 +77,7 @@ $actionChild = isset($_SESSION['vars'][2]) ? $_SESSION['vars'][2] : false;
                 <?php
             else:
                 if(!$flashCardManager->loadCardCategory($workingChild)){
-                    $sysMsg->addMessage("That flash card category does not exist.","warning");
+                    $systemMessages->addMessage("That flash card category does not exist.", "warning");
                     $cdcMastery->redirect("/admin/card-data");
                 }
 

@@ -5,12 +5,12 @@ $baseUUID = isset($_SESSION['vars'][1]) ? $_SESSION['vars'][1] : false;
 if($action){
 	if($action == "add"): 
 		if(isset($_POST['baseName'])):
-			if($bases->addBase($_POST['baseName'])){
-				$sysMsg->addMessage("Base added successfully.","success");
+			if($baseManager->addBase($_POST['baseName'])){
+				$systemMessages->addMessage("Base added successfully.", "success");
 				$cdcMastery->redirect("/admin/bases");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem adding the Base.","danger");
+				$systemMessages->addMessage("There was a problem adding the Base.", "danger");
 				$cdcMastery->redirect("/admin/bases/add");
 			}
 		else: ?>
@@ -35,16 +35,16 @@ if($action){
 	<?php
 	elseif($action == "edit"):
 		if(isset($_POST['baseName'])):
-			if($bases->editBase($baseUUID,$_POST['baseName'])){
-				$sysMsg->addMessage("Base edited successfully.","success");
+			if($baseManager->editBase($baseUUID, $_POST['baseName'])){
+				$systemMessages->addMessage("Base edited successfully.", "success");
 				$cdcMastery->redirect("/admin/bases");
 			}
 			else{
-				$sysMsg->addMessage("There was a problem editing that base.","danger");
+				$systemMessages->addMessage("There was a problem editing that base.", "danger");
 				$cdcMastery->redirect("/admin/bases/edit/" . $baseUUID);
 			}
 		else: 
-			if($bases->loadBase($baseUUID)): ?>
+			if($baseManager->loadBase($baseUUID)): ?>
 				<div class="container">
 					<div class="row">
 						<div class="8u">
@@ -55,7 +55,7 @@ if($action){
 								<form action="/admin/bases/edit/<?php echo $baseUUID; ?>" method="POST">
 									<label for="baseName">Base Name</label>
 									<br>
-									<input type="text" name="baseName" value="<?php echo $bases->getBaseName(); ?>">
+									<input type="text" name="baseName" value="<?php echo $baseManager->getBaseName(); ?>">
 									<input type="submit" value="Edit Base">
 								</form>
 							</section>
@@ -64,18 +64,18 @@ if($action){
 				</div>
 			<?php
 			else:
-				$sysMsg->addMessage("That base does not exist.","danger");
+				$systemMessages->addMessage("That base does not exist.", "danger");
 				$cdcMastery->redirect("/admin/bases");
 			endif;
 		endif; ?>
 	<?php
 	elseif($action == "delete"):
-		if($bases->deleteBase($baseUUID)){
-			$sysMsg->addMessage("Base deleted successfully.","success");
+		if($baseManager->deleteBase($baseUUID)){
+			$systemMessages->addMessage("Base deleted successfully.", "success");
 			$cdcMastery->redirect("/admin/bases");
 		}
 		else{
-			$sysMsg->addMessage("There was a problem deleting that base.","danger");
+			$systemMessages->addMessage("There was a problem deleting that base.", "danger");
 			$cdcMastery->redirect("/admin/bases");
 		}
 	endif;
@@ -84,7 +84,7 @@ else{
 	/*
 	 * Show list of office symbols with options
 	 */
-	$baseList = $bases->listBases();
+	$baseList = $baseManager->listBases();
 	?>
 	<div class="container">
 		<div class="row">

@@ -1,11 +1,11 @@
 <?php
-if(!$user->verifyUser($userUUID)){
-    $sysMsg->addMessage("That user does not exist.","warning");
+if(!$userManager->verifyUser($userUUID)){
+    $systemMessages->addMessage("That user does not exist.", "warning");
     $cdcMastery->redirect("/admin/users");
 }
 
-if($roles->getRoleType($objUser->getUserRole()) == "admin" && $roles->getRoleType($user->getUserRole()) != "admin"){
-    $sysMsg->addMessage("You cannot edit administrators unless you are an administrator.");
+if($roleManager->getRoleType($objUser->getUserRole()) == "admin" && $roleManager->getRoleType($userManager->getUserRole()) != "admin"){
+    $systemMessages->addMessage("You cannot edit administrators unless you are an administrator.");
     $cdcMastery->redirect("/admin/users/".$userUUID);
 }
 
@@ -15,14 +15,14 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     $error = false;
 
-    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If their base is not listed, choose 'Other'.","warning"); $error = true; }
-    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userRole'])){ $sysMsg->addMessage("User role cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userHandle'])){ $systemMessages->addMessage("Username cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userRank'])){ $systemMessages->addMessage("Rank cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userEmail'])){ $systemMessages->addMessage("E-mail address cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userFirstName'])){ $systemMessages->addMessage("First name cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userLastName'])){ $systemMessages->addMessage("Last name cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userBase'])){ $systemMessages->addMessage("Base cannot be empty.  If their base is not listed, choose 'Other'.", "warning"); $error = true; }
+    if(empty($_POST['timeZone'])){ $systemMessages->addMessage("Time zone cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userRole'])){ $systemMessages->addMessage("User role cannot be empty.", "warning"); $error = true; }
 
     if($error){
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
@@ -32,15 +32,15 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      * Check userHandle and userEmail to ensure collisions don't take place
      */
     if($_POST['userHandle'] != $objUser->getUserHandle()) {
-        if ($user->getUUIDByHandle($_POST['userHandle'])) {
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
+        if ($userManager->getUUIDByHandle($_POST['userHandle'])) {
+            $systemMessages->addMessage("That username is already in use.  Please choose a different one.", "warning");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
         }
     }
 
     if($_POST['userEmail'] != $objUser->getUserEmail()) {
-        if ($user->getUUIDByEmail($_POST['userEmail'])) {
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.","warning");
+        if ($userManager->getUUIDByEmail($_POST['userEmail'])) {
+            $systemMessages->addMessage("That e-mail address is already in use.  Please choose a different one.", "warning");
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
         }
     }
@@ -52,7 +52,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
             $objUser->setUserPassword($_POST['user-pw-edit']);
         } else {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError,"warning");
+                $systemMessages->addMessage($complexityCheckError, "warning");
             }
 
             $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
@@ -60,7 +60,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     }
 
     if(empty($_POST['userOfficeSymbol'])){
-        $notListedOfficeSymbol = $officeSymbol->getOfficeSymbolByName("Not Listed");
+        $notListedOfficeSymbol = $officeSymbolManager->getOfficeSymbolByName("Not Listed");
         if($notListedOfficeSymbol){
             $objUser->setUserOfficeSymbol($notListedOfficeSymbol);
         }
@@ -77,44 +77,44 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserRank($_POST['userRank']);
     $objUser->setUserTimeZone($_POST['timeZone']);
 
-    $objUserStatistics = new userStatistics($db, $log, $roles, $memcache);
+    $objUserStatistics = new CDCMastery\UserStatisticsModule($db, $systemLog, $roleManager, $memcache);
     $objUserStatistics->setUserUUID($objUser->getUUID());
 
     /**
      * Migrate Supervisor Subordinates to Training Manager
      */
-    if($roles->getRoleType($objUser->getUserRole()) == "supervisor" && $roles->getRoleType($_POST['userRole']) == "trainingManager"){
+    if($roleManager->getRoleType($objUser->getUserRole()) == "supervisor" && $roleManager->getRoleType($_POST['userRole']) == "trainingManager"){
         if($objUserStatistics->getSupervisorSubordinateCount() > 0){
             $subordinateList = $objUserStatistics->getSupervisorAssociations();
 
             if(count($subordinateList) > 1){
                 foreach($subordinateList as $subordinateUUID){
-                    $assoc->addTrainingManagerAssociation($objUser->getUUID(),$subordinateUUID);
-                    $assoc->deleteSupervisorAssociation($objUser->getUUID(),$subordinateUUID);
+                    $associationManager->addTrainingManagerAssociation($objUser->getUUID(), $subordinateUUID);
+                    $associationManager->deleteSupervisorAssociation($objUser->getUUID(), $subordinateUUID);
                 }
             }
             else{
-                $assoc->addTrainingManagerAssociation($objUser->getUUID(),$subordinateList[0]);
-                $assoc->deleteSupervisorAssociation($objUser->getUUID(),$subordinateList[0]);
+                $associationManager->addTrainingManagerAssociation($objUser->getUUID(), $subordinateList[0]);
+                $associationManager->deleteSupervisorAssociation($objUser->getUUID(), $subordinateList[0]);
             }
 
             if($objUserStatistics->getSupervisorSubordinateCount() > 0){
-                $log->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
-                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-                $log->setDetail("User UUID",$objUser->getUUID());
-                $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
-                $log->saveEntry();
+                $systemLog->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $systemLog->setDetail("Source Role", $roleManager->getRoleName($objUser->getUserRole()));
+                $systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+                $systemLog->setDetail("User UUID", $objUser->getUUID());
+                $systemLog->setDetail("Error", "After migration attempt, old associations still remained in the database.");
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.","danger");
+                $systemMessages->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
             }
             else{
-                $log->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-                $log->setDetail("User UUID",$objUser->getUUID());
-                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
-                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-                $log->saveEntry();
+                $systemLog->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $systemLog->setDetail("User UUID", $objUser->getUUID());
+                $systemLog->setDetail("Source Role", $roleManager->getRoleName($objUser->getUserRole()));
+                $systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+                $systemLog->saveEntry();
             }
         }
     }
@@ -122,38 +122,38 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     /**
      * Migrate Training Manager Subordinates to Supervisor
      */
-    elseif($roles->getRoleType($objUser->getUserRole()) == "trainingManager" && $roles->getRoleType($_POST['userRole']) == "supervisor"){
+    elseif($roleManager->getRoleType($objUser->getUserRole()) == "trainingManager" && $roleManager->getRoleType($_POST['userRole']) == "supervisor"){
         if($objUserStatistics->getTrainingManagerSubordinateCount() > 0){
             $subordinateList = $objUserStatistics->getTrainingManagerAssociations();
 
             if(sizeof($subordinateList) > 1){
                 foreach($subordinateList as $subordinateUUID){
-                    $assoc->addSupervisorAssociation($objUser->getUUID(),$subordinateUUID);
-                    $assoc->deleteTrainingManagerAssociation($objUser->getUUID(),$subordinateUUID);
+                    $associationManager->addSupervisorAssociation($objUser->getUUID(), $subordinateUUID);
+                    $associationManager->deleteTrainingManagerAssociation($objUser->getUUID(), $subordinateUUID);
                 }
             }
             else{
-                $assoc->addSupervisorAssociation($objUser->getUUID(),$subordinateList[0]);
-                $assoc->deleteTrainingManagerAssociation($objUser->getUUID(),$subordinateList[0]);
+                $associationManager->addSupervisorAssociation($objUser->getUUID(), $subordinateList[0]);
+                $associationManager->deleteTrainingManagerAssociation($objUser->getUUID(), $subordinateList[0]);
             }
 
             if($objUserStatistics->getTrainingManagerSubordinateCount() > 0){
-                $log->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
-                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-                $log->setDetail("User UUID",$objUser->getUUID());
-                $log->setDetail("Error","After migration attempt, old associations still remained in the database.");
-                $log->saveEntry();
+                $systemLog->setAction("ERROR_MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $systemLog->setDetail("Source Role", $roleManager->getRoleName($objUser->getUserRole()));
+                $systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+                $systemLog->setDetail("User UUID", $objUser->getUUID());
+                $systemLog->setDetail("Error", "After migration attempt, old associations still remained in the database.");
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.","danger");
+                $systemMessages->addMessage("After migration attempt, old associations still remained in the database. Contact CDCMastery Support for assistance with changing this user's role.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
             }
             else{
-                $log->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
-                $log->setDetail("User UUID",$objUser->getUUID());
-                $log->setDetail("Source Role",$roles->getRoleName($objUser->getUserRole()));
-                $log->setDetail("Destination Role",$roles->getRoleName($_POST['userRole']));
-                $log->saveEntry();
+                $systemLog->setAction("MIGRATE_SUBORDINATE_ASSOCIATIONS_ROLE_TYPE");
+                $systemLog->setDetail("User UUID", $objUser->getUUID());
+                $systemLog->setDetail("Source Role", $roleManager->getRoleName($objUser->getUserRole()));
+                $systemLog->setDetail("Destination Role", $roleManager->getRoleName($_POST['userRole']));
+                $systemLog->saveEntry();
             }
         }
     }
@@ -161,24 +161,24 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     $objUser->setUserRole($_POST['userRole']);
 
     if($objUser->saveUser()){
-        $log->setAction("USER_EDIT");
-        $log->setDetail("User UUID",$userUUID);
-        $log->saveEntry();
+        $systemLog->setAction("USER_EDIT");
+        $systemLog->setDetail("User UUID", $userUUID);
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("User " . $objUser->getFullName() . " was edited successfully.","success");
+        $systemMessages->addMessage("User " . $objUser->getFullName() . " was edited successfully.", "success");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
     else{
-        $log->setAction("ERROR_USER_EDIT");
-        $log->setDetail("Error",$objUser->error);
-        $log->setDetail("User UUID",$userUUID);
+        $systemLog->setAction("ERROR_USER_EDIT");
+        $systemLog->setDetail("Error", $objUser->error);
+        $systemLog->setDetail("User UUID", $userUUID);
 
         foreach($_POST as $editFormKey => $editFormVal){
-            $log->setDetail($editFormKey,$editFormVal);
+            $systemLog->setDetail($editFormKey, $editFormVal);
         }
 
-        $log->saveEntry();
-        $sysMsg->addMessage("There was a problem saving the information for that user.  Please open a support ticket for assistance.","danger");
+        $systemLog->saveEntry();
+        $systemMessages->addMessage("There was a problem saving the information for that user.  Please open a support ticket for assistance.", "danger");
         $cdcMastery->redirect("/admin/users/" . $userUUID . "/edit");
     }
 }
@@ -280,7 +280,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     data-validation-error-msg="You must provide the user's base">
                                 <option value="">Select base...</option>
                                 <?php
-                                $baseList = $bases->listBases();
+                                $baseList = $baseManager->listBases();
 
                                 foreach($baseList as $baseUUID => $baseName): ?>
                                     <?php if($objUser->getUserBase() == $baseUUID): ?>
@@ -300,7 +300,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     class="input_full">
                                 <option value="">Select office symbol...</option>
                                 <?php
-                                $officeSymbolList = $officeSymbol->listOfficeSymbols();
+                                $officeSymbolList = $officeSymbolManager->listOfficeSymbols();
 
                                 foreach($officeSymbolList as $officeSymbolUUID => $officeSymbolName): ?>
                                     <?php if($objUser->getUserOfficeSymbol() == $officeSymbolUUID): ?>
@@ -363,7 +363,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     data-validation="required"
                                     data-validation-error-msg="You must provide the User Role">
                                 <?php
-                                $roleList = $roles->listRoles();
+                                $roleList = $roleManager->listRoles();
                                 foreach($roleList as $roleUUID => $roleDetails): ?>
                                     <?php if(!$cdcMastery->verifyAdmin() && $roleDetails['roleType'] == "admin") continue; ?>
                                     <?php if($objUser->getUserRole() == $roleUUID): ?>

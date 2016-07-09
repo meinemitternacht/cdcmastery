@@ -8,17 +8,17 @@
 
 if(isset($_POST['confirmFlashCardDelete'])){
     if($flashCardManager->deleteFlashCardData($actionChild)){
-        $sysMsg->addMessage("Flash card deleted successfully.","success");
+        $systemMessages->addMessage("Flash card deleted successfully.", "success");
         $cdcMastery->redirect("/admin/card-data/".$workingChild);
     }
     else{
-        $sysMsg->addMessage("That flash card could not be deleted. Contact the support help desk for assistance.","danger");
+        $systemMessages->addMessage("That flash card could not be deleted. Contact the support help desk for assistance.", "danger");
     }
 }
 
 if(isset($_POST['confirmDeleteMultipleFlashCards'])){
     if(!isset($_POST['flashCardUUIDList']) || !is_array($_POST['flashCardUUIDList']) || empty($_POST['flashCardUUIDList'])){
-        $sysMsg->addMessage("You must specify flash cards to delete.","warning");
+        $systemMessages->addMessage("You must specify flash cards to delete.", "warning");
         $cdcMastery->redirect("/admin/card-data/".$workingChild);
     }
     else{
@@ -30,18 +30,18 @@ if(isset($_POST['confirmDeleteMultipleFlashCards'])){
         }
 
         if(!$error){
-            $sysMsg->addMessage("Flash cards deleted successfully.","success");
+            $systemMessages->addMessage("Flash cards deleted successfully.", "success");
             $cdcMastery->redirect("/admin/card-data/".$workingChild);
         }
         else{
-            $sysMsg->addMessage("Some flash cards could not be deleted. Contact the support help desk for assistance.","danger");
+            $systemMessages->addMessage("Some flash cards could not be deleted. Contact the support help desk for assistance.", "danger");
         }
     }
 }
 
 if(!empty($actionChild)):
     if(!$flashCardManager->loadFlashCardData($actionChild)){
-        $sysMsg->addMessage("That flash card does not exist.","warning");
+        $systemMessages->addMessage("That flash card does not exist.", "warning");
         $cdcMastery->redirect("/admin/card-data/".$workingChild);
     }
     ?>

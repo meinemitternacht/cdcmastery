@@ -12,7 +12,7 @@
 define('BASE_PATH', realpath(__DIR__) . "/../..");
 require BASE_PATH . '/includes/bootstrap.inc.php';
 
-$pwReset = new passwordReset($db,$log,$emailQueue);
+$pwReset = new CDCMastery\UserPasswordResetManager($db, $systemLog, $emailQueue);
 
 $res = $db->query("SELECT uuid FROM `userPasswordResets` WHERE timeExpires <= (NOW())");
 
@@ -38,19 +38,19 @@ if($res->num_rows > 0){
     }
 
     if(isset($successUUIDList) && !empty($successUUIDList)){
-        $log->setAction("CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS");
+        $systemLog->setAction("CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS");
         foreach($successUUIDList as $successUUID){
-            $log->setDetail("Token UUID",$successUUID);
+            $systemLog->setDetail("Token UUID", $successUUID);
         }
-        $log->saveEntry();
+        $systemLog->saveEntry();
     }
 
     if(isset($errorUUIDList) && !empty($errorUUIDList)){
-        $log->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS");
+        $systemLog->setAction("ERROR_CRON_RUN_GARBAGE_COLLECT_PASSWORD_RESETS");
         foreach($errorUUIDList as $errorUUID){
-            $log->setDetail("Token UUID",$errorUUID);
+            $systemLog->setDetail("Token UUID", $errorUUID);
         }
-        $log->saveEntry();
+        $systemLog->saveEntry();
     }
 
     $res->close();

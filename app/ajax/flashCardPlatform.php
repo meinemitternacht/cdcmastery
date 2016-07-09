@@ -7,7 +7,7 @@
  * Data is requested and sent through POST method.
  */
 
-$flashCardManager = new flashCardManager($db, $log);
+$flashCardManager = new CDCMastery\FlashCardManager($db, $systemLog);
 
 if(isset($_SESSION['vars'][0]))
     $categoryUUID = $_SESSION['vars'][0];
@@ -52,15 +52,15 @@ if(isset($categoryUUID)){
                     $skipData = true;
                     break;
                 default:
-                    $log->setAction("AJAX_ACTION_ERROR");
-                    $log->setDetail("CALLING SCRIPT","/ajax/flashCardPlatform");
-                    $log->setDetail("Category UUID",$categoryUUID);
-                    $log->setDetail("User Action",$userAction);
+                    $systemLog->setAction("AJAX_ACTION_ERROR");
+                    $systemLog->setDetail("CALLING SCRIPT", "/ajax/flashCardPlatform");
+                    $systemLog->setDetail("Category UUID", $categoryUUID);
+                    $systemLog->setDetail("User Action", $userAction);
 
                     if(isset($actionData))
-                        $log->setDetail("Action Data",$actionData);
+                        $systemLog->setDetail("Action Data", $actionData);
 
-                    $log->saveEntry();
+                    $systemLog->saveEntry();
                     break;
             }
         }
@@ -75,10 +75,10 @@ if(isset($categoryUUID)){
     }
 }
 else{
-    $log->setAction("AJAX_DIRECT_ACCESS");
-    $log->setDetail("CALLING SCRIPT","/ajax/flashCardPlatform");
-    $log->saveEntry();
+    $systemLog->setAction("AJAX_DIRECT_ACCESS");
+    $systemLog->setDetail("CALLING SCRIPT", "/ajax/flashCardPlatform");
+    $systemLog->saveEntry();
 
-    $sysMsg->addMessage("Direct access to this script is not authorized.","danger");
+    $systemMessages->addMessage("Direct access to this script is not authorized.", "danger");
     $cdcMastery->redirect("/errors/403");
 }

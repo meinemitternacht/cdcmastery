@@ -2,8 +2,8 @@
 $logUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
 
 if($logUUID):
-	if($log->verifyLogUUID($logUUID)): 
-		$logData = new log($db);
+	if($systemLog->verifyLogUUID($logUUID)): 
+		$logData = new CDCMastery\SystemLog($db);
 		$logData->loadEntry($logUUID);
 		$logDetails = $logData->fetchDetails($logUUID); ?>
 		<div class="container">
@@ -30,7 +30,7 @@ if($logUUID):
 							</tr>
 							<tr>
 								<th>User</th>
-								<td><?php echo $user->getUserByUUID($logData->getUserUUID()); ?></td>
+								<td><?php echo $userManager->getUserByUUID($logData->getUserUUID()); ?></td>
 							</tr>
 							<tr>
 								<th>Action</th>
@@ -74,7 +74,7 @@ if($logUUID):
 										strpos($dataTypeSearch,"supervisor") !== false ||
 										strpos($dataTypeSearch,"training manager") !== false):
 										if(strpos($dataTypeSearch,"uuid") !== false):
-											$userName = $user->getUserNameByUUID($detailData['data']);
+											$userName = $userManager->getUserNameByUUID($detailData['data']);
 										endif;
 									endif;
 							?>

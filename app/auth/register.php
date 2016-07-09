@@ -1,6 +1,6 @@
 <?php
 if(isset($_SESSION['auth'])){
-    $sysMsg->addMessage("You are already registered.","info");
+    $systemMessages->addMessage("You are already registered.", "info");
     $cdcMastery->redirect("/");
 }
 
@@ -52,28 +52,28 @@ if(isset($_POST['registrationFormStep'])):
 
         foreach($registrationArray as $userAttributeKey => $userAttribute){
             if(empty($userAttribute['data'])){
-                $sysMsg->addMessage($userAttribute['description'] . " cannot be blank.","warning");
+                $systemMessages->addMessage($userAttribute['description'] . " cannot be blank.", "warning");
                 $error = true;
             }
         }
 
         if(strpos($_SESSION['registrationArray']['userHandle']['data'],'@') !== false){
-            $sysMsg->addMessage("Your username should not contain the @ symbol.");
+            $systemMessages->addMessage("Your username should not contain the @ symbol.");
             $error = true;
         }
 
-        if($user->getUUIDByHandle($_SESSION['registrationArray']['userHandle']['data'])){
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
+        if($userManager->getUUIDByHandle($_SESSION['registrationArray']['userHandle']['data'])){
+            $systemMessages->addMessage("That username is already in use.  Please choose a different one.", "warning");
             $error = true;
         }
 
-        if($user->getUUIDByEmail($_SESSION['registrationArray']['userEmail']['data'])){
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one or reset your password by clicking the link on the login page.","warning");
+        if($userManager->getUUIDByEmail($_SESSION['registrationArray']['userEmail']['data'])){
+            $systemMessages->addMessage("That e-mail address is already in use.  Please choose a different one or reset your password by clicking the link on the login page.", "warning");
             $error = true;
         }
 
         if($registrationArray['userPassword']['data'] != $registrationArray['userPassword_confirmation']['data']){
-            $sysMsg->addMessage("Your passwords do not match.","warning");
+            $systemMessages->addMessage("Your passwords do not match.", "warning");
             $error = true;
         }
 
@@ -85,13 +85,13 @@ if(isset($_POST['registrationFormStep'])):
 
         if (is_array($complexityCheck)) {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError,"warning");
+                $systemMessages->addMessage($complexityCheckError, "warning");
             }
             $error = true;
         }
 
         if(!$cdcMastery->checkEmailAddress($registrationArray['userEmail']['data'])){
-            $sysMsg->addMessage("You did not provide a valid Air Force e-mail address.","warning");
+            $systemMessages->addMessage("You did not provide a valid Air Force e-mail address.", "warning");
             $error = true;
         }
 
@@ -109,11 +109,11 @@ if(isset($_POST['registrationFormStep'])):
         $userTrainingManager = isset($_POST['userTrainingManager']) ? $_POST['userTrainingManager'] : false;
 
         if(empty($userAFSCList)){
-            $sysMsg->addMessage("You must select at least one AFSC to be associated with.","warning");
+            $systemMessages->addMessage("You must select at least one AFSC to be associated with.", "warning");
             $cdcMastery->redirect("/auth/register/" . $accountType . "/2");
         }
 
-        $registerUser = new user($db,$log,$emailQueue);
+        $registerUser = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         $registerUser->setUserHandle($_SESSION['registrationArray']['userHandle']['data']);
         $registerUser->setUserPassword($_SESSION['registrationArray']['userPassword']['data']);
@@ -125,95 +125,95 @@ if(isset($_POST['registrationFormStep'])):
         $registerUser->setUserBase($_SESSION['registrationArray']['userBase']['data']);
         $registerUser->setUserOfficeSymbol($_SESSION['registrationArray']['userOfficeSymbol']['data']);
         $registerUser->setUserDateRegistered(date(("Y-m-d H:i:s"),time()));
-        $registerUser->setUserRole($roles->getRoleUUIDByName("Users"));
+        $registerUser->setUserRole($roleManager->getRoleUUIDByName("Users"));
         $registerUser->setUserDisabled(false);
 
         $_SESSION['timeZone'] = $registerUser->getUserTimeZone();
 
-        $authorizationQueue = new userAuthorizationQueue($db,$log,$emailQueue);
+        $authorizationQueue = new CDCMastery\UserAuthorizationQueueManager($db, $systemLog, $emailQueue);
 
         if($registerUser->saveUser()) {
 
             if ($accountType == "supervisor") {
-                $authorizationQueue->queueRoleAuthorization($registerUser->getUUID(),$roles->getRoleUUIDByName("Supervisors"));
+                $authorizationQueue->queueRoleAuthorization($registerUser->getUUID(), $roleManager->getRoleUUIDByName("Supervisors"));
             }
             elseif ($accountType == "training-manager") {
-                $authorizationQueue->queueRoleAuthorization($registerUser->getUUID(),$roles->getRoleUUIDByName("Training Managers"));
+                $authorizationQueue->queueRoleAuthorization($registerUser->getUUID(), $roleManager->getRoleUUIDByName("Training Managers"));
             }
 
             foreach ($userAFSCList as $afscUUID) {
-                if ($afsc->loadAFSC($afscUUID)) {
-                    if ($afsc->getAFSCFOUO()) {
-                        $assoc->addPendingAFSCAssociation($registerUser->getUUID(), $afscUUID);
+                if ($afscManager->loadAFSC($afscUUID)) {
+                    if ($afscManager->getAFSCFOUO()) {
+                        $associationManager->addPendingAFSCAssociation($registerUser->getUUID(), $afscUUID);
                     } else {
-                        $assoc->addAFSCAssociation($registerUser->getUUID(), $afscUUID);
+                        $associationManager->addAFSCAssociation($registerUser->getUUID(), $afscUUID);
                     }
                 }
             }
 
             if(!empty($_SESSION['referralID'])){
-                if($roles->verifyUserRole($_SESSION['referralID']) == "supervisor"){
-                    $assoc->addSupervisorAssociation($_SESSION['referralID'],$registerUser->getUUID());
+                if($roleManager->verifyUserRole($_SESSION['referralID']) == "supervisor"){
+                    $associationManager->addSupervisorAssociation($_SESSION['referralID'], $registerUser->getUUID());
                 }
-                elseif($roles->verifyUserRole($_SESSION['referralID']) == "trainingManager"){
-                    $assoc->addTrainingManagerAssociation($_SESSION['referralID'],$registerUser->getUUID());
+                elseif($roleManager->verifyUserRole($_SESSION['referralID']) == "trainingManager"){
+                    $associationManager->addTrainingManagerAssociation($_SESSION['referralID'], $registerUser->getUUID());
                 }
             }
 
             if (!empty($userSupervisor)) {
-                $assoc->addSupervisorAssociation($userSupervisor, $registerUser->getUUID());
+                $associationManager->addSupervisorAssociation($userSupervisor, $registerUser->getUUID());
             }
 
             if (!empty($userTrainingManager)) {
-                $assoc->addTrainingManagerAssociation($userTrainingManager, $registerUser->getUUID());
+                $associationManager->addTrainingManagerAssociation($userTrainingManager, $registerUser->getUUID());
             }
 
-            $userActivation = new userActivation($db, $log, $emailQueue);
+            $userActivation = new CDCMastery\UserActivationManager($db, $systemLog, $emailQueue);
 
             if($userActivation->queueActivation($registerUser->getUUID())){
-                $log->setAction("USER_REGISTER");
-                $log->setUserUUID($registerUser->getUUID());
-                $log->setDetail("User UUID",$registerUser->getUUID());
-                $log->setDetail("User Name",$registerUser->getFullName());
-                $log->setDetail("User Handle",$registerUser->getUserHandle());
-                $log->saveEntry();
+                $systemLog->setAction("USER_REGISTER");
+                $systemLog->setUserUUID($registerUser->getUUID());
+                $systemLog->setDetail("User UUID", $registerUser->getUUID());
+                $systemLog->setDetail("User Name", $registerUser->getFullName());
+                $systemLog->setDetail("User Handle", $registerUser->getUserHandle());
+                $systemLog->saveEntry();
 
                 if(isset($_SESSION['registrationArray'])){
                     unset($_SESSION['registrationArray']);
                 }
 
-                $sysMsg->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.","success");
+                $systemMessages->addMessage("Thank you for creating an account! An activation link will be sent to your e-mail address in the next few minutes. If you don't receive the link, open a ticket with our helpdesk by clicking the support link near the top of the page.", "success");
                 $_SESSION['queueActivation'] = true;
                 $cdcMastery->redirect("/");
             }
             else {
-                $log->setAction("ERROR_USER_REGISTER");
-                $log->setUserUUID($registerUser->getUUID());
+                $systemLog->setAction("ERROR_USER_REGISTER");
+                $systemLog->setUserUUID($registerUser->getUUID());
 
                 foreach($_SESSION['registrationArray'] as $registrationArrayKey => $registrationSubArray){
-                    $log->setDetail($registrationArrayKey,$registrationSubArray['data']);
+                    $systemLog->setDetail($registrationArrayKey, $registrationSubArray['data']);
                 }
 
-                $log->setDetail("Error Reason","Unable to queue user activation");
-                $log->saveEntry();
+                $systemLog->setDetail("Error Reason", "Unable to queue user activation");
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("Something went wrong and we couldn't finish the registration process. The good news is that we were able to save most of your information, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.","danger");
+                $systemMessages->addMessage("Something went wrong and we couldn't finish the registration process. The good news is that we were able to save most of your information, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.", "danger");
 
                 $cdcMastery->redirect("/errors/500");
             }
         }
         else{
-            $log->setAction("ERROR_USER_REGISTER");
-            $log->setUserUUID($registerUser->getUUID());
+            $systemLog->setAction("ERROR_USER_REGISTER");
+            $systemLog->setUserUUID($registerUser->getUUID());
 
             foreach($_SESSION['registrationArray'] as $registrationArrayKey => $registrationSubArray){
-                $log->setDetail($registrationArrayKey,$registrationSubArray['data']);
+                $systemLog->setDetail($registrationArrayKey, $registrationSubArray['data']);
             }
 
-            $log->setDetail("Error reason","Unable to save user data");
-            $log->saveEntry();
+            $systemLog->setDetail("Error reason", "Unable to save user data");
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to log most of it, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.","danger");
+            $systemMessages->addMessage("Something went terribly wrong and we couldn't save your information.  We attempted to log most of it, so just open a ticket with the helpdesk by clicking the support link near the top of the page and we'll get this sorted out as soon as possible.", "danger");
 
             $cdcMastery->redirect("/errors/500");
         }
@@ -226,14 +226,14 @@ if($accountType):
             $cdcMastery->redirect("/auth/register");
         }
 
-        if($bases->loadBase($_SESSION['registrationArray']['userBase']['data'])):
-            $supervisorList = $roles->listSupervisorsByBase($bases->getUUID());
-            $trainingManagerList = $roles->listTrainingManagersByBase($bases->getUUID());
+        if($baseManager->loadBase($_SESSION['registrationArray']['userBase']['data'])):
+            $supervisorList = $roleManager->listSupervisorsByBase($baseManager->getUUID());
+            $trainingManagerList = $roleManager->listTrainingManagersByBase($baseManager->getUUID());
 
             if($accountType == "supervisor" || $accountType == "training-manager"){
                 $accountTypeMessage = "<strong>Note:</strong> Because you selected a supervisor or training manager account type, administrator
 approval is required before the system will grant extended permissions to your account.  Until that time, your account will function as a normal user.";
-                $sysMsg->addMessage($accountTypeMessage,"info");
+                $systemMessages->addMessage($accountTypeMessage, "info");
             }
             ?>
             <form id="registrationFormPartTwo" action="/auth/register/<?php echo $accountType; ?>/2" method="POST">
@@ -263,7 +263,7 @@ approval is required before the system will grant extended permissions to your a
                                     size="10"
                                     class="input_full"
                                     MULTIPLE>
-                                <?php foreach($afsc->listAFSC(false) as $afscUUID => $afscDetails): ?>
+                                <?php foreach($afscManager->listAFSC(false) as $afscUUID => $afscDetails): ?>
                                     <option value="<?php echo $afscUUID; ?>">
                                         <?php
                                             echo $afscDetails['afscName'];
@@ -295,7 +295,7 @@ approval is required before the system will grant extended permissions to your a
                                         <option value="">None Selected</option>
                                         <?php foreach($supervisorList as $supervisorUUID): ?>
                                             <option value="<?php echo $supervisorUUID; ?>">
-                                                <?php echo $user->getUserNameByUUID($supervisorUUID); ?>
+                                                <?php echo $userManager->getUserNameByUUID($supervisorUUID); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -323,7 +323,7 @@ approval is required before the system will grant extended permissions to your a
                                         <option value="">None Selected</option>
                                         <?php foreach($trainingManagerList as $trainingManagerUUID): ?>
                                             <option value="<?php echo $trainingManagerUUID; ?>">
-                                                <?php echo $user->getUserNameByUUID($trainingManagerUUID); ?>
+                                                <?php echo $userManager->getUserNameByUUID($trainingManagerUUID); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -636,7 +636,7 @@ approval is required before the system will grant extended permissions to your a
                                         data-validation-error-msg="You must provide your base">
                                     <option value="">Select base...</option>
                                     <?php
-                                    $baseList = $bases->listBases();
+                                    $baseList = $baseManager->listBases();
 
                                     foreach($baseList as $baseUUID => $baseName): ?>
                                         <?php if(isset($_SESSION['registrationArray']['userBase']['data']) && $_SESSION['registrationArray']['userBase']['data'] == $baseUUID): ?>
@@ -657,7 +657,7 @@ approval is required before the system will grant extended permissions to your a
                                     <option value="">Select office symbol...</option>
                                     <option value="">Not Listed</option>
                                     <?php
-                                    $officeSymbolList = $officeSymbol->listOfficeSymbols();
+                                    $officeSymbolList = $officeSymbolManager->listOfficeSymbols();
 
                                     foreach($officeSymbolList as $officeSymbolUUID => $officeSymbolName): ?>
                                         <?php if(isset($_SESSION['registrationArray']['userOfficeSymbol']['data']) && $_SESSION['registrationArray']['userOfficeSymbol']['data'] == $officeSymbolUUID): ?>

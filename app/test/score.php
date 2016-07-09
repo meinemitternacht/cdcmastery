@@ -7,8 +7,8 @@
  */
 
 $testUUID = isset($_SESSION['vars'][0]) ? $_SESSION['vars'][0] : false;
-$testManager = new testManager($db, $log, $afsc);
-$answerManager = new answerManager($db, $log);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
+$answerManager = new CDCMastery\AnswerManager($db, $systemLog);
 
 $incorrectTotal = 0;
 $correctTotal = 0;
@@ -45,54 +45,54 @@ if($testUUID){
 
             if($testManager->saveTest(false)){
                 if($testManager->deleteIncompleteTest(false,$testUUID,false,false,false)){
-                    $log->setAction("SCORE_TEST");
-                    $log->setDetail("Test UUID",$testUUID);
-                    $log->setDetail("Score",$testScore);
-                    $log->setDetail("User UUID",$testManager->getIncompleteUserUUID());
-                    $log->saveEntry();
+                    $systemLog->setAction("SCORE_TEST");
+                    $systemLog->setDetail("Test UUID", $testUUID);
+                    $systemLog->setDetail("Score", $testScore);
+                    $systemLog->setDetail("User UUID", $testManager->getIncompleteUserUUID());
+                    $systemLog->saveEntry();
 
                     if($testScore >= $cdcMastery->getPassingScore()){
-                        $sysMsg->addMessage("Congratulations!  You passed the test.","success");
+                        $systemMessages->addMessage("Congratulations!  You passed the test.", "success");
                     }
                     else{
-                        $sysMsg->addMessage("Sorry, you didn't pass the test.  Keep studying!","danger");
+                        $systemMessages->addMessage("Sorry, you didn't pass the test.  Keep studying!", "danger");
                     }
 
                     $cdcMastery->redirect("/test/view/".$testUUID);
                 }
                 else{
-                    $log->setAction("ERROR_SCORE_TEST");
-                    $log->setDetail("Test UUID",$testUUID);
-                    $log->setDetail("Score",$testScore);
-                    $log->setDetail("User UUID",$testManager->getIncompleteUserUUID());
-                    $log->setDetail("MySQL Error",$testManager->db->error);
-                    $log->setDetail("Calling Script","/test/score");
-                    $log->setDetail("Function","testManager->deleteIncompleteTest()");
-                    $log->saveEntry();
+                    $systemLog->setAction("ERROR_SCORE_TEST");
+                    $systemLog->setDetail("Test UUID", $testUUID);
+                    $systemLog->setDetail("Score", $testScore);
+                    $systemLog->setDetail("User UUID", $testManager->getIncompleteUserUUID());
+                    $systemLog->setDetail("MySQL Error", $testManager->db->error);
+                    $systemLog->setDetail("Calling Script", "/test/score");
+                    $systemLog->setDetail("Function", "testManager->deleteIncompleteTest()");
+                    $systemLog->saveEntry();
                 }
             }
             else{
-                $log->setAction("ERROR_SCORE_TEST");
-                $log->setDetail("Test UUID",$testUUID);
-                $log->setDetail("Score",$testScore);
-                $log->setDetail("User UUID",$testManager->getIncompleteUserUUID());
-                $log->setDetail("MySQL Error",$testManager->db->error);
-                $log->setDetail("Calling Script","/test/score");
-                $log->setDetail("Function","testManager->saveTest()");
-                $log->saveEntry();
+                $systemLog->setAction("ERROR_SCORE_TEST");
+                $systemLog->setDetail("Test UUID", $testUUID);
+                $systemLog->setDetail("Score", $testScore);
+                $systemLog->setDetail("User UUID", $testManager->getIncompleteUserUUID());
+                $systemLog->setDetail("MySQL Error", $testManager->db->error);
+                $systemLog->setDetail("Calling Script", "/test/score");
+                $systemLog->setDetail("Function", "testManager->saveTest()");
+                $systemLog->saveEntry();
             }
         }
         else{
-            $sysMsg->addMessage("There is no test data for that test UUID.","warning");
+            $systemMessages->addMessage("There is no test data for that test UUID.", "warning");
             $cdcMastery->redirect("/errors/500");
         }
     }
     else{
-        $sysMsg->addMessage("That test does not exist.","warning");
+        $systemMessages->addMessage("That test does not exist.", "warning");
         $cdcMastery->redirect("/errors/404");
     }
 }
 else{
-    $sysMsg->addMessage("You must provide a test UUID.","warning");
+    $systemMessages->addMessage("You must provide a test UUID.", "warning");
     $cdcMastery->redirect("/errors/500");
 }

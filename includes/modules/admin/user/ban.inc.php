@@ -1,62 +1,62 @@
 <?php
 if($objUser->getUserDisabled()){
-    $sysMsg->addMessage("That user is already banned.","info");
+    $systemMessages->addMessage("That user is already banned.", "info");
     $cdcMastery->redirect("/admin/users/" . $userUUID);
 }
 
 if(isset($_POST['confirmUserBan'])){
     if($userUUID){
-        $banUserObj = new user($db,$log,$emailQueue);
+        $banUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         if($banUserObj->loadUser($userUUID)){
-            if($roles->getRoleType($banUserObj->getUserRole()) != "admin") {
+            if($roleManager->getRoleType($banUserObj->getUserRole()) != "admin") {
                 $banUserObj->setUserDisabled(true);
 
                 if ($banUserObj->saveUser()) {
-                    $log->setAction("USER_BAN");
-                    $log->setDetail("User UUID", $userUUID);
-                    $log->setDetail("User Name", $banUserObj->getFullName());
+                    $systemLog->setAction("USER_BAN");
+                    $systemLog->setDetail("User UUID", $userUUID);
+                    $systemLog->setDetail("User Name", $banUserObj->getFullName());
                     if (!empty($_POST['banReason'])) {
-                        $log->setDetail("Ban Reason", $_POST['banReason']);
+                        $systemLog->setDetail("Ban Reason", $_POST['banReason']);
                     } else {
-                        $log->setDetail("Ban Reason", "No Reason Provided");
+                        $systemLog->setDetail("Ban Reason", "No Reason Provided");
                     }
-                    $log->saveEntry();
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage($banUserObj->getFullName() . " has been banned.","success");
+                    $systemMessages->addMessage($banUserObj->getFullName() . " has been banned.", "success");
                     $cdcMastery->redirect("/admin/users/" . $userUUID);
                 } else {
-                    $log->setAction("ERROR_USER_BAN");
-                    $log->setDetail("User UUID", $userUUID);
-                    $log->setDetail("User Name", $banUserObj->getFullName());
+                    $systemLog->setAction("ERROR_USER_BAN");
+                    $systemLog->setDetail("User UUID", $userUUID);
+                    $systemLog->setDetail("User Name", $banUserObj->getFullName());
                     if (!empty($_POST['banReason'])) {
-                        $log->setDetail("Ban Reason", $_POST['banReason']);
+                        $systemLog->setDetail("Ban Reason", $_POST['banReason']);
                     } else {
-                        $log->setDetail("Ban Reason", "No Reason Provided");
+                        $systemLog->setDetail("Ban Reason", "No Reason Provided");
                     }
-                    $log->setDetail("Error", $banUserObj->error);
-                    $log->saveEntry();
+                    $systemLog->setDetail("Error", $banUserObj->error);
+                    $systemLog->saveEntry();
 
-                    $sysMsg->addMessage($banUserObj->getFullName() . " could not be banned.  The error has been logged.","danger");
+                    $systemMessages->addMessage($banUserObj->getFullName() . " could not be banned.  The error has been logged.", "danger");
                     $cdcMastery->redirect("/admin/users/" . $userUUID);
                 }
             }
             else{
-                $log->setAction("ERROR_USER_BAN_NOT_AUTH");
-                $log->setDetail("User UUID",$userUUID);
+                $systemLog->setAction("ERROR_USER_BAN_NOT_AUTH");
+                $systemLog->setDetail("User UUID", $userUUID);
                 if (!empty($_POST['banReason'])) {
-                    $log->setDetail("Ban Reason", $_POST['banReason']);
+                    $systemLog->setDetail("Ban Reason", $_POST['banReason']);
                 } else {
-                    $log->setDetail("Ban Reason", "No Reason Provided");
+                    $systemLog->setDetail("Ban Reason", "No Reason Provided");
                 }
-                $log->saveEntry();
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage("Administrators cannot be banned.","danger");
+                $systemMessages->addMessage("Administrators cannot be banned.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.","warning");
+        $systemMessages->addMessage("No User UUID was provided.", "warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

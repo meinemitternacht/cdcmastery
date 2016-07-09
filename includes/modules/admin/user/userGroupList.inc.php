@@ -29,10 +29,10 @@ $alpha = Array(
 
 if(isset($_SESSION['vars'][2])){
     $roleUUID = $_SESSION['vars'][2];
-    $userList = $user->listUsersByRole($roleUUID);
+    $userList = $userManager->listUsersByRole($roleUUID);
 }
 else {
-    $userList = $user->listUsers();
+    $userList = $userManager->listUsers();
 }
 
 $userCount = count($userList) + 1;
@@ -44,13 +44,13 @@ if($userList): ?>
 				<section>
                     <header>
                         <?php if(isset($roleUUID)): ?>
-                        <h2><?php echo $userCount; ?> Total <?php echo $roles->getRoleName($roleUUID); ?></h2>
+                        <h2><?php echo $userCount; ?> Total <?php echo $roleManager->getRoleName($roleUUID); ?></h2>
                         <?php else: ?>
                         <h2><?php echo $userCount; ?> Total Users</h2></h2>
                         <?php endif; ?>
                     </header>
                     <p>
-                        <?php $roleList = $roles->listRoles(); ?>
+                        <?php $roleList = $roleManager->listRoles(); ?>
                         <?php foreach($roleList as $roleListUUID => $roleData): ?>
                             <a href="/admin/list/users/group/<?php echo $roleListUUID; ?>"><?php echo $roleData['roleName']; ?></a> &nbsp;
                         <?php endforeach; ?>
@@ -125,7 +125,7 @@ if($userList): ?>
                         <h2>No users found</h2>
                     </header>
                     <p>
-                        <?php $roleList = $roles->listRoles(); ?>
+                        <?php $roleList = $roleManager->listRoles(); ?>
                         <?php foreach($roleList as $roleListUUID => $roleData): ?>
                             <a href="/admin/list/users/group/<?php echo $roleListUUID; ?>"><?php echo $roleData['roleName']; ?></a> &nbsp;
                         <?php endforeach; ?>

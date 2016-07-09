@@ -6,7 +6,7 @@
  * Time: 7:09 PM
  */
 
-$user->loadUser($_SESSION['userUUID']);
+$userManager->loadUser($_SESSION['userUUID']);
 
 if(!empty($_POST) && $_POST['saveUser'] == true){
     /*
@@ -14,13 +14,13 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
      */
     $error = false;
 
-    if(empty($_POST['userHandle'])){ $sysMsg->addMessage("Username cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userRank'])){ $sysMsg->addMessage("Rank cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userEmail'])){ $sysMsg->addMessage("E-mail address cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userFirstName'])){ $sysMsg->addMessage("First name cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userLastName'])){ $sysMsg->addMessage("Last name cannot be empty.","warning"); $error = true; }
-    if(empty($_POST['userBase'])){ $sysMsg->addMessage("Base cannot be empty.  If your base is not listed, choose \"Other\".","warning"); $error = true; }
-    if(empty($_POST['timeZone'])){ $sysMsg->addMessage("Time zone cannot be empty.","warning"); $error = true; }
+    if(empty($_POST['userHandle'])){ $systemMessages->addMessage("Username cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userRank'])){ $systemMessages->addMessage("Rank cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userEmail'])){ $systemMessages->addMessage("E-mail address cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userFirstName'])){ $systemMessages->addMessage("First name cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userLastName'])){ $systemMessages->addMessage("Last name cannot be empty.", "warning"); $error = true; }
+    if(empty($_POST['userBase'])){ $systemMessages->addMessage("Base cannot be empty.  If your base is not listed, choose \"Other\".", "warning"); $error = true; }
+    if(empty($_POST['timeZone'])){ $systemMessages->addMessage("Time zone cannot be empty.", "warning"); $error = true; }
 
     if($error){
         $cdcMastery->redirect("/user/edit");
@@ -29,16 +29,16 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     /*
      * Check userHandle and userEmail to ensure collisions don't take place
      */
-    if($_POST['userHandle'] != $user->getUserHandle()) {
-        if ($user->getUUIDByHandle($_POST['userHandle'])) {
-            $sysMsg->addMessage("That username is already in use.  Please choose a different one.","warning");
+    if($_POST['userHandle'] != $userManager->getUserHandle()) {
+        if ($userManager->getUUIDByHandle($_POST['userHandle'])) {
+            $systemMessages->addMessage("That username is already in use.  Please choose a different one.", "warning");
             $cdcMastery->redirect("/user/edit");
         }
     }
 
-    if($_POST['userEmail'] != $user->getUserEmail()) {
-        if ($user->getUUIDByEmail($_POST['userEmail'])) {
-            $sysMsg->addMessage("That e-mail address is already in use.  Please choose a different one.","warning");
+    if($_POST['userEmail'] != $userManager->getUserEmail()) {
+        if ($userManager->getUUIDByEmail($_POST['userEmail'])) {
+            $systemMessages->addMessage("That e-mail address is already in use.  Please choose a different one.", "warning");
             $cdcMastery->redirect("/user/edit");
         }
     }
@@ -47,10 +47,10 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         $complexityCheck = $cdcMastery->checkPasswordComplexity($_POST['user-pw-edit'], $_POST['userHandle'], $_POST['userEmail']);
 
         if (!is_array($complexityCheck)) {
-            $user->setUserPassword($_POST['user-pw-edit']);
+            $userManager->setUserPassword($_POST['user-pw-edit']);
         } else {
             foreach ($complexityCheck as $complexityCheckError) {
-                $sysMsg->addMessage($complexityCheckError,"warning");
+                $systemMessages->addMessage($complexityCheckError, "warning");
             }
 
             $cdcMastery->redirect("/user/edit");
@@ -58,42 +58,42 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
     }
 
     if(empty($_POST['userOfficeSymbol'])){
-        $notListedOfficeSymbol = $officeSymbol->getOfficeSymbolByName("Not Listed");
+        $notListedOfficeSymbol = $officeSymbolManager->getOfficeSymbolByName("Not Listed");
         if($notListedOfficeSymbol){
-            $user->setUserOfficeSymbol($notListedOfficeSymbol);
+            $userManager->setUserOfficeSymbol($notListedOfficeSymbol);
         }
     }
     else{
-        $user->setUserOfficeSymbol($_POST['userOfficeSymbol']);
+        $userManager->setUserOfficeSymbol($_POST['userOfficeSymbol']);
     }
 
-    $user->setUserEmail($_POST['userEmail']);
-    $user->setUserHandle($_POST['userHandle']);
-    $user->setUserBase($_POST['userBase']);
-    $user->setUserFirstName($_POST['userFirstName']);
-    $user->setUserLastName($_POST['userLastName']);
-    $user->setUserRank($_POST['userRank']);
-    $user->setUserTimeZone($_POST['timeZone']);
+    $userManager->setUserEmail($_POST['userEmail']);
+    $userManager->setUserHandle($_POST['userHandle']);
+    $userManager->setUserBase($_POST['userBase']);
+    $userManager->setUserFirstName($_POST['userFirstName']);
+    $userManager->setUserLastName($_POST['userLastName']);
+    $userManager->setUserRank($_POST['userRank']);
+    $userManager->setUserTimeZone($_POST['timeZone']);
 
-    if($user->saveUser()){
-        $log->setAction("USER_EDIT");
-        $log->setDetail("User UUID",$_SESSION['userUUID']);
-        $log->saveEntry();
+    if($userManager->saveUser()){
+        $systemLog->setAction("USER_EDIT");
+        $systemLog->setDetail("User UUID", $_SESSION['userUUID']);
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("Your profile was edited successfully.","success");
+        $systemMessages->addMessage("Your profile was edited successfully.", "success");
         $cdcMastery->redirect("/user/edit");
     }
     else{
-        $log->setAction("ERROR_USER_EDIT");
-        $log->setDetail("Error",$user->error);
-        $log->setDetail("User UUID",$_SESSION['userUUID']);
+        $systemLog->setAction("ERROR_USER_EDIT");
+        $systemLog->setDetail("Error", $userManager->error);
+        $systemLog->setDetail("User UUID", $_SESSION['userUUID']);
 
         foreach($_POST as $editFormKey => $editFormVal){
-            $log->setDetail($editFormKey,$editFormVal);
+            $systemLog->setDetail($editFormKey, $editFormVal);
         }
 
-        $log->saveEntry();
-        $sysMsg->addMessage("There was a problem saving your profile information.  Please open a support ticket for assistance.","danger");
+        $systemLog->saveEntry();
+        $systemMessages->addMessage("There was a problem saving your profile information.  Please open a support ticket for assistance.", "danger");
         $cdcMastery->redirect("/user/edit");
     }
 }
@@ -103,7 +103,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
         <div class="4u">
             <section>
                 <header>
-                    <h2><em><?php echo $user->getFullName(); ?></em></h2>
+                    <h2><em><?php echo $userManager->getFullName(); ?></em></h2>
                 </header>
             </section>
             <div class="sub-menu">
@@ -140,7 +140,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     echo '<optgroup label="'.$rankGroupLabel.'">';
                                     foreach($rankGroup as $rankOrder){
                                         foreach($rankOrder as $rankKey => $rankVal): ?>
-                                            <?php if($user->getUserRank() == $rankKey): ?>
+                                            <?php if($userManager->getUserRank() == $rankKey): ?>
                                                 <option value="<?php echo $rankKey; ?>" SELECTED><?php echo $rankVal; ?></option>
                                             <?php else: ?>
                                                 <option value="<?php echo $rankKey; ?>"><?php echo $rankVal; ?></option>
@@ -159,7 +159,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    name="userFirstName"
                                    type="text"
                                    class="input_full"
-                                   value="<?php echo $user->getUserFirstName(); ?>"
+                                   value="<?php echo $userManager->getUserFirstName(); ?>"
                                    data-validation="required"
                                    data-validation-error-msg="You must provide your first name">
                         </li>
@@ -170,7 +170,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    name="userLastName"
                                    type="text"
                                    class="input_full"
-                                   value="<?php echo $user->getUserLastName(); ?>"
+                                   value="<?php echo $userManager->getUserLastName(); ?>"
                                    data-validation="required"
                                    data-validation-error-msg="You must provide your last name">
                         </li>
@@ -181,7 +181,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    name="userEmail"
                                    type="text"
                                    class="input_full"
-                                   value="<?php echo $user->getUserEmail(); ?>"
+                                   value="<?php echo $userManager->getUserEmail(); ?>"
                                    data-validation="email">
                         </li>
                         <li>
@@ -195,10 +195,10 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     data-validation-error-msg="You must provide your base">
                                 <option value="">Select base...</option>
                                 <?php
-                                $baseList = $bases->listBases();
+                                $baseList = $baseManager->listBases();
 
                                 foreach($baseList as $baseUUID => $baseName): ?>
-                                    <?php if($user->getUserBase() == $baseUUID): ?>
+                                    <?php if($userManager->getUserBase() == $baseUUID): ?>
                                         <option value="<?php echo $baseUUID; ?>" SELECTED><?php echo $baseName; ?></option>
                                     <?php else: ?>
                                         <option value="<?php echo $baseUUID; ?>"><?php echo $baseName; ?></option>
@@ -215,10 +215,10 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                     class="input_full">
                                 <option value="">Select office symbol...</option>
                                 <?php
-                                $officeSymbolList = $officeSymbol->listOfficeSymbols();
+                                $officeSymbolList = $officeSymbolManager->listOfficeSymbols();
 
                                 foreach($officeSymbolList as $officeSymbolUUID => $officeSymbolName): ?>
-                                    <?php if($user->getUserOfficeSymbol() == $officeSymbolUUID): ?>
+                                    <?php if($userManager->getUserOfficeSymbol() == $officeSymbolUUID): ?>
                                         <option value="<?php echo $officeSymbolUUID; ?>" SELECTED><?php echo $officeSymbolName; ?></option>
                                     <?php else: ?>
                                         <option value="<?php echo $officeSymbolUUID; ?>"><?php echo $officeSymbolName; ?></option>
@@ -233,7 +233,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                    name="userHandle"
                                    type="text"
                                    class="input_full"
-                                   value="<?php echo $user->getUserHandle(); ?>"
+                                   value="<?php echo $userManager->getUserHandle(); ?>"
                                    data-validation="length"
                                    data-validation-length="3-32"
                                    data-validation-error-msg="Your username must be between 3 and 32 characters">
@@ -259,7 +259,7 @@ if(!empty($_POST) && $_POST['saveUser'] == true){
                                 <option value="">Select Time Zone...</option>
                                 <?php foreach($tzList as $tzGroup): ?>
                                     <?php foreach($tzGroup as $tz): ?>
-                                        <?php if($user->getUserTimeZone() == $tz): ?>
+                                        <?php if($userManager->getUserTimeZone() == $tz): ?>
                                             <option value="<?php echo $tz; ?>" SELECTED><?php echo $tz; ?></option>
                                         <?php else: ?>
                                             <option value="<?php echo $tz; ?>"><?php echo $tz; ?></option>

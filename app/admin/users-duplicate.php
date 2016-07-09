@@ -10,7 +10,7 @@ if(isset($_POST) && !empty($_POST)){
     $i=0;
     $errors=0;
     foreach($_POST['userUUID'] as $userUUIDDelete){
-        if($user->deleteUser($userUUIDDelete)){
+        if($userManager->deleteUser($userUUIDDelete)){
             $i++;
         }
         else{
@@ -18,7 +18,7 @@ if(isset($_POST) && !empty($_POST)){
         }
     }
 
-    $sysMsg->addMessage("Processed ".$i." users with ".$errors." errors. Check the system log for any issues.","info");
+    $systemMessages->addMessage("Processed ".$i." users with ".$errors." errors. Check the system log for any issues.", "info");
 }
 
 $res = $db->query("SELECT CONCAT(`userFirstName`, ' ', `userLastName`) AS concatenatedName
@@ -95,7 +95,7 @@ if($res->num_rows > 0){
                                                 ORDER BY userData.userLastName, userData.userFirstName ASC");
 
                         if($res->num_rows > 0){
-                            $userObj = new user($db,$log,$emailQueue);
+                            $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             while($row = $res->fetch_assoc()){
                                 $userObj->loadUser($row['uuid']);
                                 $userStatistics->setUserUUID($row['uuid']);
@@ -108,7 +108,7 @@ if($res->num_rows > 0){
                                 <td><?php echo $userObj->getUserLastName(); ?></td>
                                 <td><?php echo $userObj->getUserFirstName(); ?></td>
                                 <td><?php echo $userObj->getUserEmail(); ?></td>
-                                <td><?php echo $bases->getBaseName($userObj->getUserBase()); ?></td>
+                                <td><?php echo $baseManager->getBaseName($userObj->getUserBase()); ?></td>
                                 <td><?php echo $userObj->getUserDateRegistered(); ?></td>
                                 <td><?php echo $userObj->getUserLastLogin(); ?></td>
                                 <td><?php echo $userObj->getUserLastActive(); ?></td>

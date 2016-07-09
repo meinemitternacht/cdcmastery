@@ -10,29 +10,31 @@ if(isset($_POST['userEmail'])){
     $userEmail = strtolower($_POST['userEmail']);
 
     if($cdcMastery->checkEmailAddress($userEmail)){
-        $user->setUserEmail($userEmail);
+        $userManager->setUserEmail($userEmail);
 
-        if($user->saveUser()){
-            $log->setAction("USER_UPDATE_FLAGGED_EMAIL");
-            $log->saveEntry();
+        if($userManager->saveUser()){
+            $systemLog->setAction("USER_UPDATE_FLAGGED_EMAIL");
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("Your e-mail address has been updated successfully.  Thanks!","success");
+            $systemMessages->addMessage("Your e-mail address has been updated successfully.  Thanks!", "success");
             $cdcMastery->redirect("/");
         }
         else{
-            $log->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
-            $log->setDetail("Provided E-mail",$userEmail);
-            $log->saveEntry();
+            $systemLog->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
+            $systemLog->setDetail("Provided E-mail", $userEmail);
+            $systemLog->setDetail("Error","Could not save the user information.");
+            $systemLog->saveEntry();
 
-            $sysMsg->addMessage("There was a problem updating your e-mail address. If you still cannot updated your e-mail address, please contact the help desk.","danger");
+            $systemMessages->addMessage("There was a problem updating your e-mail address. If you still cannot updated your e-mail address, please contact the help desk.", "danger");
         }
     }
     else{
-        $log->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
-        $log->setDetail("Provided E-mail",$userEmail);
-        $log->saveEntry();
+        $systemLog->setAction("ERROR_USER_UPDATE_FLAGGED_EMAIL");
+        $systemLog->setDetail("Provided E-mail", $userEmail);
+        $systemLog->setDetail("Error","Invalid e-mail address provided.");
+        $systemLog->saveEntry();
 
-        $sysMsg->addMessage("You provided an invalid e-mail address.  Please use your official government e-mail address ending in af.mil or mail.mil.","warning");
+        $systemMessages->addMessage("You provided an invalid e-mail address.  Please use your official government e-mail address ending in af.mil or mail.mil.  Example:  sample.user.10@us.af.mil  or  sample.user.mil@mail.mil", "warning");
     }
 }
 ?>
@@ -44,7 +46,7 @@ if(isset($_POST['userEmail'])){
                     <h1>Update E-mail Address</h1>
                 </header>
                 You have reached this page because the system detected an error with your e-mail address.  The e-mail address
-                we currently have in the system for you is: <strong><?php echo $user->getUserEmail(); ?></strong><br>
+                we currently have in the system for you is: <strong><?php echo $userManager->getUserEmail(); ?></strong><br>
                 <br>
                 Please update your e-mail in order to continue.  Note:  You must use your official e-mail address on this screen.
                 If you want to utilize a personal e-mail address instead, you may do so by <a href="/user/edit">editing your profile</a>.

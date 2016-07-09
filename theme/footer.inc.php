@@ -41,7 +41,7 @@
 								<li>Rendered in 
 									<?php
 									$time_end = microtime(true);
-									$time = $time_end - $time_start;
+									$time = $time_end - $app->getTimeStart();
 									echo round($time,5);
 									?>s using <?php echo round((memory_get_usage(true) / 1048576),2); ?> MB
 								</li>
@@ -71,10 +71,10 @@
 			</div>
 		</div>
 		<?php
-		if($sysMsg->getMessageCount() > 0):
+		if($systemMessages->getMessageCount() > 0):
 			$systemMessageHTML = "";
-            $validMessageTypes = $sysMsg->getValidMessageTypes();
-            $messageArray = $sysMsg->retrieveMessages();
+            $validMessageTypes = $systemMessages->getValidMessageTypes();
+            $messageArray = $systemMessages->retrieveMessages();
                 
             foreach($validMessageTypes as $messageType){
                 if(!isset($messageArray[$messageType])){

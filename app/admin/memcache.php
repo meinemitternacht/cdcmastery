@@ -6,7 +6,7 @@
  * Time: 6:30 PM
  */
 if(!$cdcMastery->verifyAdmin()){
-    $sysMsg->addMessage("You are not authorized to view that page.","danger");
+    $systemMessages->addMessage("You are not authorized to view that page.", "danger");
     $cdcMastery->redirect("/errors/403");
 }
 ?>

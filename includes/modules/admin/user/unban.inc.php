@@ -1,42 +1,42 @@
 <?php
 if(isset($_POST['confirmUserUnban'])){
     if($userUUID){
-        $unbanUserObj = new user($db,$log,$emailQueue);
+        $unbanUserObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
 
         if($unbanUserObj->loadUser($userUUID)){
             $unbanUserObj->setUserDisabled(false);
 
             if ($unbanUserObj->saveUser()) {
-                $log->setAction("USER_UNBAN");
-                $log->setDetail("User UUID", $userUUID);
-                $log->setDetail("User Name", $unbanUserObj->getFullName());
+                $systemLog->setAction("USER_UNBAN");
+                $systemLog->setDetail("User UUID", $userUUID);
+                $systemLog->setDetail("User Name", $unbanUserObj->getFullName());
                 if (!empty($_POST['banReason'])) {
-                    $log->setDetail("Reason", $_POST['banReason']);
+                    $systemLog->setDetail("Reason", $_POST['banReason']);
                 } else {
-                    $log->setDetail("Reason", "No Reason Provided");
+                    $systemLog->setDetail("Reason", "No Reason Provided");
                 }
-                $log->saveEntry();
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage($unbanUserObj->getFullName() . " has been unbanned.","success");
+                $systemMessages->addMessage($unbanUserObj->getFullName() . " has been unbanned.", "success");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             } else {
-                $log->setAction("ERROR_USER_UNBAN");
-                $log->setDetail("User UUID", $userUUID);
-                $log->setDetail("User Name", $unbanUserObj->getFullName());
+                $systemLog->setAction("ERROR_USER_UNBAN");
+                $systemLog->setDetail("User UUID", $userUUID);
+                $systemLog->setDetail("User Name", $unbanUserObj->getFullName());
                 if (!empty($_POST['banReason'])) {
-                    $log->setDetail("Reason", $_POST['banReason']);
+                    $systemLog->setDetail("Reason", $_POST['banReason']);
                 } else {
-                    $log->setDetail("Reason", "No Reason Provided");
+                    $systemLog->setDetail("Reason", "No Reason Provided");
                 }
-                $log->setDetail("Error", $unbanUserObj->error);
-                $log->saveEntry();
+                $systemLog->setDetail("Error", $unbanUserObj->error);
+                $systemLog->saveEntry();
 
-                $sysMsg->addMessage($unbanUserObj->getFullName() . " could not be unbanned.  The error has been logged.","danger");
+                $systemMessages->addMessage($unbanUserObj->getFullName() . " could not be unbanned.  The error has been logged.", "danger");
                 $cdcMastery->redirect("/admin/users/" . $userUUID);
             }
         }
     } else{
-        $sysMsg->addMessage("No User UUID was provided.","warning");
+        $systemMessages->addMessage("No User UUID was provided.", "warning");
         $cdcMastery->redirect("/admin/users/" . $userUUID);
     }
 }

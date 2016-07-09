@@ -1,8 +1,8 @@
 <?php
-$userRole = $roles->verifyUserRole($_SESSION['userUUID']);
+$userRole = $roleManager->verifyUserRole($_SESSION['userUUID']);
 
 if(!$cdcMastery->verifySupervisor() && !$cdcMastery->verifyAdmin()){
-	$sysMsg->addMessage("You are not authorized to use the Supervisor profile page.","danger");
+	$systemMessages->addMessage("You are not authorized to use the Supervisor profile page.", "danger");
 	$cdcMastery->redirect("/errors/403");
 }
 
@@ -13,21 +13,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			
 			foreach($_POST['userUUID'] as $subordinateUUID):
 				if($userRole == "trainingManager"):
-					if(!$assoc->addTrainingManagerAssociation($_SESSION['userUUID'], $subordinateUUID)):
+					if(!$associationManager->addTrainingManagerAssociation($_SESSION['userUUID'], $subordinateUUID)):
 						$error = true;
 					endif;
 				elseif($userRole == "supervisor"):
-					if(!$assoc->addSupervisorAssociation($_SESSION['userUUID'], $subordinateUUID)):
+					if(!$associationManager->addSupervisorAssociation($_SESSION['userUUID'], $subordinateUUID)):
 						$error = true;
 					endif;
 				endif;
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate(s) associated successfully.","success");
+				$systemMessages->addMessage("Subordinate(s) associated successfully.", "success");
 			}
 		break;
 		case "removeSubordinate":
@@ -35,36 +35,50 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			
 			foreach($_POST['userUUID'] as $subordinateUUID):
 				if($userRole == "trainingManager"):
-					if(!$assoc->deleteTrainingManagerAssociation($_SESSION['userUUID'], $subordinateUUID)):
+					if(!$associationManager->deleteTrainingManagerAssociation($_SESSION['userUUID'], $subordinateUUID)):
 						$error = true;
 					endif;
 				elseif($userRole == "supervisor"):
-					if(!$assoc->deleteSupervisorAssociation($_SESSION['userUUID'], $subordinateUUID)):
+					if(!$associationManager->deleteSupervisorAssociation($_SESSION['userUUID'], $subordinateUUID)):
 						$error = true;
 					endif;
 				endif;
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate association(s) removed successfully.","success");
+				$systemMessages->addMessage("Subordinate association(s) removed successfully.", "success");
 			}
 		break;
 	}
 }
 
 $userStatistics->setUserUUID($_SESSION['userUUID']);
-$userInfo = new user($db, $log, $emailQueue);
-$userList = $user->listUsersByBase($user->getUserBase());
+$userInfo = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
+$userList = $userManager->listUsersByBase($userManager->getUserBase());
 
 if($userRole == "trainingManager"):
-	$subordinateList = $user->sortUserList($userStatistics->getTrainingManagerAssociations(),"userLastName");
-	$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	$associationArray = $userStatistics->getTrainingManagerAssociations();
+
+	if(is_array($associationArray) && count($associationArray) > 0):
+		$subordinateList = $userManager->sortUserList($associationArray,"userLastName");
+		$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
+	else:
+		$subordinateList = false;
+		$subordinateCount = 0;
+	endif;
 elseif($userRole == "supervisor"):
-	$subordinateList = $user->sortUserList($userStatistics->getSupervisorAssociations(),"userLastName");
-	$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	$associationArray = $userStatistics->getSupervisorAssociations();
+
+	if(is_array($associationArray) && count($associationArray) > 0):
+		$subordinateList = $userManager->sortUserList($associationArray,"userLastName");
+		$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
+	else:
+		$subordinateList = false;
+		$subordinateCount = 0;
+	endif;
 else:
 	$cdcMastery->redirect("/admin/users/".$userUUID);
 endif;
@@ -89,7 +103,7 @@ $(document).ready(function() {
 		<div class="4u">
 			<section>
 				<header>
-					<h2><em><?php echo $user->getFullName(); ?></em></h2>
+					<h2><em><?php echo $userManager->getFullName(); ?></em></h2>
 				</header>
 			</section>
 			<div class="sub-menu">
@@ -135,7 +149,7 @@ $(document).ready(function() {
 			<form action="/supervisor/subordinates" method="POST">
 				<input type="hidden" name="formAction" value="addSubordinate">
 				Showing users from<br>
-                <strong><?php echo $bases->getBaseName($user->getUserBase()); ?></strong><br>
+                <strong><?php echo $baseManager->getBaseName($userManager->getUserBase()); ?></strong><br>
 				<select name="userUUID[]" size="15" MULTIPLE>
 					<?php foreach($userList as $userListUUID => $userListData): ?>
 						<option value="<?php echo $userListUUID; ?>"><?php echo $userListData['userLastName']; ?>, <?php echo $userListData['userFirstName']; ?> <?php echo $userListData['userRank']; ?></option>

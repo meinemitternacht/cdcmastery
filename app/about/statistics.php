@@ -50,12 +50,12 @@ if(!$statSection && !$statValue){
 }
 
 if(!in_array($statSection,$statSectionList) || !in_array($statValue,$statValueList)){
-    $sysMsg->addMessage("That statistic does not exist.","warning");
+    $systemMessages->addMessage("That statistic does not exist.", "warning");
     $cdcMastery->redirect("/errors/404");
 }
 
 if(!file_exists(BASE_PATH . "/includes/modules/statistics/".$statSection."/".$statValue.".php")){
-    $sysMsg->addMessage("That statistic does not exist.","warning");
+    $systemMessages->addMessage("That statistic does not exist.", "warning");
     $cdcMastery->redirect("/errors/404");
 }
 

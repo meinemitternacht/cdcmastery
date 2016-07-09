@@ -1,5 +1,5 @@
 <?php
-$userRole = $roles->verifyUserRole($userUUID);
+$userRole = $roleManager->verifyUserRole($userUUID);
 
 if(!empty($_POST) && isset($_POST['formAction'])){
 	switch($_POST['formAction']){
@@ -8,21 +8,21 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			
 			foreach($_POST['userUUID'] as $subordinateUUID):
 				if($userRole == "trainingManager"):
-					if(!$assoc->addTrainingManagerAssociation($userUUID, $subordinateUUID)):
+					if(!$associationManager->addTrainingManagerAssociation($userUUID, $subordinateUUID)):
 						$error = true;
 					endif;
 				elseif($userRole == "supervisor"):
-					if(!$assoc->addSupervisorAssociation($userUUID, $subordinateUUID)):
+					if(!$associationManager->addSupervisorAssociation($userUUID, $subordinateUUID)):
 						$error = true;
 					endif;
 				endif;
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors encountered while associating subordinates with this user. Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate(s) associated successfully.","success");
+				$systemMessages->addMessage("Subordinate(s) associated successfully.", "success");
 			}
 		break;
 		case "removeSubordinate":
@@ -30,28 +30,28 @@ if(!empty($_POST) && isset($_POST['formAction'])){
 			
 			foreach($_POST['userUUID'] as $subordinateUUID):
 				if($userRole == "trainingManager"):
-					if(!$assoc->deleteTrainingManagerAssociation($userUUID, $subordinateUUID)):
+					if(!$associationManager->deleteTrainingManagerAssociation($userUUID, $subordinateUUID)):
 						$error = true;
 					endif;
 				elseif($userRole == "supervisor"):
-					if(!$assoc->deleteSupervisorAssociation($userUUID, $subordinateUUID)):
+					if(!$associationManager->deleteSupervisorAssociation($userUUID, $subordinateUUID)):
 						$error = true;
 					endif;
 				endif;
 			endforeach;
 			
 			if($error){
-				$sysMsg->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.","danger");
+				$systemMessages->addMessage("There were errors while removing subordinate association(s) for this user.  Check the site log for details.", "danger");
 			}
 			else{
-				$sysMsg->addMessage("Subordinate association(s) removed successfully.","success");
+				$systemMessages->addMessage("Subordinate association(s) removed successfully.", "success");
 			}
 		break;
 	}
 }
 
 $userStatistics->setUserUUID($userUUID);
-$userList = $user->listUsersByBase($user->getUserBase());
+$userList = $userManager->listUsersByBase($userManager->getUserBase());
 
 $subordinateList = false;
 $subordinateCount = 0;
@@ -59,13 +59,13 @@ $subordinateCount = 0;
 if($userRole == "trainingManager"):
 	$rawList = $userStatistics->getTrainingManagerAssociations();
 	if(is_array($rawList)):
-		$subordinateList = $user->sortUserList($rawList,"userLastName");
+		$subordinateList = $userManager->sortUserList($rawList, "userLastName");
 		$subordinateCount = $userStatistics->getTrainingManagerSubordinateCount();
 	endif;
 elseif($userRole == "supervisor"):
 	$rawList = $userStatistics->getSupervisorAssociations();
 	if(is_array($rawList)):
-		$subordinateList = $user->sortUserList($rawList,"userLastName");
+		$subordinateList = $userManager->sortUserList($rawList, "userLastName");
 		$subordinateCount = $userStatistics->getSupervisorSubordinateCount();
 	endif;
 else:
@@ -133,7 +133,7 @@ $(document).ready(function() {
 				<header>
 					<h2>Add Subordinate</h2>
 				</header>
-				<em>Showing users from <br><?php echo $bases->getBaseName($user->getUserBase()); ?></em>
+				<em>Showing users from <br><?php echo $baseManager->getBaseName($userManager->getUserBase()); ?></em>
 			</section>
 			<form action="/admin/users/<?php echo $userUUID; ?>/associations/subordinate" method="POST">
 				<input type="hidden" name="formAction" value="addSubordinate">

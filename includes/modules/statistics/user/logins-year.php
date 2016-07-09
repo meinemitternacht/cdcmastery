@@ -6,7 +6,7 @@
  * Time: 9:52 AM
  */
 
-$statsObj = new statistics($db,$log,$emailQueue,$memcache);
+$statsObj = new CDCMastery\StatisticsModule($db, $systemLog, $emailQueue, $memcache);
 $loginsByYear = $statsObj->getLoginsByYear();
 
 if($loginsByYear){
@@ -18,7 +18,7 @@ if($loginsByYear){
     }
 }
 else{
-    $sysMsg->addMessage("That statistic contains no data.","info");
+    $systemMessages->addMessage("That statistic contains no data.", "info");
     $cdcMastery->redirect("/about/statistics");
 }
 

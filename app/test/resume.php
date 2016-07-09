@@ -2,23 +2,23 @@
 if(isset($_SESSION['vars'][0])){
 	$testUUID = $_SESSION['vars'][0];
 	
-	$testManager = new testManager($db, $log, $afsc);
+	$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 	
 	if(!$testManager->resumeTest($testUUID)){
-		$log->setAction("ERROR_TEST_RESUME");
-		$log->setDetail("TEST UUID",$testUUID);
-		$log->setDetail("SCRIPT LOCATION","test/resume -- testManager->resumeTest(testUUID)");
-		$log->setDetail("MYSQL_ERROR",$testManager->error);
-		$log->saveEntry();
+		$systemLog->setAction("ERROR_TEST_RESUME");
+		$systemLog->setDetail("TEST UUID", $testUUID);
+		$systemLog->setDetail("SCRIPT LOCATION", "test/resume -- testManager->resumeTest(testUUID)");
+		$systemLog->setDetail("MYSQL_ERROR", $testManager->error);
+		$systemLog->saveEntry();
 	}
 	else{
 		if($testManager->getIncompleteUserUUID() != $_SESSION['userUUID']){
-			$log->setAction("ACCESS_DENIED");
-			$log->setDetail("TEST UUID",$testUUID);
-			$log->setDetail("Error Detail","User attempted to resume a test that was not theirs.");
-			$log->saveEntry();
+			$systemLog->setAction("ACCESS_DENIED");
+			$systemLog->setDetail("TEST UUID", $testUUID);
+			$systemLog->setDetail("Error Detail", "User attempted to resume a test that was not theirs.");
+			$systemLog->saveEntry();
 
-            $sysMsg->addMessage("Sorry, you cannot resume another user's test.","danger");
+            $systemMessages->addMessage("Sorry, you cannot resume another user's test.", "danger");
 			$cdcMastery->redirect("/errors/403");
 		}
 		else{

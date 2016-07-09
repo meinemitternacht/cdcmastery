@@ -17,7 +17,7 @@ if($subPage) {
             include BASE_PATH . "/includes/modules/admin/search/results.inc.php";
             break;
         default:
-            $sysMsg->addMessage("There was an error processing that page path.","warning");
+            $systemMessages->addMessage("There was an error processing that page path.", "warning");
             $cdcMastery->redirect("/admin/search");
             break;
     }
@@ -249,7 +249,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $roleList = $roles->listRoles();
+                                                            $roleList = $roleManager->listRoles();
                                                             foreach ($roleList as $roleUUID => $roleDetails): ?>
                                                                 <option
                                                                     value="<?php echo $roleUUID; ?>"><?php echo $roleDetails['roleName']; ?></option>
@@ -281,7 +281,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $baseList = $bases->listUserBases();
+                                                            $baseList = $baseManager->listUserBases();
                                                             foreach ($baseList as $baseUUID => $baseName): ?>
                                                                 <option value="<?php echo $baseUUID; ?>"><?php echo $baseName; ?></option>
                                                                 <?php
@@ -297,7 +297,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $officeSymbolList = $officeSymbol->listUserOfficeSymbols();
+                                                            $officeSymbolList = $officeSymbolManager->listUserOfficeSymbols();
                                                             foreach($officeSymbolList as $officeSymbolUUID => $officeSymbolName): ?>
                                                                 <option value="<?php echo $officeSymbolUUID; ?>"><?php echo $officeSymbolName; ?></option>
                                                                 <?php
@@ -344,7 +344,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $afscList = $afsc->listAFSC();
+                                                            $afscList = $afscManager->listAFSC();
                                                             foreach ($afscList as $afscUUID => $afscDetails): ?>
                                                                 <option
                                                                     value="<?php echo $afscUUID; ?>"><?php echo $afscDetails['afscName']; ?></option>
@@ -389,7 +389,7 @@ else {
                                                                 style="height:10em;"
                                                                 MULTIPLE>
                                                             <?php
-                                                            $afscList = $afsc->listAFSC();
+                                                            $afscList = $afscManager->listAFSC();
                                                             foreach ($afscList as $afscUUID => $afscDetails): ?>
                                                                 <option
                                                                     value="<?php echo $afscUUID; ?>"><?php echo $afscDetails['afscName']; ?></option>

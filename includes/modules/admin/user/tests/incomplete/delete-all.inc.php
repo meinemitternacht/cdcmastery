@@ -1,15 +1,15 @@
 <?php
-$testManager = new testManager($db, $log, $afsc);
+$testManager = new CDCMastery\TestManager($db, $systemLog, $afscManager);
 
 if(isset($_POST['confirmIncompleteTestDeleteAll'])){
 	if($testManager->deleteIncompleteTest(true,false,$userUUID)){
 		$userStatistics->setUserUUID($userUUID);
 		$userStatistics->deleteUserStatsCacheVal("getIncompleteTests");
-        $sysMsg->addMessage("Incomplete tests deleted successfully.","success");
+        $systemMessages->addMessage("Incomplete tests deleted successfully.", "success");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 	else{
-        $sysMsg->addMessage("We could not delete the incomplete tests taken by this user, please contact the support help desk.","danger");
+        $systemMessages->addMessage("We could not delete the incomplete tests taken by this user, please contact the support help desk.", "danger");
 		$cdcMastery->redirect("/admin/users/" . $userUUID);
 	}
 }
