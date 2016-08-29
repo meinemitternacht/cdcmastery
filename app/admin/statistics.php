@@ -56,7 +56,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         <header>
                             <h2>Testing Statistics</h2>
                         </header>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td>Completed Tests</td>
                                 <td><?php echo number_format($statisticsObj->getTotalCompletedTests()); ?></td>
@@ -121,7 +121,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         <header>
                             <h2>CDC Data Statistics</h2>
                         </header>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td><strong>AFSC Categories</strong></td>
                                 <td><?php echo number_format($statisticsObj->getTotalAFSCCategories()); ?></td>
@@ -255,7 +255,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         if($averageLastYear > 0)
                             $percentIncreaseAverage['year'] = number_format(((($averageThisYear - $averageLastYear) / $averageLastYear) * 100),2) . "%";
                         ?>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td><strong>Tests Today</strong></td>
                                 <td><?php echo number_format($testsToday); ?></td>
@@ -293,7 +293,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                                 <td colspan="2"><?php echo number_format($testsLastYear); ?></td>
                             </tr>
                         </table>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td><strong>Average Score Today</strong></td>
                                 <td><?php echo number_format($averageToday,2); ?>%</td>
@@ -364,7 +364,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         $percentUserClass['superAdministrators'] = round((($totalSuperAdministrators/$totalAccounts) * 100),2) . "%";
                         $percentUserClass['questionEditors'] = round((($totalQuestionEditors/$totalAccounts) * 100),2) . "%";
                         ?>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td>Total Sessions</td>
                                 <td colspan="2"><?php echo number_format($totalSessions); ?></td>
@@ -432,7 +432,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         <header>
                             <h2>User Activity</h2>
                         </header>
-                        <table>
+                        <table class="tableSmallText">
                             <tr>
                                 <td><strong>Active Today</strong></td>
                                 <td><?php echo number_format($statisticsObj->getUsersActiveToday()); ?></td>
@@ -465,7 +465,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         $usersRecentlyActive = $statisticsObj->getUsersActiveFifteenMinutes();
 
                         if(is_array($usersRecentlyActive)): ?>
-                        <table>
+                        <table class="tableSmallText">
                                 <?php foreach($usersRecentlyActive as $recentUser): ?>
                                     <?php
                                     $userObj->loadUser($recentUser);
@@ -499,7 +499,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Tests Taken Today</h2>
                         </header>
                         <?php if($topTenUserTestsToday): ?>
-                            <table id="topTenUserTestsToday">
+                            <table id="topTenUserTestsToday" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -529,7 +529,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Tests Taken This Month</h2>
                         </header>
                         <?php if($topTenUserTestsMonth): ?>
-                            <table id="topTenUserTestsMonth">
+                            <table id="topTenUserTestsMonth" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -559,7 +559,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Tests Taken This Year</h2>
                         </header>
                         <?php if($topTenUserTestsYear): ?>
-                            <table id="topTenUserTestsYear">
+                            <table id="topTenUserTestsYear" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -591,7 +591,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Average Score Today</h2>
                         </header>
                         <?php if($topTenUserAverageToday): ?>
-                            <table id="topTenUserAverageToday">
+                            <table id="topTenUserAverageToday" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -623,7 +623,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Average Score This Month</h2>
                         </header>
                         <?php if($topTenUserAverageMonth): ?>
-                            <table id="topTenUserAverageMonth">
+                            <table id="topTenUserAverageMonth" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -655,7 +655,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                             <h2>Average Score This Year</h2>
                         </header>
                         <?php if($topTenUserAverageYear): ?>
-                            <table id="topTenUserAverageYear">
+                            <table id="topTenUserAverageYear" class="tableSmallText">
                                 <thead>
                                 <tr>
                                     <td><strong>#</strong></td>
@@ -690,7 +690,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         <header>
                             <h2>System Statistics</h2>
                         </header>
-                        <table>
+                        <table class="tableSmallText" class="tableSmallText">
                             <tr>
                                 <td><strong>Database Size</strong></td>
                                 <td><?php echo round($statisticsObj->getDatabaseSize(),2); ?> GB</td>
@@ -751,7 +751,7 @@ $userObj = new CDCMastery\UserManager($db, $systemLog, $emailQueue);
                         <header>
                             <h2>Log Action Totals</h2>
                         </header>
-                        <table id="logActionCountTable">
+                        <table id="logActionCountTable" class="tableSmallText">
                             <thead>
                             <tr>
                                 <td><strong>Action</strong></td>

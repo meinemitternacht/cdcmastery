@@ -30,7 +30,7 @@ $db = new mysqli($configurationManager->getDatabaseConfiguration('host'),
  */
 if($db->connect_errno){
     http_response_code(500);
-	include __DIR__ . '../app/errors/dbError.php';
+	include __DIR__ . '/../app/errors/dbError.php';
 	exit();
 }
 
@@ -72,16 +72,3 @@ if(isset($_SESSION['userUUID']) && !empty($_SESSION['userUUID'])){
     $userManager->updateLastActiveTimestamp(); /* This updates the user's latest recorded activity on each page request */
 	$userStatistics->setUserUUID($_SESSION['userUUID']); /* Ensure user statistics module is fetching stats for this user */
 }
-
-$router = new CDCMastery\Router($systemLog,$systemMessages);
-
-if($router->showTheme)
-    include BASE_PATH . '/theme/header.inc.php';
-
-include $router->outputPage;
-
-if($router->showTheme)
-    include BASE_PATH . '/theme/footer.inc.php';
-
-$router->__destruct();
-$app->ApplicationShutdown();

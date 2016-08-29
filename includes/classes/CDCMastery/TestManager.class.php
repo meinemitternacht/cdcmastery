@@ -216,7 +216,6 @@ class TestManager extends CDCMastery
 
 				$res->close();
 			}
-
 			return true;
 		}
 		else{
@@ -227,7 +226,7 @@ class TestManager extends CDCMastery
 
 	public function listArchivableTestsDate(){
 		$testTimeObj = new DateTime();
-		$testTimeObj->modify("-2 years");
+		$testTimeObj->modify("-1 year");
 		$testTimeStart = $testTimeObj->format("Y-m-d");
 
 		$query = "SELECT uuid
