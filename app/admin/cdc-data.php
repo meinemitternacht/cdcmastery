@@ -115,32 +115,6 @@ if ($workingAFSC):
                                 break;
                         }
                         break;
-                    case "set":
-                        switch ($action) {
-                            case "view":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/set/view.inc.php";
-                                break;
-                            case "edit":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/set/edit.inc.php";
-                                break;
-                            case "delete":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/set/delete.inc.php";
-                                break;
-                        }
-                        break;
-                    case "volume":
-                        switch ($action) {
-                            case "view":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/volume/view.inc.php";
-                                break;
-                            case "edit":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/volume/edit.inc.php";
-                                break;
-                            case "delete":
-                                require_once BASE_PATH . "/includes/modules/admin/cdc-data/volume/delete.inc.php";
-                                break;
-                        }
-                        break;
                 }
             endif; ?>
         </div>

@@ -29,7 +29,7 @@ $res = $db->query("SELECT CONCAT(`userFirstName`, ' ', `userLastName`) AS concat
 
 if($res->num_rows > 0){
     while($row = $res->fetch_assoc()){
-        $duplicateUserList[] = $row['concatenatedName'];
+        $duplicateUserList[] = preg_replace("/'/","\'",$row['concatenatedName']);
     }
 
     $res->close();

@@ -20,7 +20,7 @@ class CDCMastery
 
 	public function checkEmailAddress($emailAddress){
 		if(strpos($emailAddress,"@") !== false) {
-			if (!preg_match("/(([A-Za-z_-])+\.([A-Za-z_-])+(\.[0-9A-Za-z]+)?\@(([A-Za-z]+\.afcent\.af)|([A-Za-z]+)\.af|us\.af|mail)(\.mil))$|(([A-Za-z_-])+\.([A-Za-z_-])+\.([A-Za-z0-9_-])+(\.mil)\@(mail)(\.mil))$/", $emailAddress)) {
+			if (!preg_match("/(([A-Za-z_-])+\.([A-Za-z_-])+(\.[0-9A-Za-z]+)?\@(([A-Za-z]+\.afcent\.af)|([A-Za-z]+)\.af|us\.af|mail)(\.mil))$|(([A-Za-z_-])+\.([A-Za-z_-])+\.?([A-Za-z0-9_-])+(\.mil)\@(mail)(\.mil))$/", $emailAddress)) {
 				return false;
 			}
 			else {

@@ -5,7 +5,6 @@
  * Date: 9/22/2015
  * Time: 7:48 AM
  */
-
 $answerManager = new CDCMastery\AnswerManager($db, $systemLog);
 $questionManager = new CDCMastery\QuestionManager($db, $systemLog, $afscManager, $answerManager);
 
@@ -155,7 +154,7 @@ if(isset($_SESSION['deleteUUIDList'])): ?>
                     <?php
                     if(!$questionManager->loadQuestion($questionUUID)){
                         $systemMessages->addMessage($questionManager->error, "danger");
-                        $cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID());
+                        //$cdcMastery->redirect("/admin/cdc-data/".$afscManager->getUUID());
                     }
                     ?>
                     <tr>

@@ -138,6 +138,7 @@ class QuestionManager extends CDCMastery
             $this->questionText = $questionText;
 
             if(empty($this->questionText) || empty($this->uuid)){
+                $this->error = "Sorry, we could not retrieve the question from the database [".$uuid."]";
                 return false;
             }
             else{
