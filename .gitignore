@@ -5,3 +5,4 @@ images/icons/Thumbs.db
 .idea/
 app/about/git.php
 includes/config.inc.php
+vendor/
