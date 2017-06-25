@@ -1,0 +1,55 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: tehbi
+ * Date: 6/24/2017
+ * Time: 6:47 PM
+ */
+
+namespace CDCMastery\Models\CdcData;
+
+
+class QuestionAnswer
+{
+    /**
+     * @var Question
+     */
+    private $question;
+
+    /**
+     * @var Answer[]
+     */
+    private $answers;
+
+    /**
+     * @return Question
+     */
+    public function getQuestion(): Question
+    {
+        return $this->question;
+    }
+
+    /**
+     * @param Question $question
+     */
+    public function setQuestion(Question $question)
+    {
+        $this->question = $question;
+    }
+
+    /**
+     * @return Answer[]
+     */
+    public function getAnswers(): array
+    {
+        return $this->answers;
+    }
+
+    /**
+     * @param Answer[] $answers
+     */
+    public function setAnswers(array $answers)
+    {
+        $this->answers = $answers;
+    }
+}
