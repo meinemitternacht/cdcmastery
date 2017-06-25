@@ -54,9 +54,56 @@ class QuestionCollection
             return $this->questions[$uuid];
         }
 
-        return $afsc->isFouo()
-            ? $this->fetchEncrypted($uuid)
-            : $this->fetchUnencrypted($uuid);
+        $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  questionText
+FROM questionData
+WHERE uuid = ?
+SQL;
+
+        if ($afsc->isFouo()) {
+            $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  AES_DECRYPT(questionText, '%s') as questionText
+FROM questionData
+WHERE uuid = ?
+SQL;
+
+            $qry = sprintf(
+                $qry,
+                ENCRYPTION_KEY
+            );
+        }
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $uuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return new Question();
+        }
+
+        $stmt->bind_result(
+            $_uuid,
+            $afscUuid,
+            $text
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $question = new Question();
+        $question->setUuid($_uuid);
+        $question->setAfscUuid($afscUuid);
+        $question->setText($text);
+
+        $this->questions[$uuid] = $question;
+
+        return $question;
     }
 
     /**
@@ -69,74 +116,6 @@ class QuestionCollection
             return [];
         }
 
-        return $afsc->isFouo()
-            ? $this->fetchAfscEncrypted($afsc->getUuid())
-            : $this->fetchAfscUnencrypted($afsc->getUuid());
-    }
-
-    /**
-     * @param string $afscUuid
-     * @return Question[]
-     */
-    private function fetchAfscEncrypted(string $afscUuid): array
-    {
-        $qry = <<<SQL
-SELECT
-  uuid,
-  afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
-FROM questionData
-WHERE afscUUID = ?
-SQL;
-
-        $qry = sprintf(
-            $qry,
-            ENCRYPTION_KEY
-        );
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return [];
-        }
-
-        $stmt->bind_result(
-            $_uuid,
-            $afscUuid,
-            $text
-        );
-
-        $uuidList = [];
-        while ($stmt->fetch()) {
-            if (is_null($_uuid)) {
-                continue;
-            }
-
-            $question = new Question();
-            $question->setUuid($_uuid);
-            $question->setAfscUuid($afscUuid);
-            $question->setText($text);
-
-            $this->questions[$uuid] = $question;
-            $uuidList[] = $uuid;
-        }
-
-        $stmt->close();
-
-        return array_intersect_key(
-            $this->questions,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @param string $afscUuid
-     * @return Question[]
-     */
-    private function fetchAfscUnencrypted(string $afscUuid): array
-    {
         $qry = <<<SQL
 SELECT
   uuid,
@@ -146,6 +125,24 @@ FROM questionData
 WHERE afscUUID = ?
 SQL;
 
+        if ($afsc->isFouo()) {
+            $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  AES_DECRYPT(questionText, '%s') as questionText
+FROM questionData
+WHERE afscUUID = ?
+SQL;
+
+            $qry = sprintf(
+                $qry,
+                ENCRYPTION_KEY
+            );
+        }
+
+        $uuid = $afsc->getUuid();
+
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param('s', $uuid);
 
@@ -171,8 +168,8 @@ SQL;
             $question->setAfscUuid($afscUuid);
             $question->setText($text);
 
-            $this->questions[$uuid] = $question;
-            $uuidList[] = $uuid;
+            $this->questions[$_uuid] = $question;
+            $uuidList[] = $_uuid;
         }
 
         $stmt->close();
@@ -201,174 +198,54 @@ SQL;
 
         $uuidListString = implode("','", $uuidListFiltered);
 
-        $afsc->isFouo()
-            ? $this->fetchArrayEncrypted($uuidListString)
-            : $this->fetchArrayUnencrypted($uuidListString);
+        $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  questionText
+FROM questionData
+WHERE uuid IN ('{$uuidListString}')
+ORDER BY uuid ASC
+SQL;
+
+        if ($afsc->isFouo()) {
+            $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  AES_DECRYPT(questionText, '%s') as questionText
+FROM questionData
+WHERE uuid IN ('{$uuidListString}')
+ORDER BY uuid ASC
+SQL;
+
+            $qry = sprintf(
+                $qry,
+                ENCRYPTION_KEY
+            );
+        }
+
+        $res = $this->db->query($qry);
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+                continue;
+            }
+
+            $question = new Question();
+            $question->setUuid($row['uuid'] ?? '');
+            $question->setAfscUuid($row['afscUUID'] ?? '');
+            $question->setText($row['questionText'] ?? '');
+
+            $this->questions[$row['uuid']] = $question;
+        }
+
+        $res->free();
 
         return array_intersect_key(
             $this->questions,
             array_flip($uuidList)
         );
-    }
-
-    /**
-     * @param string $uuidList
-     */
-    private function fetchArrayEncrypted(string $uuidList): void
-    {
-        $qry = <<<SQL
-SELECT
-  uuid,
-  afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
-FROM questionData
-WHERE uuid IN ('{$uuidList}')
-ORDER BY uuid ASC
-SQL;
-
-        $qry = sprintf(
-            $qry,
-            ENCRYPTION_KEY
-        );
-
-        $res = $this->db->query($qry);
-
-        while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
-                continue;
-            }
-
-            $question = new Question();
-            $question->setUuid($row['uuid'] ?? '');
-            $question->setAfscUuid($row['afscUUID'] ?? '');
-            $question->setText($row['questionText'] ?? '');
-
-            $this->questions[$row['uuid']] = $question;
-        }
-
-        $res->free();
-    }
-
-    /**
-     * @param string $uuidList
-     */
-    private function fetchArrayUnencrypted(string $uuidList): void
-    {
-        $qry = <<<SQL
-SELECT
-  uuid,
-  afscUUID,
-  questionText
-FROM questionData
-WHERE uuid IN ('{$uuidList}')
-ORDER BY uuid ASC
-SQL;
-
-        $res = $this->db->query($qry);
-
-        while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
-                continue;
-            }
-
-            $question = new Question();
-            $question->setUuid($row['uuid'] ?? '');
-            $question->setAfscUuid($row['afscUUID'] ?? '');
-            $question->setText($row['questionText'] ?? '');
-
-            $this->questions[$row['uuid']] = $question;
-        }
-
-        $res->free();
-    }
-
-    /**
-     * @param string $uuid
-     * @return Question
-     */
-    private function fetchEncrypted(string $uuid): Question
-    {
-        $qry = <<<SQL
-SELECT
-  uuid,
-  afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
-FROM questionData
-WHERE uuid = ?
-SQL;
-
-        $qry = sprintf(
-            $qry,
-            ENCRYPTION_KEY
-        );
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return new Question();
-        }
-
-        $stmt->bind_result(
-            $_uuid,
-            $afscUuid,
-            $text
-        );
-
-        $stmt->fetch();
-        $stmt->close();
-
-        $question = new Question();
-        $question->setUuid($_uuid);
-        $question->setAfscUuid($afscUuid);
-        $question->setText($text);
-
-        $this->questions[$uuid] = $question;
-
-        return $question;
-    }
-
-    /**
-     * @param string $uuid
-     * @return Question
-     */
-    private function fetchUnencrypted(string $uuid): Question
-    {
-        $qry = <<<SQL
-SELECT
-  uuid,
-  afscUUID,
-  questionText
-FROM questionData
-WHERE uuid = ?
-SQL;
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return new Question();
-        }
-
-        $stmt->bind_result(
-            $_uuid,
-            $afscUuid,
-            $text
-        );
-
-        $stmt->fetch();
-        $stmt->close();
-
-        $question = new Question();
-        $question->setUuid($_uuid);
-        $question->setAfscUuid($afscUuid);
-        $question->setText($text);
-
-        $this->questions[$uuid] = $question;
-
-        return $question;
     }
 
     /**
@@ -391,9 +268,51 @@ SQL;
             return;
         }
 
-        $afsc->isFouo()
-            ? $this->saveEncrypted($question)
-            : $this->saveUnencrypted($question);
+        $uuid = $question->getUuid();
+        $afscUuid = $question->getAfscUuid();
+        $text = $question->getText();
+
+        $qry = <<<SQL
+INSERT INTO questionData
+  (uuid, afscUUID, questionText)
+VALUES (?, ?, ?)
+ON DUPLICATE KEY UPDATE 
+  uuid=VALUES(uuid),
+  afscUUID=VALUES(afscUUID),
+  questionText=VALUES(questionText)
+SQL;
+
+        if ($afsc->isFouo()) {
+            $qry = <<<SQL
+INSERT INTO questionData
+  (uuid, afscUUID, questionText)
+VALUES (?, ?, AES_ENCRYPT(?, '%s'))
+ON DUPLICATE KEY UPDATE 
+  uuid=VALUES(uuid),
+  afscUUID=VALUES(afscUUID),
+  questionText=VALUES(questionText)
+SQL;
+
+            $qry = sprintf(
+                $qry,
+                ENCRYPTION_KEY
+            );
+        }
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param(
+            'sss',
+            $uuid,
+            $afscUuid,
+            $text
+        );
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        $stmt->close();
     }
 
     /**
@@ -418,88 +337,5 @@ SQL;
 
             $this->save($afsc, $questions[$i]);
         }
-    }
-
-    /**
-     * @param Question $question
-     */
-    private function saveEncrypted(Question $question): void
-    {
-        if (empty($question->getUuid())) {
-            return;
-        }
-
-        $uuid = $question->getUuid();
-        $afscUuid = $question->getAfscUuid();
-        $text = $question->getText();
-
-        $qry = <<<SQL
-INSERT INTO questionData
-  (uuid, afscUUID, questionText)
-VALUES (?, ?, AES_ENCRYPT(?, '%s'))
-ON DUPLICATE KEY UPDATE 
-  uuid=VALUES(uuid),
-  afscUUID=VALUES(afscUUID),
-  questionText=VALUES(questionText)
-SQL;
-
-        $qry = sprintf(
-            $qry,
-            ENCRYPTION_KEY
-        );
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $uuid,
-            $afscUuid,
-            $text
-        );
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return;
-        }
-
-        $stmt->close();
-    }
-
-    /**
-     * @param Question $question
-     */
-    private function saveUnencrypted(Question $question): void
-    {
-        if (empty($question->getUuid())) {
-            return;
-        }
-
-        $uuid = $question->getUuid();
-        $afscUuid = $question->getAfscUuid();
-        $text = $question->getText();
-
-        $qry = <<<SQL
-INSERT INTO questionData
-  (uuid, afscUUID, questionText)
-VALUES (?, ?, ?)
-ON DUPLICATE KEY UPDATE 
-  uuid=VALUES(uuid),
-  afscUUID=VALUES(afscUUID),
-  questionText=VALUES(questionText)
-SQL;
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $uuid,
-            $afscUuid,
-            $text
-        );
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return;
-        }
-
-        $stmt->close();
     }
 }
