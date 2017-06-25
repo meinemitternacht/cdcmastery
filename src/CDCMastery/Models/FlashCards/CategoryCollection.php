@@ -39,6 +39,10 @@ class CategoryCollection
         $this->log = $logger;
     }
 
+    /**
+     * @param string $uuid
+     * @return Category
+     */
     public function fetch(string $uuid): Category
     {
         if (empty($uuid)) {
@@ -96,6 +100,9 @@ SQL;
         return $category;
     }
 
+    /**
+     * @return Category[]
+     */
     public function fetchAll(): array
     {
         $qry = <<<SQL
@@ -137,6 +144,10 @@ SQL;
         return $this->categories;
     }
 
+    /**
+     * @param array $uuidList
+     * @return Category[]
+     */
     public function fetchArray(array $uuidList): array
     {
         if (empty($uuidList)) {
@@ -190,6 +201,9 @@ SQL;
         return $this->categories;
     }
 
+    /**
+     * @return CategoryCollection
+     */
     public function reset(): self
     {
         $this->categories = [];
@@ -197,6 +211,9 @@ SQL;
         return $this;
     }
 
+    /**
+     * @param Category $category
+     */
     public function save(Category $category): void
     {
         if (empty($category->getUuid())) {
@@ -250,6 +267,9 @@ SQL;
         $this->categories[$uuid] = $category;
     }
 
+    /**
+     * @param Category[] $categories
+     */
     public function saveArray(array $categories): void
     {
         if (empty($categories)) {
