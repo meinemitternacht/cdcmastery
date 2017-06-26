@@ -28,12 +28,21 @@ class CdcDataCollection
      */
     private $cdcData = [];
 
+    /**
+     * CdcDataCollection constructor.
+     * @param \mysqli $mysqli
+     * @param Logger $logger
+     */
     public function __construct(\mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
+    /**
+     * @param string $afscUuid
+     * @return CdcData
+     */
     public function fetch(string $afscUuid): CdcData
     {
         if (empty($afscUuid)) {
@@ -71,10 +80,56 @@ class CdcDataCollection
         return $cdcData;
     }
 
+    /**
+     * @return CdcDataCollection
+     */
     public function refresh(): self
     {
         $this->cdcData = [];
 
         return $this;
+    }
+
+    /**
+     * @param CdcData $cdcData
+     */
+    public function save(CdcData $cdcData): void
+    {
+        $afscCollection = new AfscCollection(
+            $this->db,
+            $this->log
+        );
+
+        $afscCollection->save($cdcData->getAfsc());
+
+        $questionCollection = new QuestionCollection(
+            $this->db,
+            $this->log
+        );
+
+        $answerCollection = new AnswerCollection(
+            $this->db,
+            $this->log
+        );
+
+        $questions = [];
+        $answers = [];
+        foreach ($cdcData->getQuestionAnswerData() as $questionAnswer) {
+            $questions[] = $questionAnswer->getQuestion();
+            $answers = array_merge(
+                $answers,
+                $questionAnswer->getAnswers()
+            );
+        }
+
+        $questionCollection->saveArray(
+            $cdcData->getAfsc(),
+            $questions
+        );
+
+        $answerCollection->saveArray(
+            $cdcData->getAfsc(),
+            $answers
+        );
     }
 }

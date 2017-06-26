@@ -133,7 +133,6 @@ SQL;
 
         $uuidListString = implode("','", $uuidListFiltered);
 
-
         $qry = <<<SQL
 SELECT
   uuid,
