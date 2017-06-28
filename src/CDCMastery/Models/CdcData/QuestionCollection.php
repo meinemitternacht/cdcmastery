@@ -182,8 +182,8 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param array $uuidList
-     * @return array
+     * @param string[] $uuidList
+     * @return Question[]
      */
     public function fetchArray(Afsc $afsc, array $uuidList): array
     {

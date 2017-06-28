@@ -188,7 +188,7 @@ SQL;
 
     /**
      * @param Category $category
-     * @param array $uuidList
+     * @param string[] $uuidList
      * @return Card[]
      */
     public function fetchArray(Category $category, array $uuidList): array

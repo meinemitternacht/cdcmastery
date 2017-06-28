@@ -95,7 +95,7 @@ SQL;
     }
 
     /**
-     * @return array
+     * @return Afsc[]
      */
     public function fetchAll(): array
     {
@@ -135,8 +135,8 @@ SQL;
     }
 
     /**
-     * @param array $uuidList
-     * @return array
+     * @param string[] $uuidList
+     * @return Afsc[]
      */
     public function fetchArray(array $uuidList): array
     {

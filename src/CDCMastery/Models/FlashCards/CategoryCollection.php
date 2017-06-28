@@ -145,7 +145,7 @@ SQL;
     }
 
     /**
-     * @param array $uuidList
+     * @param string[] $uuidList
      * @return Category[]
      */
     public function fetchArray(array $uuidList): array

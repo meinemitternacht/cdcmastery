@@ -67,7 +67,7 @@ class User
     private $lastActive;
 
     /**
-     * @var \DateTime
+     * @var string
      */
     private $timeZone;
 
@@ -273,17 +273,17 @@ class User
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
-    public function getTimeZone(): \DateTime
+    public function getTimeZone(): string
     {
         return $this->timeZone;
     }
 
     /**
-     * @param \DateTime $timeZone
+     * @param string $timeZone
      */
-    public function setTimeZone(\DateTime $timeZone)
+    public function setTimeZone(string $timeZone)
     {
         $this->timeZone = $timeZone;
     }

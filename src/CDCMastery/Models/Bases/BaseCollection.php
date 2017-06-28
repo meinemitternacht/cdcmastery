@@ -26,10 +26,10 @@ class BaseCollection
     /**
      * @var Base[]
      */
-    private $bases;
+    private $bases = [];
 
     /**
-     * AfscCollection constructor.
+     * BaseCollection constructor.
      * @param \mysqli $mysqli
      * @param Logger $logger
      */
@@ -115,7 +115,7 @@ SQL;
     }
 
     /**
-     * @param array $uuidList
+     * @param string[] $uuidList
      * @return Base[]
      */
     public function fetchArray(array $uuidList): array
@@ -143,7 +143,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || empty($row['uuid'])) {
+            if (!isset($row['uuid']) || is_null($row['uuid'])) {
                 continue;
             }
 
