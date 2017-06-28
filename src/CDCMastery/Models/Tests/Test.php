@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Tests;
 
 
 use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\CdcData\Question;
 
 class Test
 {
@@ -39,7 +40,7 @@ class Test
     private $afscs;
 
     /**
-     * @var string[]
+     * @var Question[]
      */
     private $questions;
 
@@ -78,7 +79,7 @@ class Test
      */
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->uuid ?? '';
     }
 
     /**
@@ -94,7 +95,7 @@ class Test
      */
     public function getUserUuid(): string
     {
-        return $this->userUuid;
+        return $this->userUuid ?? '';
     }
 
     /**
@@ -110,7 +111,7 @@ class Test
      */
     public function getTimeStarted(): \DateTime
     {
-        return $this->timeStarted;
+        return $this->timeStarted ?? (new \DateTime());
     }
 
     /**
@@ -126,7 +127,7 @@ class Test
      */
     public function getTimeCompleted(): \DateTime
     {
-        return $this->timeCompleted;
+        return $this->timeCompleted ?? (new \DateTime());
     }
 
     /**
@@ -142,7 +143,7 @@ class Test
      */
     public function getAfscs(): array
     {
-        return $this->afscs;
+        return $this->afscs ?? [];
     }
 
     /**
@@ -154,15 +155,15 @@ class Test
     }
 
     /**
-     * @return \string[]
+     * @return Question[]
      */
     public function getQuestions(): array
     {
-        return $this->questions;
+        return $this->questions ?? [];
     }
 
     /**
-     * @param \string[] $questions
+     * @param Question[] $questions
      */
     public function setQuestions(array $questions)
     {
@@ -174,7 +175,7 @@ class Test
      */
     public function getCurrentQuestion(): int
     {
-        return $this->currentQuestion;
+        return $this->currentQuestion ?? 0;
     }
 
     /**
@@ -190,7 +191,7 @@ class Test
      */
     public function getNumAnswered(): int
     {
-        return $this->numAnswered;
+        return $this->numAnswered ?? 0;
     }
 
     /**
@@ -206,7 +207,7 @@ class Test
      */
     public function getNumMissed(): int
     {
-        return $this->numMissed;
+        return $this->numMissed ?? 0;
     }
 
     /**
@@ -220,9 +221,17 @@ class Test
     /**
      * @return int
      */
+    public function getNumQuestions(): int
+    {
+        return count($this->questions ?? []);
+    }
+
+    /**
+     * @return int
+     */
     public function getScore(): int
     {
-        return $this->score;
+        return $this->score ?? 0;
     }
 
     /**
@@ -238,7 +247,7 @@ class Test
      */
     public function isCombined(): bool
     {
-        return $this->combined;
+        return $this->combined ?? false;
     }
 
     /**
@@ -254,7 +263,7 @@ class Test
      */
     public function isArchived(): bool
     {
-        return $this->archived;
+        return $this->archived ?? false;
     }
 
     /**
