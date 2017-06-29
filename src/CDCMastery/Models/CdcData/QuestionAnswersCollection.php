@@ -11,7 +11,7 @@ namespace CDCMastery\Models\CdcData;
 
 use Monolog\Logger;
 
-class QuestionAnswerCollection
+class QuestionAnswersCollection
 {
     /**
      * @var \mysqli
@@ -24,12 +24,12 @@ class QuestionAnswerCollection
     protected $log;
 
     /**
-     * @var QuestionAnswer[]
+     * @var QuestionAnswers[]
      */
     private $questionAnswers = [];
 
     /**
-     * QuestionAnswerCollection constructor.
+     * QuestionAnswersCollection constructor.
      * @param \mysqli $mysqli
      * @param Logger $logger
      */
@@ -77,7 +77,7 @@ class QuestionAnswerCollection
                 continue;
             }
 
-            $questionAnswer = new QuestionAnswer();
+            $questionAnswer = new QuestionAnswers();
             $questionAnswer->setQuestion($questions[$i]);
             $questionAnswer->setAnswers(
                 $answerCollection->getQuestionAnswers(
@@ -96,7 +96,7 @@ class QuestionAnswerCollection
     }
 
     /**
-     * @return QuestionAnswerCollection
+     * @return QuestionAnswersCollection
      */
     public function refresh(): self
     {

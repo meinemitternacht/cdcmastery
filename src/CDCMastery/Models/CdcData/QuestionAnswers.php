@@ -9,7 +9,7 @@
 namespace CDCMastery\Models\CdcData;
 
 
-class QuestionAnswer
+class QuestionAnswers
 {
     /**
      * @var Question
@@ -17,9 +17,9 @@ class QuestionAnswer
     private $question;
 
     /**
-     * @var Answer
+     * @var Answer[]
      */
-    private $answer;
+    private $answers;
 
     /**
      * @return Question
@@ -38,18 +38,18 @@ class QuestionAnswer
     }
 
     /**
-     * @return Answer
+     * @return Answer[]
      */
-    public function getAnswer(): Answer
+    public function getAnswers(): array
     {
-        return $this->answer;
+        return $this->answers;
     }
 
     /**
-     * @param Answer $answer
+     * @param Answer[] $answers
      */
-    public function setAnswer(Answer $answer)
+    public function setAnswers(array $answers)
     {
-        $this->answer = $answer;
+        $this->answers = $answers;
     }
 }

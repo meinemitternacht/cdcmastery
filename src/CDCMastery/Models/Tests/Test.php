@@ -14,6 +14,11 @@ use CDCMastery\Models\CdcData\Question;
 
 class Test
 {
+    const MIN_QUESTIONS = 1;
+    const MAX_QUESTIONS = 500;
+
+    const SCORE_PRECISION = 2;
+
     /**
      * @var string
      */
@@ -25,12 +30,12 @@ class Test
     private $userUuid;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $timeStarted;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $timeCompleted;
 
@@ -60,7 +65,7 @@ class Test
     private $numMissed;
 
     /**
-     * @var int
+     * @var float
      */
     private $score;
 
@@ -107,33 +112,33 @@ class Test
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getTimeStarted(): \DateTime
+    public function getTimeStarted(): ?\DateTime
     {
-        return $this->timeStarted ?? (new \DateTime());
+        return $this->timeStarted;
     }
 
     /**
-     * @param \DateTime $timeStarted
+     * @param \DateTime|null $timeStarted
      */
-    public function setTimeStarted(\DateTime $timeStarted)
+    public function setTimeStarted(?\DateTime $timeStarted)
     {
         $this->timeStarted = $timeStarted;
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getTimeCompleted(): \DateTime
+    public function getTimeCompleted(): ?\DateTime
     {
-        return $this->timeCompleted ?? (new \DateTime());
+        return $this->timeCompleted;
     }
 
     /**
-     * @param \DateTime $timeCompleted
+     * @param \DateTime|null $timeCompleted
      */
-    public function setTimeCompleted(\DateTime $timeCompleted)
+    public function setTimeCompleted(?\DateTime $timeCompleted)
     {
         $this->timeCompleted = $timeCompleted;
     }
@@ -186,6 +191,11 @@ class Test
         $this->currentQuestion = $currentQuestion;
     }
 
+    public function getNumAfscs(): int
+    {
+        return count($this->afscs ?? []);
+    }
+
     /**
      * @return int
      */
@@ -227,17 +237,17 @@ class Test
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getScore(): int
+    public function getScore(): float
     {
         return $this->score ?? 0;
     }
 
     /**
-     * @param int $score
+     * @param float $score
      */
-    public function setScore(int $score)
+    public function setScore(float $score)
     {
         $this->score = $score;
     }

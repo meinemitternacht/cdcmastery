@@ -17,7 +17,7 @@ class CdcData
     private $afsc;
 
     /**
-     * @var QuestionAnswer[]
+     * @var QuestionAnswers[]
      */
     private $questionAnswerData;
 
@@ -38,7 +38,7 @@ class CdcData
     }
 
     /**
-     * @return QuestionAnswer[]
+     * @return QuestionAnswers[]
      */
     public function getQuestionAnswerData(): array
     {
@@ -46,7 +46,7 @@ class CdcData
     }
 
     /**
-     * @param QuestionAnswer[] $questionAnswerData
+     * @param QuestionAnswers[] $questionAnswerData
      */
     public function setQuestionAnswerData(array $questionAnswerData)
     {

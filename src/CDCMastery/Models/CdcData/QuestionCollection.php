@@ -248,6 +248,163 @@ SQL;
         );
     }
 
+    private function _orderFouo(string $uuidListString): array
+    {
+        if (empty($uuidListString)) {
+            return [];
+        }
+
+        $qry = <<<SQL
+SELECT
+  questionData.uuid AS uuid,
+  afscList.afscFOUO AS fouo
+FROM questionData
+LEFT JOIN afscList ON afscList.uuid = questionData.afscUUID
+WHERE questionData.uuid IN ('{$uuidListString}')
+ORDER BY afscList.afscFOUO ASC
+SQL;
+
+        $res = $this->db->query($qry);
+
+        $uuidFouo = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || !isset($row['fouo'])) {
+                continue;
+            }
+
+            $uuidFouo[$row['uuid'] ?? ''] = (bool)($row['fouo'] ?? false);
+        }
+
+        $res->free();
+
+        return $uuidFouo;
+    }
+
+    private function _fetchMixedEncrypted(array $uuidList): void
+    {
+        if (empty($uuidList)) {
+            return;
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  AES_DECRYPT(questionText, '%s') as questionText
+FROM questionData
+WHERE uuid IN ('{$uuidListString}')
+ORDER BY uuid ASC
+SQL;
+
+        $qry = sprintf(
+            $qry,
+            ENCRYPTION_KEY
+        );
+
+        $res = $this->db->query($qry);
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+                continue;
+            }
+
+            $question = new Question();
+            $question->setUuid($row['uuid'] ?? '');
+            $question->setAfscUuid($row['afscUUID'] ?? '');
+            $question->setText($row['questionText'] ?? '');
+
+            $this->questions[$row['uuid']] = $question;
+        }
+
+        $res->free();
+    }
+
+    private function _fetchMixedUnencrypted(array $uuidList): void
+    {
+        if (empty($uuidList)) {
+            return;
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  afscUUID,
+  questionText
+FROM questionData
+WHERE uuid IN ('{$uuidListString}')
+ORDER BY uuid ASC
+SQL;
+
+        $res = $this->db->query($qry);
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+                continue;
+            }
+
+            $question = new Question();
+            $question->setUuid($row['uuid'] ?? '');
+            $question->setAfscUuid($row['afscUUID'] ?? '');
+            $question->setText($row['questionText'] ?? '');
+
+            $this->questions[$row['uuid']] = $question;
+        }
+
+        $res->free();
+    }
+
+    public function fetchArrayMixed(array $uuidList): array
+    {
+        if (empty($uuidList)) {
+            return [];
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $orderFouo = $this->_orderFouo($uuidListString);
+
+        $uuidEncrypted = [];
+        $uuidUnencrypted = [];
+
+        foreach ($orderFouo as $uuid => $isFouo) {
+            if ($isFouo) {
+                $uuidEncrypted[] = $uuid;
+                continue;
+            }
+
+            $uuidUnencrypted[] = $uuid;
+        }
+
+        $this->_fetchMixedEncrypted($uuidEncrypted);
+        $this->_fetchMixedUnencrypted($uuidUnencrypted);
+
+        return array_intersect_key(
+            $this->questions,
+            array_flip(
+                $uuidList
+            )
+        );
+    }
+
     /**
      * @return QuestionCollection
      */

@@ -11,8 +11,10 @@ namespace CDCMastery\Models\Tests;
 
 use CDCMastery\Models\CdcData\Answer;
 use CDCMastery\Models\CdcData\AnswerCollection;
-use CDCMastery\Models\CdcData\AnswerHelpers;
 use CDCMastery\Models\CdcData\Question;
+use CDCMastery\Models\CdcData\QuestionAnswer;
+use CDCMastery\Models\CdcData\QuestionCollection;
+use CDCMastery\Models\CdcData\QuestionHelpers;
 use Monolog\Logger;
 
 class TestDataHelpers
@@ -38,6 +40,52 @@ class TestDataHelpers
         $this->log = $logger;
     }
 
+    /**
+     * @param Test $test
+     * @return int
+     */
+    public function count(Test $test): int
+    {
+        if (empty($test->getUuid())) {
+            return 0;
+        }
+
+        $testUuid = $test->getUuid();
+
+        $qry = <<<SQL
+SELECT
+  COUNT(*) AS count
+FROM testData
+WHERE testUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $testUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result(
+            $responseCount
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!isset($responseCount) || is_null($responseCount) || empty($responseCount)) {
+            return 0;
+        }
+
+        return $responseCount;
+    }
+
+    /**
+     * @param Test $test
+     * @param Question $question
+     * @return Answer
+     */
     public function fetch(Test $test, Question $question): Answer
     {
         if (empty($test->getUuid()) || empty($question->getUuid())) {
@@ -78,7 +126,155 @@ SQL;
             return new Answer();
         }
 
-        $answerHelpers = new AnswerHelpers(
+        $questionHelpers = new QuestionHelpers(
+            $this->db,
+            $this->log
+        );
+
+        $afsc = $questionHelpers->getQuestionAfsc($question);
+
+        $answerCollection = new AnswerCollection(
+            $this->db,
+            $this->log
+        );
+
+        return $answerCollection->fetch(
+            $afsc,
+            $answerUuid
+        );
+    }
+
+    public function getUnanswered(Test $test): array
+    {
+        if (empty($test->getUuid())) {
+            return [];
+        }
+
+        $testUuid = $test->getUuid();
+
+        $qry = <<<SQL
+SELECT
+  questionUUID,
+  answerUUID
+FROM testData
+WHERE testUUID = ?
+ORDER BY questionUUID ASC
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $testUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $questionUuid,
+            $answerUuid
+        );
+
+        $questionUuidList = QuestionHelpers::listUuid(
+            $test->getQuestions()
+        );
+
+        $answered = [];
+        while ($stmt->fetch()) {
+            if (!isset($questionUuid) || is_null($questionUuid) || empty($questionUuid)) {
+                continue;
+            }
+
+            if (!isset($answerUuid) || is_null($answerUuid) || empty($answerUuid)) {
+                continue;
+            }
+
+            $answered[] = $questionUuid;
+        }
+
+        $stmt->close();
+
+        if (empty($answered)) {
+            return [];
+        }
+
+        $answered = array_flip($answered);
+
+        $unanswered = [];
+        $c = count($questionUuidList);
+        for ($i = 0; $i < $c; $i++) {
+            if (!isset($questionUuidList[$i])) {
+                continue;
+            }
+
+            if (isset($answered[$questionUuidList[$i]])) {
+                continue;
+            }
+
+            $unanswered[] = $questionUuidList[$i];
+        }
+
+        return $unanswered;
+    }
+
+    /**
+     * @param Test $test
+     * @return QuestionAnswer[]
+     */
+    public function list(Test $test): array
+    {
+        if (empty($test->getUuid())) {
+            return [];
+        }
+
+        $testUuid = $test->getUuid();
+
+        $qry = <<<SQL
+SELECT
+  questionUUID,
+  answerUUID
+FROM testData
+WHERE testUUID = ?
+ORDER BY questionUUID ASC
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $testUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $questionUuid,
+            $answerUuid
+        );
+
+        $qaUuid = [];
+        while ($stmt->fetch()) {
+            if (!isset($questionUuid) || is_null($questionUuid) || empty($questionUuid)) {
+                continue;
+            }
+
+            if (!isset($answerUuid) || is_null($answerUuid) || empty($answerUuid)) {
+                continue;
+            }
+
+            $qaUuid[$questionUuid] = $answerUuid;
+        }
+
+        $stmt->close();
+
+        if (empty($qaUuid)) {
+            return [];
+        }
+
+        $questionCollection = new QuestionCollection(
+            $this->db,
+            $this->log
+        );
+
+        $questionHelpers = new QuestionHelpers(
             $this->db,
             $this->log
         );
@@ -88,12 +284,32 @@ SQL;
             $this->log
         );
 
-        return $answerCollection->fetch(
-            $answerHelpers->getAnswerAfsc($answerUuid),
-            $answerUuid
-        );
+        $questionAnswers = [];
+        foreach ($qaUuid as $qUuid => $aUuid) {
+            $afsc = $questionHelpers->getQuestionAfsc($qUuid);
+
+            $questionAnswer = new QuestionAnswer();
+            $questionAnswer->setQuestion(
+                $questionCollection->fetch(
+                    $afsc,
+                    $qUuid
+                )
+            );
+            $questionAnswer->setAnswer(
+                $answerCollection->fetch(
+                    $afsc,
+                    $aUuid
+                )
+            );
+            $questionAnswers[] = $questionAnswer;
+        }
+
+        return $questionAnswers;
     }
 
+    /**
+     * @param QuestionResponse $questionResponse
+     */
     public function save(QuestionResponse $questionResponse): void
     {
         if (empty($questionResponse->getTestUuid())) {

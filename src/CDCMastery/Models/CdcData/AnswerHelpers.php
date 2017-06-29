@@ -88,4 +88,46 @@ SQL;
 
         return $afscCollection->fetch($uuid);
     }
+
+    /**
+     * @param array $uuidList
+     * @return array
+     */
+    public function fetchCorrectArray(array $uuidList): array
+    {
+        if (empty($uuidList)) {
+            return [];
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  answerCorrect
+FROM answerData
+WHERE uuid IN ('{$uuidListString}')
+ORDER BY uuid ASC
+SQL;
+
+        $res = $this->db->query($qry);
+
+        $uuidCorrect = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || is_null($row['uuid']) || empty($row['uuid'])) {
+                continue;
+            }
+
+            $uuidCorrect[$row['uuid']] = (bool)($row['answerCorrect'] ?? false);
+        }
+
+        $res->free();
+
+        return $uuidCorrect;
+    }
 }

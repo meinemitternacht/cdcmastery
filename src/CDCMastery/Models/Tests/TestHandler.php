@@ -10,9 +10,12 @@ namespace CDCMastery\Models\Tests;
 
 
 use CDCMastery\Helpers\UuidHelpers;
-use CDCMastery\Models\CdcData\CdcData;
+use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\AnswerCollection;
+use CDCMastery\Models\CdcData\AnswerHelpers;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
+use CDCMastery\Models\CdcData\QuestionHelpers;
 use Monolog\Logger;
 
 class TestHandler
@@ -85,6 +88,10 @@ class TestHandler
             return new self($mysqli, $logger);
         }
 
+        if ($options->getNumQuestions() > Test::MAX_QUESTIONS) {
+            $options->setNumQuestions(Test::MAX_QUESTIONS);
+        }
+
         $n_questions = count($questions);
 
         if ($options->getNumQuestions() > $n_questions) {
@@ -119,10 +126,14 @@ class TestHandler
 
         if ($this->test->getCurrentQuestion() <= 0) {
             $this->test->setCurrentQuestion(0);
+
+            $this->save();
             return;
         }
 
         $this->test->setCurrentQuestion(0);
+
+        $this->save();
     }
 
     public function previous(): void
@@ -133,12 +144,16 @@ class TestHandler
 
         if (($this->test->getCurrentQuestion() - 1) <= 0) {
             $this->test->setCurrentQuestion(0);
+
+            $this->save();
             return;
         }
 
         $this->test->setCurrentQuestion(
             $this->test->getCurrentQuestion() - 1
         );
+
+        $this->save();
     }
 
     public function next(): void
@@ -151,12 +166,16 @@ class TestHandler
             $this->test->setCurrentQuestion(
                 $this->test->getNumQuestions() - 1
             );
+
+            $this->save();
             return;
         }
 
         $this->test->setCurrentQuestion(
             $this->test->getCurrentQuestion() + 1
         );
+
+        $this->save();
     }
 
     public function last(): void
@@ -168,18 +187,108 @@ class TestHandler
         $this->test->setCurrentQuestion(
             $this->test->getNumQuestions() - 1
         );
+
+        $this->save();
+    }
+
+    public function getDisplayData(): array
+    {
+        if (is_null($this->test)) {
+            return [];
+        }
+
+        $questionHelpers = new QuestionHelpers(
+            $this->db,
+            $this->log
+        );
+
+        $answerCollection = new AnswerCollection(
+            $this->db,
+            $this->log
+        );
+
+        $answerCollection->preloadQuestionAnswers(
+            $questionHelpers->getQuestionAfsc(
+                $this->getQuestion()
+            ),
+            [$this->getQuestion()]
+        );
+
+        $answerList = $answerCollection->getQuestionAnswers(
+            $this->getQuestion()->getUuid()
+        );
+
+        $answerData = [];
+        foreach ($answerList as $answer) {
+            $answerData[] = [
+                'uuid' => $answer->getUuid(),
+                'text' => $answer->getText()
+            ];
+        }
+
+        $testDataHelpers = new TestDataHelpers(
+            $this->db,
+            $this->log
+        );
+
+        $storedAnswer = $testDataHelpers->fetch(
+            $this->getTest(),
+            $this->getQuestion()
+        );
+
+        return [
+            'uuid' => $this->getTest()->getUuid(),
+            'afscs' => [
+                'total' => $this->getTest()->getNumAfscs(),
+                'list' => AfscHelpers::listUuid($this->getTest()->getAfscs())
+            ],
+            'questions' => [
+                'idx' => $this->getTest()->getCurrentQuestion(),
+                'total' => $this->getTest()->getNumQuestions(),
+                'unanswered' => $testDataHelpers->getUnanswered(
+                    $this->getTest()
+                )
+            ],
+            'display' => [
+                'question' => [
+                    'uuid' => $this->getQuestion()->getUuid(),
+                    'text' => $this->getQuestion()->getText()
+                ],
+                'answers' => $answerData,
+                'selection' => $storedAnswer->getUuid()
+            ]
+        ];
     }
 
     /**
+     * @param int $idx
      * @return Question
      */
-    public function getQuestion(): Question
+    public function getQuestion(int $idx = -1): Question
     {
         if (is_null($this->test)) {
             return new Question();
         }
 
-        return $this->test->getQuestions()[$this->test->getCurrentQuestion()] ?? new Question();
+        if ($idx === -1) {
+            $idx = $this->test->getCurrentQuestion();
+        }
+
+        return $this->test->getQuestions()[$idx] ?? new Question();
+    }
+
+    private function save(): void
+    {
+        if (is_null($this->test)) {
+            return;
+        }
+
+        $testCollection = new TestCollection(
+            $this->db,
+            $this->log
+        );
+
+        $testCollection->save($this->test);
     }
 
     /**
@@ -206,6 +315,73 @@ class TestHandler
 
         $testDataHelpers->save($questionResponse);
         $this->next();
+    }
+
+    public function score(): void
+    {
+        $answerHelpers = new AnswerHelpers(
+            $this->db,
+            $this->log
+        );
+
+        $testDataHelpers = new TestDataHelpers(
+            $this->db,
+            $this->log
+        );
+
+        $testCollection = new TestCollection(
+            $this->db,
+            $this->log
+        );
+
+        $answersCorrect = $answerHelpers->fetchCorrectArray(
+            $testDataHelpers->list($this->getTest())
+        );
+
+        $nCorrect = 0;
+        $c = count($answersCorrect);
+        for ($i = 0; $i < $c; $i++) {
+            if (!isset($answersCorrect[$i])) {
+                continue;
+            }
+
+            if ($answersCorrect[$i] === true) {
+                $nCorrect++;
+            }
+        }
+
+        $test = $this->getTest();
+        $test->setCurrentQuestion(
+            $test->getNumQuestions() - 1
+        );
+        $test->setTimeCompleted(
+            new \DateTime()
+        );
+        $test->setScore(
+            $this->calculateScore(
+                $test->getNumQuestions(),
+                $nCorrect
+            )
+        );
+
+        $testCollection->save($test);
+    }
+
+    /**
+     * @param int $questions
+     * @param int $correct
+     * @return float
+     */
+    private function calculateScore(int $questions, int $correct): float
+    {
+        if ($questions === 0) {
+            return 0.00;
+        }
+
+        return round(
+            ($correct / $questions) * 100,
+            Test::SCORE_PRECISION
+        );
     }
 
     /**

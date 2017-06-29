@@ -64,7 +64,7 @@ class CdcDataCollection
             return new CdcData();
         }
 
-        $questionAnswerCollection = new QuestionAnswerCollection(
+        $questionAnswerCollection = new QuestionAnswersCollection(
             $this->db,
             $this->log
         );
