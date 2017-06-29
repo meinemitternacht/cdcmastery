@@ -191,6 +191,9 @@ class TestHandler
         $this->save();
     }
 
+    /**
+     * @return array
+     */
     public function getDisplayData(): array
     {
         if (is_null($this->test)) {
