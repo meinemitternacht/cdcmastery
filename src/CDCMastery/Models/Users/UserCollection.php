@@ -42,6 +42,36 @@ class UserCollection
 
     /**
      * @param string $uuid
+     */
+    public function delete(string $uuid): void
+    {
+        if (empty($uuid)) {
+            return;
+        }
+
+        $uuid = $this->db->real_escape_string($uuid);
+
+        $qry = <<<SQL
+DELETE FROM userData
+WHERE uuid = '{$uuid}'
+SQL;
+
+        $this->db->query($qry);
+
+        if (isset($this->users[$uuid])) {
+            array_splice(
+                $this->users,
+                array_search(
+                    $uuid,
+                    $this->users
+                ),
+                1
+            );
+        }
+    }
+
+    /**
+     * @param string $uuid
      * @return User
      */
     public function fetch(string $uuid): User

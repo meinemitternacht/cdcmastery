@@ -41,6 +41,36 @@ class CategoryCollection
 
     /**
      * @param string $uuid
+     */
+    public function delete(string $uuid): void
+    {
+        if (empty($uuid)) {
+            return;
+        }
+
+        $uuid = $this->db->real_escape_string($uuid);
+
+        $qry = <<<SQL
+DELETE FROM flashCardCategories
+WHERE uuid = '{$uuid}'
+SQL;
+
+        $this->db->query($qry);
+
+        if (isset($this->categories[$uuid])) {
+            array_splice(
+                $this->categories,
+                array_search(
+                    $uuid,
+                    $this->categories
+                ),
+                1
+            );
+        }
+    }
+
+    /**
+     * @param string $uuid
      * @return Category
      */
     public function fetch(string $uuid): Category

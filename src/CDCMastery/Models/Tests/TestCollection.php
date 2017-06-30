@@ -47,6 +47,69 @@ class TestCollection
 
     /**
      * @param string $uuid
+     */
+    public function delete(string $uuid): void
+    {
+        if (empty($uuid)) {
+            return;
+        }
+
+        $uuid = $this->db->real_escape_string($uuid);
+
+        $qry = <<<SQL
+DELETE FROM testCollection
+WHERE uuid = '{$uuid}'
+SQL;
+
+        $this->db->query($qry);
+    }
+
+    /**
+     * @param string[] $uuidList
+     */
+    public function deleteArray(array $uuidList): void
+    {
+        if (empty($uuidList)) {
+            return;
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $qry = <<<SQL
+DELETE FROM testCollection
+WHERE uuid IN ('{$uuidListString}')
+SQL;
+
+        $this->db->query($qry);
+    }
+
+    /**
+     * @param User $user
+     */
+    public function deleteAllByUser(User $user): void
+    {
+        if (empty($user->getUuid())) {
+            return;
+        }
+
+        $userUuid = $user->getUuid();
+        $userUuid = $this->db->real_escape_string($userUuid);
+
+        $qry = <<<SQL
+DELETE FROM testCollection
+WHERE userUuid = '{$userUuid}'
+SQL;
+
+        $this->db->query($qry);
+    }
+
+    /**
+     * @param string $uuid
      * @return Test
      */
     public function fetch(string $uuid): Test

@@ -72,7 +72,7 @@ class Email
      */
     public function getQueueTime(): \DateTime
     {
-        return $this->queueTime;
+        return $this->queueTime ?? new \DateTime();
     }
 
     /**
