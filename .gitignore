@@ -1,3 +1,4 @@
 .idea/
 vendor/
 includes/config.inc.php
+src/CDCMastery/config.json
