@@ -387,7 +387,7 @@ SELECT
   combined,
   archived
 FROM testCollection
-WHERE userUuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid ASC
 SQL;
 
@@ -418,7 +418,7 @@ SQL;
             $this->log
         );
 
-        $userTestList = [];
+        $testList = [];
         foreach ($data as $datum) {
             $afscs = unserialize($datum['afscList'] ?? '');
 
@@ -466,12 +466,12 @@ SQL;
             $test->setArchived((bool)($datum['archived'] ?? false));
 
             $this->tests[$datum['uuid']] = $test;
-            $userTestList[] = $datum['uuid'];
+            $testList[] = $datum['uuid'];
         }
 
         return array_intersect_key(
             $this->tests,
-            array_flip($userTestList)
+            array_flip($testList)
         );
     }
 

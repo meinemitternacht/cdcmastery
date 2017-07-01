@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Tests\Offline;
 
 
 use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\CdcData\Question;
 
 class OfflineTest
 {
@@ -29,9 +30,9 @@ class OfflineTest
     private $afsc;
 
     /**
-     * @var string[]
+     * @var Question[]
      */
-    private $questionList;
+    private $questions;
 
     /**
      * @var \DateTime
@@ -87,19 +88,27 @@ class OfflineTest
     }
 
     /**
-     * @return \string[]
+     * @return Question[]
      */
-    public function getQuestionList(): array
+    public function getQuestions(): array
     {
-        return $this->questionList;
+        return $this->questions;
     }
 
     /**
-     * @param \string[] $questionList
+     * @param Question[] $questions
      */
-    public function setQuestionList(array $questionList)
+    public function setQuestions(array $questions)
     {
-        $this->questionList = $questionList;
+        $this->questions = $questions;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumQuestions(): int
+    {
+        return count($this->questions ?? []);
     }
 
     /**
