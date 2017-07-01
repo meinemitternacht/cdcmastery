@@ -52,7 +52,7 @@ class TestHandler
      * @param TestOptions $options
      * @return TestHandler
      */
-    public function factory(\mysqli $mysqli, Logger $logger, TestOptions $options): self
+    public static function factory(\mysqli $mysqli, Logger $logger, TestOptions $options): self
     {
         if (empty($options->getAfscs())) {
             return new self($mysqli, $logger);
