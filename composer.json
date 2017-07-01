@@ -1,0 +1,9 @@
+{
+    "require": {
+        "nikic/fast-route": "^1.2",
+        "php-di/php-di": "^5.4",
+        "twig/twig": "^2.4",
+        "monolog/monolog": "^1.23",
+        "symfony/http-foundation": "^3.3"
+    }
+}
