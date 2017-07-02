@@ -53,17 +53,19 @@ return [
             $logger->pushHandler($debugHandler);
         }
 
-        if (!is_writable($config->get(['system','log','general']))) {
+        if (file_exists($config->get(['system','log','general'])) && !is_writable($config->get(['system','log','general']))) {
             $logger->alert('Log file is not writable: ' . $config->get(['system','log','general']));
-        } else {
-            $streamHandler = new \Monolog\Handler\StreamHandler(
-                $config->get(['system','log','general']),
-                \Monolog\Logger::INFO
-            );
-            $streamHandler->setFormatter($formatter);
-            $logger->pushHandler($streamHandler);
+            goto out_return;
         }
 
+        $streamHandler = new \Monolog\Handler\StreamHandler(
+            $config->get(['system','log','general']),
+            \Monolog\Logger::INFO
+        );
+        $streamHandler->setFormatter($formatter);
+        $logger->pushHandler($streamHandler);
+
+        out_return:
         $syslogHandler = new \Monolog\Handler\SyslogHandler('DLA', LOG_SYSLOG, \Monolog\Logger::WARNING);
         $syslogHandler->setFormatter($formatter);
         $logger->pushHandler($syslogHandler);
