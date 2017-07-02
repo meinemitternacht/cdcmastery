@@ -11,5 +11,8 @@ namespace CDCMastery\Controllers;
 
 class Home extends RootController
 {
-
+    public function renderFrontPage(): string
+    {
+        return 'Front page';
+    }
 }
