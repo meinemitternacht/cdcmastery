@@ -15,7 +15,7 @@
   },
   "autoload": {
     "psr-4": {
-        "DownlineAutomator\\": "src/DownlineAutomator"
+        "CDCMastery\\": "src/CDCMastery"
     }
   }
 }
