@@ -43,23 +43,23 @@ class Config
         }
 
         if (!file_exists(APP_DIR . '/config.json')) {
-            throw new FileNotFoundException("Configuration file does not exist");
+            throw new FileNotFoundException("Configuration file does not exist: " . APP_DIR . '/config.json');
         }
 
         $configFile = file_get_contents(APP_DIR . '/config.json');
 
         if ($configFile === false) {
-            throw new FileNotReadableException("Configuration file was not readable");
+            throw new FileNotReadableException("Configuration file was not readable: " . APP_DIR . '/config.json');
         }
 
         if (empty($configFile)) {
-            throw new ConfigFileEmptyException("Configuration file was empty");
+            throw new ConfigFileEmptyException("Configuration file was empty: " . APP_DIR . '/config.json');
         }
 
         $this->configData = json_decode($configFile);
 
         if ($this->configData === false) {
-            throw new ConfigFileInvalidException("Configuration file could not be decoded");
+            throw new ConfigFileInvalidException("Configuration file could not be decoded: " . APP_DIR . '/config.json');
         }
 
         return !empty($this->configData);
