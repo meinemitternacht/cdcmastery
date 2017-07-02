@@ -54,7 +54,7 @@ return [
         }
 
         if (!is_writable($config->get(['system','log','general']))) {
-            $logger->alert('Log file is not writable');
+            $logger->alert('Log file is not writable: ' . $config->get(['system','log','general']));
         } else {
             $streamHandler = new \Monolog\Handler\StreamHandler(
                 $config->get(['system','log','general']),
