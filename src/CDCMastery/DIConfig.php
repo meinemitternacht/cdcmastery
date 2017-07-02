@@ -15,12 +15,18 @@ return [
 
         $config = $c->get(\CDCMastery\Models\Config\Config::class);
 
-        $hostList = $config->getMemcachedHosts();
-        $port = $config->getMemcachedPort();
+        $hostList = $config->get(['system','memcached']);
 
         if (is_array($hostList) && !empty($hostList)) {
             foreach ($hostList as $host) {
-                $memcached->addServer($host, $port);
+                if (!isset($host->host) || !isset($host->port)) {
+                    continue;
+                }
+
+                $memcached->addServer(
+                    $host->host,
+                    $host->port
+                );
             }
         }
 
@@ -37,7 +43,7 @@ return [
             true
         );
 
-        if ($config->getDebugEnabled()) {
+        if ($config->get(['system','debug'])) {
             $debugHandler = new \Monolog\Handler\StreamHandler(
                 $config->get(['system','log','debug']),
                 \Monolog\Logger::DEBUG
@@ -67,20 +73,17 @@ return [
     mysqli::class => function (ContainerInterface $c) {
         $config = $c->get(\CDCMastery\Models\Config\Config::class);
 
-        $dbHost = $config->getMysqlHost();
-        $dbUser = $config->getMysqlUsername();
-        $dbPass = $config->getMysqlPassword();
-        $dbName = $config->getMysqlDatabase();
-        $dbPort = $config->getMysqlPort();
-        $dbSock = $config->getMysqlSocket();
+        $database = $config->get(['system','debug'])
+            ? $config->get(['database','dev'])
+            : $config->get(['database','prod']);
 
         $db = new mysqli(
-            $dbHost,
-            $dbUser,
-            $dbPass,
-            $dbName,
-            $dbPort,
-            $dbSock
+            $database->host,
+            $database->username,
+            $database->password,
+            $database->schema,
+            $database->port,
+            $database->socket
         );
 
         if ($db->connect_errno) {
@@ -102,10 +105,10 @@ return [
         $loggedIn = \CDCMastery\Helpers\SessionHelpers::isLoggedIn();
 
         $twig->addGlobal('loggedIn', $loggedIn);
-        $twig->addGlobal('cssList', $config->getTwigCssAssets());
-        $twig->addGlobal('jsList', $config->getTwigJsAssets());
+        $twig->addGlobal('cssList', $config->get(['twig','assets','css']));
+        $twig->addGlobal('jsList', $config->get(['twig','assets','js']));
 
-        if ($config->getDebugEnabled()) {
+        if ($config->get(['system','debug'])) {
             $twig->addExtension(new Twig_Extension_Debug());
         }
 
