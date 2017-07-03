@@ -6,7 +6,7 @@
  * Time: 12:02 AM
  */
 
-namespace CDCMastery\Models;
+namespace CDCMastery\Models\Messages;
 
 
 class Messages

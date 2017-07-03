@@ -9,7 +9,7 @@
 namespace CDCMastery\Controllers;
 
 
-use CDCMastery\Models\Messages;
+use CDCMastery\Models\Messages\Messages;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
