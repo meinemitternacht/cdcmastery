@@ -225,49 +225,49 @@ class User
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getDateRegistered(): \DateTime
+    public function getDateRegistered(): ?\DateTime
     {
         return $this->dateRegistered;
     }
 
     /**
-     * @param \DateTime $dateRegistered
+     * @param \DateTime|null $dateRegistered
      */
-    public function setDateRegistered(\DateTime $dateRegistered)
+    public function setDateRegistered(?\DateTime $dateRegistered)
     {
         $this->dateRegistered = $dateRegistered;
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getLastLogin(): \DateTime
+    public function getLastLogin(): ?\DateTime
     {
         return $this->lastLogin;
     }
 
     /**
-     * @param \DateTime $lastLogin
+     * @param \DateTime|null $lastLogin
      */
-    public function setLastLogin(\DateTime $lastLogin)
+    public function setLastLogin(?\DateTime $lastLogin)
     {
         $this->lastLogin = $lastLogin;
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getLastActive(): \DateTime
+    public function getLastActive(): ?\DateTime
     {
         return $this->lastActive;
     }
 
     /**
-     * @param \DateTime $lastActive
+     * @param \DateTime|null $lastActive
      */
-    public function setLastActive(\DateTime $lastActive)
+    public function setLastActive(?\DateTime $lastActive)
     {
         $this->lastActive = $lastActive;
     }

@@ -217,24 +217,34 @@ SQL;
             $user->setLegacyPassword($row['userLegacyPassword'] ?? '');
             $user->setEmail($row['userEmail'] ?? '');
             $user->setRank($row['userRank'] ?? '');
-            $user->setDateRegistered(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
-                    $row['userDateRegistered'] ?? ''
-                )
-            );
-            $user->setLastLogin(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
-                    $row['userLastLogin'] ?? ''
-                )
-            );
-            $user->setLastActive(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
-                    $row['userLastActive'] ?? ''
-                )
-            );
+
+            if (!is_null($row['userDateRegistered'] ?? null)) {
+                $user->setDateRegistered(
+                    \DateTime::createFromFormat(
+                        DateTimeHelpers::FMT_DATABASE,
+                        $row['userDateRegistered'] ?? ''
+                    )
+                );
+            }
+
+            if (!is_null($row['userLastLogin'] ?? null)) {
+                $user->setLastLogin(
+                    \DateTime::createFromFormat(
+                        DateTimeHelpers::FMT_DATABASE,
+                        $row['userLastLogin'] ?? ''
+                    )
+                );
+            }
+
+            if (!is_null($row['userLastActive'] ?? null)) {
+                $user->setLastActive(
+                    \DateTime::createFromFormat(
+                        DateTimeHelpers::FMT_DATABASE,
+                        $row['userLastActive'] ?? ''
+                    )
+                );
+            }
+
             $user->setTimeZone($row['userTimeZone'] ?? '');
             $user->setRole($row['userRole'] ?? '');
             $user->setOfficeSymbol($row['userOfficeSymbol'] ?? '');
