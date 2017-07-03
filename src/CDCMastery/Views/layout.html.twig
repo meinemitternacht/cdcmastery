@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CDCMastery</title>
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button"
+                        class="navbar-toggle collapsed"
+                        data-toggle="collapse"
+                        data-target="#navbar"
+                        aria-expanded="false"
+                        aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/" title="Learning - Enabled">CDCMastery</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/statistics">Statistics</a></li>
+                    {% if loggedIn and not error %}
+                        {% if isAdmin %}
+                            <li class="dropdown">
+                                <a href="#"
+                                   class="dropdown-toggle"
+                                   data-toggle="dropdown"
+                                   role="button"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">Admin Panel <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/admin/cdc/afsc" title="AFSC Manager">AFSC Manager</a></li>
+                                    <li><a href="/admin/bases/overview" title="Base Overview">Base Overview</a></li>
+                                    <li><a href="/admin/cdc/data" title="CDC Data">CDC Data</a></li>
+                                    <li><a href="/admin/cards/categories" title="Flash Card Categories">Flash Card Categories</a></li>
+                                    <li><a href="/admin/cards/data" title="Flash Card Data">Flash Card Data</a></li>
+                                    <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
+                                    <li><a href="/admin/roles" title="Role Manager">Role Manager</a></li>
+                                    <li><a href="/admin/search" title="Search">Search</a></li>
+                                    <li><a href="/admin/statistics" title="Statistics">Statistics</a></li>
+                                    <li><a href="/admin/upload" title="Upload Files">Upload Files</a></li>
+                                    <li><a href="/admin/users" title="User Manager">User Manager</a></li>
+                                    <li><a href="/admin/users/profiles" title="User Profiles">User Profiles</a></li>
+                                </ul>
+                            </li>
+                        {% elseif isSupervisor or isTrainingManager %}
+                            <li><a href="/overview/training">Training Panel</a></li>
+                        {% endif %}
+                        {% if notificationCount %}
+                            <li>
+                                <a href="/account/events">
+                                    <i class="fa fa-bell events-bell"></i>
+                                    <span class="badge badge-events">{{ notificationCount }}</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li><a href="/auth/logout">Log Out</a></li>
+                    {% elseif not error %}
+                        <li><a href="/auth/login">Log In</a></li>
+                        <li><a href="/auth/register">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="clearfix">&nbsp;</div>
+    <div class="clearfix">&nbsp;</div>
+    <div class="container" role="main">
+        {% include "blocks/messages.html.twig" %}
+        {% block main %}{% endblock %}
+    </div>
+    <div class="clearfix">&nbsp;</div>
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="text-muted">
+                &copy; 2017 Bing Technology Services, LLC<br>
+                <em>This application is not endorsed by, affiliated with, or an official product of the United States Air Force.</em><br>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

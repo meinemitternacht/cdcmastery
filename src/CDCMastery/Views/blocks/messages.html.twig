@@ -1,0 +1,34 @@
+{% if messages %}
+    <div class="container" id="system-messages-container-block">
+        <div id="system-messages-block">
+            {% if messages.success is defined %}
+                {% for message in messages.success %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if messages.info is defined %}
+                {% for message in messages.info %}
+                    <div class="alert alert-info">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if messages.warning is defined %}
+                {% for message in messages.warning %}
+                    <div class="alert alert-warning">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if messages.danger is defined %}
+                {% for message in messages.danger %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
