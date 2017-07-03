@@ -110,6 +110,21 @@ return [
         $twig->addGlobal('cssList', $config->get(['twig','assets','css']));
         $twig->addGlobal('jsList', $config->get(['twig','assets','js']));
 
+        if ($loggedIn) {
+            $twig->addGlobal(
+                'isAdmin',
+                \CDCMastery\Helpers\SessionHelpers::isAdmin()
+            );
+            $twig->addGlobal(
+                'isSupervisor',
+                \CDCMastery\Helpers\SessionHelpers::isSupervisor()
+            );
+            $twig->addGlobal(
+                'isTrainingManager',
+                \CDCMastery\Helpers\SessionHelpers::isTrainingManager()
+            );
+        }
+
         if ($config->get(['system','debug'])) {
             $twig->addExtension(new Twig_Extension_Debug());
         }
