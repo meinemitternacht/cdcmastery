@@ -1,0 +1,9 @@
+.front-tracks {
+    background: url(/images/tracks.jpg) no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+
+.front-tracks p, .jumbotron.front-tracks h1 {
+    color: rgba(255, 255, 255, 0.85);
+}
