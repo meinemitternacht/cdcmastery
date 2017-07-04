@@ -11,20 +11,15 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-          crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
+    {% for cssPath in cssList %}
+        <link href="{{ cssPath }}" rel="stylesheet" type="text/css">
+    {% endfor %}
+    {% for jsPath in jsList %}
+        <script src="{{ jsPath }}"></script>
+    {% endfor %}
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button"
@@ -80,18 +75,16 @@
                                 </a>
                             </li>
                         {% endif %}
-                        <li><a href="/auth/logout">Log Out</a></li>
+                        <li><a href="/auth/logout">Sign Out</a></li>
                     {% elseif not error %}
-                        <li><a href="/auth/login">Log In</a></li>
+                        <li><a href="/auth/login">Sign In</a></li>
                         <li><a href="/auth/register">Register</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="clearfix">&nbsp;</div>
-    <div class="clearfix">&nbsp;</div>
-    <div class="container" role="main">
+    <div class="container main-container" role="main">
         {% include "blocks/messages.html.twig" %}
         {% block main %}{% endblock %}
     </div>

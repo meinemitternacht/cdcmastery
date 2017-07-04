@@ -1,16 +1,40 @@
 {% extends "layout.html.twig" %}
 {% block main %}
     <div class="row">
-        <div class="col-xs-12 col-md-9">
-            <h3>Welcome to CDCMastery!</h3>
-            <h5>Helping you get on the right track for your career.</h5>
-            CDCMastery is a study tool developed to help you succeed on assessments of your career knowledge. It's free
-            to use, and we're always here when you need us. Click here to see if your AFSC is in our database. If it's
-            not, contact us about adding your Career Development Course information.
-            <br>
-            <strong>Register now to join over 9,962 others who are taking advantage of this comprehensive tool!</strong>
+        <div class="col-xs-12">
+            <div class="jumbotron front-tracks">
+                <h1>Get on the right track for your career</h1>
+                <p style="text-align: justify">
+                    CDCMastery is an application developed to help you succeed on assessments of your career knowledge. It's
+                    free to use, and we're always here when you need us. Register now to join over 10,000 others who are
+                    taking advantage of this comprehensive tool!
+                </p>
+                <p><a class="btn btn-primary btn-lg" href="/auth/register" role="button">Register &raquo;</a></p>
+            </div>
         </div>
-        <div class="col-xs-12 col-md-3">
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    <h4>Sign in</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="username">Username / E-mail</label>
+                        <input type="text" id="username" name="username" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-default">Sign In</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
 
         </div>
     </div>
