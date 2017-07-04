@@ -283,6 +283,44 @@ SQL;
     }
 
     /**
+     * @return float
+     */
+    public function averageOverall(): float
+    {
+        $cached = $this->cache->hashAndGet(
+            self::STAT_AVG_OVERALL
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+        
+        $qry = <<<SQL
+SELECT 
+  AVG(score) AS tAvg
+FROM testCollection 
+SQL;
+
+        $res = $this->db->query($qry);
+        $row = $res->fetch_assoc();
+        
+        $average = round(
+            $row['tAvg'] ?? 0.00,
+            self::PRECISION_AVG
+        );
+
+        $res->free();
+
+        $this->cache->hashAndSet(
+            $average,
+            self::STAT_AVG_OVERALL,
+            CacheHandler::TTL_XLARGE
+        );
+        
+        return $average;
+    }
+
+    /**
      * @param \DateTime $start
      * @param \DateTime $end
      * @return int
@@ -465,6 +503,39 @@ SQL;
     public function countLastSevenDays(): array
     {
         return $this->countByTimeSegment(self::STAT_COUNT_LAST_SEVEN);
+    }
+
+    /**
+     * @return int
+     */
+    public function countOverall(): int
+    {
+        $cached = $this->cache->hashAndGet(
+            self::STAT_COUNT_OVERALL
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(*) AS tCount
+FROM testCollection 
+SQL;
+
+        $res = $this->db->query($qry);
+        $row = $res->fetch_assoc();
+
+        $res->free();
+
+        $this->cache->hashAndSet(
+            $row['tCount'] ?? 0,
+            self::STAT_COUNT_OVERALL,
+            CacheHandler::TTL_XLARGE
+        );
+
+        return $row['tCount'] ?? 0;
     }
 
     /**
@@ -719,6 +790,67 @@ SQL;
 
     /**
      * @param Base $base
+     * @return float
+     */
+    public function baseAverageOverall(Base $base): float
+    {
+        if (empty($base->getUuid())) {
+            return 0.00;
+        }
+        
+        $baseUuid = $base->getUuid();
+        
+        $cached = $this->cache->hashAndGet(
+            self::STAT_BASE_AVG_OVERALL, [
+                $baseUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  AVG(score) AS tAvg
+FROM testCollection 
+LEFT JOIN userData ON testCollection.userUuid = userData.uuid
+WHERE userData.userBase = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $baseUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0.00;
+        }
+        
+        $stmt->bind_result(
+            $tAvg
+        );
+        
+        $stmt->fetch();
+        $stmt->close();
+        
+        $average = round(
+            $tAvg ?? 0.00,
+            self::PRECISION_AVG
+        );
+
+        $this->cache->hashAndSet(
+            $average,
+            self::STAT_BASE_AVG_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $baseUuid
+            ]
+        );
+
+        return $average;
+    }
+
+    /**
+     * @param Base $base
      * @param \DateTime $start
      * @param \DateTime $end
      * @return int
@@ -957,6 +1089,62 @@ SQL;
             $base,
             self::STAT_BASE_COUNT_LAST_SEVEN
         );
+    }
+
+    /**
+     * @param Base $base
+     * @return int
+     */
+    public function baseCountOverall(Base $base): int
+    {
+        if (empty($base->getUuid())) {
+            return 0;
+        }
+
+        $baseUuid = $base->getUuid();
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_BASE_COUNT_OVERALL, [
+                $baseUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(*) AS tCount
+FROM testCollection 
+LEFT JOIN userData ON testCollection.userUuid = userData.uuid
+WHERE userData.userBase = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $baseUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result(
+            $tCount
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $tCount ?? 0,
+            self::STAT_BASE_COUNT_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $baseUuid
+            ]
+        );
+
+        return $tCount ?? 0;
     }
 
     /**
@@ -1206,6 +1394,66 @@ SQL;
 
     /**
      * @param User $user
+     * @return float
+     */
+    public function userAverageOverall(User $user): float
+    {
+        if (empty($user->getUuid())) {
+            return 0.00;
+        }
+
+        $userUuid = $user->getUuid();
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_USER_AVG_OVERALL, [
+                $userUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  AVG(score) AS tAvg
+FROM testCollection 
+WHERE userUuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $userUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0.00;
+        }
+
+        $stmt->bind_result(
+            $tAvg
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $average = round(
+            $tAvg ?? 0.00,
+            self::PRECISION_AVG
+        );
+
+        $this->cache->hashAndSet(
+            $average,
+            self::STAT_USER_AVG_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $userUuid
+            ]
+        );
+
+        return $average;
+    }
+
+    /**
+     * @param User $user
      * @param \DateTime $start
      * @param \DateTime $end
      * @return int
@@ -1439,5 +1687,60 @@ SQL;
             $user,
             self::STAT_USER_COUNT_LAST_SEVEN
         );
+    }
+
+    /**
+     * @param User $user
+     * @return int
+     */
+    public function userCountOverall(User $user): int
+    {
+        if (empty($user->getUuid())) {
+            return 0;
+        }
+
+        $userUuid = $user->getUuid();
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_USER_COUNT_OVERALL, [
+                $userUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(*) AS tCount
+FROM testCollection 
+WHERE userUuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $userUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result(
+            $tCount
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $tCount ?? 0,
+            self::STAT_USER_COUNT_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $userUuid
+            ]
+        );
+
+        return $tCount ?? 0;
     }
 }
