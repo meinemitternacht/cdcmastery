@@ -97,11 +97,11 @@ class Tests
     public function averageBetween(\DateTime $start, \DateTime $end): float
     {
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(
@@ -328,11 +328,11 @@ SQL;
     public function countBetween(\DateTime $start, \DateTime $end): int
     {
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(
@@ -459,7 +459,7 @@ SQL;
                 continue;
             }
 
-            $counts[$row['tDate']] = $row['tCount'] ?? 0;
+            $counts[$row['tDate']] = (int)$row['tCount'] ?? 0;
         }
 
         $res->free();
@@ -553,11 +553,11 @@ SQL;
         $baseUuid = $base->getUuid();
 
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(
@@ -864,11 +864,11 @@ SQL;
         $baseUuid = $base->getUuid();
         
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(
@@ -1162,11 +1162,11 @@ SQL;
         $userUuid = $user->getUuid();
 
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(
@@ -1467,11 +1467,11 @@ SQL;
         $userUuid = $user->getUuid();
 
         $tStart = $start->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_START
+            DateTimeHelpers::DT_FMT_DB_DAY_START
         );
 
         $tEnd = $end->format(
-            DateTimeHelpers::FMT_DATABASE_DAY_END
+            DateTimeHelpers::DT_FMT_DB_DAY_END
         );
 
         $cached = $this->cache->hashAndGet(

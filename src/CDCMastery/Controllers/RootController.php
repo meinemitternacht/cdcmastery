@@ -49,6 +49,14 @@ class RootController
     }
 
     /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
      * @param string $template
      * @param array $data
      * @return string

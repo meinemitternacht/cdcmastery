@@ -124,7 +124,7 @@ SQL;
             $email->setUuid($row['uuid'] ?? '');
             $email->setQueueTime(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $row['queueTime'] ?? ''
                 )
             );
@@ -152,7 +152,7 @@ SQL;
         
         $uuid = $email->getUuid();
         $queueTime = $email->getQueueTime()->format(
-            DateTimeHelpers::FMT_DATABASE
+            DateTimeHelpers::DT_FMT_DB
         );
         $sender = $email->getSender();
         $recipient = $email->getRecipient();

@@ -206,7 +206,7 @@ SQL;
         $offlineTest->setQuestions($questionArr);
         $offlineTest->setDateCreated(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $dateCreated ?? ''
             )
         );
@@ -308,7 +308,7 @@ SQL;
             $offlineTest->setQuestions($questionArr);
             $offlineTest->setDateCreated(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $rows[$i]['dateCreated'] ?? ''
                 )
             );
@@ -424,7 +424,7 @@ SQL;
             $offlineTest->setQuestions($questionArr);
             $offlineTest->setDateCreated(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $rows[$i]['dateCreated'] ?? ''
                 )
             );
@@ -525,7 +525,7 @@ SQL;
             $offlineTest->setQuestions($questionArr);
             $offlineTest->setDateCreated(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $rows[$i]['dateCreated'] ?? ''
                 )
             );
@@ -569,7 +569,7 @@ SQL;
         );
         $numQuestions = $offlineTest->getNumQuestions();
         $dateCreated = $offlineTest->getDateCreated()->format(
-            DateTimeHelpers::FMT_DATABASE
+            DateTimeHelpers::DT_FMT_DB
         );
         
         $qry = <<<SQL

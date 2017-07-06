@@ -145,19 +145,19 @@ SQL;
         $user->setRank($rank);
         $user->setDateRegistered(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $dateRegistered
             )
         );
         $user->setLastLogin(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $lastLogin
             )
         );
         $user->setLastActive(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $lastActive
             )
         );
@@ -221,7 +221,7 @@ SQL;
             if (!is_null($row['userDateRegistered'] ?? null)) {
                 $user->setDateRegistered(
                     \DateTime::createFromFormat(
-                        DateTimeHelpers::FMT_DATABASE,
+                        DateTimeHelpers::DT_FMT_DB,
                         $row['userDateRegistered'] ?? ''
                     )
                 );
@@ -230,7 +230,7 @@ SQL;
             if (!is_null($row['userLastLogin'] ?? null)) {
                 $user->setLastLogin(
                     \DateTime::createFromFormat(
-                        DateTimeHelpers::FMT_DATABASE,
+                        DateTimeHelpers::DT_FMT_DB,
                         $row['userLastLogin'] ?? ''
                     )
                 );
@@ -239,7 +239,7 @@ SQL;
             if (!is_null($row['userLastActive'] ?? null)) {
                 $user->setLastActive(
                     \DateTime::createFromFormat(
-                        DateTimeHelpers::FMT_DATABASE,
+                        DateTimeHelpers::DT_FMT_DB,
                         $row['userLastActive'] ?? ''
                     )
                 );
@@ -319,19 +319,19 @@ SQL;
             $user->setRank($row['userRank'] ?? '');
             $user->setDateRegistered(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $row['userDateRegistered'] ?? ''
                 )
             );
             $user->setLastLogin(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $row['userLastLogin'] ?? ''
                 )
             );
             $user->setLastActive(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $row['userLastActive'] ?? ''
                 )
             );
@@ -381,13 +381,13 @@ SQL;
         $email = $user->getEmail();
         $rank = $user->getRank();
         $dateRegistered = $user->getDateRegistered()->format(
-            DateTimeHelpers::FMT_DATABASE
+            DateTimeHelpers::DT_FMT_DB
         );
         $lastLogin = $user->getLastLogin()->format(
-            DateTimeHelpers::FMT_DATABASE
+            DateTimeHelpers::DT_FMT_DB
         );
         $lastActive = $user->getLastActive()->format(
-            DateTimeHelpers::FMT_DATABASE
+            DateTimeHelpers::DT_FMT_DB
         );
         $timeZone = $user->getTimeZone();
         $role = $user->getRole();

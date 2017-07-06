@@ -197,13 +197,13 @@ SQL;
         $test->setAfscs($afscArr);
         $test->setTimeStarted(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $timeStarted ?? ''
             )
         );
         $test->setTimeCompleted(
             \DateTime::createFromFormat(
-                DateTimeHelpers::FMT_DATABASE,
+                DateTimeHelpers::DT_FMT_DB,
                 $timeCompleted ?? ''
             )
         );
@@ -328,13 +328,13 @@ SQL;
             $test->setAfscs($afscArr);
             $test->setTimeStarted(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $datum['timeStarted'] ?? ''
                 )
             );
             $test->setTimeCompleted(
                 \DateTime::createFromFormat(
-                    DateTimeHelpers::FMT_DATABASE,
+                    DateTimeHelpers::DT_FMT_DB,
                     $datum['timeCompleted'] ?? ''
                 )
             );
@@ -443,7 +443,7 @@ SQL;
             if (!is_null($datum['timeStarted'])) {
                 $test->setTimeStarted(
                     \DateTime::createFromFormat(
-                        DateTimeHelpers::FMT_DATABASE,
+                        DateTimeHelpers::DT_FMT_DB,
                         $datum['timeStarted'] ?? ''
                     )
                 );
@@ -452,7 +452,7 @@ SQL;
             if (!is_null($datum['timeCompleted'])) {
                 $test->setTimeCompleted(
                     \DateTime::createFromFormat(
-                        DateTimeHelpers::FMT_DATABASE,
+                        DateTimeHelpers::DT_FMT_DB,
                         $datum['timeCompleted'] ?? ''
                     )
                 );
@@ -500,12 +500,12 @@ SQL;
         $timeStarted = is_null($test->getTimeStarted())
             ? null
             : $test->getTimeStarted()->format(
-                DateTimeHelpers::FMT_DATABASE
+                DateTimeHelpers::DT_FMT_DB
             );
         $timeCompleted = is_null($test->getTimeCompleted())
             ? null
             : $test->getTimeCompleted()->format(
-                DateTimeHelpers::FMT_DATABASE
+                DateTimeHelpers::DT_FMT_DB
             );
         $questionList = serialize(QuestionHelpers::listUuid($test->getQuestions()));
         $curQuestion = $test->getCurrentQuestion();

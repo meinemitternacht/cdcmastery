@@ -27,14 +27,14 @@ $route = $dispatcher->dispatch(
 /**
  * Check desired path against public routes if not logged in
  */
-if (!\CDCMastery\Helpers\SessionHelpers::isLoggedIn()) {
+if (!\CDCMastery\Models\Auth\AuthHelpers::isLoggedIn()) {
     $publicRoutes = array_flip($config->get(['system','routing','public']));
 
     if (!isset($publicRoutes[ $path ])) {
         $_SESSION[ 'login-redirect' ] = $path;
 
-        \CDCMastery\Models\Messages::add(
-            \CDCMastery\Models\Messages::WARNING,
+        \CDCMastery\Models\Messages\Messages::add(
+            \CDCMastery\Models\Messages\Messages::WARNING,
             'You must log in to continue'
         );
 
@@ -85,9 +85,6 @@ switch ($route[ 0 ]) {
         }
         break;
     default:
-        /**
-         * We should never, ever reach this case
-         */
         http_response_code(500);
         $response = '';
         $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);

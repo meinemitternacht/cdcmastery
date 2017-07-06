@@ -104,7 +104,7 @@ return [
             ? new Twig_Environment($loader, ['debug' => true])
             : new Twig_Environment($loader, ['debug' => false, 'cache' => '/tmp/twig_cache']);
 
-        $loggedIn = \CDCMastery\Helpers\SessionHelpers::isLoggedIn();
+        $loggedIn = \CDCMastery\Models\Auth\AuthHelpers::isLoggedIn();
 
         $twig->addGlobal('loggedIn', $loggedIn);
         $twig->addGlobal('cssList', $config->get(['twig','assets','css']));
@@ -113,15 +113,15 @@ return [
         if ($loggedIn) {
             $twig->addGlobal(
                 'isAdmin',
-                \CDCMastery\Helpers\SessionHelpers::isAdmin()
+                \CDCMastery\Models\Auth\AuthHelpers::isAdmin()
             );
             $twig->addGlobal(
                 'isSupervisor',
-                \CDCMastery\Helpers\SessionHelpers::isSupervisor()
+                \CDCMastery\Models\Auth\AuthHelpers::isSupervisor()
             );
             $twig->addGlobal(
                 'isTrainingManager',
-                \CDCMastery\Helpers\SessionHelpers::isTrainingManager()
+                \CDCMastery\Models\Auth\AuthHelpers::isTrainingManager()
             );
         }
 

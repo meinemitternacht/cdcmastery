@@ -11,6 +11,20 @@ namespace CDCMastery\Models\Users;
 
 class Role
 {
+    const TYPE_ADMIN = 'admin';
+    const TYPE_QUESTION_EDITOR = 'editor';
+    const TYPE_SUPERVISOR = 'supervisor';
+    const TYPE_TRAINING_MANAGER = 'trainingManager';
+    const TYPE_USER = 'user';
+
+    const VALID_TYPES = [
+        self::TYPE_ADMIN,
+        self::TYPE_QUESTION_EDITOR,
+        self::TYPE_SUPERVISOR,
+        self::TYPE_TRAINING_MANAGER,
+        self::TYPE_USER
+    ];
+
     /**
      * @var string
      */
@@ -60,6 +74,10 @@ class Role
      */
     public function setType(string $type)
     {
+        if (!in_array($type, self::VALID_TYPES)) {
+            return;
+        }
+
         $this->type = $type;
     }
 

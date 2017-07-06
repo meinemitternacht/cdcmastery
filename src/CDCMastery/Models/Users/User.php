@@ -147,6 +147,18 @@ class User
     /**
      * @return string
      */
+    public function getName(): string
+    {
+        return implode(' ', [
+            $this->getRank(),
+            $this->getFirstName(),
+            $this->getLastName()
+        ]);
+    }
+
+    /**
+     * @return string
+     */
     public function getHandle(): string
     {
         return $this->handle;
