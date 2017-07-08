@@ -32,17 +32,19 @@
                     <h4>Sign in</h4>
                 </div>
                 <div class="panel-body">
-                    <div class="form-group">
-                        <label for="username">Username / E-mail</label>
-                        <input type="text" id="username" name="username" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control">
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-default">Sign In</button>
-                    </div>
+                    <form action="/auth/login" method="POST">
+                        <div class="form-group">
+                            <label for="username">Username / E-mail</label>
+                            <input type="text" id="username" name="username" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-default">Sign In</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -55,118 +57,118 @@
                     <div id="year-avg-count" style="height:218px">
                         &nbsp;
                     </div>
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            var lastSevenChart = new CanvasJS.Chart("last-seven-avg-count",
-                                {
-                                    zoomEnabled: false,
-                                    animationEnabled: true,
-                                    axisX: {
-                                        valueFormatString: " ",
-                                        tickLength: 0
-                                    },
-                                    axisY: {
-                                        interlacedColor: "#F5F5F5",
-                                        gridColor: "#D7D7D7",
-                                        tickColor: "#D7D7D7",
-                                        tickLength: 0
-                                    },
-                                    theme: "theme2",
-                                    toolTip: {
-                                        shared: true
-                                    },
-                                    data: [
-                                        {
-                                            type: "column",
-                                            lineThickness: 3,
-                                            axisYType: "primary",
-                                            name: "Average Score",
-                                            dataPoints: {{ lastSevenStats.avg|raw }}
-                                        },
-                                        {
-                                            type: "column",
-                                            lineThickness: 3,
-                                            name: "Tests Taken",
-                                            axisYType: "primary",
-                                            dataPoints: {{ lastSevenStats.count|raw }}
-                                        }
-                                    ],
-                                    legend: {
-                                        verticalAlign: "bottom",
-                                        horizontalAlign: "center",
-                                        fontSize: 15,
-                                        fontFamily: "Lucida Sans Unicode",
-                                        cursor: "pointer",
-                                        itemclick: function (e) {
-                                            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                                                e.dataSeries.visible = false;
-                                            }
-                                            else {
-                                                e.dataSeries.visible = true;
-                                            }
-                                            lastSevenChart.render();
-                                        }
-                                    }
-                                });
-
-                            var yearChart = new CanvasJS.Chart("year-avg-count",
-                            {
-                                zoomEnabled: false,
-                                animationEnabled: true,
-                                axisX: {
-                                    valueFormatString: " ",
-                                    tickLength: 0
-                                },
-                                axisY: {
-                                    interlacedColor: "#F5F5F5",
-                                    gridColor: "#D7D7D7",
-                                    tickColor: "#D7D7D7",
-                                    tickLength: 0
-                                },
-                                theme: "theme2",
-                                toolTip: {
-                                    shared: true
-                                },
-                                data: [
-                                    {
-                                        type: "column",
-                                        lineThickness: 3,
-                                        name: "Tests Taken",
-                                        axisYType: "primary",
-                                        dataPoints: {{ yearStats.count|raw }}
-                                    },
-                                    {
-                                        type: "line",
-                                        lineThickness: 3,
-                                        axisYType: "secondary",
-                                        name: "Average Score",
-                                        dataPoints: {{ yearStats.avg|raw }}
-                                    }
-                                ],
-                                legend: {
-                                    verticalAlign: "bottom",
-                                    horizontalAlign: "center",
-                                    fontSize: 15,
-                                    fontFamily: "Lucida Sans Unicode",
-                                    cursor: "pointer",
-                                    itemclick: function (e) {
-                                        if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                                            e.dataSeries.visible = false;
-                                        }
-                                        else {
-                                            e.dataSeries.visible = true;
-                                        }
-                                        yearChart.render();
-                                    }
-                                }
-                            });
-
-                            lastSevenChart.render();
-                            yearChart.render();
-                        }
-                    </script>
                 </div>
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            var lastSevenChart = new CanvasJS.Chart("last-seven-avg-count",
+                {
+                    zoomEnabled: false,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: " ",
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        shared: true
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            lineThickness: 3,
+                            axisYType: "primary",
+                            name: "Average Score",
+                            dataPoints: {{ lastSevenStats.avg|raw }}
+                        },
+                        {
+                            type: "column",
+                            lineThickness: 3,
+                            name: "Tests Taken",
+                            axisYType: "primary",
+                            dataPoints: {{ lastSevenStats.count|raw }}
+                        }
+                    ],
+                    legend: {
+                        verticalAlign: "bottom",
+                        horizontalAlign: "center",
+                        fontSize: 15,
+                        fontFamily: "Lucida Sans Unicode",
+                        cursor: "pointer",
+                        itemclick: function (e) {
+                            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                                e.dataSeries.visible = false;
+                            }
+                            else {
+                                e.dataSeries.visible = true;
+                            }
+                            lastSevenChart.render();
+                        }
+                    }
+                });
+
+            var yearChart = new CanvasJS.Chart("year-avg-count",
+                {
+                    zoomEnabled: false,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: " ",
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        shared: true
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            lineThickness: 3,
+                            name: "Tests Taken",
+                            axisYType: "primary",
+                            dataPoints: {{ yearStats.count|raw }}
+                        },
+                        {
+                            type: "line",
+                            lineThickness: 3,
+                            axisYType: "secondary",
+                            name: "Average Score",
+                            dataPoints: {{ yearStats.avg|raw }}
+                        }
+                    ],
+                    legend: {
+                        verticalAlign: "bottom",
+                        horizontalAlign: "center",
+                        fontSize: 15,
+                        fontFamily: "Lucida Sans Unicode",
+                        cursor: "pointer",
+                        itemclick: function (e) {
+                            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                                e.dataSeries.visible = false;
+                            }
+                            else {
+                                e.dataSeries.visible = true;
+                            }
+                            yearChart.render();
+                        }
+                    }
+                });
+
+            lastSevenChart.render();
+            yearChart.render();
+        }
+    </script>
 {% endblock %}
