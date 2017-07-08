@@ -221,13 +221,15 @@ SQL;
 
     /**
      * @param User $user
-     * @return array
+     * @return Test[]
      */
     public function fetchAllByUser(User $user): array
     {
         if (empty($user->getUuid())) {
             return [];
         }
+
+        $uuid = $user->getUuid();
 
         $qry = <<<SQL
 SELECT
@@ -322,21 +324,29 @@ SQL;
             $afscArr = $afscCollection->fetchArray($afscs);
             $questionArr = $questionCollection->fetchArrayMixed($questions);
 
+            $tTimeStarted = \DateTime::createFromFormat(
+                DateTimeHelpers::DT_FMT_DB,
+                $datum['timeStarted'] ?? null
+            );
+
+            $tTimeCompleted = \DateTime::createFromFormat(
+                DateTimeHelpers::DT_FMT_DB,
+                $datum['timeCompleted'] ?? null
+            );
+
             $test = new Test();
             $test->setUuid($datum['uuid'] ?? '');
             $test->setUserUuid($datum['userUuid'] ?? '');
             $test->setAfscs($afscArr);
             $test->setTimeStarted(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $datum['timeStarted'] ?? ''
-                )
+                $tTimeStarted
+                    ? $tTimeStarted
+                    : null
             );
             $test->setTimeCompleted(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $datum['timeCompleted'] ?? ''
-                )
+                $tTimeCompleted
+                    ? $tTimeCompleted
+                    : null
             );
             $test->setQuestions($questionArr);
             $test->setCurrentQuestion($datum['curQuestion'] ?? 0);
@@ -398,7 +408,7 @@ SQL;
             if (!isset($row['uuid']) || is_null($row['uuid'])) {
                 continue;
             }
-            
+
             $data[] = $row;
         }
 
