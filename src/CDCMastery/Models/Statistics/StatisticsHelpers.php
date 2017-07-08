@@ -25,6 +25,8 @@ class StatisticsHelpers
             $i++;
         }
 
-        return json_encode($newData);
+        return empty($newData)
+            ? ''
+            : json_encode($newData);
     }
 }
