@@ -19,7 +19,9 @@ class AppHelpers
     {
         session_write_close();
 
-        $protocol = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+        $protocol = isset($_SERVER['HTTPS'])
+            ? 'https://'
+            : 'http://';
 
         header('Location: ' . $protocol . $_SERVER['HTTP_HOST'] . $destination);
         ob_end_flush();
