@@ -68,7 +68,7 @@ class LoginRateLimiter
     /**
      * @return bool
      */
-    public static function initialize(): bool
+    private static function initialize(): bool
     {
         if (!isset($_SESSION[self::SESS_KEY_COUNT])) {
             $_SESSION[self::SESS_KEY_COUNT] = 0;
