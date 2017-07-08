@@ -189,17 +189,17 @@ class User
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getLegacyPassword(): string
+    public function getLegacyPassword(): ?string
     {
         return $this->legacyPassword;
     }
 
     /**
-     * @param string $legacyPassword
+     * @param null|string $legacyPassword
      */
-    public function setLegacyPassword(string $legacyPassword)
+    public function setLegacyPassword(?string $legacyPassword)
     {
         $this->legacyPassword = $legacyPassword;
     }
@@ -301,33 +301,33 @@ class User
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getRole(): string
+    public function getRole(): ?string
     {
         return $this->role;
     }
 
     /**
-     * @param string $role
+     * @param null|string $role
      */
-    public function setRole(string $role)
+    public function setRole(?string $role)
     {
         $this->role = $role;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getOfficeSymbol(): string
+    public function getOfficeSymbol(): ?string
     {
         return $this->officeSymbol;
     }
 
     /**
-     * @param string $officeSymbol
+     * @param null|string $officeSymbol
      */
-    public function setOfficeSymbol(string $officeSymbol)
+    public function setOfficeSymbol(?string $officeSymbol)
     {
         $this->officeSymbol = $officeSymbol;
     }
@@ -353,7 +353,7 @@ class User
      */
     public function isDisabled(): bool
     {
-        return $this->disabled;
+        return $this->disabled ?? false;
     }
 
     /**
@@ -369,13 +369,13 @@ class User
      */
     public function isReminderSent(): bool
     {
-        return $this->reminderSent;
+        return $this->reminderSent ?? false;
     }
 
     /**
-     * @param bool $reminderSent
+     * @param bool|null $reminderSent
      */
-    public function setReminderSent(bool $reminderSent)
+    public function setReminderSent(?bool $reminderSent)
     {
         $this->reminderSent = $reminderSent;
     }
