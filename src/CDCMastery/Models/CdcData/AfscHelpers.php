@@ -15,8 +15,34 @@ class AfscHelpers
      * @param Afsc[] $afscs
      * @return string[]
      */
+    public static function listNames(array $afscs): array
+    {
+        $afscs = array_values($afscs);
+        $c = count($afscs);
+
+        $nameList = [];
+        for ($i = 0; $i < $c; $i++) {
+            if (!isset($afscs[$i])) {
+                continue;
+            }
+
+            if (!$afscs[$i] instanceof Afsc) {
+                continue;
+            }
+
+            $nameList[] = $afscs[$i]->getName();
+        }
+
+        return $nameList;
+    }
+
+    /**
+     * @param Afsc[] $afscs
+     * @return string[]
+     */
     public static function listUuid(array $afscs): array
     {
+        $afscs = array_values($afscs);
         $c = count($afscs);
 
         $uuidList = [];
