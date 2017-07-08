@@ -233,6 +233,10 @@ class Test
      */
     public function getNumQuestions(): int
     {
+        if (empty($this->questions)) {
+            return $this->getNumAnswered();
+        }
+
         return count($this->questions ?? []);
     }
 
