@@ -79,6 +79,8 @@ return [
             ? $config->get(['database','dev'])
             : $config->get(['database','prod']);
 
+        define('ENCRYPTION_KEY', $config->get(['encryption', 'key']));
+
         $db = new mysqli(
             $database->host,
             $database->username,
