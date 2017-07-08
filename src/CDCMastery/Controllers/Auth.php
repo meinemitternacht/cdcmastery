@@ -22,6 +22,9 @@ use CDCMastery\Models\Users\UserHelpers;
 
 class Auth extends RootController
 {
+    /**
+     * @return string
+     */
     public function processLogin(): string
     {
         if (AuthHelpers::isLoggedIn()) {
@@ -40,6 +43,22 @@ class Auth extends RootController
             return AppHelpers::redirect('/');
         }
 
+        if (LoginRateLimiter::assertLimited()) {
+            $this->log->addWarning(
+                'rate-limited login attempt :: ' .
+                serialize($this->request) .
+                ' :: ip ' .
+                $_SERVER['REMOTE_ADDR']
+            );
+
+            Messages::add(
+                Messages::WARNING,
+                'You have made too many login attempts, please try again at a later time'
+            );
+
+            return self::renderLogin();
+        }
+
         try {
             ParameterHelpers::checkRequiredParameters(
                 $this->getRequest(), [
@@ -48,6 +67,8 @@ class Auth extends RootController
                 ]
             );
         } catch (MissingParameterException $e) {
+            LoginRateLimiter::increment();
+
             $this->log->addWarning(
                 'login attempt missing parameters :: ' .
                 serialize($this->request) .
@@ -66,22 +87,6 @@ class Auth extends RootController
         $username = $this->getRequest()->request->get('username');
         $password = $this->getRequest()->request->get('password');
 
-        if (LoginRateLimiter::assertLimited()) {
-            $this->log->addWarning(
-                'rate-limited login attempt :: ' .
-                serialize($this->request) .
-                ' :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
-
-            Messages::add(
-                Messages::WARNING,
-                'You have made too many login attempts, please try again at a later time'
-            );
-
-            return self::renderLogin();
-        }
-
         $userHelpers = $this->container->get(UserHelpers::class);
         $matchUsername = $userHelpers->findByUsername($username);
 
@@ -97,6 +102,8 @@ class Auth extends RootController
             : $matchUsername;
 
         if (is_null($uuid)) {
+            LoginRateLimiter::increment();
+
             $this->log->addWarning(
                 'failed login attempt :: bad username :: ip ' .
                 $_SERVER['REMOTE_ADDR']
@@ -114,6 +121,8 @@ class Auth extends RootController
         $user = $userCollection->fetch($uuid);
 
         if (empty($user->getUuid())) {
+            LoginRateLimiter::increment();
+
             $this->log->addWarning(
                 'failed login attempt :: bad username :: ip ' .
                 $_SERVER['REMOTE_ADDR']
@@ -128,6 +137,8 @@ class Auth extends RootController
         }
 
         if ($user->isDisabled()) {
+            LoginRateLimiter::increment();
+
             $this->log->addWarning(
                 'failed login attempt :: disabled account :: ip ' .
                 $_SERVER['REMOTE_ADDR']
@@ -142,6 +153,8 @@ class Auth extends RootController
         }
 
         if (!AuthHelpers::comparePassword($password, $user->getPassword())) {
+            LoginRateLimiter::increment();
+
             $this->log->addWarning(
                 'failed login attempt :: bad password :: ip ' .
                 $_SERVER['REMOTE_ADDR']
@@ -224,6 +237,6 @@ class Auth extends RootController
             return AppHelpers::redirect('/');
         }
 
-        return $this->render('auth/login.html.twig');
+        return $this->render('public/auth/login.html.twig');
     }
 }
