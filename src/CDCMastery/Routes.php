@@ -132,4 +132,89 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
         \CDCMastery\Controllers\Search::class,
         'renderSearchResults'
     ]);
+
+    $r->addGroup('/stats', function (\FastRoute\RouteCollector $r) {
+        $r->addRoute('GET', '/bases', [
+            \CDCMastery\Controllers\Stats\Bases::class,
+            'renderBasesStatsHome'
+        ]);
+
+        $r->addRoute('GET', '/bases/tests', [
+            \CDCMastery\Controllers\Stats\Bases::class,
+            'renderBasesTests'
+        ]);
+
+        $r->addGroup('/bases', function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/{baseUuid}/tests', [
+                \CDCMastery\Controllers\Stats\Bases::class,
+                'renderBaseTests'
+            ]);
+
+            $r->addGroup('/{baseUuid}/tests', function (\FastRoute\RouteCollector $r) {
+                $r->addRoute('GET', '/last-seven', [
+                    \CDCMastery\Controllers\Stats\Bases::class,
+                    'renderBaseTestsLastSeven'
+                ]);
+
+                $r->addRoute('GET', '/month', [
+                    \CDCMastery\Controllers\Stats\Bases::class,
+                    'renderBaseTestsByMonth'
+                ]);
+
+                $r->addRoute('GET', '/week', [
+                    \CDCMastery\Controllers\Stats\Bases::class,
+                    'renderBaseTestsByWeek'
+                ]);
+
+                $r->addRoute('GET', '/year', [
+                    \CDCMastery\Controllers\Stats\Bases::class,
+                    'renderBaseTestsByYear'
+                ]);
+            });
+        });
+
+        $r->addRoute('GET', '/tests', [
+            \CDCMastery\Controllers\Stats\Tests::class,
+            'renderTestsStatsHome'
+        ]);
+
+        $r->addGroup('/tests', function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/last-seven', [
+                \CDCMastery\Controllers\Stats\Tests::class,
+                'renderTestsLastSeven'
+            ]);
+
+            $r->addRoute('GET', '/month', [
+                \CDCMastery\Controllers\Stats\Tests::class,
+                'renderTestsByMonth'
+            ]);
+
+            $r->addRoute('GET', '/week', [
+                \CDCMastery\Controllers\Stats\Tests::class,
+                'renderTestsByWeek'
+            ]);
+
+            $r->addRoute('GET', '/year', [
+                \CDCMastery\Controllers\Stats\Tests::class,
+                'renderTestsByYear'
+            ]);
+        });
+
+        $r->addRoute('GET', '/users', [
+            \CDCMastery\Controllers\Stats\Users::class,
+            'renderUsersStatsHome'
+        ]);
+
+        $r->addGroup('/users', function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/bases', [
+                \CDCMastery\Controllers\Stats\Users::class,
+                'renderUsersByBase'
+            ]);
+
+            $r->addRoute('GET', '/groups', [
+                \CDCMastery\Controllers\Stats\Users::class,
+                'renderUsersByRole'
+            ]);
+        });
+    });
 });

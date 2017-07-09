@@ -42,7 +42,7 @@ class Base
      */
     public function getName(): string
     {
-        return $this->name;
+        return trim($this->name);
     }
 
     /**

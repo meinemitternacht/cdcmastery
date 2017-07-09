@@ -104,7 +104,7 @@ SQL;
 
             $base = new Base();
             $base->setUuid($row['uuid'] ?? '');
-            $base->setName($row['name'] ?? '');
+            $base->setName($row['baseName'] ?? '');
 
             $this->bases[$row['uuid']] = $base;
         }
@@ -149,7 +149,7 @@ SQL;
 
             $base = new Base();
             $base->setUuid($row['uuid'] ?? '');
-            $base->setName($row['name'] ?? '');
+            $base->setName($row['baseName'] ?? '');
 
             $this->bases[$row['uuid']] = $base;
         }

@@ -1,0 +1,33 @@
+{% extends "layout.html.twig" %}
+{% block main %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="/stats/tests" class="list-group-item">All Tests</a>
+                <a href="/stats/bases/tests" class="list-group-item">Tests by Base</a>
+                <a href="/stats/users/bases" class="list-group-item">Users by Base</a>
+                <a href="/stats/users/groups" class="list-group-item">Users by Group</a>
+            </div>
+            {% if baseList %}
+                <ul class="nav nav-pills nav-stacked" style="height: 36em; overflow-y: scroll">
+                    {% set doScroll = false %}
+                    {% for baseUuid, baseName in baseList %}
+                        <li{% if uuid and baseUuid == uuid %}{% set doScroll = true %} id="scrollToMe" class="active"{% endif %}>
+                            <a href="/stats/bases/{{ baseUuid }}/tests/month">{{ baseName }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if doScroll %}
+                    <script>
+                        document.getElementById('scrollToMe').scrollIntoView();
+                    </script>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            {% block navTimeSegments %}{% endblock %}
+            {% block graphs %}{% endblock %}
+            {% block graphOptions %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

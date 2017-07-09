@@ -29,4 +29,64 @@ class StatisticsHelpers
             ? ''
             : json_encode($newData);
     }
+
+    public static function formatGraphDataBasesOverall(array $data, array $names): string
+    {
+        $newData = [];
+        $i = 0;
+        foreach ($data as $uuid => $datum) {
+            if (is_array($datum)) {
+                $newData[] = [
+                    'label' => $names[$uuid] ?? '',
+                    'x' => $i,
+                    'y' => $datum['tAvg'] ?? $datum['tCount'] ?? 0
+                ];
+
+                $i++;
+                continue;
+            }
+
+            $newData[] = [
+                'label' => $names[$uuid] ?? '',
+                'x' => $i,
+                'y' => $datum ?? 0
+            ];
+
+            $i++;
+        }
+
+        return empty($newData)
+            ? ''
+            : json_encode($newData);
+    }
+
+    public static function formatGraphDataUsers(array $data, array $names): string
+    {
+        $newData = [];
+        $i = 0;
+        foreach ($data as $uuid => $datum) {
+            if (is_array($datum)) {
+                $newData[] = [
+                    'label' => $names[$uuid] ?? '',
+                    'x' => $i,
+                    'y' => $datum['tAvg'] ?? $datum['tCount'] ?? 0
+                ];
+
+                $i++;
+                continue;
+            }
+
+            $newData[] = [
+                'label' => $names[$uuid] ?? '',
+                'x' => $i,
+                'y' => $datum ?? 0
+            ];
+
+            $i++;
+        }
+
+        return empty($newData)
+            ? ''
+            : json_encode($newData);
+    }
 }

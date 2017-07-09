@@ -5,3 +5,7 @@ div.main-container {
 .panel-min-250 {
     min-height: 250px;
 }
+
+.footer {
+    margin-top: 10em;
+}

@@ -1,0 +1,72 @@
+{% extends "public/stats/stats.html.twig" %}
+{% block navTimeSegments %}
+    <ul class="nav nav-pills">
+        <li{% if period == "last-seven" %} class="active"{% endif %}>
+            <a href="/stats/tests/last-seven">Last Seven Days</a>
+        </li>
+        <li{% if period == "week" %} class="active"{% endif %}>
+            <a href="/stats/tests/week">By Week</a>
+        </li>
+        <li{% if period == "month" %} class="active"{% endif %}>
+            <a href="/stats/tests/month">By Month</a>
+        </li>
+        <li{% if period == "year" %} class="active"{% endif %}>
+            <a href="/stats/tests/year">By Year</a>
+        </li>
+    </ul>
+{% endblock %}
+{% block graphs %}
+    <div class="text-center">
+        <h3>{{ title }}</h3>
+        <h4>{{ subTitle }}</h4>
+    </div>
+    <div id="graph-cont" style="height:400px">
+        &nbsp;
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            var testsChart = new CanvasJS.Chart("graph-cont",
+                {
+                    zoomEnabled: true,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: null,
+                        labelFormatter: function () {return '';},
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0,
+                        title: "Average Score"
+                    },
+                    axisY2: {
+                        tickLength: 0,
+                        title: "Tests Taken"
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        content: "<em>{label}</em><br>{name}: <strong>{y}</strong>"
+                    },
+                    data: [
+                        {
+                            type: "line",
+                            lineThickness: 2,
+                            axisYType: "primary",
+                            name: "Average Score",
+                            dataPoints: {{ averages|raw }}
+                        },
+                        {
+                            type: "area",
+                            name: "Tests Taken",
+                            axisYType: "secondary",
+                            dataPoints: {{ counts|raw }}
+                        }
+                    ]
+                });
+
+            testsChart.render();
+        }
+    </script>
+{% endblock %}
