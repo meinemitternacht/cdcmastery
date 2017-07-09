@@ -114,6 +114,15 @@ class Bases extends Stats
                         $statsTests->baseCountLastSevenDays($base)
                     )
                 ]);
+
+                if (empty($data['averages'])) {
+                    Messages::add(
+                        Messages::INFO,
+                        "No tests have been taken at {$base->getName()} in the last seven days"
+                    );
+
+                    AppHelpers::redirect('/stats/bases/tests');
+                }
                 break;
             case self::TYPE_MONTH:
                 $data = array_merge($data, [
@@ -164,7 +173,7 @@ class Bases extends Stats
         if (empty($data['averages'])) {
             Messages::add(
                 Messages::INFO,
-                "No tests have been taken at {$base->getName()} in the last seven days"
+                "No tests have been taken at {$base->getName()}"
             );
 
             AppHelpers::redirect('/stats/bases/tests');
