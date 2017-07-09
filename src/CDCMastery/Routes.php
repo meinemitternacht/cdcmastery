@@ -133,6 +133,11 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
         'renderSearchResults'
     ]);
 
+    $r->addRoute('GET', '/stats', [
+        \CDCMastery\Controllers\Stats::class,
+        'renderStatsHome'
+    ]);
+
     $r->addGroup('/stats', function (\FastRoute\RouteCollector $r) {
         $r->addRoute('GET', '/bases', [
             \CDCMastery\Controllers\Stats\Bases::class,

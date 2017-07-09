@@ -8,6 +8,8 @@
 
 namespace CDCMastery\Controllers;
 
+use CDCMastery\Helpers\AppHelpers;
+
 class Stats extends RootController
 {
     /**
@@ -15,6 +17,6 @@ class Stats extends RootController
      */
     public function renderStatsHome(): string
     {
-
+        return AppHelpers::redirect('/stats/tests/last-seven');
     }
 }
