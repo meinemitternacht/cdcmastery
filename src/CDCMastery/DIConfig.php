@@ -33,7 +33,7 @@ return [
         return $memcached;
     },
     \Monolog\Logger::class => function (ContainerInterface $c) {
-        $logger = new Monolog\Logger('DLA');
+        $logger = new Monolog\Logger('CDC');
         $config = $c->get(\CDCMastery\Models\Config\Config::class);
 
         $formatter = new \Monolog\Formatter\LineFormatter(
@@ -66,7 +66,7 @@ return [
         $logger->pushHandler($streamHandler);
 
         out_return:
-        $syslogHandler = new \Monolog\Handler\SyslogHandler('DLA', LOG_SYSLOG, \Monolog\Logger::WARNING);
+        $syslogHandler = new \Monolog\Handler\SyslogHandler('CDC', LOG_SYSLOG, \Monolog\Logger::WARNING);
         $syslogHandler->setFormatter($formatter);
         $logger->pushHandler($syslogHandler);
 
