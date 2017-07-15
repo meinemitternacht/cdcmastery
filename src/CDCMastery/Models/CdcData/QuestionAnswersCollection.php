@@ -56,6 +56,7 @@ class QuestionAnswersCollection
             $this->log
         );
 
+        /** @var Question[] $questions */
         $questions = $questionCollection->fetchAfsc($afsc);
 
         $questionUuidList = QuestionHelpers::listUuid($questions);
@@ -67,6 +68,7 @@ class QuestionAnswersCollection
 
         $answerCollection->preloadQuestionAnswers($afsc, $questionUuidList);
 
+        $questions = array_values($questions);
         $c = count($questions);
         for ($i = 0; $i < $c; $i++) {
             if (!isset($questions[$i])) {
