@@ -196,7 +196,6 @@ SELECT
 FROM userAFSCAssociations
 WHERE userUUID = ?
   AND afscUUID = ?
-  AND userAuthorized = 1
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -219,6 +218,51 @@ SQL;
         $stmt->close();
 
         return (bool)($associated ?? false);
+    }
+
+    /**
+     * @param User $user
+     * @param Afsc $afsc
+     * @return bool
+     */
+    public function assertAuthorized(User $user, Afsc $afsc): bool
+    {
+        if (empty($user->getUuid()) || empty($afsc->getUuid())) {
+            return false;
+        }
+
+        $userUuid = $user->getUuid();
+        $afscUuid = $afsc->getUuid();
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(*) as count
+FROM userAFSCAssociations
+WHERE userUUID = ?
+  AND afscUUID = ?
+  AND userAuthorized = 1
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param(
+            'ss',
+            $userUuid,
+            $afscUuid
+        );
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return false;
+        }
+
+        $stmt->bind_result(
+            $authorized
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        return (bool)($authorized ?? false);
     }
 
     /**
@@ -452,6 +496,53 @@ SQL;
         }
 
         $stmt->close();
+    }
+
+    /**
+     * @param User $user
+     * @return UserAfscCollection
+     */
+    public function fetchAllByUser(User $user): UserAfscCollection
+    {
+        if (empty($user->getUuid())) {
+            return new UserAfscCollection();
+        }
+
+        $userUuid = $user->getUuid();
+
+        $qry = <<<SQL
+SELECT
+  afscUUID
+FROM userAFSCAssociations
+WHERE userUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $userUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return new UserAfscCollection();
+        }
+
+        $stmt->bind_result($afscUuid);
+
+        $afscList = [];
+        while ($stmt->fetch()) {
+            if (!isset($afscUuid) || is_null($afscUuid)) {
+                continue;
+            }
+
+            $afscList[] = $afscUuid;
+        }
+
+        $stmt->close();
+
+        $userAfscCollection = new UserAfscCollection();
+        $userAfscCollection->setUser($user);
+        $userAfscCollection->setAssociations($afscList);
+
+        return $userAfscCollection;
     }
 
     /**
