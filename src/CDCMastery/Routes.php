@@ -222,4 +222,21 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
             ]);
         });
     });
+
+    $r->addGroup('/tests', function (\FastRoute\RouteCollector $r) {
+        $r->addRoute('GET', '/new', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderNewTest'
+        ]);
+
+        $r->addRoute('POST', '/new', [
+            \CDCMastery\Controllers\Tests::class,
+            'processNewTest'
+        ]);
+
+        $r->addRoute('GET', '/{testUuid}', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderTest'
+        ]);
+    });
 });

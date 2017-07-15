@@ -1,0 +1,85 @@
+{% extends "layout.html.twig" %}
+{% block main %}
+    <div class="page-header text-right">
+        <h2>Start New Test</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="well">
+                <form action="/tests/new" method="POST">
+                    <fieldset>
+                        <legend>Test Options</legend>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-2 control-label">
+                                    AFSC(s)
+                                </label>
+                                <div class="col-md-10">
+                                    {% for afsc in afscList %}
+                                        <div class="checkbox new-test-afsc">
+                                            <label for="afsc-{{ afsc.uuid }}"
+                                                   class="control-label new-test-afsc"
+                                                   title="{{ afsc.version }}">
+                                                <input type="checkbox"
+                                                       name="afscs[]"
+                                                       id="afsc-{{ afsc.uuid }}"
+                                                       value="{{ afsc.uuid }}">
+                                                {{ afsc.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label for="numQuestions" class="col-md-2 control-label">
+                                    Questions
+                                </label>
+                                <div class="col-md-10">
+                                    <input class="form-control"
+                                           type="number"
+                                           min="0"
+                                           max="300"
+                                           name="numQuestions"
+                                           id="numQuestions"
+                                           value="100">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-2 control-label">Type</label>
+                                <div class="col-md-10">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="testType" id="normalTest" value="normal" checked="" disabled="disabled">
+                                            Normal Test
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="testType" id="practiceTest" value="practice" disabled="disabled">
+                                            Practice Test
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="col-md-10 col-md-offset-2">
+                                    <button type="reset" class="btn btn-default">Reset</button>
+                                    <button type="submit" class="btn btn-primary">Start Test</button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            Incomplete tests
+        </div>
+    </div>
+{% endblock %}

@@ -21,7 +21,13 @@
                 </div>
                 <div class="panel-body">
                     <div id="last-seven-avg-count" style="height:218px">
+                        {% if lastSevenStats.avg|length > 0 %}
                         &nbsp;
+                        {% else %}
+                            <div class="text-center">
+                                <strong>No Data</strong>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -63,6 +69,7 @@
     </div>
     <script type="text/javascript">
         window.onload = function () {
+            {% if lastSevenStats.avg|length > 0 %}
             var lastSevenChart = new CanvasJS.Chart("last-seven-avg-count",
                 {
                     zoomEnabled: false,
@@ -114,6 +121,9 @@
                         }
                     }
                 });
+
+            lastSevenChart.render();
+            {% endif %}
 
             var yearChart = new CanvasJS.Chart("year-avg-count",
                 {
@@ -167,7 +177,6 @@
                     }
                 });
 
-            lastSevenChart.render();
             yearChart.render();
         }
     </script>
