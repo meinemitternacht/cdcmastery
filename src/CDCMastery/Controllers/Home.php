@@ -40,20 +40,12 @@ class Home extends RootController
 
         $data = [
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->averageLastSevenDays()
-                ),
-                'count' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->countLastSevenDays()
-                )
+                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->averageLastSevenDays()),
+                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->countLastSevenDays())
             ],
             'yearStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->averageByYear()
-                ),
-                'count' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->countByYear()
-                )
+                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->averageByYear()),
+                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->countByYear())
             ]
         ];
 
@@ -151,69 +143,25 @@ class Home extends RootController
         $data = [
             'generalStats' => [
                 'avg' => [
-                    'overall' => $statsTests->userAverageOverall(
-                        $user
-                    ),
-                    'lastSeven' => $statsTests->userAverageBetween(
-                        $user,
-                        $daysAgo_7,
-                        new \DateTime()
-                    ),
-                    'lastThirty' => $statsTests->userAverageBetween(
-                        $user,
-                        $daysAgo_30,
-                        new \DateTime()
-                    ),
-                    'lastNinety' => $statsTests->userAverageBetween(
-                        $user,
-                        $daysAgo_90,
-                        new \DateTime()
-                    )
+                    'overall' => $statsTests->userAverageOverall($user),
+                    'lastSeven' => $statsTests->userAverageBetween($user, $daysAgo_7, new \DateTime()),
+                    'lastThirty' => $statsTests->userAverageBetween($user, $daysAgo_30, new \DateTime()),
+                    'lastNinety' => $statsTests->userAverageBetween($user, $daysAgo_90, new \DateTime())
                 ],
                 'count' => [
-                    'overall' => $statsTests->userCountOverall(
-                        $user
-                    ),
-                    'lastSeven' => $statsTests->userCountBetween(
-                        $user,
-                        $daysAgo_7,
-                        new \DateTime()
-                    ),
-                    'lastThirty' => $statsTests->userCountBetween(
-                        $user,
-                        $daysAgo_30,
-                        new \DateTime()
-                    ),
-                    'lastNinety' => $statsTests->userCountBetween(
-                        $user,
-                        $daysAgo_90,
-                        new \DateTime()
-                    )
+                    'overall' => $statsTests->userCountOverall($user),
+                    'lastSeven' => $statsTests->userCountBetween($user, $daysAgo_7, new \DateTime()),
+                    'lastThirty' => $statsTests->userCountBetween($user, $daysAgo_30, new \DateTime()),
+                    'lastNinety' => $statsTests->userCountBetween($user, $daysAgo_90, new \DateTime())
                 ]
             ],
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->userAverageLastSevenDays(
-                        $user
-                    )
-                ),
-                'count' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->userCountLastSevenDays(
-                        $user
-                    )
-                )
+                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->userAverageLastSevenDays($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->userCountLastSevenDays($user))
             ],
             'monthStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->userAverageByMonth(
-                        $user
-                    )
-                ),
-                'count' => StatisticsHelpers::formatGraphDataTests(
-                    $statsTests->userCountByMonth(
-                        $user
-                    )
-                )
+                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->userAverageByMonth($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->userCountByMonth($user))
             ],
             'tests' => [
                 'complete' => $testsComplete,
