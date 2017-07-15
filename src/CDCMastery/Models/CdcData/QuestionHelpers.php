@@ -40,6 +40,8 @@ class QuestionHelpers
      */
     public static function listUuid(array $questions): array
     {
+        $questions = array_values($questions);
+
         $c = count($questions);
 
         $uuidList = [];
