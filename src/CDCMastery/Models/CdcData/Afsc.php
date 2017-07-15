@@ -74,33 +74,33 @@ class Afsc
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param string $description
+     * @param null|string $description
      */
-    public function setDescription(string $description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getVersion(): string
+    public function getVersion(): ?string
     {
         return $this->version;
     }
 
     /**
-     * @param string $version
+     * @param null|string $version
      */
-    public function setVersion(string $version)
+    public function setVersion(?string $version)
     {
         $this->version = $version;
     }
