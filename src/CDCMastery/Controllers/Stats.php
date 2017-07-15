@@ -17,6 +17,6 @@ class Stats extends RootController
      */
     public function renderStatsHome(): string
     {
-        return AppHelpers::redirect('/stats/tests/last-seven');
+        return AppHelpers::redirect('/stats/tests/month');
     }
 }
