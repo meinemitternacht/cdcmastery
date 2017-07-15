@@ -66,7 +66,7 @@ class TestHandler
 
         $questions = [];
         foreach ($options->getAfscs() as $afsc) {
-            $questionData = $cdcDataCollection->fetch($afsc)->getQuestionAnswerData();
+            $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
 
             if (empty($questionData)) {
                 continue;
@@ -114,6 +114,8 @@ class TestHandler
 
         $testHandler = new self($mysqli, $logger);
         $testHandler->setTest($test);
+
+        $testHandler->save();
 
         return $testHandler;
     }
