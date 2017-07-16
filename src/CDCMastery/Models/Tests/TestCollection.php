@@ -191,22 +191,26 @@ SQL;
         $afscArr = $afscCollection->fetchArray($afscs);
         $questionArr = $questionCollection->fetchArrayMixed($questions);
 
+        if ($timeStarted !== null) {
+            $timeStarted = \DateTime::createFromFormat(
+                DateTimeHelpers::DT_FMT_DB,
+                $timeStarted ?? ''
+            );
+        }
+
+        if ($timeCompleted !== null) {
+            $timeCompleted = \DateTime::createFromFormat(
+                DateTimeHelpers::DT_FMT_DB,
+                $timeCompleted ?? ''
+            );
+        }
+
         $test = new Test();
         $test->setUuid($_uuid ?? '');
         $test->setUserUuid($userUuid ?? '');
         $test->setAfscs($afscArr);
-        $test->setTimeStarted(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $timeStarted ?? ''
-            )
-        );
-        $test->setTimeCompleted(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $timeCompleted ?? ''
-            )
-        );
+        $test->setTimeStarted($timeStarted);
+        $test->setTimeCompleted($timeCompleted);
         $test->setQuestions($questionArr);
         $test->setCurrentQuestion($curQuestion ?? 0);
         $test->setNumAnswered($numAnswered ?? 0);

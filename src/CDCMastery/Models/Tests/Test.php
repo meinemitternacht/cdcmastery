@@ -172,7 +172,7 @@ class Test
      */
     public function setQuestions(array $questions)
     {
-        $this->questions = $questions;
+        $this->questions = array_values($questions);
     }
 
     /**
@@ -286,5 +286,13 @@ class Test
     public function setArchived(bool $archived)
     {
         $this->archived = $archived;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isComplete(): bool
+    {
+        return $this->getScore() > 0 && !is_null($this->getTimeCompleted());
     }
 }

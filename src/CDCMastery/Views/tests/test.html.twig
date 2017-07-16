@@ -1,0 +1,366 @@
+{% extends "layout.html.twig" %}
+{% block main %}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var TEST_ID = '{{ testUuid }}';
+
+            var ACTION_NO_ACTION = -1;
+            var ACTION_SUBMIT_ANSWER = 0;
+            var ACTION_NAV_FIRST = 1;
+            var ACTION_NAV_PREV = 2;
+            var ACTION_NAV_NEXT = 3;
+            var ACTION_NAV_LAST = 4;
+            var ACTION_NAV_NUM = 5;
+            var ACTION_SCORE_TEST = 6;
+
+            var $loadingAnimation = $('#loading');
+            var $question = $('#question');
+            var $answer_1 = $('#answer1');
+            var $answer_2 = $('#answer2');
+            var $answer_3 = $('#answer3');
+            var $answer_4 = $('#answer4');
+            var $testProgress = $('#testProgress');
+            var $unansweredContainer = $('#unansweredContainer');
+            var $unansweredToggle = $('#unansweredToggle');
+            var $questionIdx = $('#questionIdx');
+            var $totalQuestions = $('#totalQuestions');
+            var $scoreTest = $('#scoreTest');
+            var $btnScoreTest = $('#btnScoreTest');
+
+            var $div_navFirst = $('#navFirst');
+            var $div_navPrev = $('#navPrev');
+            var $div_navNext = $('#navNext');
+            var $div_navLast = $('#navLast');
+
+            $div_navFirst.click(function () {
+                performAction(ACTION_NAV_FIRST, null);
+            });
+
+            $div_navPrev.click(function () {
+                performAction(ACTION_NAV_PREV, null);
+            });
+
+            $div_navNext.click(function () {
+                performAction(ACTION_NAV_NEXT, null);
+            });
+
+            $div_navLast.click(function () {
+                performAction(ACTION_NAV_LAST, null);
+            });
+
+            $answer_1.click(function () {
+                performAction(ACTION_SUBMIT_ANSWER, $answer_1);
+            });
+
+            $answer_2.click(function () {
+                performAction(ACTION_SUBMIT_ANSWER, $answer_2);
+            });
+
+            $answer_3.click(function () {
+                performAction(ACTION_SUBMIT_ANSWER, $answer_3);
+            });
+
+            $answer_4.click(function () {
+                performAction(ACTION_SUBMIT_ANSWER, $answer_4);
+            });
+
+            $unansweredToggle.click(function () {
+                if ($unansweredContainer.is(":visible")) {
+                    $unansweredContainer.slideUp();
+                    $unansweredToggle.text("Show Unanswered Questions");
+                    return;
+                }
+
+                $unansweredContainer.slideDown();
+                $unansweredToggle.text("Hide Unanswered Questions");
+            });
+
+            $btnScoreTest.click(function () {
+                performAction(ACTION_SCORE_TEST);
+            });
+
+            $(window).keydown(function(e) {
+                switch (e.keyCode) {
+                    case 35: /* End */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_LAST, null);
+                        return;
+                    case 36: /* Home */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_FIRST, null);
+                        return;
+                    case 37: /* Left arrow */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_PREV, null);
+                        return;
+                    case 39: /* Right arrow */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_NEXT, null);
+                        return;
+                    case 49: /* 1 */
+                    case 65: /* A */
+                    case 97: /* Numpad 1 */
+                        performAction(ACTION_SUBMIT_ANSWER, $answer_1);
+                        return;
+                    case 50: /* 2 */
+                    case 66: /* B */
+                    case 98: /* Numpad 2 */
+                        performAction(ACTION_SUBMIT_ANSWER, $answer_2);
+                        return;
+                    case 51: /* 3 */
+                    case 67: /* C */
+                    case 99: /* Numpad 3 */
+                        performAction(ACTION_SUBMIT_ANSWER, $answer_3);
+                        return;
+                    case 52: /* 4 */
+                    case 68: /* D */
+                    case 100: /* Numpad 4 */
+                        performAction(ACTION_SUBMIT_ANSWER, $answer_4);
+                        return;
+                }
+            });
+
+            function performAction( action, payload ) {
+                $loadingAnimation.fadeIn();
+
+                var jsonData;
+
+                switch (action) {
+                    case ACTION_SUBMIT_ANSWER:
+                        var answerUuid = $.data(payload, 'uuid');
+                        var questionUuid = $.data($question, 'uuid');
+
+                        if (typeof(answerUuid) === "undefined" || answerUuid === null || answerUuid === '') {
+                            return;
+                        }
+
+                        if (typeof(questionUuid) === "undefined" || questionUuid === null || questionUuid === '') {
+                            return;
+                        }
+
+                        jsonData = {
+                            'action': action,
+                            'answer': answerUuid,
+                            'question': questionUuid
+                        };
+                        break;
+                    case ACTION_NAV_NUM:
+                        var idx;
+
+                        idx = parseInt(payload.innerHTML) - 1;
+
+                        jsonData = {
+                            'action': action,
+                            'idx': idx
+                        };
+                        break;
+                    case ACTION_NO_ACTION:
+                    case ACTION_NAV_FIRST:
+                    case ACTION_NAV_PREV:
+                    case ACTION_NAV_NEXT:
+                    case ACTION_NAV_LAST:
+                    case ACTION_SCORE_TEST:
+                        jsonData = {
+                            'action': action
+                        };
+                        break;
+                    default:
+                        return;
+                }
+
+                $.ajax('/tests/' + TEST_ID,{
+                    'data': JSON.stringify(jsonData),
+                    'type': 'POST',
+                    'processData': false,
+                    'contentType': 'application/json',
+                    'success': function ( data ) {
+                        payload = JSON.parse(data);
+
+                        if (typeof(payload.redirect) !== "undefined") {
+                            window.location.href = payload.redirect;
+                        }
+
+                        populateQuestionAnswerData(payload);
+                        updateProgress(payload);
+                        populateUnansweredQuestions(payload);
+                    },
+                    'error': function ( data, status, error ) {
+                        console.error(data, status, error);
+                    }
+                });
+
+                $loadingAnimation.fadeOut();
+            }
+
+            function populateQuestionAnswerData( payload ) {
+                if (typeof(payload.display) === "undefined") {
+                    return;
+                }
+
+                $question.html(payload.display.question.text);
+                $.data($question, 'uuid', payload.display.question.uuid);
+
+                for (var i = 0; i < 4; i++) {
+                    if (typeof(payload.display.answers[i]) === "undefined" || payload.display.answers[i] === null) {
+                        continue;
+                    }
+
+                    var answer = payload.display.answers[i];
+                    var element;
+
+                    switch (i) {
+                        case 0:
+                            element = $answer_1;
+                            break;
+                        case 1:
+                            element = $answer_2;
+                            break;
+                        case 2:
+                            element = $answer_3;
+                            break;
+                        case 3:
+                            element = $answer_4;
+                            break;
+                        default:
+                            return;
+                    }
+
+                    element.html(answer.text);
+                    $.data(element, 'uuid', answer.uuid);
+
+                    if (payload.display.selection === answer.uuid) {
+                        element.addClass('selected');
+                    } else if (element.hasClass('selected')) {
+                        element.removeClass('selected');
+                    }
+                }
+            }
+
+            function updateProgress( payload ) {
+                if (typeof(payload.questions) === "undefined") {
+                    return;
+                }
+
+                var pctDone;
+
+                if (payload.questions.total === 0) {
+                    return;
+                }
+
+                if (payload.questions.numAnswered === payload.questions.total) {
+                    $scoreTest.fadeIn();
+                }
+
+                pctDone = (payload.questions.numAnswered / payload.questions.total) * 100;
+
+                $testProgress.css('width', pctDone + '%');
+                $questionIdx.html(payload.questions.idx + 1);
+                $totalQuestions.html(payload.questions.total);
+            }
+
+            /**
+             *
+             * @param payload
+             */
+            function populateUnansweredQuestions( payload ) {
+                if (typeof(payload.questions) === "undefined") {
+                    return;
+                }
+
+                if (payload.questions.unanswered.length === 0) {
+                    $unansweredToggle.fadeOut();
+                    $unansweredContainer.fadeOut();
+                    return;
+                } else if (!$unansweredToggle.is(":visible")) {
+                    $unansweredToggle.fadeIn();
+                }
+
+                $unansweredContainer.empty();
+                for (var i = 0; i < payload.questions.unanswered.length; i++) {
+                    if (typeof(payload.questions.unanswered[i]) === "undefined" || payload.questions.unanswered[i] === null || payload.questions.unanswered[i] === '') {
+                        continue;
+                    }
+
+                    var $div = $(
+                        "<div>" + (payload.questions.unanswered[i] + 1) + "</div>"
+                    );
+
+                    $div.addClass('btn btn-warning unanswered');
+                    $div.click(function () {
+                        performAction(ACTION_NAV_NUM, this);
+                    });
+
+                    $unansweredContainer.append($div);
+                }
+            }
+
+            performAction(ACTION_NO_ACTION);
+        });
+
+    </script>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="progress progress-striped">
+                <div id="testProgress" class="progress-bar progress-bar-info" style="width: 0;"></div>
+            </div>
+            <div id="scoreTest" class="alert alert-info text-center" style="display:none;">
+                <p>Congratulations! Your test is complete. Click on the button below to submit your test for scoring.</p>
+                <div class="clearfix">&nbsp;</div>
+                <a href="#" id="btnScoreTest" class="btn btn-default">Score Test</a>
+            </div>
+            <div id="question" class="well well-lg"></div>
+            <div class="list-group">
+                <div id="answer1" class="list-group-item answer"></div>
+                <div id="answer2" class="list-group-item answer"></div>
+                <div id="answer3" class="list-group-item answer"></div>
+                <div id="answer4" class="list-group-item answer"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="text-center">
+                <strong>
+                    <span id="questionIdx">0</span>
+                </strong>
+                /
+                <strong>
+                    <span id="totalQuestions">0</span>
+                </strong>
+            </div>
+            <ul class="pager">
+                <li>
+                    <a id="navFirst" title="First Question" href="#">First</a>
+                </li>
+                <li>
+                    <a id="navPrev" title="Previous Question" href="#">Previous</a>
+                </li>
+                <li>
+                    <a id="navNext" title="Next Question" href="#">Next</a>
+                </li>
+                <li>
+                    <a id="navLast" title="Last Question" href="#">Last</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="text-center">
+                <a href="#"
+                   id="unansweredToggle"
+                   class="btn btn-default"
+                   style="display:none;"
+                   title="Toggle Unanswered Question List">
+                    Show Unanswered Questions
+                </a>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <div id="unansweredContainer"
+                 style="display:none;"
+                 class="btn-group-sm">
+            </div>
+        </div>
+    </div>
+{% endblock %}

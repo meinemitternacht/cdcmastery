@@ -15,6 +15,8 @@ use CDCMastery\Helpers\SessionHelpers;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Tests\QuestionResponse;
+use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestHandler;
 use CDCMastery\Models\Tests\TestOptions;
 use CDCMastery\Models\Users\UserAfscAssociations;
@@ -31,6 +33,9 @@ class Tests extends RootController
 
     }
 
+    /**
+     * @return string
+     */
     public function processNewTest(): string
     {
         try {
@@ -177,6 +182,90 @@ class Tests extends RootController
         return AppHelpers::redirect('/tests/' . $newTest->getTest()->getUuid());
     }
 
+    public function processTest(string $testUuid): string
+    {
+        $testCollection = $this->container->get(TestCollection::class);
+        $test = $testCollection->fetch($testUuid);
+
+        if (empty($test->getUuid())) {
+            /** @todo send message that test does not exist */
+        }
+
+        if ($test->getUserUuid() !== SessionHelpers::getUserUuid()) {
+            /** @todo send message that test does not belong to this user */
+        }
+
+        if ($test->isComplete()) {
+            /** @todo send message that test is already complete */
+        }
+
+        $testHandler = TestHandler::resume(
+            $this->container->get(\mysqli::class),
+            $this->container->get(Logger::class),
+            $test
+        );
+
+        $payload = json_decode($this->getRequest()->getContent() ?? null);
+
+        if (is_null($payload) || !isset($payload->action)) {
+            /** @todo send message that request was malformed */
+        }
+
+        switch ($payload->action) {
+            case TestHandler::ACTION_NO_ACTION:
+                break;
+            case TestHandler::ACTION_SUBMIT_ANSWER:
+                if (!isset($payload->question) || !isset($payload->answer)) {
+                    break;
+                }
+
+                $questionResponse = new QuestionResponse();
+                $questionResponse->setTestUuid($testUuid);
+                $questionResponse->setQuestionUuid($payload->question);
+                $questionResponse->setAnswerUuid($payload->answer);
+
+                $testHandler->saveResponse($questionResponse);
+                break;
+            case TestHandler::ACTION_NAV_FIRST:
+                $testHandler->first();
+                break;
+            case TestHandler::ACTION_NAV_PREV:
+                $testHandler->previous();
+                break;
+            case TestHandler::ACTION_NAV_NEXT:
+                $testHandler->next();
+                break;
+            case TestHandler::ACTION_NAV_LAST:
+                $testHandler->last();
+                break;
+            case TestHandler::ACTION_NAV_NUM:
+                if (!isset($payload->idx)) {
+                    break;
+                }
+
+                $testHandler->navigate($payload->idx);
+                break;
+            case TestHandler::ACTION_SCORE_TEST:
+                if ($testHandler->getNumAnswered() !== $testHandler->getTest()->getNumQuestions()) {
+                    break;
+                }
+
+                $testHandler->score();
+                return json_encode([
+                    'redirect' => '/tests/' . $testUuid . '?score'
+                ]);
+                break;
+            default:
+                /** @todo handle bad action */
+                break;
+        }
+
+        return json_encode($testHandler->getDisplayData());
+    }
+
+    /**
+     * @return string
+     */
     public function renderNewTest(): string
     {
         $userCollection = $this->container->get(UserCollection::class);
@@ -229,9 +318,38 @@ class Tests extends RootController
         );
     }
 
+    /**
+     * @param string $testUuid
+     * @return string
+     */
     public function renderTest(string $testUuid): string
     {
+        $testCollection = $this->container->get(TestCollection::class);
+        $test = $testCollection->fetch($testUuid);
 
+        if (empty($test->getUuid())) {
+            Messages::add(
+                Messages::WARNING,
+                'The provided Test ID does not exist'
+            );
+
+            AppHelpers::redirect('/tests/new');
+        }
+
+        if ($test->getUserUuid() !== SessionHelpers::getUserUuid()) {
+            Messages::add(
+                Messages::WARNING,
+                'The selected test does not belong to your user account'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        if ($test->isComplete()) {
+            return $this->renderTestComplete($testUuid);
+        }
+
+        return $this->renderTestIncomplete($testUuid);
     }
 
     private function renderTestComplete(string $testUuid): string
@@ -241,6 +359,10 @@ class Tests extends RootController
 
     private function renderTestIncomplete(string $testUuid): string
     {
-
+        return $this->render(
+            'tests/test.html.twig', [
+                'testUuid' => $testUuid
+            ]
+        );
     }
 }

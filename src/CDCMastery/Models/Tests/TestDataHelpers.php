@@ -210,7 +210,7 @@ SQL;
                 continue;
             }
 
-            $unanswered[] = $questionUuidList[$i];
+            $unanswered[] = $i;
         }
 
         return $unanswered;

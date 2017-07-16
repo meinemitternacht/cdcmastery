@@ -20,6 +20,15 @@ use Monolog\Logger;
 
 class TestHandler
 {
+    const ACTION_NO_ACTION = -1;
+    const ACTION_SUBMIT_ANSWER = 0;
+    const ACTION_NAV_FIRST = 1;
+    const ACTION_NAV_PREV = 2;
+    const ACTION_NAV_NEXT = 3;
+    const ACTION_NAV_LAST = 4;
+    const ACTION_NAV_NUM = 5;
+    const ACTION_SCORE_TEST = 6;
+
     /**
      * @var \mysqli
      */
@@ -115,7 +124,22 @@ class TestHandler
         $testHandler = new self($mysqli, $logger);
         $testHandler->setTest($test);
 
-        $testHandler->save();
+        /** Navigate to the first question, which automatically saves the new test */
+        $testHandler->first();
+
+        return $testHandler;
+    }
+
+    /**
+     * @param \mysqli $mysqli
+     * @param Logger $logger
+     * @param Test $test
+     * @return TestHandler
+     */
+    public static function resume(\mysqli $mysqli, Logger $logger, Test $test): self
+    {
+        $testHandler = new self($mysqli, $logger);
+        $testHandler->setTest($test);
 
         return $testHandler;
     }
@@ -194,6 +218,23 @@ class TestHandler
     }
 
     /**
+     * @param int $idx
+     */
+    public function navigate(int $idx): void
+    {
+        if (is_null($this->test)) {
+            return;
+        }
+
+        if (!isset($this->test->getQuestions()[$idx])) {
+            return;
+        }
+
+        $this->test->setCurrentQuestion($idx);
+        $this->save();
+    }
+
+    /**
      * @return array
      */
     public function getDisplayData(): array
@@ -216,12 +257,14 @@ class TestHandler
             $questionHelpers->getQuestionAfsc(
                 $this->getQuestion()
             ),
-            [$this->getQuestion()]
+            [$this->getQuestion()->getUuid()]
         );
 
         $answerList = $answerCollection->getQuestionAnswers(
             $this->getQuestion()->getUuid()
         );
+
+        shuffle($answerList);
 
         $answerData = [];
         foreach ($answerList as $answer) {
@@ -241,6 +284,8 @@ class TestHandler
             $this->getQuestion()
         );
 
+        $numAnswered = $testDataHelpers->count($this->test);
+
         return [
             'uuid' => $this->getTest()->getUuid(),
             'afscs' => [
@@ -250,6 +295,7 @@ class TestHandler
             'questions' => [
                 'idx' => $this->getTest()->getCurrentQuestion(),
                 'total' => $this->getTest()->getNumQuestions(),
+                'numAnswered' => $numAnswered,
                 'unanswered' => $testDataHelpers->getUnanswered(
                     $this->getTest()
                 )
@@ -263,6 +309,16 @@ class TestHandler
                 'selection' => $storedAnswer->getUuid()
             ]
         ];
+    }
+
+    public function getNumAnswered(): int
+    {
+        $testDataHelpers = new TestDataHelpers(
+            $this->db,
+            $this->log
+        );
+
+        return $testDataHelpers->count($this->test);
     }
 
     /**
@@ -339,18 +395,20 @@ class TestHandler
             $this->log
         );
 
+        $selectedAnswers = $testDataHelpers->list($this->getTest());
+
+        $answerUuids = [];
+        foreach ($selectedAnswers as $answer) {
+            $answerUuids[] = $answer->getAnswer()->getUuid();
+        }
+
         $answersCorrect = $answerHelpers->fetchCorrectArray(
-            $testDataHelpers->list($this->getTest())
+            $answerUuids
         );
 
         $nCorrect = 0;
-        $c = count($answersCorrect);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($answersCorrect[$i])) {
-                continue;
-            }
-
-            if ($answersCorrect[$i] === true) {
+        foreach ($answersCorrect as $answerUuid => $answerCorrect) {
+            if ($answerCorrect === true) {
                 $nCorrect++;
             }
         }

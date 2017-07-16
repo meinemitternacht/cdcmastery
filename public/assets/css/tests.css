@@ -10,3 +10,23 @@ label.new-test-afsc {
     padding-left: 30px;
     margin-top: 0;
 }
+
+#question {
+    min-height: 6em;
+}
+
+.answer {
+    cursor: pointer;
+}
+
+.answer:hover {
+    background-color: #faffa3;
+}
+
+.answer.selected {
+    background-color: #7cd6f7;
+}
+
+#unansweredContainer > .unanswered {
+    margin: 5px;
+}

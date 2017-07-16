@@ -238,5 +238,10 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
             \CDCMastery\Controllers\Tests::class,
             'renderTest'
         ]);
+
+        $r->addRoute('POST', '/{testUuid}', [
+            \CDCMastery\Controllers\Tests::class,
+            'processTest'
+        ]);
     });
 });

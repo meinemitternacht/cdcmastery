@@ -32,9 +32,9 @@ class Answer
     private $questionUuid;
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getUuid(): string
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }
