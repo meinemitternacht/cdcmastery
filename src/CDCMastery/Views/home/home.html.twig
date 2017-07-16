@@ -61,7 +61,7 @@
                                         <th>AFSC</th>
                                         <th>Questions</th>
                                         <th>Time Started</th>
-                                        <th>Score</th>
+                                        <th>Progress</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -72,7 +72,11 @@
                                             </td>
                                             <td>{{ test.questions }}</td>
                                             <td>{{ test.time.started }}</td>
-                                            <td>{{ test.score }}</td>
+                                            {% if test.questions > 0 %}
+                                                <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
+                                            {% else %}
+                                                <td>0%</td>
+                                            {% endif %}
                                         </tr>
                                     {% endfor %}
                                     </tbody>

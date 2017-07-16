@@ -259,10 +259,6 @@
                 $totalQuestions.html(payload.questions.total);
             }
 
-            /**
-             *
-             * @param payload
-             */
             function populateUnansweredQuestions( payload ) {
                 if (typeof(payload.questions) === "undefined") {
                     return;
@@ -282,8 +278,10 @@
                         continue;
                     }
 
+                    var val = payload.questions.unanswered[i] + 1;
+
                     var $div = $(
-                        "<div>" + (payload.questions.unanswered[i] + 1) + "</div>"
+                        "<div>" + val + "</div>"
                     );
 
                     $div.addClass('btn btn-warning unanswered');

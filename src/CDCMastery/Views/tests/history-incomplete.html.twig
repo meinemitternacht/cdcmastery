@@ -1,0 +1,74 @@
+{% extends "layout.html.twig" %}
+{% block main %}
+    <div class="row">
+        <div class="col-md-4">
+            Left menu
+        </div>
+        <div class="col-md-8">
+            <table id="tests-table" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>AFSC</th>
+                    <th>Questions</th>
+                    <th>Time Started</th>
+                    <th>Time Completed</th>
+                    <th>Progress</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for test in tests %}
+                    <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                        <td>
+                            {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
+                        </td>
+                        <td>{{ test.questions }}</td>
+                        <td>{{ test.time.started }}</td>
+                        <td>{{ test.time.completed }}</td>
+                        {% if test.questions > 0 %}
+                            <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
+                        {% else %}
+                            <td>0%</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if pagination %}
+                <div class="text-center">
+                    {{ pagination|raw }}
+                </div>
+            {% endif %}
+            {% if tests|length > 0 %}
+                <script>
+                    $('#tests-table').on('click', 'tr', function ( event ) {
+                        if (typeof(event.currentTarget.attributes) === "undefined" || event.currentTarget.attributes.length <= 0) {
+                            return;
+                        }
+
+                        var uuid, attr;
+
+                        for (var i = 0; i < event.currentTarget.attributes.length; i++) {
+                            if (typeof(event.currentTarget.attributes[i]) === "undefined") {
+                                continue;
+                            }
+
+                            attr = event.currentTarget.attributes[i];
+
+                            if (typeof(attr.name) === "undefined" || attr.name !== "data-uuid") {
+                                continue;
+                            }
+
+                            uuid = attr.value || '';
+                        }
+
+                        if (typeof(uuid) === "undefined" || uuid === null || uuid === "") {
+                            return;
+                        }
+
+                        window.location.replace("/tests/" + uuid);
+                    });
+                </script>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

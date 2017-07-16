@@ -375,6 +375,11 @@ class TestHandler
         );
 
         $testDataHelpers->save($questionResponse);
+
+        $this->test->setNumAnswered(
+            $this->test->getNumAnswered() + 1
+        );
+
         $this->next();
     }
 
@@ -407,10 +412,14 @@ class TestHandler
         );
 
         $nCorrect = 0;
+        $nMissed = 0;
         foreach ($answersCorrect as $answerUuid => $answerCorrect) {
             if ($answerCorrect === true) {
                 $nCorrect++;
+                continue;
             }
+
+            $nMissed++;
         }
 
         $test = $this->getTest();
@@ -425,6 +434,12 @@ class TestHandler
                 $test->getNumQuestions(),
                 $nCorrect
             )
+        );
+        $test->setNumAnswered(
+            count($selectedAnswers)
+        );
+        $test->setNumMissed(
+            $nMissed
         );
 
         $testCollection->save($test);

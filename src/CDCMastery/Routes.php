@@ -223,7 +223,22 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
         });
     });
 
+    $r->addRoute('GET', '/tests', [
+        \CDCMastery\Controllers\Tests::class,
+        'renderTestsHome'
+    ]);
+
     $r->addGroup('/tests', function (\FastRoute\RouteCollector $r) {
+        $r->addRoute('GET', '/history', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderTestHistoryComplete'
+        ]);
+
+        $r->addRoute('GET', '/history/incomplete', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderTestHistoryIncomplete'
+        ]);
+
         $r->addRoute('GET', '/new', [
             \CDCMastery\Controllers\Tests::class,
             'renderNewTest'

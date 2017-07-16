@@ -19,6 +19,23 @@ use Monolog\Logger;
 
 class TestCollection
 {
+    const TABLE_NAME = 'testCollection';
+
+    const COL_TIME_STARTED = 'timeStarted';
+    const COL_TIME_COMPLETED = 'timeCompleted';
+    const COL_CUR_QUESTION = 'curQuestion';
+    const COL_NUM_ANSWERED = 'numAnswered';
+    const COL_NUM_MISSED = 'numMissed';
+    const COL_SCORE = 'score';
+    const COL_IS_COMBINED = 'combined';
+    const COL_IS_ARCHIVED = 'archived';
+
+    const ORDER_ASC = 'ASC';
+    const ORDER_DESC = 'DESC';
+
+    const DEFAULT_COL = self::COL_TIME_STARTED;
+    const DEFAULT_ORDER = self::ORDER_DESC;
+
     /**
      * @var \mysqli
      */
@@ -43,6 +60,60 @@ class TestCollection
     {
         $this->db = $mysqli;
         $this->log = $logger;
+    }
+
+    private static function generateOrderSuffix(array $columnOrders): string
+    {
+        if (empty($columnOrders)) {
+            return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
+        }
+
+        $sql = [];
+        foreach ($columnOrders as $column => $order) {
+            switch ($column) {
+                case self::COL_TIME_STARTED:
+                    $str = self::TABLE_NAME . '.timeStarted';
+                    break;
+                case self::COL_TIME_COMPLETED:
+                    $str = self::TABLE_NAME . '.timeCompleted';
+                    break;
+                case self::COL_CUR_QUESTION:
+                    $str = self::TABLE_NAME . '.curQuestion';
+                    break;
+                case self::COL_NUM_ANSWERED:
+                    $str = self::TABLE_NAME . '.numAnswered';
+                    break;
+                case self::COL_NUM_MISSED:
+                    $str = self::TABLE_NAME . '.numMissed';
+                    break;
+                case self::COL_SCORE:
+                    $str = self::TABLE_NAME . '.score';
+                    break;
+                case self::COL_IS_COMBINED:
+                    $str = self::TABLE_NAME . '.combined';
+                    break;
+                case self::COL_IS_ARCHIVED:
+                    $str = self::TABLE_NAME . '.archived';
+                    break;
+                default:
+                    $str = '';
+                    continue;
+            }
+
+            switch ($order) {
+                case self::ORDER_ASC:
+                    $str .= ' ASC';
+                    break;
+                case self::ORDER_DESC:
+                default:
+                    $str .= ' DESC';
+                    break;
+            }
+
+            $sql[] = $str;
+        }
+
+        return ' ORDER BY ' . implode(' , ', $sql);
     }
 
     /**
@@ -225,9 +296,10 @@ SQL;
 
     /**
      * @param User $user
-     * @return Test[]
+     * @param array $columnOrders
+     * @return array
      */
-    public function fetchAllByUser(User $user): array
+    public function fetchAllByUser(User $user, array $columnOrders = []): array
     {
         if (empty($user->getUuid())) {
             return [];
@@ -251,8 +323,9 @@ SELECT
   archived
 FROM testCollection
 WHERE userUuid = ?
-ORDER BY uuid ASC
 SQL;
+
+        $qry .= self::generateOrderSuffix($columnOrders);
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param('s', $uuid);
@@ -371,9 +444,10 @@ SQL;
 
     /**
      * @param array $uuidList
+     * @param array $columnOrders
      * @return array
      */
-    public function fetchArray(array $uuidList): array
+    public function fetchArray(array $uuidList, array $columnOrders = []): array
     {
         if (empty($uuidList)) {
             return [];
@@ -402,8 +476,9 @@ SELECT
   archived
 FROM testCollection
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
 SQL;
+
+        $qry .= self::generateOrderSuffix($columnOrders);
 
         $res = $this->db->query($qry);
 

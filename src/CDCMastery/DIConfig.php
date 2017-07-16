@@ -131,6 +131,8 @@ return [
             $twig->addExtension(new Twig_Extension_Debug());
         }
 
+        $twig->addExtension(new \CDCMastery\Models\Twig\CreateSortLink());
+
         return $twig;
     }
 ];

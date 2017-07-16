@@ -9,3 +9,11 @@ div.main-container {
 .footer {
     margin-top: 10em;
 }
+
+.text-white {
+    color: #ffffff;
+}
+
+.text-black {
+    color: #000000;
+}

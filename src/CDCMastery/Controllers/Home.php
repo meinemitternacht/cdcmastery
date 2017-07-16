@@ -122,11 +122,11 @@ class Home extends RootController
 
             $testsIncomplete[] = [
                 'uuid' => $test->getUuid(),
-                'score' => $test->getScore(),
                 'afsc' => implode(
                     ', ',
                     AfscHelpers::listNames($test->getAfscs())
                 ),
+                'answered' => $test->getNumAnswered(),
                 'questions' => $test->getNumQuestions(),
                 'time' => [
                     'started' => ($started !== null)
