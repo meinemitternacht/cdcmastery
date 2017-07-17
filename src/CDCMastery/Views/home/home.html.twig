@@ -1,9 +1,10 @@
 {% extends "layout.html.twig" %}
+{% set page_title = "Home" %}
 {% block main %}
     <div class="row">
         <div class="col-md-4">
             <div class="list-group">
-                <a href="/tests/new" class="list-group-item">Start Test</a>
+                <a href="/tests/new" class="list-group-item border-success">Start Test</a>
                 <a href="/tests" class="list-group-item">Test History</a>
                 <a href="/cards" class="list-group-item">Flash Cards</a>
             </div>
@@ -14,7 +15,7 @@
             {% else %}
                 <ul class="nav nav-tabs">
                     {% if tests.complete|length > 0 %}
-                    <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Completed Tests</a></li>
+                    <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Last Five Tests</a></li>
                     {% endif %}
                     {% if tests.incomplete|length > 0 %}
                     <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests</a></li>
@@ -44,7 +45,7 @@
                                             <td>{{ test.questions }}</td>
                                             <td>{{ test.time.started }}</td>
                                             <td>{{ test.time.completed }}</td>
-                                            <td>{{ test.score }}</td>
+                                            <td>{{ test.score }}%</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -62,6 +63,7 @@
                                         <th>Questions</th>
                                         <th>Time Started</th>
                                         <th>Progress</th>
+                                        <th style="width:15%">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -77,6 +79,16 @@
                                             {% else %}
                                                 <td>0%</td>
                                             {% endif %}
+                                            <td>
+                                                <div class="btn-group btn-group-justified btn-group-xs">
+                                                    <a class="btn btn-success"
+                                                       href="/tests/{{ test.uuid }}"
+                                                       title="Resume Test">Go</a>
+                                                    <a class="btn btn-danger"
+                                                       href="/tests/{{ test.uuid }}/delete"
+                                                       title="Delete Test">X</a>
+                                                </div>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

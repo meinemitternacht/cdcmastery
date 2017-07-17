@@ -77,13 +77,8 @@ class Home extends RootController
             }
         );
 
-        $tests = array_slice(
-            array_reverse(
-                $tests,
-                true
-            ),
-            0,
-            10,
+        $tests = array_reverse(
+            $tests,
             true
         );
 
@@ -100,6 +95,10 @@ class Home extends RootController
             $completed = $test->getTimeCompleted();
 
             if ($test->getTimeCompleted() !== null) {
+                if (count($testsComplete) === 5) {
+                    continue;
+                }
+
                 $testsComplete[] = [
                     'uuid' => $test->getUuid(),
                     'score' => $test->getScore(),

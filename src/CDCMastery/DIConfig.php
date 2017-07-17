@@ -111,6 +111,7 @@ return [
         $twig->addGlobal('loggedIn', $loggedIn);
         $twig->addGlobal('cssList', $config->get(['twig','assets','css']));
         $twig->addGlobal('jsList', $config->get(['twig','assets','js']));
+        $twig->addGlobal('passingScore', $config->get(['testing','passingScore']));
 
         if ($loggedIn) {
             $twig->addGlobal(

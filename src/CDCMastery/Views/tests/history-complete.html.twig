@@ -1,34 +1,40 @@
 {% extends "layout.html.twig" %}
+{% set page_title = 'Test History' %}
 {% block main %}
+    <div class="page-header">
+        <h3>Test History &mdash; Completed Tests</h3>
+    </div>
     <div class="row">
         <div class="col-md-3">
-            Left menu
+            {% include "blocks/tests/history/menu.html.twig" %}
         </div>
         <div class="col-md-9">
-            <table id="tests-table" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>AFSC</th>
-                    <th>Questions</th>
-                    <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
-                    <th>{{ sortlink('timeCompleted','Time Completed',sort)|raw }}</th>
-                    <th>{{ sortlink('score','Score',sort)|raw }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for test in tests %}
-                    <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                        <td>
-                            {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
-                        </td>
-                        <td>{{ test.questions }}</td>
-                        <td>{{ test.time.started }}</td>
-                        <td>{{ test.time.completed }}</td>
-                        <td>{{ test.score }}</td>
+            <div class="table-responsive">
+                <table id="tests-table" class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>{{ sortlink('afscList','AFSC',sort)|raw }}</th>
+                        <th>Questions</th>
+                        <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
+                        <th>{{ sortlink('timeCompleted','Time Completed',sort)|raw }}</th>
+                        <th>{{ sortlink('score','Score',sort)|raw }}</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for test in tests %}
+                        <tr class="{% if test.score >= passingScore %} bg-success{% else %} bg-danger{% endif %}" style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                            <td>
+                                {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
+                            </td>
+                            <td>{{ test.questions }}</td>
+                            <td>{{ test.time.started }}</td>
+                            <td>{{ test.time.completed }}</td>
+                            <td>{{ test.score }}%</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% if pagination %}
                 <div class="text-center">
                     {{ pagination|raw }}
@@ -36,7 +42,7 @@
             {% endif %}
             {% if tests|length > 0 %}
                 <script>
-                    $('#tests-table, #tests-table').on('click', 'tr', function ( event ) {
+                    $('#tests-table').on('click', 'tr', function ( event ) {
                         if (typeof(event.currentTarget.attributes) === "undefined" || event.currentTarget.attributes.length <= 0) {
                             return;
                         }

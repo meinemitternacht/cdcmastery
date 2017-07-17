@@ -1,10 +1,16 @@
 {% extends "layout.html.twig" %}
+{% set page_title = "Start Test" %}
 {% block main %}
-    <div class="page-header text-right">
-        <h2>Start New Test</h2>
+    <div class="page-header">
+        <h3>Start New Test</h3>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        {% if disableNewTest %}
+            <div class="col-md-12 alert alert-info">
+                You have too many incomplete tests.  Please finish one before starting a new test.
+            </div>
+        {% endif %}
+        <div class="col-md-6{% if not tests %} col-md-offset-3{% endif %}">
             <div class="well">
                 <form action="/tests/new" method="POST">
                     <fieldset>
@@ -70,7 +76,7 @@
                             <fieldset>
                                 <div class="col-md-10 col-md-offset-2">
                                     <button type="reset" class="btn btn-default">Reset</button>
-                                    <button type="submit" class="btn btn-primary">Start Test</button>
+                                    <button type="submit" class="btn btn-primary"{% if disableNewTest %} disabled="disabled"{% endif %}>Start Test</button>
                                 </div>
                             </fieldset>
                         </div>
@@ -79,7 +85,79 @@
             </div>
         </div>
         <div class="col-md-6">
-            Incomplete tests
+            {% if tests|length > 0 %}
+                <div class="table-responsive">
+                    <table id="tests-table" class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th>AFSC</th>
+                            <th>Questions</th>
+                            <th>Time Started</th>
+                            <th>Progress</th>
+                            <th style="width:15%">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for test in tests %}
+                            <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                                <td title="{{ test.afsc }}">
+                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc  }}
+                                </td>
+                                <td>{{ test.questions }}</td>
+                                <td>{{ test.time.started }}</td>
+                                {% if test.questions > 0 %}
+                                    <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
+                                {% else %}
+                                    <td>0%</td>
+                                {% endif %}
+                                <td>
+                                    <div class="btn-group btn-group-justified btn-group-xs">
+                                        <a class="btn btn-success"
+                                           href="/tests/{{ test.uuid }}"
+                                           title="Resume Test">Go</a>
+                                        <a class="btn btn-danger"
+                                           href="/tests/{{ test.uuid }}/delete"
+                                           title="Delete Test">X</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-right">
+                    <a class="btn btn-warning btn-sm" href="/tests/incomplete/delete">Delete All</a>
+                </div>
+                <script>
+                    $('#tests-table').on('click', 'tr', function ( event ) {
+                        if (typeof(event.currentTarget.attributes) === "undefined" || event.currentTarget.attributes.length <= 0) {
+                            return;
+                        }
+
+                        var uuid, attr;
+
+                        for (var i = 0; i < event.currentTarget.attributes.length; i++) {
+                            if (typeof(event.currentTarget.attributes[i]) === "undefined") {
+                                continue;
+                            }
+
+                            attr = event.currentTarget.attributes[i];
+
+                            if (typeof(attr.name) === "undefined" || attr.name !== "data-uuid") {
+                                continue;
+                            }
+
+                            uuid = attr.value || '';
+                        }
+
+                        if (typeof(uuid) === "undefined" || uuid === null || uuid === "") {
+                            return;
+                        }
+
+                        window.location.replace("/tests/" + uuid);
+                    });
+                </script>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

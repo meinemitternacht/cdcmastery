@@ -21,6 +21,7 @@ class TestCollection
 {
     const TABLE_NAME = 'testCollection';
 
+    const COL_AFSC_LIST = 'afscList';
     const COL_TIME_STARTED = 'timeStarted';
     const COL_TIME_COMPLETED = 'timeCompleted';
     const COL_CUR_QUESTION = 'curQuestion';
@@ -71,6 +72,9 @@ class TestCollection
         $sql = [];
         foreach ($columnOrders as $column => $order) {
             switch ($column) {
+                case self::COL_AFSC_LIST:
+                    $str = self::TABLE_NAME . '.afscList';
+                    break;
                 case self::COL_TIME_STARTED:
                     $str = self::TABLE_NAME . '.timeStarted';
                     break;

@@ -39,204 +39,93 @@ class Tests extends RootController
     /**
      * @return string
      */
-    public function renderTestsHome(): string
+    public function processDeleteIncompleteTests(): string
     {
-        return AppHelpers::redirect('/tests/history');
-    }
-
-    /**
-     * @param null|string $column
-     * @param null|string $direction
-     * @return array
-     */
-    private function validateSort(?string $column, ?string $direction): array {
-        if (is_null($column)) {
-            $column = 'timeStarted';
-        }
-
-        if (is_null($direction)) {
-            $direction = 'DESC';
-        }
-
-        switch ($column) {
-            case TestCollection::COL_TIME_STARTED:
-            case TestCollection::COL_TIME_COMPLETED:
-            case TestCollection::COL_CUR_QUESTION:
-            case TestCollection::COL_NUM_ANSWERED:
-            case TestCollection::COL_NUM_MISSED:
-            case TestCollection::COL_SCORE:
-            case TestCollection::COL_IS_COMBINED:
-            case TestCollection::COL_IS_ARCHIVED:
-                break;
-            default:
-                $column = TestCollection::DEFAULT_COL;
-                break;
-        }
-
-        $direction = strtoupper($direction);
-
-        switch ($direction) {
-            case TestCollection::ORDER_ASC:
-            case TestCollection::ORDER_DESC:
-                break;
-            default:
-                $direction = TestCollection::DEFAULT_ORDER;
-                break;
-        }
-
-        return [$column, $direction];
-    }
-
-    /**
-     * @param int $type
-     * @return string
-     */
-    private function renderTestHistory(int $type): string
-    {
-        switch ($type) {
-            case self::TYPE_ALL:
-                $path = '/tests/history/all';
-                $typeStr = 'all';
-                break;
-            case self::TYPE_COMPLETE:
-                $path = '/tests/history';
-                $typeStr = 'complete';
-                break;
-            case self::TYPE_INCOMPLETE:
-                $path = '/tests/history/incomplete';
-                $typeStr = 'incomplete';
-                break;
-            default:
-                Messages::add(
-                    Messages::INFO,
-                    'We made a mistake when processing that request'
-                );
-
-                return AppHelpers::redirect('/');
-                break;
-        }
-
-        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
-        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
-
         $userCollection = $this->container->get(UserCollection::class);
+
         $user = $userCollection->fetch(
             SessionHelpers::getUserUuid()
         );
 
-        list($col, $dir) = self::validateSort($sortCol, $sortDir);
         $testCollection = $this->container->get(TestCollection::class);
-        $userTests = $testCollection->fetchAllByUser(
-            $user, [
-                $col => $dir
-            ]
-        );
+        $tests = $testCollection->fetchAllByUser($user);
 
-        if (empty($userTests)) {
-            Messages::add(
-                Messages::INFO,
-                'You have not taken any tests'
-            );
-
-            AppHelpers::redirect('/');
-        }
-
-        $userTests = array_filter(
-            $userTests,
-            function ($v) use ($type) {
+        $tests = array_filter(
+            $tests,
+            function ($v) {
                 if (!$v instanceof Test) {
                     return false;
                 }
 
-                switch ($type) {
-                    case Tests::TYPE_ALL:
-                        return true;
-                        break;
-                    case Tests::TYPE_COMPLETE:
-                        if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
-                            return true;
-                        }
-                        break;
-                    case Tests::TYPE_INCOMPLETE:
-                        if ($v->getScore() === 0 && $v->getTimeCompleted() === null) {
-                            return true;
-                        }
-                        break;
-                }
-
-                return false;
+                return $v->getScore() < 1 && is_null($v->getTimeCompleted());
             }
         );
 
-        $userTests = TestHelpers::formatHtml($userTests);
-
-        $filteredList = ArrayPaginator::paginate(
-            $userTests,
-            $curPage,
-            $numRecords
-        );
-
-        if (empty($filteredList)) {
+        if (empty($tests)) {
             Messages::add(
                 Messages::INFO,
-                $type === self::TYPE_ALL
-                    ? 'You have not taken any tests'
-                    : ($type === self::TYPE_INCOMPLETE)
-                        ? 'You have not started any ' . $typeStr . ' tests'
-                        : 'You have not taken any ' . $typeStr . ' tests'
+                'There are no tests to delete'
             );
 
             AppHelpers::redirect('/');
         }
 
-        $pagination = ArrayPaginator::buildLinks(
-            $path,
-            $curPage,
-            ArrayPaginator::calcNumPagesData(
-                $userTests,
-                $numRecords
-            ),
-            $numRecords,
-            $col,
-            $dir
+        $testCollection->deleteArray(
+            TestHelpers::listUuid($tests)
         );
 
-        return $this->render(
-            'tests/history-complete.html.twig', [
-                'tests' => $filteredList,
-                'pagination' => $pagination,
-                'sort' => [
-                    'col' => $sortCol,
-                    'dir' => $sortDir
-                ]
-            ]
+        Messages::add(
+            Messages::SUCCESS,
+            'All incomplete tests have been removed from the database'
         );
+
+        AppHelpers::redirect('/tests/new');
     }
 
     /**
+     * @param string $testUuid
      * @return string
      */
-    public function renderTestHistoryAll(): string
+    public function processDeleteTest(string $testUuid): string
     {
-        return $this->renderTestHistory(self::TYPE_ALL);
-    }
+        $testCollection = $this->container->get(TestCollection::class);
+        $test = $testCollection->fetch($testUuid);
 
-    /**
-     * @return string
-     */
-    public function renderTestHistoryComplete(): string
-    {
-        return $this->renderTestHistory(self::TYPE_COMPLETE);
-    }
+        if (empty($test->getUuid())) {
+            Messages::add(
+                Messages::WARNING,
+                'The provided Test ID does not exist'
+            );
 
-    /**
-     * @return string
-     */
-    public function renderTestHistoryIncomplete(): string
-    {
-        return $this->renderTestHistory(self::TYPE_INCOMPLETE);
+            AppHelpers::redirect('/');
+        }
+
+        if ($test->getUserUuid() !== SessionHelpers::getUserUuid()) {
+            Messages::add(
+                Messages::WARNING,
+                'The selected test does not belong to your user account'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        if ($test->getScore() > 0 || !is_null($test->getTimeCompleted())) {
+            Messages::add(
+                Messages::WARNING,
+                'You cannot delete a completed test'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        $testCollection->delete($test->getUuid());
+
+        Messages::add(
+            Messages::SUCCESS,
+            'The specified test has been removed from the database'
+        );
+
+        return AppHelpers::redirect('/tests/new');
     }
 
     /**
@@ -281,26 +170,37 @@ class Tests extends RootController
             AppHelpers::redirect('/tests/new');
         }
 
+        $config = $this->container->get(Config::class);
+        $testHelpers = $this->container->get(TestHelpers::class);
         $userCollection = $this->container->get(UserCollection::class);
         $userAfscAssociations = $this->container->get(UserAfscAssociations::class);
 
-        $userAfscCollection = $userAfscAssociations->fetchAllByUser(
-            $userCollection->fetch(
-                SessionHelpers::getUserUuid()
-            )
+        $user = $userCollection->fetch(
+            SessionHelpers::getUserUuid()
         );
+
+        $userAfscCollection = $userAfscAssociations->fetchAllByUser($user);
 
         $validAfscs = array_intersect(
             $userAfscCollection->getAssociations(),
             $afscs
         );
 
+        if ($testHelpers->countIncomplete($user) > $config->get(['testing', 'maxIncomplete']) ?? 0) {
+            Messages::add(
+                Messages::WARNING,
+                'You have too many incomplete tests.  Please finish your current tests before beginning a new one.'
+            );
+
+            AppHelpers::redirect('/tests/new');
+        }
+
         if (empty($validAfscs)) {
             $this->log->addWarning(
                 'create test failed :: afsc not associated :: user ' .
-                $userAfscCollection->getUser()->getUuid() .
+                $user->getUuid() .
                 ' [' .
-                $userAfscCollection->getUser()->getName() .
+                $user->getName() .
                 '] :: AFSC list ' .
                 implode(',', $afscs)
             );
@@ -334,9 +234,9 @@ class Tests extends RootController
             if (!$isAuthorized) {
                 $this->log->addWarning(
                     'create test failed :: afsc not authorized :: user ' .
-                    $userAfscCollection->getUser()->getUuid() .
+                    $user->getUuid() .
                     ' [' .
-                    $userAfscCollection->getUser()->getName() .
+                    $user->getName() .
                     '] :: AFSC ' .
                     $validAfsc->getUuid() .
                     ' [' .
@@ -356,7 +256,7 @@ class Tests extends RootController
 
         $testOptions = new TestOptions();
         $testOptions->setNumQuestions($numQuestions);
-        $testOptions->setUser($userAfscCollection->getUser());
+        $testOptions->setUser($user);
         $testOptions->setAfscs($validAfscs);
 
         $newTest = TestHandler::factory(
@@ -368,9 +268,9 @@ class Tests extends RootController
         if (empty($newTest->getTest()->getUuid())) {
             $this->log->addWarning(
                 'create test failed :: user ' .
-                $userAfscCollection->getUser()->getUuid() .
+                $user->getUuid() .
                 ' [' .
-                $userAfscCollection->getUser()->getName() .
+                $user->getName() .
                 '] :: options -- AFSC List ' .
                 implode(',', AfscHelpers::listUuid($testOptions->getAfscs())) .
                 ' :: numQuestions ' .
@@ -494,18 +394,123 @@ class Tests extends RootController
     /**
      * @return string
      */
+    public function renderDeleteIncompleteTests(): string
+    {
+        $userCollection = $this->container->get(UserCollection::class);
+
+        $user = $userCollection->fetch(
+            SessionHelpers::getUserUuid()
+        );
+
+        $testCollection = $this->container->get(TestCollection::class);
+        $tests = $testCollection->fetchAllByUser($user);
+
+        $tests = array_filter(
+            $tests,
+            function ($v) {
+                if (!$v instanceof Test) {
+                    return false;
+                }
+
+                return $v->getScore() < 1 && is_null($v->getTimeCompleted());
+            }
+        );
+
+        if (empty($tests)) {
+            Messages::add(
+                Messages::INFO,
+                'There are no tests to delete'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        uasort(
+            $tests,
+            function ($a, $b) {
+                /** @var Test $a */
+                /** @var Test $b */
+                return $a->getTimeStarted()->format('U') <=> $b->getTimeStarted()->format('U');
+            }
+        );
+
+        $tests = array_reverse(
+            $tests,
+            true
+        );
+
+        $tests = TestHelpers::formatHtml($tests);
+
+        $data = [
+            'tests' => $tests
+        ];
+
+        return $this->render(
+            'tests/delete-incomplete.html.twig',
+            $data
+        );
+    }
+
+    /**
+     * @param string $testUuid
+     * @return string
+     */
+    public function renderDeleteTest(string $testUuid): string
+    {
+        $testCollection = $this->container->get(TestCollection::class);
+        $test = $testCollection->fetch($testUuid);
+
+        if (empty($test->getUuid())) {
+            Messages::add(
+                Messages::WARNING,
+                'The provided Test ID does not exist'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        if ($test->getUserUuid() !== SessionHelpers::getUserUuid()) {
+            Messages::add(
+                Messages::WARNING,
+                'The selected test does not belong to your user account'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        if ($test->getScore() > 0 || !is_null($test->getTimeCompleted())) {
+            Messages::add(
+                Messages::WARNING,
+                'You cannot delete a completed test'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        $data = [
+            'test' => TestHelpers::formatHtml([$test])[0] ?? []
+        ];
+
+        return $this->render(
+            'tests/delete.html.twig',
+            $data
+        );
+    }
+
+    /**
+     * @return string
+     */
     public function renderNewTest(): string
     {
+        $config = $this->container->get(Config::class);
         $userCollection = $this->container->get(UserCollection::class);
         $userAfscAssociations = $this->container->get(UserAfscAssociations::class);
 
-        $userAfscCollection = $userAfscAssociations->fetchAllByUser(
-            $userCollection->fetch(
-                SessionHelpers::getUserUuid()
-            )
+        $user = $userCollection->fetch(
+            SessionHelpers::getUserUuid()
         );
 
-        if (empty($userAfscCollection->getUser()->getUuid())) {
+        if (empty($user->getUuid())) {
             Messages::add(
                 Messages::WARNING,
                 'An error has occurred while fetching your user data'
@@ -513,6 +518,8 @@ class Tests extends RootController
 
             AppHelpers::redirect('/auth/logout');
         }
+
+        $userAfscCollection = $userAfscAssociations->fetchAllByUser($user);
 
         if (empty($userAfscCollection->getAssociations())) {
             Messages::add(
@@ -537,14 +544,209 @@ class Tests extends RootController
             ];
         }
 
+        $testCollection = $this->container->get(TestCollection::class);
+        $tests = $testCollection->fetchAllByUser($user);
+
+        $tests = array_filter(
+            $tests,
+            function ($v) {
+                if (!$v instanceof Test) {
+                    return false;
+                }
+
+                return $v->getScore() < 1 && is_null($v->getTimeCompleted());
+            }
+        );
+
+        uasort(
+            $tests,
+            function ($a, $b) {
+                /** @var Test $a */
+                /** @var Test $b */
+                return $a->getTimeStarted()->format('U') <=> $b->getTimeStarted()->format('U');
+            }
+        );
+
+        $tests = array_reverse(
+            $tests,
+            true
+        );
+
+        $tests = TestHelpers::formatHtml($tests);
+
         $data = [
-            'afscList' => $userAfscList
+            'afscList' => $userAfscList,
+            'tests' => $tests,
+            'disableNewTest' => count($tests) > ($config->get(['testing', 'maxIncomplete']) ?? 0)
         ];
 
         return $this->render(
             'tests/new.html.twig',
             $data
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function renderTestsHome(): string
+    {
+        return AppHelpers::redirect('/tests/history');
+    }
+
+    /**
+     * @param int $type
+     * @return string
+     */
+    private function renderTestHistory(int $type): string
+    {
+        switch ($type) {
+            case self::TYPE_ALL:
+                $path = '/tests/history/all';
+                $typeStr = 'all';
+                $template = 'tests/history-combined.html.twig';
+                break;
+            case self::TYPE_COMPLETE:
+                $path = '/tests/history';
+                $typeStr = 'complete';
+                $template = 'tests/history-complete.html.twig';
+                break;
+            case self::TYPE_INCOMPLETE:
+                $path = '/tests/history/incomplete';
+                $typeStr = 'incomplete';
+                $template = 'tests/history-incomplete.html.twig';
+                break;
+            default:
+                Messages::add(
+                    Messages::INFO,
+                    'We made a mistake when processing that request'
+                );
+
+                return AppHelpers::redirect('/');
+                break;
+        }
+
+        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+
+        $userCollection = $this->container->get(UserCollection::class);
+        $user = $userCollection->fetch(
+            SessionHelpers::getUserUuid()
+        );
+
+        list($col, $dir) = self::validateSort($sortCol, $sortDir);
+        $testCollection = $this->container->get(TestCollection::class);
+        $userTests = $testCollection->fetchAllByUser(
+            $user, [
+                $col => $dir
+            ]
+        );
+
+        if (empty($userTests)) {
+            Messages::add(
+                Messages::INFO,
+                'You have not taken any tests'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        $userTests = array_filter(
+            $userTests,
+            function ($v) use ($type) {
+                if (!$v instanceof Test) {
+                    return false;
+                }
+
+                switch ($type) {
+                    case Tests::TYPE_ALL:
+                        return true;
+                        break;
+                    case Tests::TYPE_COMPLETE:
+                        if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
+                            return true;
+                        }
+                        break;
+                    case Tests::TYPE_INCOMPLETE:
+                        if ($v->getScore() < 1 && $v->getTimeCompleted() === null) {
+                            return true;
+                        }
+                        break;
+                }
+
+                return false;
+            }
+        );
+
+        $userTests = TestHelpers::formatHtml($userTests);
+
+        $filteredList = ArrayPaginator::paginate(
+            $userTests,
+            $curPage,
+            $numRecords
+        );
+
+        if (empty($filteredList)) {
+            Messages::add(
+                Messages::INFO,
+                $type === self::TYPE_ALL
+                    ? 'You have not taken any tests'
+                    : ($type === self::TYPE_INCOMPLETE)
+                        ? 'You have not started any ' . $typeStr . ' tests'
+                        : 'You have not taken any ' . $typeStr . ' tests'
+            );
+
+            AppHelpers::redirect('/');
+        }
+
+        $pagination = ArrayPaginator::buildLinks(
+            $path,
+            $curPage,
+            ArrayPaginator::calcNumPagesData(
+                $userTests,
+                $numRecords
+            ),
+            $numRecords,
+            $col,
+            $dir
+        );
+
+        return $this->render(
+            $template, [
+                'tests' => $filteredList,
+                'pagination' => $pagination,
+                'sort' => [
+                    'col' => $sortCol,
+                    'dir' => $sortDir
+                ]
+            ]
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function renderTestHistoryAll(): string
+    {
+        return $this->renderTestHistory(self::TYPE_ALL);
+    }
+
+    /**
+     * @return string
+     */
+    public function renderTestHistoryComplete(): string
+    {
+        return $this->renderTestHistory(self::TYPE_COMPLETE);
+    }
+
+    /**
+     * @return string
+     */
+    public function renderTestHistoryIncomplete(): string
+    {
+        return $this->renderTestHistory(self::TYPE_INCOMPLETE);
     }
 
     /**
@@ -625,5 +827,49 @@ class Tests extends RootController
                 'testUuid' => $testUuid
             ]
         );
+    }
+
+    /**
+     * @param null|string $column
+     * @param null|string $direction
+     * @return array
+     */
+    private function validateSort(?string $column, ?string $direction): array {
+        if (is_null($column)) {
+            $column = 'timeStarted';
+        }
+
+        if (is_null($direction)) {
+            $direction = 'DESC';
+        }
+
+        switch ($column) {
+            case TestCollection::COL_AFSC_LIST:
+            case TestCollection::COL_TIME_STARTED:
+            case TestCollection::COL_TIME_COMPLETED:
+            case TestCollection::COL_CUR_QUESTION:
+            case TestCollection::COL_NUM_ANSWERED:
+            case TestCollection::COL_NUM_MISSED:
+            case TestCollection::COL_SCORE:
+            case TestCollection::COL_IS_COMBINED:
+            case TestCollection::COL_IS_ARCHIVED:
+                break;
+            default:
+                $column = TestCollection::DEFAULT_COL;
+                break;
+        }
+
+        $direction = strtoupper($direction);
+
+        switch ($direction) {
+            case TestCollection::ORDER_ASC:
+            case TestCollection::ORDER_DESC:
+                break;
+            default:
+                $direction = TestCollection::DEFAULT_ORDER;
+                break;
+        }
+
+        return [$column, $direction];
     }
 }

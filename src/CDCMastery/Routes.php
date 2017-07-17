@@ -249,6 +249,16 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
             'processNewTest'
         ]);
 
+        $r->addRoute('GET', '/incomplete/delete', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderDeleteIncompleteTests'
+        ]);
+
+        $r->addRoute('POST', '/incomplete/delete', [
+            \CDCMastery\Controllers\Tests::class,
+            'processDeleteIncompleteTests'
+        ]);
+
         $r->addRoute('GET', '/{testUuid}', [
             \CDCMastery\Controllers\Tests::class,
             'renderTest'
@@ -257,6 +267,16 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
         $r->addRoute('POST', '/{testUuid}', [
             \CDCMastery\Controllers\Tests::class,
             'processTest'
+        ]);
+
+        $r->addRoute('GET', '/{testUuid}/delete', [
+            \CDCMastery\Controllers\Tests::class,
+            'renderDeleteTest'
+        ]);
+
+        $r->addRoute('POST', '/{testUuid}/delete', [
+            \CDCMastery\Controllers\Tests::class,
+            'processDeleteTest'
         ]);
     });
 });

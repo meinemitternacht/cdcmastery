@@ -1,0 +1,59 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Delete Test" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Delete Test</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="alert alert-warning">
+                <h4>Warning!</h4>
+                <p>Deleting this test will remove all questions answered and cannot be undone.  Do you wish to proceed?</p>
+            </div>
+            <div class="panel-group">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            Time Started
+                        </div>
+                        <div class="panel-body text-center">
+                            {{ test.time.started }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            AFSC
+                        </div>
+                        <div class="panel-body text-center">
+                            {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc  }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading text-center">
+                            Progress
+                        </div>
+                        <div class="panel-body text-center">
+                            {% if test.questions > 0 %}
+                                {{ ((test.answered / test.questions) * 100)|round }}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix">&nbsp;</div>
+            <form action="/tests/{{ test.uuid }}/delete" method="POST">
+                <div class="text-center">
+                    <a class="btn btn-success" href="/tests/{{ test.uuid }}">Resume</a>
+                    <a class="btn btn-default" href="/">Keep</a>
+                    <button class="btn btn-warning">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
