@@ -18,7 +18,7 @@
                     <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Last Five Tests</a></li>
                     {% endif %}
                     {% if tests.incomplete|length > 0 %}
-                    <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests</a></li>
+                    <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests ({{ tests.incomplete|length }})</a></li>
                     {% endif %}
                     <li class=""><a href="#practice" data-toggle="tab" aria-expanded="false">Practice Tests</a></li>
                 </ul>
