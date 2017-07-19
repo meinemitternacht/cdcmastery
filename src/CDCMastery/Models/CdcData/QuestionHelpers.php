@@ -113,4 +113,50 @@ SQL;
 
         return $afscCollection->fetch($uuid);
     }
+
+    /**
+     * @param array $uuidList The list of AFSC UUIDs to retrieve counts for
+     * @return array
+     */
+    public function getNumQuestionsByAfsc(array $uuidList): array
+    {
+        if (empty($uuidList)) {
+            return [];
+        }
+
+        $uuidListFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuidList
+        );
+
+        $uuidListString = implode("','", $uuidListFiltered);
+
+        $qry = <<<SQL
+SELECT
+  afscUUID,
+  COUNT(*) AS count
+FROM questionData
+WHERE afscUUID IN ('{$uuidListString}')
+GROUP BY afscUUID
+SQL;
+
+        $res = $this->db->query($qry);
+
+        $data = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['count']) || is_null($row['count'])) {
+                continue;
+            }
+
+            if (!isset($row['afscUUID']) || is_null($row['afscUUID'])) {
+                continue;
+            }
+
+            $data[$row['afscUUID']] = (int)$row['count'];
+        }
+
+        $res->free();
+
+        return $data;
+    }
 }

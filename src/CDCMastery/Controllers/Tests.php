@@ -182,7 +182,7 @@ class Tests extends RootController
         $userAfscCollection = $userAfscAssociations->fetchAllByUser($user);
 
         $validAfscs = array_intersect(
-            $userAfscCollection->getAssociations(),
+            $userAfscCollection->getAfscs(),
             $afscs
         );
 
@@ -227,7 +227,7 @@ class Tests extends RootController
 
         foreach ($validAfscs as $validAfsc) {
             $isAuthorized = $userAfscAssociations->assertAuthorized(
-                $userAfscCollection->getUser(),
+                $user,
                 $validAfsc
             );
 
@@ -521,7 +521,7 @@ class Tests extends RootController
 
         $userAfscCollection = $userAfscAssociations->fetchAllByUser($user);
 
-        if (empty($userAfscCollection->getAssociations())) {
+        if (empty($userAfscCollection->getAfscs())) {
             Messages::add(
                 Messages::WARNING,
                 'You are not associated with any AFSCs'
@@ -531,7 +531,7 @@ class Tests extends RootController
         }
 
         $afscCollection = $this->container->get(AfscCollection::class);
-        $userAfscs = $afscCollection->fetchArray($userAfscCollection->getAssociations());
+        $userAfscs = $afscCollection->fetchArray($userAfscCollection->getAfscs());
 
         $userAfscList = [];
         /** @var Afsc $afsc */

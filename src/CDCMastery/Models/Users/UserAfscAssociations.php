@@ -14,6 +14,9 @@ use Monolog\Logger;
 
 class UserAfscAssociations
 {
+    const GROUP_BY_AFSC = 0;
+    const GROUP_BY_USER = 1;
+
     /**
      * @var \mysqli
      */
@@ -499,6 +502,122 @@ SQL;
     }
 
     /**
+     * @param int $groupBy
+     * @return UserAfscCollection[]|AfscUserCollection[]
+     */
+    public function fetchAll(int $groupBy): array
+    {
+        $qry = <<<SQL
+SELECT
+  afscUUID,
+  userUUID
+FROM userAFSCAssociations
+SQL;
+
+        switch ($groupBy) {
+            case self::GROUP_BY_AFSC:
+                $qry .= ' ORDER BY afscUUID ASC';
+                break;
+            case self::GROUP_BY_USER:
+                $qry .= ' ORDER BY userUUID ASC';
+                break;
+            default:
+                return [];
+                break;
+        }
+
+        $res = $this->db->query($qry);
+
+        $data = [];
+        $out = [];
+        switch ($groupBy) {
+            case self::GROUP_BY_AFSC:
+                while ($row = $res->fetch_assoc()) {
+                    $data[$row['afscUUID']][] = $row['userUUID'];
+                }
+
+                $res->free();
+
+                foreach ($data as $afscUuid => $userList) {
+                    $afscUserCollection = new AfscUserCollection();
+                    $afscUserCollection->setAfsc($afscUuid);
+                    $afscUserCollection->setUsers($userList);
+
+                    $out[] = $afscUserCollection;
+                }
+                break;
+            case self::GROUP_BY_USER:
+                while ($row = $res->fetch_assoc()) {
+                    $data[$row['userUUID']][] = $row['afscUUID'];
+                }
+
+                $res->free();
+
+                foreach ($data as $userUuid => $afscList) {
+                    $userAfscCollection = new UserAfscCollection();
+                    $userAfscCollection->setUser($userUuid);
+                    $userAfscCollection->setAfscs($afscList);
+
+                    $out[] = $userAfscCollection;
+                }
+                break;
+            default:
+                return [];
+                break;
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return AfscUserCollection
+     */
+    public function fetchAllByAfsc(Afsc $afsc): AfscUserCollection
+    {
+        if (empty($afsc->getUuid())) {
+            return new AfscUserCollection();
+        }
+
+        $afscUserCollection = new AfscUserCollection();
+        $afscUserCollection->setAfsc($afsc->getUuid());
+
+        $afscUuid = $afsc->getUuid();
+
+        $qry = <<<SQL
+SELECT
+  userUUID
+FROM userAFSCAssociations
+WHERE afscUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afscUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return $afscUserCollection;
+        }
+
+        $stmt->bind_result($userUuid);
+
+        $userList = [];
+        while ($stmt->fetch()) {
+            if (!isset($userUuid) || is_null($userUuid)) {
+                continue;
+            }
+
+            $userList[] = $userUuid;
+        }
+
+        $stmt->close();
+
+        $afscUserCollection->setUsers($userList);
+
+        return $afscUserCollection;
+    }
+
+    /**
      * @param User $user
      * @return UserAfscCollection
      */
@@ -509,6 +628,9 @@ SQL;
         }
 
         $userUuid = $user->getUuid();
+
+        $userAfscCollection = new UserAfscCollection();
+        $userAfscCollection->setUser($userUuid);
 
         $qry = <<<SQL
 SELECT
@@ -522,7 +644,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new UserAfscCollection();
+            return $userAfscCollection;
         }
 
         $stmt->bind_result($afscUuid);
@@ -538,9 +660,7 @@ SQL;
 
         $stmt->close();
 
-        $userAfscCollection = new UserAfscCollection();
-        $userAfscCollection->setUser($user);
-        $userAfscCollection->setAssociations($afscList);
+        $userAfscCollection->setAfscs($afscList);
 
         return $userAfscCollection;
     }

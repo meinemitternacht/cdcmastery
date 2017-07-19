@@ -13,6 +13,24 @@ use Monolog\Logger;
 
 class AfscCollection
 {
+    const TABLE_NAME = 'afscList';
+
+    const COL_UUID = 'uuid';
+    const COL_NAME = 'afscName';
+    const COL_DESCRIPTION = 'afscDescription';
+    const COL_VERSION = 'afscVersion';
+    const COL_IS_FOUO = 'afscFOUO';
+    const COL_IS_HIDDEN = 'afscHidden';
+
+    const ORDER_ASC = 'ASC';
+    const ORDER_DESC = 'DESC';
+
+    const DEFAULT_COL = self::COL_NAME;
+    const DEFAULT_ORDER = self::ORDER_ASC;
+
+    const SHOW_HIDDEN = 1 << 0;
+    const SHOW_FOUO = 1 << 1;
+    
     /**
      * @var \mysqli
      */
@@ -37,6 +55,84 @@ class AfscCollection
     {
         $this->db = $mysqli;
         $this->log = $logger;
+    }
+
+    /**
+     * @param array $columnOrders
+     * @return string
+     */
+    private static function generateOrderSuffix(array $columnOrders): string
+    {
+        if (empty($columnOrders)) {
+            return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
+        }
+
+        $sql = [];
+        foreach ($columnOrders as $column => $order) {
+            switch ($column) {
+                case self::COL_UUID:
+                case self::COL_NAME:
+                case self::COL_DESCRIPTION:
+                case self::COL_VERSION:
+                case self::COL_IS_FOUO:
+                case self::COL_IS_HIDDEN:
+                    $str = self::TABLE_NAME . '.' . $column;
+                    break;
+                default:
+                    $str = '';
+                    continue;
+            }
+
+            switch ($order) {
+                case self::ORDER_ASC:
+                    $str .= ' ASC';
+                    break;
+                case self::ORDER_DESC:
+                default:
+                    $str .= ' DESC';
+                    break;
+            }
+
+            $sql[] = $str;
+        }
+
+        return ' ORDER BY ' . implode(' , ', $sql);
+    }
+
+    /**
+     * @param int $flags
+     * @param bool $omitWhere
+     * @return string
+     */
+    private static function generateWhereSuffix(int $flags, bool $omitWhere = false): string
+    {
+        $showFouo = ($flags & self::SHOW_FOUO) !== 0;
+        $showHidden = ($flags & self::SHOW_HIDDEN) !== 0;
+
+        if ($showFouo && $showHidden) {
+            goto out_query;
+        }
+
+        $qry = $omitWhere
+            ? ' AND '
+            : ' WHERE ';
+
+        if (!$showFouo && !$showHidden) {
+            $qry .= self::COL_IS_FOUO . ' = 0 AND ' . self::COL_IS_HIDDEN . ' = 0';
+            goto out_query;
+        }
+
+        if (!$showFouo) {
+            $qry .= self::COL_IS_FOUO . ' = 0';
+            goto out_query;
+        }
+
+        if (!$showHidden) {
+            $qry .= self::COL_IS_HIDDEN . ' = 0';
+        }
+
+        out_query:
+        return $qry ?? '';
     }
 
     /**
@@ -95,9 +191,11 @@ SQL;
     }
 
     /**
+     * @param array $columnOrders
+     * @param int $flags
      * @return Afsc[]
      */
-    public function fetchAll(): array
+    public function fetchAll(array $columnOrders = [], int $flags = self::SHOW_FOUO): array
     {
         $qry = <<<SQL
 SELECT
@@ -108,8 +206,10 @@ SELECT
  afscFOUO,
  afscHidden
 FROM afscList
-ORDER BY uuid ASC
 SQL;
+
+        $qry .= self::generateWhereSuffix($flags);
+        $qry .= self::generateOrderSuffix($columnOrders);
 
         $res = $this->db->query($qry);
 
@@ -123,8 +223,8 @@ SQL;
             $afsc->setName($row['afscName'] ?? '');
             $afsc->setDescription($row['afscDescription'] ?? '');
             $afsc->setVersion($row['afscVersion'] ?? '');
-            $afsc->setFouo((bool)$row['afscFOUO'] ?? false);
-            $afsc->setHidden((bool)$row['afscHidden'] ?? false);
+            $afsc->setFouo((bool)($row['afscFOUO'] ?? false));
+            $afsc->setHidden((bool)($row['afscHidden'] ?? false));
 
             $this->afscs[$row['uuid']] = $afsc;
         }
@@ -135,10 +235,12 @@ SQL;
     }
 
     /**
-     * @param string[] $uuidList
+     * @param array $uuidList
+     * @param array $columnOrders
+     * @param int $flags
      * @return Afsc[]
      */
-    public function fetchArray(array $uuidList): array
+    public function fetchArray(array $uuidList, array $columnOrders = [], int $flags = self::SHOW_FOUO): array
     {
         if (empty($uuidList)) {
             return [];
@@ -161,8 +263,10 @@ SELECT
  afscHidden
 FROM afscList
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
 SQL;
+
+        $qry .= self::generateWhereSuffix($flags, true);
+        $qry .= self::generateOrderSuffix($columnOrders);
 
         $res = $this->db->query($qry);
 

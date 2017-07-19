@@ -63,6 +63,10 @@ class TestCollection
         $this->log = $logger;
     }
 
+    /**
+     * @param array $columnOrders
+     * @return string
+     */
     private static function generateOrderSuffix(array $columnOrders): string
     {
         if (empty($columnOrders)) {
@@ -73,31 +77,15 @@ class TestCollection
         foreach ($columnOrders as $column => $order) {
             switch ($column) {
                 case self::COL_AFSC_LIST:
-                    $str = self::TABLE_NAME . '.afscList';
-                    break;
                 case self::COL_TIME_STARTED:
-                    $str = self::TABLE_NAME . '.timeStarted';
-                    break;
                 case self::COL_TIME_COMPLETED:
-                    $str = self::TABLE_NAME . '.timeCompleted';
-                    break;
                 case self::COL_CUR_QUESTION:
-                    $str = self::TABLE_NAME . '.curQuestion';
-                    break;
                 case self::COL_NUM_ANSWERED:
-                    $str = self::TABLE_NAME . '.numAnswered';
-                    break;
                 case self::COL_NUM_MISSED:
-                    $str = self::TABLE_NAME . '.numMissed';
-                    break;
                 case self::COL_SCORE:
-                    $str = self::TABLE_NAME . '.score';
-                    break;
                 case self::COL_IS_COMBINED:
-                    $str = self::TABLE_NAME . '.combined';
-                    break;
                 case self::COL_IS_ARCHIVED:
-                    $str = self::TABLE_NAME . '.archived';
+                    $str = self::TABLE_NAME . '.' . $column;
                     break;
                 default:
                     $str = '';

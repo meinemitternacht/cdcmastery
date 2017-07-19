@@ -12,52 +12,52 @@ namespace CDCMastery\Models\Users;
 class UserAfscCollection
 {
     /**
-     * @var User
+     * @var string
      */
     private $user;
 
     /**
      * @var string[]
      */
-    private $associations;
+    private $afscs;
 
     /**
-     * @return User
+     * @return string
      */
-    public function getUser(): User
+    public function getUser(): string
     {
         return $this->user;
     }
 
     /**
-     * @param User $user
+     * @param string $user
      */
-    public function setUser(User $user)
+    public function setUser(string $user)
     {
         $this->user = $user;
     }
 
     /**
-     * @param string $association
+     * @param string $afscUuid
      */
-    public function addAssociation(string $association)
+    public function addAfsc(string $afscUuid)
     {
-        $this->associations[] = $association;
+        $this->afscs[] = $afscUuid;
     }
 
     /**
      * @return \string[]
      */
-    public function getAssociations(): array
+    public function getAfscs(): array
     {
-        return $this->associations;
+        return $this->afscs;
     }
 
     /**
-     * @param \string[] $associations
+     * @param \string[] $afscs
      */
-    public function setAssociations(array $associations)
+    public function setAfscs(array $afscs)
     {
-        $this->associations = $associations;
+        $this->afscs = $afscs;
     }
 }

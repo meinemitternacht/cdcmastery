@@ -18,15 +18,89 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
     ]);
 
     $r->addGroup('/admin', function (\FastRoute\RouteCollector $r) {
-        $r->addRoute('GET', '/log', [
-            '\CDCMastery\Controllers\Admin',
-            'renderLogEntries'
+        $r->addRoute('GET', '/cdc/afsc', [
+            \CDCMastery\Controllers\Admin\CdcData::class,
+            'renderAfscList'
         ]);
 
-        $r->addRoute('GET', '/log/{uuid}', [
-            '\CDCMastery\Controllers\Admin',
-            'renderLogDetail'
+        $r->addRoute('POST', '/cdc/afsc', [
+            \CDCMastery\Controllers\Admin\CdcData::class,
+            'processNewAfsc'
         ]);
+        
+        $r->addGroup('/cdc/afsc', function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/migrate', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'renderMigrateAfsc'
+            ]);
+
+            $r->addRoute('POST', '/migrate', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'processMigrateAfsc'
+            ]);
+
+            $r->addRoute('GET', '/{afscUuid}', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'renderAfscHome'
+            ]);
+
+            $r->addRoute('POST', '/{afscUuid}', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'processEditAfsc'
+            ]);
+
+            $r->addRoute('GET', '/{afscUuid}/delete', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'renderDeleteAfsc'
+            ]);
+
+            $r->addRoute('POST', '/{afscUuid}/delete', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'processDeleteAfsc'
+            ]);
+
+            $r->addRoute('GET', '/{afscUuid}/questions', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'renderQuestions'
+            ]);
+
+            $r->addRoute('POST', '/{afscUuid}/questions', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'processAddQuestion'
+            ]);
+            
+            $r->addGroup('/{afscUuid}/questions', function (\FastRoute\RouteCollector $r) {
+                $r->addRoute('GET', '/{questionUuid}', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'renderQuestionHome'
+                ]);
+
+                $r->addRoute('POST', '/{questionUuid}', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'processEditQuestion'
+                ]);
+
+                $r->addRoute('GET', '/{questionUuid}/delete', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'renderDeleteQuestion'
+                ]);
+
+                $r->addRoute('POST', '/{questionUuid}/delete', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'processDeleteQuestion'
+                ]);
+
+                $r->addRoute('POST', '/{questionUuid}/answers', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'processEditAnswers'
+                ]);
+
+                $r->addRoute('POST', '/{questionUuid}/answers/{answerUuid}', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'processEditAnswer'
+                ]); 
+            });
+        });
     });
 
     $r->addGroup('/auth', function (\FastRoute\RouteCollector $r) {
@@ -48,11 +122,6 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
         $r->addRoute('POST', '/activate/resend', [
             \CDCMastery\Controllers\Auth::class,
             'processUserActivationResendEmail'
-        ]);
-
-        $r->addRoute('GET', '/create-subscription', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderCreateSubscription'
         ]);
 
         $r->addRoute('GET', '/login', [
