@@ -21,6 +21,7 @@ class AfscCollection
     const COL_VERSION = 'version';
     const COL_IS_FOUO = 'fouo';
     const COL_IS_HIDDEN = 'hidden';
+    const COL_IS_OBSOLETE = 'obsolete';
 
     const ORDER_ASC = 'ASC';
     const ORDER_DESC = 'DESC';
@@ -30,7 +31,8 @@ class AfscCollection
 
     const SHOW_HIDDEN = 1 << 0;
     const SHOW_FOUO = 1 << 1;
-    
+    const SHOW_OBSOLETE = 1 << 2;
+
     /**
      * @var \mysqli
      */
@@ -108,8 +110,11 @@ class AfscCollection
     {
         $showFouo = ($flags & self::SHOW_FOUO) !== 0;
         $showHidden = ($flags & self::SHOW_HIDDEN) !== 0;
+        $showObsolete = ($flags & self::SHOW_OBSOLETE) !== 0;
 
-        if ($showFouo && $showHidden) {
+        $qry = '';
+        $parts = [];
+        if ($showFouo && $showHidden && $showObsolete) {
             goto out_query;
         }
 
@@ -117,21 +122,21 @@ class AfscCollection
             ? ' AND '
             : ' WHERE ';
 
-        if (!$showFouo && !$showHidden) {
-            $qry .= self::COL_IS_FOUO . ' = 0 AND ' . self::COL_IS_HIDDEN . ' = 0';
-            goto out_query;
-        }
-
         if (!$showFouo) {
-            $qry .= self::COL_IS_FOUO . ' = 0';
-            goto out_query;
+            $parts[] = self::COL_IS_FOUO . ' = 0';
         }
 
         if (!$showHidden) {
-            $qry .= self::COL_IS_HIDDEN . ' = 0';
+            $parts[] = self::COL_IS_HIDDEN . ' = 0';
+        }
+
+        if (!$showObsolete) {
+            $parts[] = self::COL_IS_OBSOLETE . ' = 0';
         }
 
         out_query:
+        $qry = $qry . implode(' AND ', $parts);
+
         return $qry ?? '';
     }
 
@@ -152,7 +157,8 @@ SELECT
   description,
   version,
   fouo,
-  hidden
+  hidden,
+  obsolete
 FROM afscList
 WHERE uuid = ?
 SQL;
@@ -171,7 +177,8 @@ SQL;
             $description,
             $version,
             $fouo,
-            $hidden
+            $hidden,
+            $obsolete
         );
 
         $stmt->fetch();
@@ -184,6 +191,7 @@ SQL;
         $afsc->setVersion($version);
         $afsc->setFouo((bool)$fouo);
         $afsc->setHidden((bool)$hidden);
+        $afsc->setObsolete((bool)$obsolete);
 
         $this->afscs[$uuid] = $afsc;
 
@@ -199,12 +207,13 @@ SQL;
     {
         $qry = <<<SQL
 SELECT
- uuid,
- name,
- description,
- version,
- fouo,
- hidden
+  uuid,
+  name,
+  description,
+  version,
+  fouo,
+  hidden,
+  obsolete
 FROM afscList
 SQL;
 
@@ -225,6 +234,7 @@ SQL;
             $afsc->setVersion($row['version'] ?? '');
             $afsc->setFouo((bool)($row['fouo'] ?? false));
             $afsc->setHidden((bool)($row['hidden'] ?? false));
+            $afsc->setObsolete((bool)($row['obsolete'] ?? false));
 
             $this->afscs[$row['uuid']] = $afsc;
         }
@@ -255,12 +265,13 @@ SQL;
 
         $qry = <<<SQL
 SELECT
- uuid,
- name,
- description,
- version,
- fouo,
- hidden
+  uuid,
+  name,
+  description,
+  version,
+  fouo,
+  hidden,
+  obsolete
 FROM afscList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
@@ -282,6 +293,7 @@ SQL;
             $afsc->setVersion($row['version'] ?? '');
             $afsc->setFouo((bool)$row['fouo'] ?? false);
             $afsc->setHidden((bool)$row['hidden'] ?? false);
+            $afsc->setObsolete((bool)($row['obsolete'] ?? false));
 
             $this->afscs[$row['uuid']] = $afsc;
         }
@@ -319,6 +331,7 @@ SQL;
         $version = $afsc->getVersion();
         $fouo = $afsc->isFouo();
         $hidden = $afsc->isHidden();
+        $obsolete = $afsc->isObsolete();
 
         $qry = <<<SQL
 INSERT INTO afscList
@@ -328,27 +341,30 @@ INSERT INTO afscList
     description, 
     version, 
     fouo, 
-    hidden
+    hidden,
+    obsolete
   ) 
-VALUES (?, ?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
   name=VALUES(name),
   description=VALUES(description),
   version=VALUES(version),
   fouo=VALUES(fouo),
-  hidden=VALUES(hidden)
+  hidden=VALUES(hidden),
+  obsolete=VALUES(obsolete)
 SQL;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
-            'ssssii',
+            'ssssiii',
             $uuid,
             $name,
             $description,
             $version,
             $fouo,
-            $hidden
+            $hidden,
+            $obsolete
         );
 
         if (!$stmt->execute()) {

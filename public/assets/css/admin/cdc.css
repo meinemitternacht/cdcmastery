@@ -1,0 +1,69 @@
+.addAfscFormWell {
+    margin-top: 1em;
+}
+
+input#name,
+input#version,
+input#description {
+    width: 100%;
+}
+
+@media screen and (max-width: 767px) {
+    button#addAfsc {
+        margin-bottom: 2em;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .name-fg,
+    .version-fg,
+    .description-fg {
+        width: 20%;
+    }
+
+    .fouo-fg,
+    .hidden-fg {
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+
+    button#addAfsc {
+        float:right;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .name-fg,
+    .version-fg,
+    .description-fg {
+        width: 23%;
+    }
+
+    .fouo-fg,
+    .hidden-fg {
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+
+    button#addAfsc {
+        float:right;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .name-fg,
+    .version-fg,
+    .description-fg {
+        width: 25%;
+    }
+
+    .fouo-fg,
+    .hidden-fg {
+        margin-left: 1em;
+        margin-right: 1em;
+    }
+
+    button#addAfsc {
+        float:right;
+    }
+}

@@ -12,6 +12,7 @@ namespace CDCMastery\Models\Statistics;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\Users\User;
 use Monolog\Logger;
 
@@ -25,6 +26,27 @@ class Tests
     const STAT_AVG_BY_YEAR = 'avg_by_year';
     const STAT_AVG_LAST_SEVEN = 'avg_last_seven_days';
     const STAT_AVG_OVERALL = 'avg_overall';
+
+    const STAT_COUNT_BETWEEN = 'count_between';
+    const STAT_COUNT_BY_MONTH = 'count_by_month';
+    const STAT_COUNT_BY_WEEK = 'count_by_week';
+    const STAT_COUNT_BY_YEAR = 'count_by_year';
+    const STAT_COUNT_LAST_SEVEN = 'count_last_seven_days';
+    const STAT_COUNT_OVERALL = 'count_overall';
+
+    const STAT_AFSC_AVG_BETWEEN = 'afsc_avg_between';
+    const STAT_AFSC_AVG_BY_MONTH = 'afsc_avg_by_month';
+    const STAT_AFSC_AVG_BY_WEEK = 'afsc_avg_by_week';
+    const STAT_AFSC_AVG_BY_YEAR = 'afsc_avg_by_year';
+    const STAT_AFSC_AVG_LAST_SEVEN = 'afsc_avg_last_seven_days';
+    const STAT_AFSC_AVG_OVERALL = 'afsc_avg_overall';
+
+    const STAT_AFSC_COUNT_BETWEEN = 'afsc_count_between';
+    const STAT_AFSC_COUNT_BY_MONTH = 'afsc_count_by_month';
+    const STAT_AFSC_COUNT_BY_WEEK = 'afsc_count_by_week';
+    const STAT_AFSC_COUNT_BY_YEAR = 'afsc_count_by_year';
+    const STAT_AFSC_COUNT_LAST_SEVEN = 'afsc_count_last_seven_days';
+    const STAT_AFSC_COUNT_OVERALL = 'afsc_count_overall';
     
     const STAT_BASE_AVG_BETWEEN = 'base_avg_between';
     const STAT_BASE_AVG_BY_MONTH = 'base_avg_by_month';
@@ -39,13 +61,6 @@ class Tests
     const STAT_BASE_COUNT_BY_YEAR = 'base_count_by_year';
     const STAT_BASE_COUNT_LAST_SEVEN = 'base_count_last_seven_days';
     const STAT_BASE_COUNT_OVERALL = 'base_count_overall';
-
-    const STAT_COUNT_BETWEEN = 'count_between';
-    const STAT_COUNT_BY_MONTH = 'count_by_month';
-    const STAT_COUNT_BY_WEEK = 'count_by_week';
-    const STAT_COUNT_BY_YEAR = 'count_by_year';
-    const STAT_COUNT_LAST_SEVEN = 'count_last_seven_days';
-    const STAT_COUNT_OVERALL = 'count_overall';
 
     const STAT_USER_AVG_BETWEEN = 'user_avg_between';
     const STAT_USER_AVG_BY_MONTH = 'user_avg_by_month';
@@ -536,6 +551,603 @@ SQL;
         );
 
         return $row['tCount'] ?? 0;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return float
+     */
+    public function afscAverageBetween(Afsc $afsc, \DateTime $start, \DateTime $end): float
+    {
+        if (empty($afsc->getUuid())) {
+            return 0.00;
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        $tStart = $start->format(
+            DateTimeHelpers::DT_FMT_DB_DAY_START
+        );
+
+        $tEnd = $end->format(
+            DateTimeHelpers::DT_FMT_DB_DAY_END
+        );
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_AFSC_AVG_BETWEEN, [
+                $afscUuid,
+                $tStart,
+                $tEnd
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  AVG(score) AS avgScore 
+FROM testCollection 
+WHERE afscList = ?
+  AND timeCompleted BETWEEN ? AND ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param(
+            'sss',
+            $afscUuid,
+            $tStart,
+            $tEnd
+        );
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0.00;
+        }
+
+        $stmt->bind_result($avgScore);
+        $stmt->fetch();
+        $stmt->close();
+
+        $avgScore = round(
+            $avgScore,
+            self::PRECISION_AVG
+        );
+
+        $this->cache->hashAndSet(
+            $avgScore,
+            self::STAT_AFSC_AVG_BETWEEN,
+            CacheHandler::TTL_XLARGE, [
+                $afscUuid,
+                $tStart,
+                $tEnd
+            ]
+        );
+
+        return $avgScore ?? 0.00;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param string $type
+     * @return array
+     */
+    private function afscAverageByTimeSegment(Afsc $afsc, string $type): array
+    {
+        if (empty($afsc->getUuid())) {
+            return [];
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        switch ($type) {
+            case self::STAT_AFSC_AVG_BY_MONTH:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate, 
+  AVG(testCollection.score) AS tAvg
+FROM testCollection
+WHERE afscList = ?
+GROUP BY tDate
+ORDER BY tDate ASC
+SQL;
+                break;
+            case self::STAT_AFSC_AVG_BY_WEEK:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  YEARWEEK(testCollection.timeCompleted) AS tDate, 
+  AVG(testCollection.score) AS tAvg
+FROM testCollection
+WHERE afscList = ?
+GROUP BY YEARWEEK(testCollection.timeCompleted)
+ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+SQL;
+                break;
+            case self::STAT_AFSC_AVG_BY_YEAR:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
+  AVG(testCollection.score) AS tAvg
+FROM testCollection
+WHERE afscList = ?
+GROUP BY tDate
+ORDER BY tDate ASC
+SQL;
+                break;
+            case self::STAT_AFSC_AVG_LAST_SEVEN:
+                $timeout = CacheHandler::TTL_LARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y-%m-%d') AS tDate, 
+  AVG(score) AS tAvg
+FROM testCollection 
+WHERE afscList = ?
+  AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+GROUP BY DAY(timeCompleted)
+ORDER BY timeCompleted ASC
+SQL;
+                break;
+            default:
+                return [];
+                break;
+        }
+
+        $cached = $this->cache->hashAndGet(
+            $type, [
+                $afscUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afscUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $tDate,
+            $tAvg
+        );
+
+        $averages = [];
+        while ($stmt->fetch()) {
+            if (($tDate ?? false) === false) {
+                continue;
+            }
+
+            if (($tAvg ?? false) === false) {
+                continue;
+            }
+
+            $averages[$tDate] = round(
+                $tAvg ?? 0.00,
+                self::PRECISION_AVG
+            );
+        }
+
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $averages,
+            $type,
+            $timeout, [
+                $afscUuid
+            ]
+        );
+
+        return $averages;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscAverageByMonth(Afsc $afsc): array
+    {
+        return $this->afscAverageByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_AVG_BY_MONTH
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscAverageByWeek(Afsc $afsc): array
+    {
+        return $this->afscAverageByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_AVG_BY_WEEK
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscAverageByYear(Afsc $afsc): array
+    {
+        return $this->afscAverageByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_AVG_BY_YEAR
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscAverageLastSevenDays(Afsc $afsc): array
+    {
+        return $this->afscAverageByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_AVG_LAST_SEVEN
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return float
+     */
+    public function afscAverageOverall(Afsc $afsc): float
+    {
+        if (empty($afsc->getUuid())) {
+            return 0.00;
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_AFSC_AVG_OVERALL, [
+                $afscUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  AVG(score) AS tAvg
+FROM testCollection 
+WHERE afscList = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afscUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0.00;
+        }
+
+        $stmt->bind_result(
+            $tAvg
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $average = round(
+            $tAvg ?? 0.00,
+            self::PRECISION_AVG
+        );
+
+        $this->cache->hashAndSet(
+            $average,
+            self::STAT_AFSC_AVG_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $afscUuid
+            ]
+        );
+
+        return $average;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param \DateTime $start
+     * @param \DateTime $end
+     * @return int
+     */
+    public function afscCountBetween(Afsc $afsc, \DateTime $start, \DateTime $end): int
+    {
+        if (empty($afsc->getUuid())) {
+            return 0;
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        $tStart = $start->format(
+            DateTimeHelpers::DT_FMT_DB_DAY_START
+        );
+
+        $tEnd = $end->format(
+            DateTimeHelpers::DT_FMT_DB_DAY_END
+        );
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_AFSC_COUNT_BETWEEN, [
+                $afscUuid,
+                $tStart,
+                $tEnd
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(score) AS tCount 
+FROM testCollection 
+WHERE afscList = ?
+  AND timeCompleted BETWEEN ? AND ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param(
+            'sss',
+            $afscUuid,
+            $tStart,
+            $tEnd
+        );
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result($tCount);
+        $stmt->fetch();
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $tCount,
+            self::STAT_AFSC_COUNT_BETWEEN,
+            CacheHandler::TTL_XLARGE, [
+                $afscUuid,
+                $tStart,
+                $tEnd
+            ]
+        );
+
+        return $tCount ?? 0;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param string $type
+     * @return array
+     */
+    private function afscCountByTimeSegment(Afsc $afsc, string $type): array
+    {
+        if (empty($afsc->getUuid())) {
+            return [];
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        switch ($type) {
+            case self::STAT_AFSC_COUNT_BY_MONTH:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate,  
+  COUNT(*) AS tCount
+FROM testCollection
+WHERE afscList = ?
+GROUP BY tDate
+ORDER BY tDate ASC
+SQL;
+                break;
+            case self::STAT_AFSC_COUNT_BY_WEEK:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  YEARWEEK(testCollection.timeCompleted) AS tDate,  
+  COUNT(*) AS tCount
+FROM testCollection
+WHERE afscList = ?
+GROUP BY YEARWEEK(testCollection.timeCompleted)
+ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+SQL;
+                break;
+            case self::STAT_AFSC_COUNT_BY_YEAR:
+                $timeout = CacheHandler::TTL_XLARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
+  COUNT(*) AS tCount
+FROM testCollection
+WHERE afscList = ?
+GROUP BY tDate
+ORDER BY tDate ASC
+SQL;
+                break;
+            case self::STAT_AFSC_COUNT_LAST_SEVEN:
+                $timeout = CacheHandler::TTL_LARGE;
+                $qry = <<<SQL
+SELECT 
+  DATE_FORMAT(testCollection.timeCompleted, '%Y-%m-%d') AS tDate,  
+  COUNT(*) AS tCount
+FROM testCollection 
+WHERE afscList = ?
+  AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+GROUP BY DAY(timeCompleted)
+ORDER BY timeCompleted ASC
+SQL;
+                break;
+            default:
+                return [];
+                break;
+        }
+
+        $cached = $this->cache->hashAndGet(
+            $type, [
+                $afscUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afscUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $tDate,
+            $tCount
+        );
+
+        $counts = [];
+        while ($stmt->fetch()) {
+            if (($tDate ?? false) === false) {
+                continue;
+            }
+
+            if (($tCount ?? false) === false) {
+                continue;
+            }
+
+            $counts[$tDate] = $tCount ?? 0;
+        }
+
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $counts,
+            $type,
+            $timeout, [
+                $afscUuid
+            ]
+        );
+
+        return $counts;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscCountByMonth(Afsc $afsc): array
+    {
+        return $this->afscCountByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_COUNT_BY_MONTH
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscCountByWeek(Afsc $afsc): array
+    {
+        return $this->afscCountByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_COUNT_BY_WEEK
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscCountByYear(Afsc $afsc): array
+    {
+        return $this->afscCountByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_COUNT_BY_YEAR
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return array
+     */
+    public function afscCountLastSevenDays(Afsc $afsc): array
+    {
+        return $this->afscCountByTimeSegment(
+            $afsc,
+            self::STAT_AFSC_COUNT_LAST_SEVEN
+        );
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @return int
+     */
+    public function afscCountOverall(Afsc $afsc): int
+    {
+        if (empty($afsc->getUuid())) {
+            return 0;
+        }
+
+        $afscUuid = serialize([$afsc->getUuid()]);
+
+        $cached = $this->cache->hashAndGet(
+            self::STAT_AFSC_COUNT_OVERALL, [
+                $afscUuid
+            ]
+        );
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT 
+  COUNT(*) AS tCount
+FROM testCollection 
+WHERE afscList = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afscUuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result(
+            $tCount
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        $this->cache->hashAndSet(
+            $tCount ?? 0,
+            self::STAT_AFSC_COUNT_OVERALL,
+            CacheHandler::TTL_XLARGE, [
+                $afscUuid
+            ]
+        );
+
+        return $tCount ?? 0;
     }
 
     /**

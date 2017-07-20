@@ -1,0 +1,59 @@
+{% extends "public/stats/stats.html.twig" %}
+{% block graphs %}
+    <div class="text-center">
+        <h3>{{ title }}</h3>
+        <h4>{{ subTitle }}</h4>
+    </div>
+    <div id="graph-cont" style="height:400px">
+        &nbsp;
+    </div>
+    <script type="text/javascript">
+        window.onload = function () {
+            var overallChart = new CanvasJS.Chart("graph-cont",
+                {
+                    zoomEnabled: true,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: null,
+                        labelFormatter: function () {return '';},
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0,
+                        title: "Average Score"
+                    },
+                    axisY2: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0,
+                        title: "Tests Taken"
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        content: "<em>{label}</em><br>{name}: <strong>{y}</strong>"
+                    },
+                    data: [
+                        {
+                            type: "line",
+                            lineThickness: 1,
+                            axisYType: "primary",
+                            name: "Average Score",
+                            dataPoints: {{ averages|raw }}
+                        },
+                        {
+                            type: "column",
+                            name: "Tests Taken",
+                            axisYType: "secondary",
+                            dataPoints: {{ counts|raw }}
+                        }
+                    ]
+                });
+
+            overallChart.render();
+        }
+    </script>
+{% endblock %}

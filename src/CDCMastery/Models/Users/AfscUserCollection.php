@@ -33,7 +33,7 @@ class AfscUserCollection
      */
     public function getUsers(): array
     {
-        return $this->users;
+        return $this->users ?? [];
     }
 
     /**
@@ -49,7 +49,7 @@ class AfscUserCollection
      */
     public function getAfsc(): string
     {
-        return $this->afsc;
+        return $this->afsc ?? '';
     }
 
     /**

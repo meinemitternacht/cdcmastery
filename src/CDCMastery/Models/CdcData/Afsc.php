@@ -42,6 +42,11 @@ class Afsc
     private $hidden;
 
     /**
+     * @var bool
+     */
+    private $obsolete;
+
+    /**
      * @return string
      */
     public function getUuid(): ?string
@@ -135,5 +140,21 @@ class Afsc
     public function setHidden(bool $hidden)
     {
         $this->hidden = $hidden;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isObsolete(): bool
+    {
+        return $this->obsolete;
+    }
+
+    /**
+     * @param bool $obsolete
+     */
+    public function setObsolete(bool $obsolete)
+    {
+        $this->obsolete = $obsolete;
     }
 }

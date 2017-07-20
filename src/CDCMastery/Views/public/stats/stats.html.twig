@@ -5,10 +5,25 @@
             <div class="list-group">
                 <a href="/stats/tests" class="list-group-item">All Tests</a>
                 <a href="/stats/bases/tests" class="list-group-item">Tests by Base</a>
+                <a href="/stats/afscs/tests" class="list-group-item">Tests by AFSC</a>
                 <a href="/stats/users/bases" class="list-group-item">Users by Base</a>
                 <a href="/stats/users/groups" class="list-group-item">Users by Group</a>
             </div>
-            {% if baseList %}
+            {% if afscList %}
+                <ul class="nav nav-pills nav-stacked" style="height: 36em; overflow-y: scroll">
+                    {% set doScroll = false %}
+                    {% for afscUuid, afscName in afscList %}
+                        <li{% if uuid and afscUuid == uuid %}{% set doScroll = true %} id="scrollToMe" class="active"{% endif %}>
+                            <a href="/stats/afscs/{{ afscUuid }}/tests/month">{{ afscName }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if doScroll %}
+                    <script>
+                        document.getElementById('scrollToMe').scrollIntoView();
+                    </script>
+                {% endif %}
+            {% elseif baseList %}
                 <ul class="nav nav-pills nav-stacked" style="height: 36em; overflow-y: scroll">
                     {% set doScroll = false %}
                     {% for baseUuid, baseName in baseList %}

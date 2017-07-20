@@ -208,6 +208,45 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
     ]);
 
     $r->addGroup('/stats', function (\FastRoute\RouteCollector $r) {
+        $r->addRoute('GET', '/afscs', [
+            \CDCMastery\Controllers\Stats\Afscs::class,
+            'renderAfscsStatsHome'
+        ]);
+
+        $r->addRoute('GET', '/afscs/tests', [
+            \CDCMastery\Controllers\Stats\Afscs::class,
+            'renderAfscsStatsHome'
+        ]);
+
+        $r->addGroup('/afscs', function (\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/{afscUuid}/tests', [
+                \CDCMastery\Controllers\Stats\Afscs::class,
+                'renderAfscTests'
+            ]);
+
+            $r->addGroup('/{afscUuid}/tests', function (\FastRoute\RouteCollector $r) {
+                $r->addRoute('GET', '/last-seven', [
+                    \CDCMastery\Controllers\Stats\Afscs::class,
+                    'renderAfscTestsLastSeven'
+                ]);
+
+                $r->addRoute('GET', '/month', [
+                    \CDCMastery\Controllers\Stats\Afscs::class,
+                    'renderAfscTestsByMonth'
+                ]);
+
+                $r->addRoute('GET', '/week', [
+                    \CDCMastery\Controllers\Stats\Afscs::class,
+                    'renderAfscTestsByWeek'
+                ]);
+
+                $r->addRoute('GET', '/year', [
+                    \CDCMastery\Controllers\Stats\Afscs::class,
+                    'renderAfscTestsByYear'
+                ]);
+            });
+        });
+        
         $r->addRoute('GET', '/bases', [
             \CDCMastery\Controllers\Stats\Bases::class,
             'renderBasesStatsHome'

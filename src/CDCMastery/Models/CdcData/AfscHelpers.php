@@ -13,9 +13,10 @@ class AfscHelpers
 {
     /**
      * @param Afsc[] $afscs
-     * @return string[]
+     * @param bool $keyed
+     * @return array
      */
-    public static function listNames(array $afscs): array
+    public static function listNames(array $afscs, bool $keyed = false): array
     {
         $afscs = array_values($afscs);
         $c = count($afscs);
@@ -30,7 +31,12 @@ class AfscHelpers
                 continue;
             }
 
-            $nameList[] = $afscs[$i]->getName();
+            if (!$keyed) {
+                $nameList[] = $afscs[$i]->getName();
+                continue;
+            }
+
+            $nameList[$afscs[$i]->getUuid()] = $afscs[$i]->getName();
         }
 
         return $nameList;
