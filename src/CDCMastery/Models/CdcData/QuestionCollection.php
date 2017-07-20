@@ -257,11 +257,11 @@ SQL;
         $qry = <<<SQL
 SELECT
   questionData.uuid AS uuid,
-  afscList.afscFOUO AS fouo
+  afscList.fouo AS fouo
 FROM questionData
 LEFT JOIN afscList ON afscList.uuid = questionData.afscUUID
 WHERE questionData.uuid IN ('{$uuidListString}')
-ORDER BY afscList.afscFOUO ASC
+ORDER BY afscList.fouo ASC
 SQL;
 
         $res = $this->db->query($qry);

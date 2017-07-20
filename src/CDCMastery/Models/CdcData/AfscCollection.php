@@ -16,11 +16,11 @@ class AfscCollection
     const TABLE_NAME = 'afscList';
 
     const COL_UUID = 'uuid';
-    const COL_NAME = 'afscName';
-    const COL_DESCRIPTION = 'afscDescription';
-    const COL_VERSION = 'afscVersion';
-    const COL_IS_FOUO = 'afscFOUO';
-    const COL_IS_HIDDEN = 'afscHidden';
+    const COL_NAME = 'name';
+    const COL_DESCRIPTION = 'description';
+    const COL_VERSION = 'version';
+    const COL_IS_FOUO = 'fouo';
+    const COL_IS_HIDDEN = 'hidden';
 
     const ORDER_ASC = 'ASC';
     const ORDER_DESC = 'DESC';
@@ -148,11 +148,11 @@ class AfscCollection
         $qry = <<<SQL
 SELECT
   uuid,
-  afscName,
-  afscDescription,
-  afscVersion,
-  afscFOUO,
-  afscHidden
+  name,
+  description,
+  version,
+  fouo,
+  hidden
 FROM afscList
 WHERE uuid = ?
 SQL;
@@ -200,11 +200,11 @@ SQL;
         $qry = <<<SQL
 SELECT
  uuid,
- afscName,
- afscDescription,
- afscVersion,
- afscFOUO,
- afscHidden
+ name,
+ description,
+ version,
+ fouo,
+ hidden
 FROM afscList
 SQL;
 
@@ -220,11 +220,11 @@ SQL;
 
             $afsc = new Afsc();
             $afsc->setUuid($row['uuid'] ?? '');
-            $afsc->setName($row['afscName'] ?? '');
-            $afsc->setDescription($row['afscDescription'] ?? '');
-            $afsc->setVersion($row['afscVersion'] ?? '');
-            $afsc->setFouo((bool)($row['afscFOUO'] ?? false));
-            $afsc->setHidden((bool)($row['afscHidden'] ?? false));
+            $afsc->setName($row['name'] ?? '');
+            $afsc->setDescription($row['description'] ?? '');
+            $afsc->setVersion($row['version'] ?? '');
+            $afsc->setFouo((bool)($row['fouo'] ?? false));
+            $afsc->setHidden((bool)($row['hidden'] ?? false));
 
             $this->afscs[$row['uuid']] = $afsc;
         }
@@ -256,11 +256,11 @@ SQL;
         $qry = <<<SQL
 SELECT
  uuid,
- afscName,
- afscDescription,
- afscVersion,
- afscFOUO,
- afscHidden
+ name,
+ description,
+ version,
+ fouo,
+ hidden
 FROM afscList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
@@ -277,11 +277,11 @@ SQL;
 
             $afsc = new Afsc();
             $afsc->setUuid($row['uuid'] ?? '');
-            $afsc->setName($row['afscName'] ?? '');
-            $afsc->setDescription($row['afscDescription'] ?? '');
-            $afsc->setVersion($row['afscVersion'] ?? '');
-            $afsc->setFouo((bool)$row['afscFOUO'] ?? false);
-            $afsc->setHidden((bool)$row['afscHidden'] ?? false);
+            $afsc->setName($row['name'] ?? '');
+            $afsc->setDescription($row['description'] ?? '');
+            $afsc->setVersion($row['version'] ?? '');
+            $afsc->setFouo((bool)$row['fouo'] ?? false);
+            $afsc->setHidden((bool)$row['hidden'] ?? false);
 
             $this->afscs[$row['uuid']] = $afsc;
         }
@@ -324,20 +324,20 @@ SQL;
 INSERT INTO afscList
   (
     uuid, 
-    afscName, 
-    afscDescription, 
-    afscVersion, 
-    afscFOUO, 
-    afscHidden
+    name, 
+    description, 
+    version, 
+    fouo, 
+    hidden
   ) 
 VALUES (?, ?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
-  afscName=VALUES(afscName),
-  afscDescription=VALUES(afscDescription),
-  afscVersion=VALUES(afscVersion),
-  afscFOUO=VALUES(afscFOUO),
-  afscHidden=VALUES(afscHidden)
+  name=VALUES(name),
+  description=VALUES(description),
+  version=VALUES(version),
+  fouo=VALUES(fouo),
+  hidden=VALUES(hidden)
 SQL;
 
         $stmt = $this->db->prepare($qry);
