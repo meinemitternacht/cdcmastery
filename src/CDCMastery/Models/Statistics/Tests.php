@@ -135,6 +135,7 @@ SELECT
   AVG(score) AS avgScore 
 FROM testCollection 
 WHERE timeCompleted BETWEEN ? AND ?
+    AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -184,6 +185,8 @@ SELECT
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate, 
   AVG(testCollection.score) AS tAvg
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -195,6 +198,8 @@ SELECT
   YEARWEEK(testCollection.timeCompleted) AS tDate, 
   AVG(testCollection.score) AS tAvg
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -206,6 +211,8 @@ SELECT
   DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
   AVG(testCollection.score) AS tAvg
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -219,6 +226,7 @@ SELECT
 FROM testCollection 
 WHERE timeCompleted
   BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -314,6 +322,8 @@ SQL;
 SELECT 
   AVG(score) AS tAvg
 FROM testCollection 
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $res = $this->db->query($qry);
@@ -366,6 +376,8 @@ SELECT
   COUNT(score) AS tCount 
 FROM testCollection 
 WHERE timeCompleted BETWEEN ? AND ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -410,6 +422,8 @@ SELECT
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate,  
   COUNT(*) AS tCount
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -421,6 +435,8 @@ SELECT
   YEARWEEK(testCollection.timeCompleted) AS tDate,  
   COUNT(*) AS tCount
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -432,6 +448,8 @@ SELECT
   DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
   COUNT(*) AS tCount
 FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -445,6 +463,7 @@ SELECT
 FROM testCollection 
 WHERE timeCompleted
   BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0 
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -537,6 +556,8 @@ SQL;
 SELECT 
   COUNT(*) AS tCount
 FROM testCollection 
+WHERE score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $res = $this->db->query($qry);
@@ -593,6 +614,7 @@ SELECT
 FROM testCollection 
 WHERE afscList = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -652,6 +674,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -664,6 +688,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -676,6 +702,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -688,6 +716,7 @@ SELECT
   AVG(score) AS tAvg
 FROM testCollection 
 WHERE afscList = ?
+  AND score > 0
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
@@ -825,6 +854,8 @@ SELECT
   AVG(score) AS tAvg
 FROM testCollection 
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -898,6 +929,7 @@ SELECT
 FROM testCollection 
 WHERE afscList = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -952,6 +984,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -964,6 +998,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -976,6 +1012,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -989,6 +1027,7 @@ SELECT
 FROM testCollection 
 WHERE afscList = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -1122,6 +1161,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection 
 WHERE afscList = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1191,6 +1232,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1251,6 +1293,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1264,6 +1308,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -1277,6 +1323,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1291,6 +1339,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -1428,6 +1477,8 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1502,6 +1553,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1557,6 +1609,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1570,6 +1624,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -1583,6 +1639,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1597,6 +1655,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -1731,6 +1790,8 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1799,6 +1860,7 @@ SELECT
 FROM testCollection 
 WHERE userUuid = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -1858,6 +1920,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1870,6 +1934,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -1882,6 +1948,8 @@ SELECT
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -1895,6 +1963,7 @@ SELECT
 FROM testCollection 
 WHERE userUuid = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -2031,6 +2100,8 @@ SELECT
   AVG(score) AS tAvg
 FROM testCollection 
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -2104,6 +2175,7 @@ SELECT
 FROM testCollection 
 WHERE userUuid = ?
   AND timeCompleted BETWEEN ? AND ?
+  AND score > 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -2158,6 +2230,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -2170,6 +2244,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
 ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
 SQL;
@@ -2182,6 +2258,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 GROUP BY tDate
 ORDER BY tDate ASC
 SQL;
@@ -2195,6 +2273,7 @@ SELECT
 FROM testCollection 
 WHERE userUuid = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND score > 0
 GROUP BY DAY(timeCompleted)
 ORDER BY timeCompleted ASC
 SQL;
@@ -2328,6 +2407,8 @@ SELECT
   COUNT(*) AS tCount
 FROM testCollection 
 WHERE userUuid = ?
+  AND score > 0
+  AND timeCompleted IS NOT NULL 
 SQL;
 
         $stmt = $this->db->prepare($qry);

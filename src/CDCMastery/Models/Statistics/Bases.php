@@ -95,6 +95,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
+  AND testCollection.score > 0
 GROUP BY tBase
 HAVING tBase IS NOT NULL
 SQL;
@@ -162,6 +163,7 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY tDate, tBase
 ORDER BY tDate ASC, tAvg DESC
 SQL;
@@ -176,6 +178,7 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY YEARWEEK(testCollection.timeStarted), tBase
 ORDER BY YEARWEEK(testCollection.timeStarted) ASC, tAvg DESC
 SQL;
@@ -190,6 +193,7 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY tDate, tBase
 ORDER BY tDate ASC, tAvg DESC
 SQL;
@@ -299,6 +303,8 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
+WHERE testCollection.score > 0
+  AND testCollection.timeCompleted IS NOT NULL
 GROUP BY tBase
 ORDER BY baseList.baseName ASC
 SQL;
@@ -358,6 +364,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
+  AND testCollection.score > 0
 GROUP BY tBase
 SQL;
 
@@ -417,6 +424,7 @@ SELECT
 FROM testCollection
   LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY tDate, tBase
 ORDER BY tDate ASC
 SQL;
@@ -431,6 +439,7 @@ SELECT
 FROM testCollection
   LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY YEARWEEK(testCollection.timeStarted), tBase
 ORDER BY YEARWEEK(testCollection.timeStarted) ASC
 SQL;
@@ -445,6 +454,7 @@ SELECT
 FROM testCollection
   LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
+  AND testCollection.score > 0
 GROUP BY tDate, tBase
 ORDER BY tDate ASC
 SQL;
@@ -460,6 +470,7 @@ FROM testCollection
   LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
     AND testCollection.timeStarted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
+  AND testCollection.score > 0
 GROUP BY DAY(timeStarted)
 ORDER BY timeStarted ASC
 SQL;
@@ -550,6 +561,8 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
+WHERE testCollection.score > 0
+  AND testCollection.timeCompleted IS NOT NULL 
 GROUP BY tBase
 ORDER BY baseList.baseName ASC
 SQL;
