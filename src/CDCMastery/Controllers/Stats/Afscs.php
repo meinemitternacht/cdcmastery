@@ -11,7 +11,6 @@ namespace CDCMastery\Controllers\Stats;
 
 use CDCMastery\Controllers\Stats;
 use CDCMastery\Helpers\AppHelpers;
-use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\Messages;

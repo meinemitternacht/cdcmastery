@@ -16,6 +16,8 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Statistics\StatisticsHelpers;
+use CDCMastery\Models\Statistics\Tests;
 use CDCMastery\Models\Users\AfscUserCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
 
@@ -26,6 +28,7 @@ class CdcData extends Admin
         $afscCollection = $this->container->get(AfscCollection::class);
         $questionHelpers = $this->container->get(QuestionHelpers::class);
         $userAfscAssociations = $this->container->get(UserAfscAssociations::class);
+        $statsTests = $this->container->get(Tests::class);
 
         $afsc = $afscCollection->fetch($afscUuid);
 
@@ -46,13 +49,21 @@ class CdcData extends Admin
             goto out_return;
         }
 
-        $afscQuestions = count($afscQuestionsArr[0] ?? []);
+        $afscQuestions = intval(array_shift($afscQuestionsArr));
 
         out_return:
         $data = [
             'afsc' => $afsc,
             'afscUsers' => count($afscUsers->getUsers()),
-            'afscQuestions' => $afscQuestions
+            'afscQuestions' => $afscQuestions,
+            'subTitle' => 'Tests By Month',
+            'period' => 'month',
+            'averages' => StatisticsHelpers::formatGraphDataTests(
+                $statsTests->afscAverageByMonth($afsc)
+            ),
+            'counts' => StatisticsHelpers::formatGraphDataTests(
+                $statsTests->afscCountByMonth($afsc)
+            )
         ];
 
         return $this->render(

@@ -59,6 +59,11 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
                 'processDeleteAfsc'
             ]);
 
+            $r->addRoute('POST', '/{afscUuid}/edit', [
+                \CDCMastery\Controllers\Admin\CdcData::class,
+                'renderEditAfsc'
+            ]);
+
             $r->addRoute('GET', '/{afscUuid}/questions', [
                 \CDCMastery\Controllers\Admin\CdcData::class,
                 'renderQuestions'
@@ -88,6 +93,11 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
                 $r->addRoute('POST', '/{questionUuid}/delete', [
                     \CDCMastery\Controllers\Admin\CdcData::class,
                     'processDeleteQuestion'
+                ]);
+
+                $r->addRoute('GET', '/{questionUuid}/edit', [
+                    \CDCMastery\Controllers\Admin\CdcData::class,
+                    'renderQuestionEdit'
                 ]);
 
                 $r->addRoute('POST', '/{questionUuid}/answers', [

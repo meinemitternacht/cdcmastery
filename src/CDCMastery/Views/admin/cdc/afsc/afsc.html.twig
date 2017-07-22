@@ -1,9 +1,170 @@
 {% extends "layout.html.twig" %}
-{% set page_title = "Manage AFSCs" %}
+{% set page_title = "Manage AFSC - #{afsc.name}" %}
 {% block main %}
+    <div class="page-header">
+        <h3>Manage {{ afsc.name }}</h3>
+    </div>
     {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default text-center">
+                        <div class="panel-heading">
+                            <h5>AFSC Stats by Month</h5>
+                        </div>
+                        <div class="panel-body">
+                            {% if averages and counts %}
+                                <div id="graph-cont" style="height:277px">
+                                    &nbsp;
+                                </div>
+                                <script type="text/javascript">
+                                    window.onload = function () {
+                                        var afscChart = new CanvasJS.Chart("graph-cont",
+                                            {
+                                                zoomEnabled: true,
+                                                animationEnabled: true,
+                                                axisX: {
+                                                    valueFormatString: null,
+                                                    labelFormatter: function () {return '';},
+                                                    tickLength: 0
+                                                },
+                                                axisY: {
+                                                    interlacedColor: "#F5F5F5",
+                                                    gridColor: "#D7D7D7",
+                                                    tickColor: "#D7D7D7",
+                                                    tickLength: 0,
+                                                    title: "Average Score"
+                                                },
+                                                axisY2: {
+                                                    tickLength: 0,
+                                                    title: "Tests Taken"
+                                                },
+                                                theme: "theme2",
+                                                toolTip: {
+                                                    content: "<em>{label}</em><br>{name}: <strong>{y}</strong>"
+                                                },
+                                                data: [
+                                                    {
+                                                        type: "line",
+                                                        lineThickness: 2,
+                                                        axisYType: "primary",
+                                                        name: "Average Score",
+                                                        dataPoints: {{ averages|raw }}
+                                                    },
+                                                    {
+                                                        type: "area",
+                                                        name: "Tests Taken",
+                                                        axisYType: "secondary",
+                                                        dataPoints: {{ counts|raw }}
+                                                    }
+                                                ]
+                                            });
+
+                                        afscChart.render();
+                                    }
+                                </script>
+                            {% else %}
+                                There is no test data to display for this AFSC
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Questions</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ afscQuestions|number_format }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Users</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ afscUsers|number_format }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>FOUO</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.fouo ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Obsolete</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.obsolete ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Hidden</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.hidden ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if afsc.version %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5>Version</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ afsc.version }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if afsc.description %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5>Description</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ afsc.description }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+
+        </div>
+        <div class="col-md-6">
 
         </div>
     </div>

@@ -1,4 +1,9 @@
 <ul class="nav nav-pills">
     <li><a href="/admin/cdc/afsc">AFSC List</a></li>
     <li><a href="/admin/cdc/afsc/migrate">Migrate Associations</a></li>
+    {% if afsc %}
+        <li><a href="/admin/cdc/afsc/{{ afsc.uuid }}/edit">Edit AFSC</a></li>
+        <li><a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">Manage Questions</a></li>
+    {% endif %}
 </ul>
+<div class="clearfix">&nbsp;</div>
