@@ -1,0 +1,29 @@
+<script>
+    $('{{ tableSelector }}').on('click', 'tr', function ( event ) {
+        if (typeof(event.currentTarget.attributes) === "undefined" || event.currentTarget.attributes.length <= 0) {
+            return;
+        }
+
+        var uuid, attr;
+
+        for (var i = 0; i < event.currentTarget.attributes.length; i++) {
+            if (typeof(event.currentTarget.attributes[i]) === "undefined") {
+                continue;
+            }
+
+            attr = event.currentTarget.attributes[i];
+
+            if (typeof(attr.name) === "undefined" || attr.name !== "data-uuid") {
+                continue;
+            }
+
+            uuid = attr.value || '';
+        }
+
+        if (typeof(uuid) === "undefined" || uuid === null || uuid === "") {
+            return;
+        }
+
+        window.location.href = "{{ redirectPath }}/" + uuid;
+    });
+</script>

@@ -97,35 +97,9 @@
                         </div>
                     {% endif %}
                     {% if tests.incomplete|length > 0 or tests.complete|length > 0 %}
-                    <script>
-                        $('#incomplete-tests-table, #completed-tests-table').on('click', 'tr', function ( event ) {
-                            if (typeof(event.currentTarget.attributes) === "undefined" || event.currentTarget.attributes.length <= 0) {
-                                return;
-                            }
-
-                            var uuid, attr;
-
-                            for (var i = 0; i < event.currentTarget.attributes.length; i++) {
-                                if (typeof(event.currentTarget.attributes[i]) === "undefined") {
-                                    continue;
-                                }
-
-                                attr = event.currentTarget.attributes[i];
-
-                                if (typeof(attr.name) === "undefined" || attr.name !== "data-uuid") {
-                                    continue;
-                                }
-
-                                uuid = attr.value || '';
-                            }
-
-                            if (typeof(uuid) === "undefined" || uuid === null || uuid === "") {
-                                return;
-                            }
-
-                            window.location.replace("/tests/" + uuid);
-                        });
-                    </script>
+                        {% set tableSelector = "#incomplete-tests-table, #completed-tests-table" %}
+                        {% set redirectPath = "/tests" %}
+                        {% include "utilities/table-row-link.html.twig" %}
                     {% endif %}
                     <div class="tab-pane fade" id="practice">
                         Practice Tests
@@ -206,7 +180,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
+    <script>
         window.onload = function () {
             {% if lastSevenStats.avg|length > 0 %}
             var lastSevenChart = new CanvasJS.Chart("last-seven-avg-count",
