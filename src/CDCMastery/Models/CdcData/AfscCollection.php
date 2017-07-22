@@ -247,10 +247,9 @@ SQL;
     /**
      * @param array $uuidList
      * @param array $columnOrders
-     * @param int $flags
-     * @return Afsc[]
+     * @return array
      */
-    public function fetchArray(array $uuidList, array $columnOrders = [], int $flags = self::SHOW_FOUO): array
+    public function fetchArray(array $uuidList, array $columnOrders = []): array
     {
         if (empty($uuidList)) {
             return [];
@@ -276,7 +275,6 @@ FROM afscList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
 
-        $qry .= self::generateWhereSuffix($flags, true);
         $qry .= self::generateOrderSuffix($columnOrders);
 
         $res = $this->db->query($qry);
