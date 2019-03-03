@@ -11,12 +11,12 @@ namespace CDCMastery\Models\Cache;
 
 class CacheHandler
 {
-    const TTL_TINY = 5;
-    const TTL_SMALL = 30;
-    const TTL_MEDIUM = 120;
-    const TTL_LARGE = 3600;
-    const TTL_XLARGE = 86400;
-    const TTL_MAX = 604800;
+    public const TTL_TINY = 5;
+    public const TTL_SMALL = 30;
+    public const TTL_MEDIUM = 120;
+    public const TTL_LARGE = 3600;
+    public const TTL_XLARGE = 86400;
+    public const TTL_MAX = 604800;
 
     /**
      * @var \Memcached
@@ -116,11 +116,11 @@ class CacheHandler
      */
     public function refresh(string $hash, ?int $timeout = null): void
     {
-        if (empty($hash)) {
+        if ($hash === '') {
             return;
         }
 
-        if (is_null($timeout)) {
+        if ($timeout === null) {
             $timeout = self::TTL_MEDIUM;
         }
 
@@ -145,11 +145,11 @@ class CacheHandler
      */
     public function set($data, string $hash, ?int $timeout = null): void
     {
-        if (empty($hash)) {
+        if ($hash === '') {
             return;
         }
 
-        if (is_null($timeout)) {
+        if ($timeout === null) {
             $timeout = self::TTL_MEDIUM;
         }
 

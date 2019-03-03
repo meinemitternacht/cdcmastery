@@ -603,7 +603,7 @@ SQL;
 
         $userList = [];
         while ($stmt->fetch()) {
-            if (!isset($userUuid) || is_null($userUuid)) {
+            if (!isset($userUuid) || $userUuid === null) {
                 continue;
             }
 
@@ -651,7 +651,7 @@ SQL;
 
         $afscList = [];
         while ($stmt->fetch()) {
-            if (!isset($afscUuid) || is_null($afscUuid)) {
+            if (!isset($afscUuid) || $afscUuid === null) {
                 continue;
             }
 

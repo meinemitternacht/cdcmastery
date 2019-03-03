@@ -6,8 +6,10 @@
     </div>
     <div class="row">
         {% if disableNewTest %}
-            <div class="col-md-12 alert alert-info">
-                You have too many incomplete tests.  Please finish one before starting a new test.
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    You have too many incomplete tests.  Please finish one before starting a new test.
+                </div>
             </div>
         {% endif %}
         <div class="col-md-6{% if not tests %} col-md-offset-3{% endif %}">
@@ -25,12 +27,12 @@
                                         <div class="checkbox new-test-afsc">
                                             <label for="afsc-{{ afsc.uuid }}"
                                                    class="control-label new-test-afsc"
-                                                   title="{{ afsc.version }}">
+                                                   title="{{ afsc.name }} -- {{ afsc.version }}">
                                                 <input type="checkbox"
                                                        name="afscs[]"
                                                        id="afsc-{{ afsc.uuid }}"
                                                        value="{{ afsc.uuid }}">
-                                                {{ afsc.name }}
+                                                {{ afsc.name|length > 45 ? afsc.name|slice(0, 45) ~ '...' : afsc.name  }}
                                             </label>
                                         </div>
                                     {% endfor %}

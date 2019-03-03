@@ -79,7 +79,7 @@ SQL;
         if (empty($uuid)) {
             return new User();
         }
-        
+
         $qry = <<<SQL
 SELECT
   uuid,
@@ -105,12 +105,12 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param('s', $uuid);
-        
+
         if (!$stmt->execute()) {
             $stmt->close();
             return new User();
         }
-        
+
         $stmt->bind_result(
             $_uuid,
             $firstName,
@@ -130,10 +130,10 @@ SQL;
             $disabled,
             $reminderSent
         );
-        
+
         $stmt->fetch();
         $stmt->close();
-        
+
         $user = new User();
         $user->setUuid($_uuid);
         $user->setFirstName($firstName);
@@ -167,9 +167,9 @@ SQL;
         $user->setBase($base);
         $user->setDisabled($disabled);
         $user->setReminderSent($reminderSent);
-        
+
         $this->users[$uuid] = $user;
-        
+
         return $user;
     }
 
@@ -204,10 +204,10 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
-            
+
             $user = new User();
             $user->setUuid($row['uuid'] ?? '');
             $user->setFirstName($row['userFirstName'] ?? '');
@@ -218,7 +218,7 @@ SQL;
             $user->setEmail($row['userEmail'] ?? '');
             $user->setRank($row['userRank'] ?? '');
 
-            if (!is_null($row['userDateRegistered'] ?? null)) {
+            if (($row['userDateRegistered'] ?? null) !== null) {
                 $user->setDateRegistered(
                     \DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
@@ -227,7 +227,7 @@ SQL;
                 );
             }
 
-            if (!is_null($row['userLastLogin'] ?? null)) {
+            if (($row['userLastLogin'] ?? null) !== null) {
                 $user->setLastLogin(
                     \DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
@@ -236,7 +236,7 @@ SQL;
                 );
             }
 
-            if (!is_null($row['userLastActive'] ?? null)) {
+            if (($row['userLastActive'] ?? null) !== null) {
                 $user->setLastActive(
                     \DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
@@ -251,12 +251,12 @@ SQL;
             $user->setBase($row['userBase'] ?? '');
             $user->setDisabled((bool)($row['userDisabled'] ?? false));
             $user->setReminderSent((bool)($row['reminderSent'] ?? false));
-            
+
             $this->users[$row['uuid']] = $user;
         }
 
         $res->free();
-        
+
         return $this->users;
     }
 
@@ -276,7 +276,7 @@ SQL;
         );
 
         $uuidListString = implode("','", $uuidListFiltered);
-        
+
         $qry = <<<SQL
 SELECT
   uuid,
@@ -302,9 +302,9 @@ ORDER BY uuid ASC
 SQL;
 
         $res = $this->db->query($qry);
-        
+
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
@@ -359,7 +359,7 @@ SQL;
     public function reset(): self
     {
         $this->users = [];
-        
+
         return $this;
     }
 
@@ -371,7 +371,7 @@ SQL;
         if (empty($user->getUuid())) {
             return;
         }
-        
+
         $uuid = $user->getUuid();
         $firstName = $user->getFirstName();
         $lastName = $user->getLastName();
@@ -395,7 +395,7 @@ SQL;
         $base = $user->getBase();
         $disabled = (int)$user->isDisabled();
         $reminderSent = (int)$user->isReminderSent();
-        
+
         $qry = <<<SQL
 INSERT INTO userData
   (

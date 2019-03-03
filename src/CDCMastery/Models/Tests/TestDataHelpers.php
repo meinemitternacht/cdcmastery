@@ -74,7 +74,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($responseCount) || is_null($responseCount) || empty($responseCount)) {
+        if (!isset($responseCount) || $responseCount === null) {
             return 0;
         }
 
@@ -122,7 +122,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($answerUuid) || is_null($answerUuid) || empty($answerUuid)) {
+        if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
             return new Answer();
         }
 
@@ -180,11 +180,11 @@ SQL;
 
         $answered = [];
         while ($stmt->fetch()) {
-            if (!isset($questionUuid) || is_null($questionUuid) || empty($questionUuid)) {
+            if (!isset($questionUuid) || $questionUuid === null || $questionUuid === '') {
                 continue;
             }
 
-            if (!isset($answerUuid) || is_null($answerUuid) || empty($answerUuid)) {
+            if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
                 continue;
             }
 
@@ -252,11 +252,11 @@ SQL;
 
         $qaUuid = [];
         while ($stmt->fetch()) {
-            if (!isset($questionUuid) || is_null($questionUuid) || empty($questionUuid)) {
+            if (!isset($questionUuid) || $questionUuid === null || $questionUuid === '') {
                 continue;
             }
 
-            if (!isset($answerUuid) || is_null($answerUuid) || empty($answerUuid)) {
+            if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
                 continue;
             }
 

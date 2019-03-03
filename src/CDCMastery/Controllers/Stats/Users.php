@@ -17,32 +17,62 @@ use CDCMastery\Models\Messages\Messages;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\RoleHelpers;
+use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Response;
 
 class Users extends Stats
 {
     /**
-     * @return string
+     * @var BaseCollection
      */
-    public function renderUsersStatsHome(): string
+    private $baseCollection;
+
+    /**
+     * @var RoleCollection
+     */
+    private $roleCollection;
+
+    /**
+     * @var \CDCMastery\Models\Statistics\Users
+     */
+    private $users;
+
+    public function __construct(
+        Logger $logger,
+        \Twig_Environment $twig,
+        BaseCollection $baseCollection,
+        RoleCollection $roleCollection,
+        \CDCMastery\Models\Statistics\Users $users
+    ) {
+        parent::__construct($logger, $twig);
+
+        $this->baseCollection = $baseCollection;
+        $this->roleCollection = $roleCollection;
+        $this->users = $users;
+    }
+
+    /**
+     * @return Response
+     */
+    public function renderUsersStatsHome(): Response
     {
         return AppHelpers::redirect('/stats/users/bases');
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderUsersByBase(): string
+    public function renderUsersByBase(): Response
     {
-        $statsUsers = $this->container->get(\CDCMastery\Models\Statistics\Users::class);
-
-        $baseCollection = $this->container->get(BaseCollection::class);
-
         $data = [
             'title' => 'All Users',
             'subTitle' => 'Users by Base',
             'counts' => StatisticsHelpers::formatGraphDataUsers(
-                $statsUsers->countsByBase(),
-                BaseHelpers::listNamesKeyed($baseCollection->fetchAll())
+                $this->users->countsByBase(),
+                BaseHelpers::listNamesKeyed($this->baseCollection->fetchAll())
             )
         ];
 
@@ -52,7 +82,7 @@ class Users extends Stats
                 "There are no users in the system"
             );
 
-            AppHelpers::redirect('/stats');
+            return AppHelpers::redirect('/stats');
         }
 
         return $this->render(
@@ -62,20 +92,19 @@ class Users extends Stats
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderUsersByRole(): string
+    public function renderUsersByRole(): Response
     {
-        $statsUsers = $this->container->get(\CDCMastery\Models\Statistics\Users::class);
-
-        $roleCollection = $this->container->get(RoleCollection::class);
-
         $data = [
             'title' => 'All Users',
             'subTitle' => 'Users by Role',
             'counts' => StatisticsHelpers::formatGraphDataUsers(
-                $statsUsers->countsByRole(),
-                RoleHelpers::listNamesKeyed($roleCollection->fetchAll())
+                $this->users->countsByRole(),
+                RoleHelpers::listNamesKeyed($this->roleCollection->fetchAll())
             )
         ];
 
@@ -85,7 +114,7 @@ class Users extends Stats
                 "There are no users in the system"
             );
 
-            AppHelpers::redirect('/stats');
+            return AppHelpers::redirect('/stats');
         }
 
         return $this->render(

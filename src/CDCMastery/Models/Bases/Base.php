@@ -26,7 +26,7 @@ class Base
      */
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->uuid ?? '';
     }
 
     /**

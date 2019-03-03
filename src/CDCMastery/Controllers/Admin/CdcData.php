@@ -20,31 +20,76 @@ use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\Tests;
 use CDCMastery\Models\Users\AfscUserCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
+use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Response;
 
 class CdcData extends Admin
 {
-    public function renderAfscHome(string $afscUuid): string
+    /**
+     * @var AfscCollection
+     */
+    private $afscCollection;
+
+    /**
+     * @var QuestionHelpers
+     */
+    private $questionHelpers;
+
+    /**
+     * @var UserAfscAssociations
+     */
+    private $userAfscAssociations;
+
+    /**
+     * @var Tests
+     */
+    private $tests;
+
+    public function __construct(
+        Logger $logger,
+        \Twig_Environment $twig,
+        AfscCollection $afscCollection,
+        QuestionHelpers $questionHelpers,
+        UserAfscAssociations $userAfscAssociations,
+        Tests $tests
+    ) {
+        parent::__construct($logger, $twig);
+
+        $this->afscCollection = $afscCollection;
+        $this->questionHelpers = $questionHelpers;
+        $this->userAfscAssociations = $userAfscAssociations;
+        $this->tests = $tests;
+    }
+
+    public function processAddAfsc(): Response
     {
-        $afscCollection = $this->container->get(AfscCollection::class);
-        $questionHelpers = $this->container->get(QuestionHelpers::class);
-        $userAfscAssociations = $this->container->get(UserAfscAssociations::class);
-        $statsTests = $this->container->get(Tests::class);
 
-        $afsc = $afscCollection->fetch($afscUuid);
+    }
 
-        if (empty($afsc->getUuid())) {
+    /**
+     * @param string $afscUuid
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function renderAfscHome(string $afscUuid): Response
+    {
+        $afsc = $this->afscCollection->fetch($afscUuid);
+
+        if ($afsc->getUuid() === '') {
             Messages::add(
                 Messages::WARNING,
                 'The specified AFSC does not exist'
             );
 
-            AppHelpers::redirect('/admin/cdc/afsc');
+            return AppHelpers::redirect('/admin/cdc/afsc');
         }
 
-        $afscUsers = $userAfscAssociations->fetchAllByAfsc($afsc);
-        $afscQuestionsArr = $questionHelpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
+        $afscUsers = $this->userAfscAssociations->fetchAllByAfsc($afsc);
+        $afscQuestionsArr = $this->questionHelpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
 
-        if (empty($afscQuestionsArr) || !is_array($afscQuestionsArr)) {
+        if (!is_array($afscQuestionsArr) || \count($afscQuestionsArr) === 0) {
             $afscQuestions = 0;
             goto out_return;
         }
@@ -59,10 +104,10 @@ class CdcData extends Admin
             'subTitle' => 'Tests By Month',
             'period' => 'month',
             'averages' => StatisticsHelpers::formatGraphDataTests(
-                $statsTests->afscAverageByMonth($afsc)
+                $this->tests->afscAverageByMonth($afsc)
             ),
             'counts' => StatisticsHelpers::formatGraphDataTests(
-                $statsTests->afscCountByMonth($afsc)
+                $this->tests->afscCountByMonth($afsc)
             )
         ];
 
@@ -73,19 +118,20 @@ class CdcData extends Admin
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscList(): string
+    public function renderAfscList(): Response
     {
-        $afscCollection = $this->container->get(AfscCollection::class);
-        $questionHelpers = $this->container->get(QuestionHelpers::class);
-        $userAfscAssociations = $this->container->get(UserAfscAssociations::class);
+        $flags = AfscCollection::SHOW_FOUO;
 
-        $flags = AuthHelpers::isAdmin()
-            ? (AfscCollection::SHOW_HIDDEN | AfscCollection::SHOW_FOUO | AfscCollection::SHOW_OBSOLETE)
-            : AfscCollection::SHOW_FOUO;
+        if (AuthHelpers::isAdmin()) {
+            $flags |= AfscCollection::SHOW_HIDDEN | AfscCollection::SHOW_OBSOLETE;
+        }
 
-        $afscList = $afscCollection->fetchAll(
+        $afscList = $this->afscCollection->fetchAll(
             [
                 AfscCollection::COL_NAME => AfscCollection::ORDER_ASC,
                 AfscCollection::COL_VERSION => AfscCollection::ORDER_ASC,
@@ -94,17 +140,17 @@ class CdcData extends Admin
             $flags
         );
 
-        if (empty($afscList)) {
+        if (\count($afscList) === 0) {
             Messages::add(
                 Messages::WARNING,
                 'There are no AFSCs in the database'
             );
 
-            AppHelpers::redirect('/');
+            return AppHelpers::redirect('/');
         }
 
-        $afscUsers = $userAfscAssociations->fetchAll(UserAfscAssociations::GROUP_BY_AFSC);
-        $afscQuestions = $questionHelpers->getNumQuestionsByAfsc(
+        $afscUsers = $this->userAfscAssociations->fetchAll(UserAfscAssociations::GROUP_BY_AFSC);
+        $afscQuestions = $this->questionHelpers->getNumQuestionsByAfsc(
             AfscHelpers::listUuid($afscList)
         );
 

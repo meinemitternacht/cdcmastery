@@ -6,7 +6,7 @@
  * Time: 11:15 AM
  */
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 
 return [
@@ -17,7 +17,7 @@ return [
 
         $hostList = $config->get(['system','memcached']);
 
-        if (is_array($hostList) && !empty($hostList)) {
+        if (is_array($hostList) && \count($hostList) > 0) {
             foreach ($hostList as $host) {
                 if (!isset($host->host) || !isset($host->port)) {
                     continue;
@@ -53,7 +53,8 @@ return [
             $logger->pushHandler($debugHandler);
         }
 
-        if (file_exists($config->get(['system','log','general'])) && !is_writable($config->get(['system','log','general']))) {
+        $general_log = $config->get(['system','log','general']);
+        if (file_exists($general_log) && !is_writable($general_log)) {
             $logger->alert('Log file is not writable: ' . $config->get(['system','log','general']));
             goto out_return;
         }
@@ -75,19 +76,19 @@ return [
     mysqli::class => function (ContainerInterface $c) {
         $config = $c->get(\CDCMastery\Models\Config\Config::class);
 
-        $database = $config->get(['system','debug'])
+        $db_conf = $config->get(['system','debug'])
             ? $config->get(['database','dev'])
             : $config->get(['database','prod']);
 
         define('ENCRYPTION_KEY', $config->get(['encryption', 'key']));
 
         $db = new mysqli(
-            $database->host,
-            $database->username,
-            $database->password,
-            $database->schema,
-            $database->port,
-            $database->socket
+            $db_conf->host,
+            $db_conf->username,
+            $db_conf->password,
+            $db_conf->schema,
+            $db_conf->port,
+            $db_conf->socket
         );
 
         if ($db->connect_errno) {

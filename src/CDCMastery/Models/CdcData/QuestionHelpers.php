@@ -102,7 +102,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($uuid) || is_null($uuid) || empty($uuid)) {
+        if (!isset($uuid) || $uuid === null || $uuid === '') {
             return new Afsc();
         }
 
@@ -144,11 +144,11 @@ SQL;
 
         $data = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['count']) || is_null($row['count'])) {
+            if (!isset($row['count']) || $row['count'] === null) {
                 continue;
             }
 
-            if (!isset($row['afscUUID']) || is_null($row['afscUUID'])) {
+            if (!isset($row['afscUUID']) || $row['afscUUID'] === null) {
                 continue;
             }
 

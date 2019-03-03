@@ -39,8 +39,12 @@
                                     <tbody>
                                     {% for test in tests.complete %}
                                         <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                                            <td>
-                                                {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
+                                            <td title="{{ test.afsc }}">
+                                                {% if test.afsc|length > 0 %}
+                                                    {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc  }}
+                                                {% else %}
+                                                    No Data
+                                                {% endif %}
                                             </td>
                                             <td>{{ test.questions }}</td>
                                             <td>{{ test.time.started }}</td>
@@ -69,8 +73,12 @@
                                     <tbody>
                                     {% for test in tests.incomplete %}
                                         <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                                            <td>
-                                                {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
+                                            <td title="{{ test.afsc }}">
+                                                {% if test.afsc|length > 0 %}
+                                                    {{ test.afsc|length > 30 ? test.afsc|slice(0, 30) ~ '...' : test.afsc  }}
+                                                {% else %}
+                                                    No Data
+                                                {% endif %}
                                             </td>
                                             <td>{{ test.questions }}</td>
                                             <td>{{ test.time.started }}</td>
@@ -111,7 +119,7 @@
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading text-center">
                     <h4>General Stats</h4>
                 </div>
                 <div class="panel-body panel-min-250">

@@ -13,30 +13,43 @@ use CDCMastery\Controllers\Stats;
 use CDCMastery\Helpers\AppHelpers;
 use CDCMastery\Models\Messages\Messages;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
+use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Response;
 
 class Tests extends Stats
 {
-    const TYPE_LAST_SEVEN = 0;
-    const TYPE_MONTH = 1;
-    const TYPE_WEEK = 2;
-    const TYPE_YEAR = 3;
+    /**
+     * @var \CDCMastery\Models\Statistics\Tests
+     */
+    private $tests;
+
+    public function __construct(
+        Logger $logger,
+        \Twig_Environment $twig,
+        \CDCMastery\Models\Statistics\Tests $tests
+    ) {
+        parent::__construct($logger, $twig);
+
+        $this->tests = $tests;
+    }
 
     /**
-     * @return string
+     * @return Response
      */
-    public function renderTestsStatsHome(): string
+    public function renderTestsStatsHome(): Response
     {
         return AppHelpers::redirect('/stats/tests/last-seven');
     }
 
     /**
      * @param int $type
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    private function renderTestsByTimeSegment(int $type): string
+    private function renderTestsByTimeSegment(int $type): Response
     {
-        $statsTests = $this->container->get(\CDCMastery\Models\Statistics\Tests::class);
-
         $data = [
             'title' => 'All Tests'
         ];
@@ -47,10 +60,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests Last Seven Days',
                     'period' => 'last-seven',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->averageLastSevenDays()
+                        $this->tests->averageLastSevenDays()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->countLastSevenDays()
+                        $this->tests->countLastSevenDays()
                     )
                 ]);
                 break;
@@ -59,10 +72,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Month',
                     'period' => 'month',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->averageByMonth()
+                        $this->tests->averageByMonth()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->countByMonth()
+                        $this->tests->countByMonth()
                     )
                 ]);
                 break;
@@ -71,10 +84,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Week',
                     'period' => 'week',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->averageByWeek()
+                        $this->tests->averageByWeek()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->countByWeek()
+                        $this->tests->countByWeek()
                     ),
                 ]);
                 break;
@@ -83,10 +96,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Year',
                     'period' => 'year',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->averageByYear()
+                        $this->tests->averageByYear()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $statsTests->countByYear()
+                        $this->tests->countByYear()
                     ),
                 ]);
                 break;
@@ -96,17 +109,16 @@ class Tests extends Stats
                     'Invalid time period'
                 );
 
-                AppHelpers::redirect('/stats/tests');
-                break;
+                return AppHelpers::redirect('/stats/tests');
         }
 
-        if (empty($data['averages'])) {
+        if ($data['averages'] === '') {
             Messages::add(
                 Messages::INFO,
                 "No tests have been taken in the last seven days"
             );
 
-            AppHelpers::redirect('/stats/bases/tests');
+            return AppHelpers::redirect('/stats/bases/tests');
         }
 
         return $this->render(
@@ -116,33 +128,45 @@ class Tests extends Stats
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsLastSeven(): string
+    public function renderTestsLastSeven(): Response
     {
         return $this->renderTestsByTimeSegment(self::TYPE_LAST_SEVEN);
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByMonth(): string
+    public function renderTestsByMonth(): Response
     {
         return $this->renderTestsByTimeSegment(self::TYPE_MONTH);
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByWeek(): string
+    public function renderTestsByWeek(): Response
     {
         return $this->renderTestsByTimeSegment(self::TYPE_WEEK);
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByYear(): string
+    public function renderTestsByYear(): Response
     {
         return $this->renderTestsByTimeSegment(self::TYPE_YEAR);
     }

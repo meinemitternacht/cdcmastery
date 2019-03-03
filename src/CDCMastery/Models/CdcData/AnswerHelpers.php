@@ -77,7 +77,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($uuid) || is_null($uuid) || empty($uuid)) {
+        if (!isset($uuid) || $uuid  === null || $uuid === '') {
             return new Afsc();
         }
 
@@ -119,7 +119,7 @@ SQL;
 
         $uuidCorrect = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid']) || empty($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null ) {
                 continue;
             }
 

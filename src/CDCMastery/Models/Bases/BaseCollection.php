@@ -143,7 +143,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 

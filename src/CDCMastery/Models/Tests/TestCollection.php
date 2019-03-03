@@ -225,7 +225,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || is_null($_uuid)) {
+        if (!isset($_uuid) || $_uuid === null) {
             return new Test();
         }
 
@@ -476,7 +476,7 @@ SQL;
 
         $data = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
@@ -521,7 +521,7 @@ SQL;
             $test->setUserUuid($datum['userUuid'] ?? '');
             $test->setAfscs($afscArr);
 
-            if (!is_null($datum['timeStarted'])) {
+            if ($datum['timeStarted'] !== null) {
                 $test->setTimeStarted(
                     \DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
@@ -530,7 +530,7 @@ SQL;
                 );
             }
 
-            if (!is_null($datum['timeCompleted'])) {
+            if ($datum['timeCompleted'] !== null) {
                 $test->setTimeCompleted(
                     \DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
@@ -578,12 +578,12 @@ SQL;
         $uuid = $test->getUuid();
         $userUuid = $test->getUserUuid();
         $afscList = serialize(AfscHelpers::listUuid($test->getAfscs()));
-        $timeStarted = is_null($test->getTimeStarted())
+        $timeStarted = $test->getTimeStarted() === null
             ? null
             : $test->getTimeStarted()->format(
                 DateTimeHelpers::DT_FMT_DB
             );
-        $timeCompleted = is_null($test->getTimeCompleted())
+        $timeCompleted = $test->getTimeCompleted() === null
             ? null
             : $test->getTimeCompleted()->format(
                 DateTimeHelpers::DT_FMT_DB

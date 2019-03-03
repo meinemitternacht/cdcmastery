@@ -172,7 +172,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || is_null($_uuid)) {
+        if (!isset($_uuid) || $_uuid === null) {
             return new OfflineTest();
         }
 
@@ -260,7 +260,7 @@ SQL;
 
         $rows = [];
         while ($stmt->fetch()) {
-            if (!isset($uuid) || is_null($uuid)) {
+            if (!isset($uuid) || $uuid === null) {
                 continue;
             }
 
@@ -286,7 +286,7 @@ SQL;
         $uuidList = [];
         $c = count($rows);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || is_null($rows[$i]['uuid'])) {
+            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || $rows[$i]['uuid'] === '') {
                 continue;
             }
 
@@ -369,7 +369,7 @@ SQL;
 
         $rows = [];
         while ($stmt->fetch()) {
-            if (!isset($uuid) || is_null($uuid)) {
+            if (!isset($uuid) || $uuid === null) {
                 continue;
             }
 
@@ -470,12 +470,12 @@ FROM testGeneratorData
 WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid ASC
 SQL;
-        
+
         $res = $this->db->query($qry);
-        
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
@@ -501,12 +501,12 @@ SQL;
         $uuidList = [];
         $c = count($rows);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || is_null($rows[$i]['uuid'])) {
+            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || $rows[$i]['uuid'] === '') {
                 continue;
             }
 
             $afsc = $afscCollection->fetch($rows[$i]['afscUuid'] ?? '');
-            
+
             $questions = unserialize($rows[$i]['questionList'] ?? '');
 
             if (!is_array($questions)) {
@@ -558,7 +558,7 @@ SQL;
         if (empty($offlineTest->getUuid())) {
             return;
         }
-        
+
         $uuid = $offlineTest->getUuid();
         $userUuid = $offlineTest->getUserUuid();
         $afscUuid = $offlineTest->getAfsc()->getUuid();
@@ -571,7 +571,7 @@ SQL;
         $dateCreated = $offlineTest->getDateCreated()->format(
             DateTimeHelpers::DT_FMT_DB
         );
-        
+
         $qry = <<<SQL
 INSERT INTO testGeneratorData
   (

@@ -25,7 +25,7 @@ class StatisticsHelpers
             $i++;
         }
 
-        return empty($newData)
+        return \count($newData) === 0
             ? ''
             : json_encode($newData);
     }
@@ -55,7 +55,7 @@ class StatisticsHelpers
             $i++;
         }
 
-        return empty($newData)
+        return \count($newData) === 0
             ? ''
             : json_encode($newData);
     }
@@ -85,7 +85,7 @@ class StatisticsHelpers
             $i++;
         }
 
-        return empty($newData)
+        return \count($newData) === 0
             ? ''
             : json_encode($newData);
     }

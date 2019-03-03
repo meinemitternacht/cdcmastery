@@ -48,9 +48,9 @@ class EmailCollection
         if (empty($uuid)) {
             return;
         }
-        
+
         $uuid = $this->db->real_escape_string($uuid);
-        
+
         $qry = <<<SQL
 DELETE FROM emailQueue
 WHERE uuid = '{$uuid}'
@@ -112,14 +112,14 @@ SELECT
   queueUser
 FROM emailQueue
 SQL;
-        
+
         $res = $this->db->query($qry);
-        
+
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid']) || empty($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
-            
+
             $email = new Email();
             $email->setUuid($row['uuid'] ?? '');
             $email->setQueueTime(
@@ -134,10 +134,10 @@ SQL;
             $email->setBodyHtml($row['emailBodyHTML'] ?? '');
             $email->setBodyTxt($row['emailBodyText'] ?? '');
             $email->setUserUuid($row['queueUser'] ?? '');
-            
+
             $this->emails[$row['uuid']] = $email;
         }
-        
+
         return $this->emails;
     }
 
@@ -149,7 +149,7 @@ SQL;
         if (empty($email->getUuid())) {
             return;
         }
-        
+
         $uuid = $email->getUuid();
         $queueTime = $email->getQueueTime()->format(
             DateTimeHelpers::DT_FMT_DB
@@ -160,7 +160,7 @@ SQL;
         $bodyHtml = $email->getBodyHtml();
         $bodyText = $email->getBodyTxt();
         $userUuid = $email->getUserUuid();
-        
+
         $qry = <<<SQL
 INSERT INTO emailQueue
   (

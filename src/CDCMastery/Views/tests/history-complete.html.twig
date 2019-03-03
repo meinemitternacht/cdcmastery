@@ -23,8 +23,12 @@
                     <tbody>
                     {% for test in tests %}
                         <tr class="{% if test.score >= passingScore %} bg-success{% else %} bg-danger{% endif %}" style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                            <td>
-                                {% if test.afsc|length > 0 %}{{ test.afsc }}{% else %}No Data{% endif %}
+                            <td title="{{ test.afsc }}">
+                                {% if test.afsc|length > 0 %}
+                                    {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc  }}
+                                {% else %}
+                                    No Data
+                                {% endif %}
                             </td>
                             <td>{{ test.questions }}</td>
                             <td>{{ test.time.started }}</td>

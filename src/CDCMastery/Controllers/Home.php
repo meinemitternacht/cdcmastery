@@ -18,13 +18,47 @@ use CDCMastery\Models\Statistics\Tests;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\UserCollection;
+use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Response;
 
 class Home extends RootController
 {
     /**
-     * @return string
+     * @var Tests
      */
-    public function renderFrontPage(): string
+    private $tests;
+
+    /**
+     * @var UserCollection
+     */
+    private $userCollection;
+
+    /**
+     * @var TestCollection
+     */
+    private $testCollection;
+
+    public function __construct(
+        Logger $logger,
+        \Twig_Environment $twig,
+        Tests $tests,
+        UserCollection $userCollection,
+        TestCollection $testCollection
+    ) {
+        parent::__construct($logger, $twig);
+
+        $this->tests = $tests;
+        $this->userCollection = $userCollection;
+        $this->testCollection = $testCollection;
+    }
+
+    /**
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function renderFrontPage(): Response
     {
         return AuthHelpers::isLoggedIn()
             ? $this->renderFrontPageAuth()
@@ -32,20 +66,21 @@ class Home extends RootController
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    private function renderFrontPageAnon(): string
+    private function renderFrontPageAnon(): Response
     {
-        $statsTests = $this->container->get(Tests::class);
-
         $data = [
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->averageLastSevenDays()),
-                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->countLastSevenDays())
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->averageLastSevenDays()),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->countLastSevenDays())
             ],
             'yearStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->averageByYear()),
-                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->countByYear())
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->averageByYear()),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->countByYear())
             ]
         ];
 
@@ -56,17 +91,16 @@ class Home extends RootController
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     * @throws \Exception
      */
-    private function renderFrontPageAuth(): string
+    private function renderFrontPageAuth(): Response
     {
-        $statsTests = $this->container->get(Tests::class);
-
-        $userCollection = $this->container->get(UserCollection::class);
-        $user = $userCollection->fetch(SessionHelpers::getUserUuid());
-
-        $testCollection = $this->container->get(TestCollection::class);
-        $tests = $testCollection->fetchAllByUser($user);
+        $user = $this->userCollection->fetch(SessionHelpers::getUserUuid());
+        $tests = $this->testCollection->fetchAllByUser($user);
 
         uasort(
             $tests,
@@ -142,25 +176,25 @@ class Home extends RootController
         $data = [
             'generalStats' => [
                 'avg' => [
-                    'overall' => $statsTests->userAverageOverall($user),
-                    'lastSeven' => $statsTests->userAverageBetween($user, $daysAgo_7, new \DateTime()),
-                    'lastThirty' => $statsTests->userAverageBetween($user, $daysAgo_30, new \DateTime()),
-                    'lastNinety' => $statsTests->userAverageBetween($user, $daysAgo_90, new \DateTime())
+                    'overall' => $this->tests->userAverageOverall($user),
+                    'lastSeven' => $this->tests->userAverageBetween($user, $daysAgo_7, new \DateTime()),
+                    'lastThirty' => $this->tests->userAverageBetween($user, $daysAgo_30, new \DateTime()),
+                    'lastNinety' => $this->tests->userAverageBetween($user, $daysAgo_90, new \DateTime())
                 ],
                 'count' => [
-                    'overall' => $statsTests->userCountOverall($user),
-                    'lastSeven' => $statsTests->userCountBetween($user, $daysAgo_7, new \DateTime()),
-                    'lastThirty' => $statsTests->userCountBetween($user, $daysAgo_30, new \DateTime()),
-                    'lastNinety' => $statsTests->userCountBetween($user, $daysAgo_90, new \DateTime())
+                    'overall' => $this->tests->userCountOverall($user),
+                    'lastSeven' => $this->tests->userCountBetween($user, $daysAgo_7, new \DateTime()),
+                    'lastThirty' => $this->tests->userCountBetween($user, $daysAgo_30, new \DateTime()),
+                    'lastNinety' => $this->tests->userCountBetween($user, $daysAgo_90, new \DateTime())
                 ]
             ],
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->userAverageLastSevenDays($user)),
-                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->userCountLastSevenDays($user))
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->userAverageLastSevenDays($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->userCountLastSevenDays($user))
             ],
             'monthStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($statsTests->userAverageByMonth($user)),
-                'count' => StatisticsHelpers::formatGraphDataTests($statsTests->userCountByMonth($user))
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->userAverageByMonth($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->userCountByMonth($user))
             ],
             'tests' => [
                 'complete' => $testsComplete,

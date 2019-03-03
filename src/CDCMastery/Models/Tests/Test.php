@@ -293,6 +293,6 @@ class Test
      */
     public function isComplete(): bool
     {
-        return $this->getScore() > 0 && !is_null($this->getTimeCompleted());
+        return $this->getScore() > 0 && $this->getTimeCompleted() !== null;
     }
 }

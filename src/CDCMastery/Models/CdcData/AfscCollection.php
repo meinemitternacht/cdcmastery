@@ -65,7 +65,7 @@ class AfscCollection
      */
     private static function generateOrderSuffix(array $columnOrders): string
     {
-        if (empty($columnOrders)) {
+        if (\count($columnOrders) === 0) {
             return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
         }
 
@@ -223,7 +223,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
@@ -280,7 +280,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 

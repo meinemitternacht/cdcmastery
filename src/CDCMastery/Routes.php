@@ -25,9 +25,9 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
 
         $r->addRoute('POST', '/cdc/afsc', [
             \CDCMastery\Controllers\Admin\CdcData::class,
-            'processNewAfsc'
+            'processAddAfsc'
         ]);
-        
+
         $r->addGroup('/cdc/afsc', function (\FastRoute\RouteCollector $r) {
             $r->addRoute('GET', '/migrate', [
                 \CDCMastery\Controllers\Admin\CdcData::class,
@@ -73,7 +73,7 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
                 \CDCMastery\Controllers\Admin\CdcData::class,
                 'processAddQuestion'
             ]);
-            
+
             $r->addGroup('/{afscUuid}/questions', function (\FastRoute\RouteCollector $r) {
                 $r->addRoute('GET', '/{questionUuid}', [
                     \CDCMastery\Controllers\Admin\CdcData::class,
@@ -108,7 +108,7 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
                 $r->addRoute('POST', '/{questionUuid}/answers/{answerUuid}', [
                     \CDCMastery\Controllers\Admin\CdcData::class,
                     'processEditAnswer'
-                ]); 
+                ]);
             });
         });
     });
@@ -256,7 +256,7 @@ return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
                 ]);
             });
         });
-        
+
         $r->addRoute('GET', '/bases', [
             \CDCMastery\Controllers\Stats\Bases::class,
             'renderBasesStatsHome'

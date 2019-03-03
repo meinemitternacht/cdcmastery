@@ -116,7 +116,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || is_null($_uuid)) {
+        if (!isset($_uuid) || $_uuid === null) {
             return new OfficeSymbol();
         }
 
@@ -145,7 +145,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
@@ -190,7 +190,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || is_null($row['uuid'])) {
+            if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 

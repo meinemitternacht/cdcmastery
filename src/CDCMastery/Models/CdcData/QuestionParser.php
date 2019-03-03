@@ -44,11 +44,11 @@ class QuestionParser
         $lines = self::splitByLineAndAnswerIdentifiers($text);
 
         /* Handle instances where the line breaks are not copied correctly */
-        if (count($lines) === 1) {
+        if (\count($lines) === 1) {
             $lines = self::addLineBreaks($lines[0]);
         }
 
-        $c = count($lines);
+        $c = \count($lines);
 
         if ($c > 5) {
             throw new QuestionTextParserFailedException();
@@ -77,7 +77,7 @@ class QuestionParser
             }
         }
 
-        if (is_null($questionText) || empty($questionText)) {
+        if ($questionText === null || empty($questionText)) {
             throw new QuestionTextEmptyException();
         }
 
@@ -116,6 +116,7 @@ class QuestionParser
     /**
      * @param string $line
      * @return array
+     * @throws QuestionTextParserFailedException
      */
     private static function addLineBreaks(string $line): array
     {

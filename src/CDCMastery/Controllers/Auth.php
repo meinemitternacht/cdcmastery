@@ -9,9 +9,7 @@
 namespace CDCMastery\Controllers;
 
 
-use CDCMastery\Exceptions\Parameters\MissingParameterException;
 use CDCMastery\Helpers\AppHelpers;
-use CDCMastery\Helpers\ParameterHelpers;
 use CDCMastery\Helpers\SessionHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
@@ -19,13 +17,47 @@ use CDCMastery\Models\Messages\Messages;
 use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
+use Monolog\Logger;
+use Symfony\Component\HttpFoundation\Response;
 
 class Auth extends RootController
 {
     /**
-     * @return string
+     * @var UserHelpers
      */
-    public function processLogin(): string
+    private $userHelpers;
+
+    /**
+     * @var UserCollection
+     */
+    private $userCollection;
+
+    /**
+     * @var RoleCollection
+     */
+    private $roleCollection;
+
+    public function __construct(
+        Logger $logger,
+        \Twig_Environment $twig,
+        UserHelpers $userHelpers,
+        UserCollection $userCollection,
+        RoleCollection  $roleCollection
+    ) {
+        parent::__construct($logger, $twig);
+
+        $this->userHelpers = $userHelpers;
+        $this->userCollection = $userCollection;
+        $this->roleCollection = $roleCollection;
+    }
+
+    /**
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function processLogin(): Response
     {
         if (AuthHelpers::isLoggedIn()) {
             $this->log->addWarning(
@@ -59,14 +91,12 @@ class Auth extends RootController
             return self::renderLogin();
         }
 
-        try {
-            ParameterHelpers::checkRequiredParameters(
-                $this->getRequest(), [
-                    'username',
-                    'password'
-                ]
-            );
-        } catch (MissingParameterException $e) {
+        $parameters = [
+            'username',
+            'password'
+        ];
+
+        if (!$this->checkParameters($parameters, $this->request)) {
             LoginRateLimiter::increment();
 
             $this->log->addWarning(
@@ -84,24 +114,21 @@ class Auth extends RootController
             return self::renderLogin();
         }
 
-        $username = $this->getRequest()->request->get('username');
-        $password = $this->getRequest()->request->get('password');
+        $username = $this->get('username');
+        $password = $this->get('password');
 
-        $userHelpers = $this->container->get(UserHelpers::class);
-        $matchUsername = $userHelpers->findByUsername($username);
+        $matchUsername = $this->userHelpers->findByUsername($username);
 
         $matchEmail = null;
         if (filter_var($username, FILTER_VALIDATE_EMAIL) !== false) {
-            $matchEmail = $userHelpers->findByEmail($username);
+            $matchEmail = $this->userHelpers->findByEmail($username);
         }
 
-        $uuid = is_null($matchUsername)
-            ? is_null($matchEmail)
-                ? null
-                : $matchEmail
+        $uuid = $matchUsername === null
+            ? ($matchEmail === null ? null : $matchEmail)
             : $matchUsername;
 
-        if (is_null($uuid)) {
+        if ($uuid === null) {
             LoginRateLimiter::increment();
 
             $this->log->addWarning(
@@ -117,10 +144,9 @@ class Auth extends RootController
             return self::renderLogin();
         }
 
-        $userCollection = $this->container->get(UserCollection::class);
-        $user = $userCollection->fetch($uuid);
+        $user = $this->userCollection->fetch($uuid);
 
-        if (empty($user->getUuid())) {
+        if ($user->getUuid() === '') {
             LoginRateLimiter::increment();
 
             $this->log->addWarning(
@@ -168,8 +194,7 @@ class Auth extends RootController
             return self::renderLogin();
         }
 
-        $roleCollection = $this->container->get(RoleCollection::class);
-        $role = $roleCollection->fetch($user->getRole());
+        $role = $this->roleCollection->fetch($user->getRole());
 
         AuthHelpers::postprocessLogin($user, $role);
 
@@ -187,17 +212,15 @@ class Auth extends RootController
             'Welcome, ' . $user->getName() . '! You are now signed in.'
         );
 
-        $destination = isset($_SESSION[AuthHelpers::KEY_REDIRECT])
-            ? $_SESSION[AuthHelpers::KEY_REDIRECT]
-            : '/';
-
-        return AppHelpers::redirect($destination);
+        return AppHelpers::redirect(
+            $_SESSION[AuthHelpers::KEY_REDIRECT] ?? '/'
+        );
     }
 
     /**
-     * @return string
+     * @return Response
      */
-    public function processLogout(): string
+    public function processLogout(): Response
     {
         $this->log->addInfo(
             'logout success:: account ' .
@@ -217,9 +240,12 @@ class Auth extends RootController
     }
 
     /**
-     * @return string
+     * @return Response
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
-    public function renderLogin(): string
+    public function renderLogin(): Response
     {
         if (AuthHelpers::isLoggedIn()) {
             $this->log->addWarning(

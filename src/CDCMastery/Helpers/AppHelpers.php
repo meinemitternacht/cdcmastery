@@ -9,22 +9,23 @@
 namespace CDCMastery\Helpers;
 
 
+use Symfony\Component\HttpFoundation\Response;
+
 class AppHelpers
 {
     /**
      * @param string $destination
-     * @return string
+     * @return Response
      */
-    public static function redirect(string $destination): string
+    public static function redirect(string $destination): Response
     {
-        session_write_close();
-
         $protocol = isset($_SERVER['HTTPS'])
             ? 'https://'
             : 'http://';
 
-        header('Location: ' . $protocol . $_SERVER['HTTP_HOST'] . $destination);
-        ob_end_flush();
-        return exit();
+        $response = new Response();
+        $response->headers->add(['Location' => $protocol . $_SERVER['HTTP_HOST'] . $destination]);
+
+        return $response;
     }
 }

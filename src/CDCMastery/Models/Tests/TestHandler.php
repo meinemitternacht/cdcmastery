@@ -60,6 +60,7 @@ class TestHandler
      * @param Logger $logger
      * @param TestOptions $options
      * @return TestHandler
+     * @throws \Exception
      */
     public static function factory(\mysqli $mysqli, Logger $logger, TestOptions $options): self
     {
@@ -146,7 +147,7 @@ class TestHandler
 
     public function first(): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -164,7 +165,7 @@ class TestHandler
 
     public function previous(): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -184,7 +185,7 @@ class TestHandler
 
     public function next(): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -206,7 +207,7 @@ class TestHandler
 
     public function last(): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -222,7 +223,7 @@ class TestHandler
      */
     public function navigate(int $idx): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -239,7 +240,7 @@ class TestHandler
      */
     public function getDisplayData(): array
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return [];
         }
 
@@ -327,7 +328,7 @@ class TestHandler
      */
     public function getQuestion(int $idx = -1): Question
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return new Question();
         }
 
@@ -340,7 +341,7 @@ class TestHandler
 
     private function save(): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -357,7 +358,7 @@ class TestHandler
      */
     public function saveResponse(QuestionResponse $questionResponse): void
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             return;
         }
 
@@ -383,6 +384,9 @@ class TestHandler
         $this->next();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function score(): void
     {
         $answerHelpers = new AnswerHelpers(
@@ -414,7 +418,7 @@ class TestHandler
         $nCorrect = 0;
         $nMissed = 0;
         foreach ($answersCorrect as $answerUuid => $answerCorrect) {
-            if ($answerCorrect === true) {
+            if ($answerCorrect) {
                 $nCorrect++;
                 continue;
             }
@@ -436,7 +440,7 @@ class TestHandler
             )
         );
         $test->setNumAnswered(
-            count($selectedAnswers)
+            \count($selectedAnswers)
         );
         $test->setNumMissed(
             $nMissed
@@ -467,7 +471,7 @@ class TestHandler
      */
     public function getTest(): Test
     {
-        if (is_null($this->test)) {
+        if ($this->test === null) {
             $this->setTest(new Test());
         }
 

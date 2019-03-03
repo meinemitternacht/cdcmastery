@@ -101,7 +101,7 @@ class User
      */
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->uuid ?? '';
     }
 
     /**
