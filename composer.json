@@ -11,7 +11,11 @@
     "twig/twig": "^2.6",
     "monolog/monolog": "^1.24",
     "symfony/http-foundation": "^4.2",
-    "swiftmailer/swiftmailer": "^6.1"
+    "swiftmailer/swiftmailer": "^6.1",
+    "ext-mysqli": "*",
+    "ext-memcached": "*",
+    "ext-json": "*",
+    "ext-sysvsem": "*"
   },
   "autoload": {
     "psr-4": {

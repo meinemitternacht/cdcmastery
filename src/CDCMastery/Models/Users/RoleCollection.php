@@ -10,11 +10,12 @@ namespace CDCMastery\Models\Users;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class RoleCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -24,29 +25,40 @@ class RoleCollection
     protected $log;
 
     /**
-     * @var Role[]
-     */
-    private $roles = [];
-
-    /**
      * RoleCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
+    private function create_objects(array $data): array
+    {
+        $roles = [];
+        foreach ($data as $row) {
+            $role = new Role();
+            $role->setUuid($row['uuid'] ?? '');
+            $role->setType($row['roleType'] ?? '');
+            $role->setName($row['roleName'] ?? '');
+            $role->setDescription($row['roleDescription'] ?? '');
+            $roles[$row['uuid']] = $role;
+        }
+
+        return $roles;
+    }
+
     /**
      * @param string $uuid
-     * @return Role
+     * @return Role|null
      */
-    public function fetch(string $uuid): Role
+    public function fetch(string $uuid): ?Role
     {
-        if (empty($uuid)) {
-            return new Role();
+        $role = null;
+        if ($uuid === '') {
+            goto out_return;
         }
 
         $qry = <<<SQL
@@ -60,21 +72,34 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
+
+        if ($stmt === false) {
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $uuid)) {
+            $stmt->close();
+            goto out_return;
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Role();
+            goto out_return;
         }
 
-        $stmt->bind_result(
-            $_uuid,
-            $type,
-            $name,
-            $description
-        );
+        if (!$stmt->bind_result($_uuid,
+                                $type,
+                                $name,
+                                $description)) {
+            $stmt->close();
+            goto out_return;
+        }
 
-        $stmt->fetch();
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            goto out_return;
+        }
+
         $stmt->close();
 
         $role = new Role();
@@ -83,8 +108,7 @@ SQL;
         $role->setName($name);
         $role->setDescription($description);
 
-        $this->roles[$uuid] = $role;
-
+        out_return:
         return $role;
     }
 
@@ -100,44 +124,40 @@ SELECT
   roleName,
   roleDescription
 FROM roleList
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);
 
-        while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
-                continue;
-            }
-
-            $role = new Role();
-            $role->setUuid($row['uuid'] ?? '');
-            $role->setType($row['roleType'] ?? '');
-            $role->setName($row['roleName'] ?? '');
-            $role->setDescription($row['roleDescription'] ?? '');
-
-            $this->roles[$row['uuid']] = $role;
-        }
-
-        return $this->roles;
-    }
-
-    /**
-     * @param string[] $uuidList
-     * @return Role[]
-     */
-    public function fetchArray(array $uuidList): array
-    {
-        if (empty($uuidList)) {
+        if ($res === false) {
             return [];
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
+        $rows = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid'])) {
+                continue;
+            }
 
-        $uuidListString = implode("','", $uuidListFiltered);
+            $rows[] = $row;
+        }
+
+        return $this->create_objects($rows);
+    }
+
+    /**
+     * @param string[] $uuids
+     * @return Role[]
+     */
+    public function fetchArray(array $uuids): array
+    {
+        if (count($uuids) === 0) {
+            return [];
+        }
+
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 SELECT
@@ -146,48 +166,35 @@ SELECT
   roleName,
   roleDescription
 FROM roleList
-WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+WHERE uuid IN ('{$uuids_str}')
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row['uuid'])) {
                 continue;
             }
 
-            $role = new Role();
-            $role->setUuid($row['uuid'] ?? '');
-            $role->setType($row['roleType'] ?? '');
-            $role->setName($row['roleName'] ?? '');
-            $role->setDescription($row['roleDescription'] ?? '');
-
-            $this->roles[$row['uuid']] = $role;
+            $rows[] = $row;
         }
 
-        return array_intersect_key(
-            $this->roles,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @return RoleCollection
-     */
-    public function reset(): self
-    {
-        $this->roles = [];
-
-        return $this;
+        return array_intersect_key($this->create_objects($rows),
+                                   array_flip($uuids));
     }
 
     /**
      * @param Role $role
      */
-    public function save(Role $role): void
+    private function _save(Role $role): void
     {
-        if (empty($role->getUuid())) {
+        if (($role->getUuid() ?? '') === '') {
             return;
         }
 
@@ -213,13 +220,19 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssss',
-            $uuid,
-            $type,
-            $name,
-            $description
-        );
+
+        if ($stmt === false) {
+            return;
+        }
+
+        if (!$stmt->bind_param('ssss',
+                               $uuid,
+                               $type,
+                               $name,
+                               $description)) {
+            $stmt->close();
+            return;
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
@@ -227,30 +240,15 @@ SQL;
         }
 
         $stmt->close();
-
-        $this->roles[$uuid] = $role;
     }
 
     /**
      * @param Role[] $roles
      */
-    public function saveArray(array $roles): void
+    public function save(array $roles): void
     {
-        if (empty($roles)) {
-            return;
-        }
-
-        $c = count($roles);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($roles[$i])) {
-                continue;
-            }
-
-            if (!$roles[$i] instanceof Role) {
-                continue;
-            }
-
-            $this->save($roles[$i]);
+        foreach ($roles as $role) {
+            $this->_save($role);
         }
     }
 }

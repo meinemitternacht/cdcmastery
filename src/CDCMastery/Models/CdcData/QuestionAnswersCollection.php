@@ -10,11 +10,12 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class QuestionAnswersCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -30,10 +31,10 @@ class QuestionAnswersCollection
 
     /**
      * QuestionAnswersCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -95,15 +96,5 @@ class QuestionAnswersCollection
         }
 
         return $this->questionAnswers[$afscUuid] ?? [];
-    }
-
-    /**
-     * @return QuestionAnswersCollection
-     */
-    public function refresh(): self
-    {
-        $this->questionAnswers = [];
-
-        return $this;
     }
 }

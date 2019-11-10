@@ -15,24 +15,17 @@ class RoleHelpers
      * @param Role[] $roles
      * @return string[]
      */
-    public static function listNamesKeyed(array $roles): array
+    public static function listNames(array $roles): array
     {
-        $roles = array_values($roles);
-        $c = count($roles);
-
-        $nameList = [];
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($roles[$i])) {
+        $names = [];
+        foreach ($roles as $role) {
+            if (!$role instanceof Role) {
                 continue;
             }
 
-            if (!$roles[$i] instanceof Role) {
-                continue;
-            }
-
-            $nameList[$roles[$i]->getUuid()] = $roles[$i]->getName();
+            $names[$role->getUuid()] = $role->getName();
         }
 
-        return $nameList;
+        return $names;
     }
 }

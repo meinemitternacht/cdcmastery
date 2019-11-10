@@ -1,12 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Claude Bing
- * Date: 1/6/2017
- * Time: 10:27 PM
- */
 
 namespace CDCMastery\Models\Auth;
+
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class LoginRateLimiter
@@ -14,86 +10,98 @@ namespace CDCMastery\Models\Auth;
  */
 class LoginRateLimiter
 {
-    const RATE_LIMIT_DURATION = 300;
-    const RATE_LIMIT_THRESHOLD = 10;
+    private const RATE_LIMIT_DURATION = 300;
+    private const RATE_LIMIT_THRESHOLD = 10;
 
-    const SESS_KEY_COUNT = 'rate-limit-attempts';
-    const SESS_KEY_TIME = 'rate-limit-time';
+    private const KEY_ATTEMPTS = 'rate-limit-attempts';
+    private const KEY_INIT_TIME = 'rate-limit-init-time';
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var resource
+     */
+    private $lock;
+
+    public function __construct(Session $session)
+    {
+        $this->session = $session;
+        $this->lock = sem_get(ftok(__FILE__, 'R'));
+        $this->init();
+    }
+
+    private function lock(): void
+    {
+        sem_acquire($this->lock);
+    }
+
+    private function unlock(): void
+    {
+        sem_release($this->lock);
+    }
+
+    private function init(): void
+    {
+        try {
+            $this->lock();
+            $this->session->set(self::KEY_INIT_TIME, time());
+            $this->session->set(self::KEY_ATTEMPTS, 0);
+        } finally {
+            $this->unlock();
+        }
+    }
 
     /**
      * @return bool
      */
-    public static function assertLimited(): bool
+    public function assert_limited(): bool
     {
-        if (!isset($_SESSION[self::SESS_KEY_COUNT]) || !isset($_SESSION[self::SESS_KEY_TIME])) {
-            return false;
-        }
+        try {
+            $this->lock();
 
-        $limitStartTime = filter_var(
-            $_SESSION[self::SESS_KEY_TIME],
-            FILTER_VALIDATE_INT
-        );
-        $limitCount = filter_var(
-            $_SESSION[self::SESS_KEY_COUNT],
-            FILTER_VALIDATE_INT
-        );
+            $start_time = $this->session->get(self::KEY_INIT_TIME);
+            $count = $this->session->get(self::KEY_ATTEMPTS);
 
-        if (!is_int($limitStartTime) || !is_int($limitCount)) {
-            return false;
-        }
+            if ($start_time === null || $count === null) {
+                return false;
+            }
 
-        if (($limitStartTime + self::RATE_LIMIT_DURATION) < time()) {
-            return false;
-        }
+            if ($start_time + self::RATE_LIMIT_DURATION < time()) {
+                return false;
+            }
 
-        if ($limitCount >= self::RATE_LIMIT_THRESHOLD) {
+            if ($count < self::RATE_LIMIT_THRESHOLD) {
+                return false;
+            }
+
             return true;
+        } finally {
+            $this->unlock();
         }
-
-        return false;
     }
 
-    /**
-     * @return bool
-     */
-    public static function increment(): bool
+    public function increment(): void
     {
-        self::initialize();
-
-        $_SESSION[self::SESS_KEY_COUNT]++;
-
-        return true;
+        try {
+            $this->lock();
+            $this->session->set(self::KEY_ATTEMPTS,
+                                $this->session->get(self::KEY_ATTEMPTS, 0) + 1);
+        } finally {
+            $this->unlock();
+        }
     }
 
-    /**
-     * @return bool
-     */
-    private static function initialize(): bool
+    public function destroy(): void
     {
-        if (!isset($_SESSION[self::SESS_KEY_COUNT])) {
-            $_SESSION[self::SESS_KEY_COUNT] = 0;
+        try {
+            $this->lock();
+            $this->session->remove(self::KEY_ATTEMPTS);
+            $this->session->remove(self::KEY_INIT_TIME);
+        } finally {
+            $this->unlock();
         }
-
-        if (!isset($_SESSION[self::SESS_KEY_TIME])) {
-            $_SESSION[self::SESS_KEY_TIME] = time();
-        }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    public static function reset(): bool
-    {
-        if (isset($_SESSION[self::SESS_KEY_COUNT])) {
-            unset($_SESSION[self::SESS_KEY_COUNT]);
-        }
-
-        if (isset($_SESSION[self::SESS_KEY_TIME])) {
-            unset($_SESSION[self::SESS_KEY_TIME]);
-        }
-
-        return true;
     }
 }

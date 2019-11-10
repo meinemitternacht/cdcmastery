@@ -15,7 +15,8 @@ use CDCMastery\Exceptions\CdcData\QuestionParser\QuestionTextInsufficientAnswers
 use CDCMastery\Exceptions\CdcData\QuestionParser\QuestionTextInvalidCorrectAnswerException;
 use CDCMastery\Exceptions\CdcData\QuestionParser\QuestionTextInvalidException;
 use CDCMastery\Exceptions\CdcData\QuestionParser\QuestionTextParserFailedException;
-use CDCMastery\Helpers\UuidHelpers;
+use CDCMastery\Helpers\UUID;
+use function count;
 
 class QuestionParser
 {
@@ -44,11 +45,11 @@ class QuestionParser
         $lines = self::splitByLineAndAnswerIdentifiers($text);
 
         /* Handle instances where the line breaks are not copied correctly */
-        if (\count($lines) === 1) {
+        if (count($lines) === 1) {
             $lines = self::addLineBreaks($lines[0]);
         }
 
-        $c = \count($lines);
+        $c = count($lines);
 
         if ($c > 5) {
             throw new QuestionTextParserFailedException();
@@ -86,7 +87,7 @@ class QuestionParser
         }
 
         $question = new Question();
-        $question->setUuid(UuidHelpers::generate());
+        $question->setUuid(UUID::generate());
         $question->setText($questionText);
         $question->setAfscUuid($afsc->getUuid());
 
@@ -98,7 +99,7 @@ class QuestionParser
             }
 
             $answer = new Answer();
-            $answer->setUuid(UuidHelpers::generate());
+            $answer->setUuid(UUID::generate());
             $answer->setText($answerText);
             $answer->setQuestionUuid($question->getUuid());
             $answer->setCorrect($i === $correctAnswer);

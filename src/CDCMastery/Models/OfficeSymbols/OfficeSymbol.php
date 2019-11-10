@@ -32,7 +32,7 @@ class OfficeSymbol
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -48,7 +48,7 @@ class OfficeSymbol
     /**
      * @param string $symbol
      */
-    public function setSymbol(string $symbol)
+    public function setSymbol(string $symbol): void
     {
         $this->symbol = $symbol;
     }

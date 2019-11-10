@@ -10,11 +10,12 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class AnswerCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -35,10 +36,10 @@ class AnswerCollection
 
     /**
      * AnswerCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -79,10 +80,8 @@ FROM answerData
 WHERE uuid = ?
 SQL;
 
-            $qry = sprintf(
-                $qry,
-                ENCRYPTION_KEY
-            );
+            $qry = sprintf($qry,
+                           ENCRYPTION_KEY);
         }
 
         $stmt = $this->db->prepare($qry);
@@ -117,21 +116,18 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param string[] $uuidList
+     * @param string[] $uuids
      * @return Answer[]
      */
-    public function fetchArray(Afsc $afsc, array $uuidList): array
+    public function fetchArray(Afsc $afsc, array $uuids): array
     {
-        if (empty($uuidList)) {
+        if (count($uuids) === 0) {
             return [];
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
-
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 SELECT
@@ -140,8 +136,8 @@ SELECT
   answerText,
   answerCorrect
 FROM answerData
-WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+WHERE uuid IN ('{$uuids_str}')
+ORDER BY uuid
 SQL;
 
         if ($afsc->isFouo()) {
@@ -152,8 +148,8 @@ SELECT
   AES_DECRYPT(answerText, '%s') as answerText,
   answerCorrect
 FROM answerData
-WHERE uuid IN ('{$uuidList}')
-ORDER BY uuid ASC
+WHERE uuid IN ('{$uuids}')
+ORDER BY uuid
 SQL;
 
             $qry = sprintf(
@@ -183,7 +179,7 @@ SQL;
 
         return array_intersect_key(
             $this->answers,
-            array_flip($uuidList)
+            array_flip($uuids)
         );
     }
 
@@ -225,20 +221,17 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param array $uuidList
+     * @param array $uuids
      */
-    public function preloadQuestionAnswers(Afsc $afsc, array $uuidList): void
+    public function preloadQuestionAnswers(Afsc $afsc, array $uuids): void
     {
-        if (empty($uuidList)) {
+        if (count($uuids) === 0) {
             return;
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
-
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 SELECT
@@ -247,8 +240,8 @@ SELECT
   answerText,
   answerCorrect
 FROM answerData
-WHERE questionUUID IN ('{$uuidListString}')
-ORDER BY uuid ASC
+WHERE questionUUID IN ('{$uuids_str}')
+ORDER BY uuid
 SQL;
 
         if ($afsc->isFouo()) {
@@ -259,8 +252,8 @@ SELECT
   AES_DECRYPT(answerText, '%s') as answerText,
   answerCorrect
 FROM answerData
-WHERE questionUUID IN ('{$uuidListString}')
-ORDER BY uuid ASC
+WHERE questionUUID IN ('{$uuids_str}')
+ORDER BY uuid
 SQL;
 
             $qry = sprintf(
@@ -287,17 +280,6 @@ SQL;
         }
 
         $res->free();
-    }
-
-    /**
-     * @return AnswerCollection
-     */
-    public function refresh(): self
-    {
-        $this->answers = [];
-        $this->questionAnswerMap = [];
-
-        return $this;
     }
 
     /**

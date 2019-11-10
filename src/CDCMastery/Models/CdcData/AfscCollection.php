@@ -10,31 +10,32 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
+use function count;
 
 class AfscCollection
 {
-    const TABLE_NAME = 'afscList';
+    public const COL_UUID = 'uuid';
+    public const COL_NAME = 'name';
+    public const COL_DESCRIPTION = 'description';
+    public const COL_VERSION = 'version';
+    public const COL_IS_FOUO = 'fouo';
+    public const COL_IS_HIDDEN = 'hidden';
+    public const COL_IS_OBSOLETE = 'obsolete';
 
-    const COL_UUID = 'uuid';
-    const COL_NAME = 'name';
-    const COL_DESCRIPTION = 'description';
-    const COL_VERSION = 'version';
-    const COL_IS_FOUO = 'fouo';
-    const COL_IS_HIDDEN = 'hidden';
-    const COL_IS_OBSOLETE = 'obsolete';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
 
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
+    public const SHOW_HIDDEN = 1 << 0;
+    public const SHOW_FOUO = 1 << 1;
+    public const SHOW_OBSOLETE = 1 << 2;
 
-    const DEFAULT_COL = self::COL_NAME;
-    const DEFAULT_ORDER = self::ORDER_ASC;
-
-    const SHOW_HIDDEN = 1 << 0;
-    const SHOW_FOUO = 1 << 1;
-    const SHOW_OBSOLETE = 1 << 2;
+    private const TABLE_NAME = 'afscList';
+    private const DEFAULT_COL = self::COL_NAME;
+    private const DEFAULT_ORDER = self::ORDER_ASC;
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -50,10 +51,10 @@ class AfscCollection
 
     /**
      * AfscCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -65,7 +66,7 @@ class AfscCollection
      */
     private static function generateOrderSuffix(array $columnOrders): string
     {
-        if (\count($columnOrders) === 0) {
+        if (count($columnOrders) === 0) {
             return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
         }
 
@@ -199,11 +200,11 @@ SQL;
     }
 
     /**
-     * @param array $columnOrders
      * @param int $flags
+     * @param array $columnOrders
      * @return Afsc[]
      */
-    public function fetchAll(array $columnOrders = [], int $flags = self::SHOW_FOUO): array
+    public function fetchAll(int $flags = self::SHOW_FOUO, array $columnOrders = []): array
     {
         $qry = <<<SQL
 SELECT

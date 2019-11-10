@@ -9,6 +9,8 @@
 namespace CDCMastery\Models\Users;
 
 
+use DateTime;
+
 class User
 {
     /**
@@ -52,17 +54,17 @@ class User
     private $rank;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateRegistered;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastLogin;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastActive;
 
@@ -95,6 +97,11 @@ class User
      * @var bool
      */
     private $reminderSent;
+
+    public function assert_valid(): bool
+    {
+        return ($this->uuid ?? '') !== '';
+    }
 
     /**
      * @return string
@@ -237,49 +244,49 @@ class User
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getDateRegistered(): ?\DateTime
+    public function getDateRegistered(): ?DateTime
     {
         return $this->dateRegistered;
     }
 
     /**
-     * @param \DateTime|null $dateRegistered
+     * @param DateTime|null $dateRegistered
      */
-    public function setDateRegistered(?\DateTime $dateRegistered)
+    public function setDateRegistered(?DateTime $dateRegistered)
     {
         $this->dateRegistered = $dateRegistered;
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getLastLogin(): ?\DateTime
+    public function getLastLogin(): ?DateTime
     {
         return $this->lastLogin;
     }
 
     /**
-     * @param \DateTime|null $lastLogin
+     * @param DateTime|null $lastLogin
      */
-    public function setLastLogin(?\DateTime $lastLogin)
+    public function setLastLogin(?DateTime $lastLogin)
     {
         $this->lastLogin = $lastLogin;
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getLastActive(): ?\DateTime
+    public function getLastActive(): ?DateTime
     {
         return $this->lastActive;
     }
 
     /**
-     * @param \DateTime|null $lastActive
+     * @param DateTime|null $lastActive
      */
-    public function setLastActive(?\DateTime $lastActive)
+    public function setLastActive(?DateTime $lastActive)
     {
         $this->lastActive = $lastActive;
     }

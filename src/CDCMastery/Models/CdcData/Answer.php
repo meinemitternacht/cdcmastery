@@ -42,7 +42,7 @@ class Answer
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -58,7 +58,7 @@ class Answer
     /**
      * @param string $text
      */
-    public function setText(string $text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
@@ -74,7 +74,7 @@ class Answer
     /**
      * @param bool $correct
      */
-    public function setCorrect(bool $correct)
+    public function setCorrect(bool $correct): void
     {
         $this->correct = $correct;
     }
@@ -90,7 +90,7 @@ class Answer
     /**
      * @param string $questionUuid
      */
-    public function setQuestionUuid(string $questionUuid)
+    public function setQuestionUuid(string $questionUuid): void
     {
         $this->questionUuid = $questionUuid;
     }

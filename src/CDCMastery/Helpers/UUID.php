@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/27/2017
- * Time: 10:39 PM
- */
 
 namespace CDCMastery\Helpers;
 
 
-class UuidHelpers
+class UUID
 {
     /**
      * @return string

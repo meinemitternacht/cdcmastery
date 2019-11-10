@@ -1,20 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/24/2017
- * Time: 11:32 PM
- */
 
 namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class QuestionHelpers
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -24,11 +19,11 @@ class QuestionHelpers
     protected $log;
 
     /**
-     * AnswerHelpers constructor.
-     * @param \mysqli $mysqli
+     * QuestionHelpers constructor.
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -40,24 +35,9 @@ class QuestionHelpers
      */
     public static function listUuid(array $questions): array
     {
-        $questions = array_values($questions);
-
-        $c = count($questions);
-
-        $uuidList = [];
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($questions[$i])) {
-                continue;
-            }
-
-            if (!$questions[$i] instanceof Question) {
-                continue;
-            }
-
-            $uuidList[] = $questions[$i]->getUuid();
-        }
-
-        return $uuidList;
+        return array_map(static function (Question $v) {
+            return $v->getUuid();
+        }, $questions);
     }
 
     /**
@@ -115,7 +95,8 @@ SQL;
     }
 
     /**
-     * @param array $uuidList The list of AFSC UUIDs to retrieve counts for
+     * @param array $uuidList
+     *  The list of AFSC UUIDs to retrieve counts for
      * @return array
      */
     public function getNumQuestionsByAfsc(array $uuidList): array

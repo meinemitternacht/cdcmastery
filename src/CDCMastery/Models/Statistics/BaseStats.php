@@ -11,30 +11,30 @@ namespace CDCMastery\Models\Statistics;
 
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Cache\CacheHandler;
+use DateTime;
 use Monolog\Logger;
+use mysqli;
 
-class Bases
+class BaseStats
 {
-    const PRECISION_AVG = 2;
+    private const PRECISION_AVG = 2;
 
-    const STAT_BASES_AVG = 'bases_avg';
-    const STAT_BASES_AVG_BETWEEN = 'bases_avg_between';
-    const STAT_BASES_AVG_BY_MONTH = 'bases_avg_by_month';
-    const STAT_BASES_AVG_BY_WEEK = 'bases_avg_by_week';
-    const STAT_BASES_AVG_BY_YEAR = 'bases_avg_by_year';
-    const STAT_BASES_AVG_LAST_SEVEN = 'bases_avg_last_seven';
-    const STAT_BASES_AVG_OVERALL = 'bases_avg_overall';
+    private const STAT_BASES_AVG_BETWEEN = 'bases_avg_between';
+    private const STAT_BASES_AVG_BY_MONTH = 'bases_avg_by_month';
+    private const STAT_BASES_AVG_BY_WEEK = 'bases_avg_by_week';
+    private const STAT_BASES_AVG_BY_YEAR = 'bases_avg_by_year';
+    private const STAT_BASES_AVG_LAST_SEVEN = 'bases_avg_last_seven';
+    private const STAT_BASES_AVG_OVERALL = 'bases_avg_overall';
 
-    const STAT_BASES_COUNT = 'bases_count';
-    const STAT_BASES_COUNT_BETWEEN = 'bases_count_between';
-    const STAT_BASES_COUNT_BY_MONTH = 'bases_count_by_month';
-    const STAT_BASES_COUNT_BY_WEEK = 'bases_count_by_week';
-    const STAT_BASES_COUNT_BY_YEAR = 'bases_count_by_year';
-    const STAT_BASES_COUNT_LAST_SEVEN = 'bases_count_last_seven';
-    const STAT_BASES_COUNT_OVERALL = 'bases_count_overall';
+    private const STAT_BASES_COUNT_BETWEEN = 'bases_count_between';
+    private const STAT_BASES_COUNT_BY_MONTH = 'bases_count_by_month';
+    private const STAT_BASES_COUNT_BY_WEEK = 'bases_count_by_week';
+    private const STAT_BASES_COUNT_BY_YEAR = 'bases_count_by_year';
+    private const STAT_BASES_COUNT_LAST_SEVEN = 'bases_count_last_seven';
+    private const STAT_BASES_COUNT_OVERALL = 'bases_count_overall';
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -50,11 +50,11 @@ class Bases
 
     /**
      * Tests constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      * @param CacheHandler $cacheHandler
      */
-    public function __construct(\mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
+    public function __construct(mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -62,11 +62,11 @@ class Bases
     }
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return array
      */
-    public function averagesBetween(\DateTime $start, \DateTime $end): array
+    public function averagesBetween(DateTime $start, DateTime $end): array
     {
         $tStart = $start->format(
             DateTimeHelpers::DT_FMT_DB_DAY_START
@@ -165,7 +165,7 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY tDate, tBase
-ORDER BY tDate ASC, tAvg DESC
+ORDER BY tDate, tAvg DESC
 SQL;
                 break;
             case self::STAT_BASES_AVG_BY_WEEK:
@@ -180,7 +180,7 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY YEARWEEK(testCollection.timeStarted), tBase
-ORDER BY YEARWEEK(testCollection.timeStarted) ASC, tAvg DESC
+ORDER BY YEARWEEK(testCollection.timeStarted), tAvg DESC
 SQL;
                 break;
             case self::STAT_BASES_AVG_BY_YEAR:
@@ -195,7 +195,7 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY tDate, tBase
-ORDER BY tDate ASC, tAvg DESC
+ORDER BY tDate, tAvg DESC
 SQL;
                 break;
             case self::STAT_BASES_AVG_LAST_SEVEN:
@@ -211,7 +211,7 @@ WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
   AND testCollection.timeStarted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
 GROUP BY tDate, tBase
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             default:
@@ -305,8 +305,8 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
 WHERE testCollection.score > 0
   AND testCollection.timeCompleted IS NOT NULL
-GROUP BY tBase
-ORDER BY baseList.baseName ASC
+GROUP BY baseList.baseName
+ORDER BY baseList.baseName
 SQL;
 
         $res = $this->db->query($qry);
@@ -331,11 +331,11 @@ SQL;
     }
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return array
      */
-    public function countsBetween(\DateTime $start, \DateTime $end): array
+    public function countsBetween(DateTime $start, DateTime $end): array
     {
         $tStart = $start->format(
             DateTimeHelpers::DT_FMT_DB_DAY_START
@@ -426,7 +426,7 @@ FROM testCollection
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY tDate, tBase
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASES_COUNT_BY_WEEK:
@@ -441,7 +441,7 @@ FROM testCollection
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY YEARWEEK(testCollection.timeStarted), tBase
-ORDER BY YEARWEEK(testCollection.timeStarted) ASC
+ORDER BY YEARWEEK(testCollection.timeStarted)
 SQL;
                 break;
             case self::STAT_BASES_COUNT_BY_YEAR:
@@ -456,7 +456,7 @@ FROM testCollection
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
 GROUP BY tDate, tBase
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASES_COUNT_LAST_SEVEN:
@@ -472,7 +472,7 @@ WHERE testCollection.timeCompleted IS NOT NULL
     AND testCollection.timeStarted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND testCollection.score > 0
 GROUP BY DAY(timeStarted)
-ORDER BY timeStarted ASC
+ORDER BY timeStarted
 SQL;
                 break;
             default:
@@ -563,8 +563,8 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
 WHERE testCollection.score > 0
   AND testCollection.timeCompleted IS NOT NULL 
-GROUP BY tBase
-ORDER BY baseList.baseName ASC
+GROUP BY baseList.baseName
+ORDER BY baseList.baseName
 SQL;
 
         $res = $this->db->query($qry);

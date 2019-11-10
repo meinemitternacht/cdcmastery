@@ -10,11 +10,12 @@ namespace CDCMastery\Models\FlashCards;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class CardCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -30,10 +31,10 @@ class CardCollection
 
     /**
      * CardCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -212,7 +213,7 @@ SELECT
   cardCategory
 FROM flashCardData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         if ($category->isEncrypted()) {
@@ -224,7 +225,7 @@ SELECT
   cardCategory
 FROM flashCardData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
             $qry = sprintf(

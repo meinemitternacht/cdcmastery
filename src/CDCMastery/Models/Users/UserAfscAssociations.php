@@ -1,24 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/27/2017
- * Time: 8:54 PM
- */
 
 namespace CDCMastery\Models\Users;
 
 
 use CDCMastery\Models\CdcData\Afsc;
 use Monolog\Logger;
+use mysqli;
 
 class UserAfscAssociations
 {
-    const GROUP_BY_AFSC = 0;
-    const GROUP_BY_USER = 1;
+    public const GROUP_BY_AFSC = 0;
+    public const GROUP_BY_USER = 1;
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -29,10 +24,10 @@ class UserAfscAssociations
 
     /**
      * UserAfscAssociations constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;

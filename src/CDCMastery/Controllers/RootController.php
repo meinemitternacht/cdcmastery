@@ -9,10 +9,15 @@
 namespace CDCMastery\Controllers;
 
 
-use CDCMastery\Models\Messages\Messages;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class RootController
 {
@@ -22,9 +27,14 @@ class RootController
     protected $log;
 
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     protected $twig;
+
+    /**
+     * @var Session
+     */
+    protected $session;
 
     /**
      * @var Request
@@ -34,14 +44,42 @@ class RootController
     /**
      * RootController constructor.
      * @param Logger $logger
-     * @param \Twig_Environment $twig
+     * @param Environment $twig
+     * @param Session $session
+     * @param Request|null $request
      */
-    public function __construct(Logger $logger, \Twig_Environment $twig)
-    {
+    public function __construct(
+        Logger $logger,
+        Environment $twig,
+        Session $session,
+        ?Request $request = null
+    ) {
         $this->log = $logger;
         $this->twig = $twig;
+        $this->session = $session;
 
-        $this->request = Request::createFromGlobals();
+        $this->request = $request ?? Request::createFromGlobals();
+    }
+
+    public static function static_redirect(string $destination): Response
+    {
+        $protocol = isset($_SERVER['HTTPS'])
+            ? 'https://'
+            : 'http://';
+
+        $response = new Response();
+        $response->headers->add(['Location' => $protocol . $_SERVER['HTTP_HOST'] . $destination]);
+
+        return $response;
+    }
+
+    /**
+     * @param string $destination
+     * @return Response
+     */
+    public function redirect(string $destination): Response
+    {
+        return self::static_redirect($destination);
     }
 
     /**
@@ -53,21 +91,28 @@ class RootController
     }
 
     /**
+     * @return Session
+     */
+    public function getSession(): Session
+    {
+        return $this->session;
+    }
+
+    /**
+     * @return FlashBagInterface
+     */
+    public function flash(): FlashBagInterface
+    {
+        return $this->session->getFlashBag();
+    }
+
+    /**
      * @param array $parameters
-     * @param Request|null $request
      * @return bool
      */
-    public function checkParameters(array $parameters, ?Request $request = null): bool
+    public function checkParameters(array $parameters): bool
     {
         foreach ($parameters as $parameter) {
-            if ($request !== null && $request->request->has($parameter)) {
-                continue;
-            }
-
-            if ($request !== null && !$request->request->has($parameter)) {
-                return false;
-            }
-
             if (!$this->has($parameter)) {
                 return false;
             }
@@ -111,25 +156,38 @@ class RootController
      * @param string $template
      * @param array $data
      * @param int $status
+     * @param bool $error_controller
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function render(string $template, array $data = [], int $status = 200): Response
-    {
-        return new Response(
-            $this->twig->render(
-                $template,
-                array_merge(
-                    $data,
-                    [
-                        'messages' => Messages::get(),
-                        'uri' => $this->request->getRequestUri(),
-                    ]
-                )
-            ),
-            $status
-        );
+    public function render(
+        string $template,
+        array $data = [],
+        int $status = 200,
+        bool $error_controller = false
+    ): Response {
+        try {
+            return new Response(
+                $this->twig->render(
+                    $template,
+                    array_merge(
+                        $data,
+                        [
+                            'messages' => $this->flash()->all(),
+                            'uri' => $this->request->getRequestUri(),
+                        ]
+                    )
+                ),
+                $status
+            );
+        } catch (LoaderError|RuntimeError|SyntaxError $e) {
+            $this->log->addDebug(__METHOD__ . " :: {$e}");
+
+            if ($error_controller) {
+                echo "There was a problem handling your request.";
+                exit;
+            }
+
+            return (new Errors($this->log, $this->twig, $this->session, $this->request))->show_500();
+        }
     }
 }

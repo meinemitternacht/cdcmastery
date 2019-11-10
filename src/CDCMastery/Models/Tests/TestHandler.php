@@ -9,14 +9,18 @@
 namespace CDCMastery\Models\Tests;
 
 
-use CDCMastery\Helpers\UuidHelpers;
+use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\AnswerHelpers;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionHelpers;
+use DateTime;
+use Exception;
 use Monolog\Logger;
+use mysqli;
+use function count;
 
 class TestHandler
 {
@@ -30,7 +34,7 @@ class TestHandler
     const ACTION_SCORE_TEST = 6;
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -40,32 +44,44 @@ class TestHandler
     protected $log;
 
     /**
+     * @var TestDataHelpers
+     */
+    private $test_data_helpers;
+
+    /**
      * @var Test
      */
     private $test;
 
     /**
      * TestHandler constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
+     * @param TestDataHelpers $test_data_helpers
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger, TestDataHelpers $test_data_helpers)
     {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->test_data_helpers = $test_data_helpers;
     }
 
     /**
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
+     * @param TestDataHelpers $test_data_helpers
      * @param TestOptions $options
      * @return TestHandler
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function factory(\mysqli $mysqli, Logger $logger, TestOptions $options): self
-    {
-        if (empty($options->getAfscs())) {
-            return new self($mysqli, $logger);
+    public static function factory(
+        mysqli $mysqli,
+        Logger $logger,
+        TestDataHelpers $test_data_helpers,
+        TestOptions $options
+    ): self {
+        if (count($options->getAfscs()) === 0) {
+            return new self($mysqli, $logger, $test_data_helpers);
         }
 
         /* Load AFSCs and generate an array of questions */
@@ -78,7 +94,7 @@ class TestHandler
         foreach ($options->getAfscs() as $afsc) {
             $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
 
-            if (empty($questionData)) {
+            if (count($questionData) === 0) {
                 continue;
             }
 
@@ -87,15 +103,15 @@ class TestHandler
             }
         }
 
-        if (empty($questions)) {
-            return new self($mysqli, $logger);
+        if (count($questions) === 0) {
+            return new self($mysqli, $logger, $test_data_helpers);
         }
 
         /* Randomize questions and extract a slice of them */
         shuffle($questions);
 
         if ($options->getNumQuestions() <= 0) {
-            return new self($mysqli, $logger);
+            return new self($mysqli, $logger, $test_data_helpers);
         }
 
         if ($options->getNumQuestions() > Test::MAX_QUESTIONS) {
@@ -108,41 +124,40 @@ class TestHandler
             $options->setNumQuestions($n_questions);
         }
 
-        $questionList = array_slice(
-            $questions,
-            0,
-            $options->getNumQuestions()
-        );
+        $questionList = array_slice($questions,
+                                    0,
+                                    $options->getNumQuestions());
 
         $test = new Test();
-        $test->setUuid(UuidHelpers::generate());
+        $test->setUuid(UUID::generate());
         $test->setAfscs($options->getAfscs());
         $test->setQuestions($questionList);
         $test->setCombined(count($options->getAfscs()) > 1);
-        $test->setTimeStarted(new \DateTime());
+        $test->setTimeStarted(new DateTime());
         $test->setUserUuid($options->getUser()->getUuid());
 
-        $testHandler = new self($mysqli, $logger);
-        $testHandler->setTest($test);
+        $handler = new self($mysqli, $logger, $test_data_helpers);
+        $handler->setTest($test);
 
-        /** Navigate to the first question, which automatically saves the new test */
-        $testHandler->first();
+        /* Navigate to the first question, which automatically saves the new test */
+        $handler->first();
 
-        return $testHandler;
+        return $handler;
     }
 
     /**
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
+     * @param TestDataHelpers $test_data_helpers
      * @param Test $test
      * @return TestHandler
      */
-    public static function resume(\mysqli $mysqli, Logger $logger, Test $test): self
+    public static function resume(mysqli $mysqli, Logger $logger, TestDataHelpers $test_data_helpers, Test $test): self
     {
-        $testHandler = new self($mysqli, $logger);
-        $testHandler->setTest($test);
+        $handler = new self($mysqli, $logger, $test_data_helpers);
+        $handler->setTest($test);
 
-        return $testHandler;
+        return $handler;
     }
 
     public function first(): void
@@ -271,55 +286,45 @@ class TestHandler
         foreach ($answerList as $answer) {
             $answerData[] = [
                 'uuid' => $answer->getUuid(),
-                'text' => $answer->getText()
+                'text' => $answer->getText(),
             ];
         }
 
-        $testDataHelpers = new TestDataHelpers(
-            $this->db,
-            $this->log
-        );
-
-        $storedAnswer = $testDataHelpers->fetch(
+        $storedAnswer = $this->test_data_helpers->fetch(
             $this->getTest(),
             $this->getQuestion()
         );
 
-        $numAnswered = $testDataHelpers->count($this->test);
+        $numAnswered = $this->test_data_helpers->count($this->test);
 
         return [
             'uuid' => $this->getTest()->getUuid(),
             'afscs' => [
                 'total' => $this->getTest()->getNumAfscs(),
-                'list' => AfscHelpers::listUuid($this->getTest()->getAfscs())
+                'list' => AfscHelpers::listUuid($this->getTest()->getAfscs()),
             ],
             'questions' => [
                 'idx' => $this->getTest()->getCurrentQuestion(),
                 'total' => $this->getTest()->getNumQuestions(),
                 'numAnswered' => $numAnswered,
-                'unanswered' => $testDataHelpers->getUnanswered(
+                'unanswered' => $this->test_data_helpers->getUnanswered(
                     $this->getTest()
-                )
+                ),
             ],
             'display' => [
                 'question' => [
                     'uuid' => $this->getQuestion()->getUuid(),
-                    'text' => $this->getQuestion()->getText()
+                    'text' => $this->getQuestion()->getText(),
                 ],
                 'answers' => $answerData,
-                'selection' => $storedAnswer->getUuid()
-            ]
+                'selection' => $storedAnswer->getUuid(),
+            ],
         ];
     }
 
     public function getNumAnswered(): int
     {
-        $testDataHelpers = new TestDataHelpers(
-            $this->db,
-            $this->log
-        );
-
-        return $testDataHelpers->count($this->test);
+        return $this->test_data_helpers->count($this->test);
     }
 
     /**
@@ -345,10 +350,8 @@ class TestHandler
             return;
         }
 
-        $testCollection = new TestCollection(
-            $this->db,
-            $this->log
-        );
+        $testCollection = new TestCollection($this->db,
+                                             $this->log);
 
         $testCollection->save($this->test);
     }
@@ -362,49 +365,31 @@ class TestHandler
             return;
         }
 
-        if (empty($questionResponse->getQuestionUuid()) || empty($questionResponse->getAnswerUuid())) {
+        if (($questionResponse->getQuestionUuid() ?? '') === '' || ($questionResponse->getAnswerUuid() ?? '') === '') {
             return;
         }
 
-        if (empty($questionResponse->getTestUuid())) {
+        if (($questionResponse->getTestUuid() ?? '') === '') {
             $questionResponse->setTestUuid($this->test->getUuid());
         }
 
-        $testDataHelpers = new TestDataHelpers(
-            $this->db,
-            $this->log
-        );
-
-        $testDataHelpers->save($questionResponse);
-
-        $this->test->setNumAnswered(
-            $this->test->getNumAnswered() + 1
-        );
-
+        $this->test_data_helpers->save($questionResponse);
+        $this->test->setNumAnswered($this->test->getNumAnswered() + 1);
         $this->next();
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function score(): void
     {
-        $answerHelpers = new AnswerHelpers(
-            $this->db,
-            $this->log
-        );
+        $answerHelpers = new AnswerHelpers($this->db,
+                                           $this->log);
 
-        $testDataHelpers = new TestDataHelpers(
-            $this->db,
-            $this->log
-        );
+        $testCollection = new TestCollection($this->db,
+                                             $this->log);
 
-        $testCollection = new TestCollection(
-            $this->db,
-            $this->log
-        );
-
-        $selectedAnswers = $testDataHelpers->list($this->getTest());
+        $selectedAnswers = $this->test_data_helpers->list($this->getTest());
 
         $answerUuids = [];
         foreach ($selectedAnswers as $answer) {
@@ -427,25 +412,12 @@ class TestHandler
         }
 
         $test = $this->getTest();
-        $test->setCurrentQuestion(
-            $test->getNumQuestions() - 1
-        );
-        $test->setTimeCompleted(
-            new \DateTime()
-        );
-        $test->setScore(
-            $this->calculateScore(
-                $test->getNumQuestions(),
-                $nCorrect
-            )
-        );
-        $test->setNumAnswered(
-            \count($selectedAnswers)
-        );
-        $test->setNumMissed(
-            $nMissed
-        );
-
+        $test->setCurrentQuestion($test->getNumQuestions() - 1);
+        $test->setTimeCompleted(new DateTime());
+        $test->setScore($this->calculateScore($test->getNumQuestions(),
+                                              $nCorrect));
+        $test->setNumAnswered(count($selectedAnswers));
+        $test->setNumMissed($nMissed);
         $testCollection->save($test);
     }
 
@@ -460,10 +432,8 @@ class TestHandler
             return 0.00;
         }
 
-        return round(
-            ($correct / $questions) * 100,
-            Test::SCORE_PRECISION
-        );
+        return round(($correct / $questions) * 100,
+                     Test::SCORE_PRECISION);
     }
 
     /**

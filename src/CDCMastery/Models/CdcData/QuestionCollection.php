@@ -10,11 +10,12 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class QuestionCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -30,10 +31,10 @@ class QuestionCollection
 
     /**
      * QuestionCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -205,7 +206,7 @@ SELECT
   questionText
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         if ($afsc->isFouo()) {
@@ -216,7 +217,7 @@ SELECT
   AES_DECRYPT(questionText, '%s') as questionText
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
             $qry = sprintf(
@@ -261,7 +262,7 @@ SELECT
 FROM questionData
 LEFT JOIN afscList ON afscList.uuid = questionData.afscUUID
 WHERE questionData.uuid IN ('{$uuidListString}')
-ORDER BY afscList.fouo ASC
+ORDER BY afscList.fouo
 SQL;
 
         $res = $this->db->query($qry);
@@ -300,7 +301,7 @@ SELECT
   AES_DECRYPT(questionText, '%s') as questionText
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $qry = sprintf(
@@ -346,7 +347,7 @@ SELECT
   questionText
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);

@@ -1,23 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 2:59 PM
- */
 
 namespace CDCMastery\Controllers\Stats;
 
 
 use CDCMastery\Controllers\Stats;
-use CDCMastery\Helpers\AppHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\Bases\BaseHelpers;
-use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\Statistics\BaseStats;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
-use CDCMastery\Models\Statistics\Tests;
+use CDCMastery\Models\Statistics\TestStats;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
 
 class Bases extends Stats
 {
@@ -27,57 +23,55 @@ class Bases extends Stats
     private $baseCollection;
 
     /**
-     * @var \CDCMastery\Models\Statistics\Bases
+     * @var BaseStats
      */
-    private $bases;
+    private $base_stats;
 
     /**
-     * @var Tests
+     * @var TestStats
      */
-    private $tests;
+    private $test_stats;
 
     public function __construct(
         Logger $logger,
-        \Twig_Environment $twig,
+        Environment $twig,
+        Session $session,
         BaseCollection $baseCollection,
-        \CDCMastery\Models\Statistics\Bases $bases,
-        Tests $tests
+        BaseStats $bases,
+        TestStats $tests
     ) {
-        parent::__construct($logger, $twig);
+        parent::__construct($logger, $twig, $session);
 
         $this->baseCollection = $baseCollection;
-        $this->bases = $bases;
-        $this->tests = $tests;
+        $this->base_stats = $bases;
+        $this->test_stats = $tests;
     }
 
     /**
      * @return Response
      */
-    public function renderBasesStatsHome(): Response
+    public function show_bases_home(): Response
     {
-        return AppHelpers::redirect('/');
+        return $this->redirect('/');
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderBasesTests(): Response
+    public function show_bases_tests(): Response
     {
-        $baseList = BaseHelpers::listNamesKeyed($this->baseCollection->fetchAll());
-        $baseNames = BaseHelpers::listNamesKeyed($this->baseCollection->fetchAll());
+        $baseList = BaseHelpers::listNames($this->baseCollection->fetchAll());
+        $baseNames = BaseHelpers::listNames($this->baseCollection->fetchAll());
 
         $data = [
             'title' => 'All Bases',
             'subTitle' => 'Tests Overall',
-            'averages' => StatisticsHelpers::formatGraphDataBasesOverall(
-                $this->bases->averagesOverall(),
+            'averages' => StatisticsHelpers::formatGraphDataUsersBases(
+                $this->base_stats->averagesOverall(),
                 $baseNames
             ),
-            'counts' => StatisticsHelpers::formatGraphDataBasesOverall(
-                $this->bases->countsOverall(),
+            'counts' => StatisticsHelpers::formatGraphDataUsersBases(
+                $this->base_stats->countsOverall(),
                 $baseNames
             ),
             'baseList' => $baseList
@@ -93,32 +87,27 @@ class Bases extends Stats
      * @param string $baseUuid
      * @return Response
      */
-    public function renderBaseTests(string $baseUuid): Response
+    public function show_bases_tests_timespan_home(string $baseUuid): Response
     {
-        return AppHelpers::redirect("/stats/bases/{$baseUuid}/tests/last-seven");
+        return $this->redirect("/stats/bases/{$baseUuid}/tests/last-seven");
     }
 
     /**
      * @param string $baseUuid
      * @param int $type
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    private function renderBaseTestsTimeSegment(string $baseUuid, int $type): Response
+    private function show_base_tests_timespan(string $baseUuid, int $type): Response
     {
-        $baseList = BaseHelpers::listNamesKeyed($this->baseCollection->fetchAll());
+        $baseList = BaseHelpers::listNames($this->baseCollection->fetchAll());
 
         $base = $this->baseCollection->fetch($baseUuid);
 
-        if ($base->getUuid() === '') {
-            Messages::add(
-                Messages::INFO,
-                'The specified base does not exist'
-            );
+        if ($base === null || ($base->getUuid() ?? '') === '') {
+            $this->flash()->add(MessageTypes::INFO,
+                                'The specified base does not exist');
 
-            return AppHelpers::redirect('/stats/bases');
+            return $this->redirect('/stats/bases');
         }
 
         $data = [
@@ -133,20 +122,20 @@ class Bases extends Stats
                     'subTitle' => 'Tests Last Seven Days',
                     'period' => 'last-seven',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseAverageLastSevenDays($base)
+                        $this->test_stats->baseAverageLastSevenDays($base)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseCountLastSevenDays($base)
+                        $this->test_stats->baseCountLastSevenDays($base)
                     )
                 ]);
 
                 if (empty($data['averages'])) {
-                    Messages::add(
-                        Messages::INFO,
+                    $this->flash()->add(
+                        MessageTypes::INFO,
                         "No tests have been taken at {$base->getName()} in the last seven days"
                     );
 
-                    return AppHelpers::redirect('/stats/bases/tests');
+                    return $this->redirect('/stats/bases/tests');
                 }
                 break;
             case self::TYPE_MONTH:
@@ -154,10 +143,10 @@ class Bases extends Stats
                     'subTitle' => 'Tests By Month',
                     'period' => 'month',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseAverageByMonth($base)
+                        $this->test_stats->baseAverageByMonth($base)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseCountByMonth($base)
+                        $this->test_stats->baseCountByMonth($base)
                     )
                 ]);
                 break;
@@ -166,10 +155,10 @@ class Bases extends Stats
                     'subTitle' => 'Tests By Week',
                     'period' => 'week',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseAverageByWeek($base)
+                        $this->test_stats->baseAverageByWeek($base)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseCountByWeek($base)
+                        $this->test_stats->baseCountByWeek($base)
                     ),
                 ]);
                 break;
@@ -178,29 +167,29 @@ class Bases extends Stats
                     'subTitle' => 'Tests By Year',
                     'period' => 'year',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseAverageByYear($base)
+                        $this->test_stats->baseAverageByYear($base)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->baseCountByYear($base)
+                        $this->test_stats->baseCountByYear($base)
                     ),
                 ]);
                 break;
             default:
-                Messages::add(
-                    Messages::WARNING,
+                $this->flash()->add(
+                    MessageTypes::WARNING,
                     'Invalid time period'
                 );
 
-                return AppHelpers::redirect('/stats/bases');
+                return $this->redirect('/stats/bases');
         }
 
         if ($data['averages'] === '') {
-            Messages::add(
-                Messages::INFO,
+            $this->flash()->add(
+                MessageTypes::INFO,
                 "No tests have been taken at {$base->getName()}"
             );
 
-            return AppHelpers::redirect('/stats/bases/tests');
+            return $this->redirect('/stats/bases/tests');
         }
 
         return $this->render(
@@ -212,48 +201,36 @@ class Bases extends Stats
     /**
      * @param string $baseUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderBaseTestsLastSeven(string $baseUuid): Response
+    public function show_base_tests_last_seven(string $baseUuid): Response
     {
-        return $this->renderBaseTestsTimeSegment($baseUuid, self::TYPE_LAST_SEVEN);
+        return $this->show_base_tests_timespan($baseUuid, self::TYPE_LAST_SEVEN);
     }
 
     /**
      * @param string $baseUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderBaseTestsByMonth(string $baseUuid): Response
+    public function show_base_tests_month(string $baseUuid): Response
     {
-        return $this->renderBaseTestsTimeSegment($baseUuid, self::TYPE_MONTH);
+        return $this->show_base_tests_timespan($baseUuid, self::TYPE_MONTH);
     }
 
     /**
      * @param string $baseUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderBaseTestsByWeek(string $baseUuid): Response
+    public function show_base_tests_week(string $baseUuid): Response
     {
-        return $this->renderBaseTestsTimeSegment($baseUuid, self::TYPE_WEEK);
+        return $this->show_base_tests_timespan($baseUuid, self::TYPE_WEEK);
     }
 
     /**
      * @param string $baseUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderBaseTestsByYear(string $baseUuid): Response
+    public function show_base_tests_year(string $baseUuid): Response
     {
-        return $this->renderBaseTestsTimeSegment($baseUuid, self::TYPE_YEAR);
+        return $this->show_base_tests_timespan($baseUuid, self::TYPE_YEAR);
     }
 }

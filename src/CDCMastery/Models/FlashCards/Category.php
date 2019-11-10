@@ -62,7 +62,7 @@ class Category
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -78,7 +78,7 @@ class Category
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -94,7 +94,7 @@ class Category
     /**
      * @param bool $encrypted
      */
-    public function setEncrypted(bool $encrypted)
+    public function setEncrypted(bool $encrypted): void
     {
         $this->encrypted = $encrypted;
     }
@@ -110,7 +110,7 @@ class Category
     /**
      * @param string $type
      */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
@@ -126,7 +126,7 @@ class Category
     /**
      * @param string $binding
      */
-    public function setBinding(string $binding)
+    public function setBinding(string $binding): void
     {
         $this->binding = $binding;
     }
@@ -142,7 +142,7 @@ class Category
     /**
      * @param bool $private
      */
-    public function setPrivate(bool $private)
+    public function setPrivate(bool $private): void
     {
         $this->private = $private;
     }
@@ -158,7 +158,7 @@ class Category
     /**
      * @param string $createdBy
      */
-    public function setCreatedBy(string $createdBy)
+    public function setCreatedBy(string $createdBy): void
     {
         $this->createdBy = $createdBy;
     }
@@ -174,7 +174,7 @@ class Category
     /**
      * @param string $comments
      */
-    public function setComments(string $comments)
+    public function setComments(string $comments): void
     {
         $this->comments = $comments;
     }

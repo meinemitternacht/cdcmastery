@@ -13,33 +13,20 @@ class AfscHelpers
 {
     /**
      * @param Afsc[] $afscs
-     * @param bool $keyed
      * @return array
      */
-    public static function listNames(array $afscs, bool $keyed = false): array
+    public static function listNames(array $afscs): array
     {
-        $afscs = array_values($afscs);
-        $c = count($afscs);
-
-        $nameList = [];
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($afscs[$i])) {
+        $names = [];
+        foreach ($afscs as $afsc) {
+            if (!$afsc instanceof Afsc) {
                 continue;
             }
 
-            if (!$afscs[$i] instanceof Afsc) {
-                continue;
-            }
-
-            if (!$keyed) {
-                $nameList[] = $afscs[$i]->getName();
-                continue;
-            }
-
-            $nameList[$afscs[$i]->getUuid()] = $afscs[$i]->getName();
+            $names[$afsc->getUuid()] = $afsc->getName();
         }
 
-        return $nameList;
+        return $names;
     }
 
     /**
@@ -48,22 +35,15 @@ class AfscHelpers
      */
     public static function listUuid(array $afscs): array
     {
-        $afscs = array_values($afscs);
-        $c = count($afscs);
-
-        $uuidList = [];
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($afscs[$i])) {
+        $uuids = [];
+        foreach ($afscs as $afsc) {
+            if (!$afsc instanceof Afsc) {
                 continue;
             }
 
-            if (!$afscs[$i] instanceof Afsc) {
-                continue;
-            }
-
-            $uuidList[] = $afscs[$i]->getUuid();
+            $uuids[] = $afsc->getUuid();
         }
 
-        return $uuidList;
+        return $uuids;
     }
 }

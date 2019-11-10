@@ -9,7 +9,9 @@
 namespace CDCMastery\Models\FlashCards;
 
 
-class Session
+use DateTime;
+
+class CardSession
 {
     /**
      * @var string
@@ -37,7 +39,7 @@ class Session
     private $state;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $timeStarted;
 
@@ -60,7 +62,7 @@ class Session
     /**
      * @param string $userUuid
      */
-    public function setUserUuid(string $userUuid)
+    public function setUserUuid(string $userUuid): void
     {
         $this->userUuid = $userUuid;
     }
@@ -76,7 +78,7 @@ class Session
     /**
      * @param string $category
      */
-    public function setCategory(string $category)
+    public function setCategory(string $category): void
     {
         $this->category = $category;
     }
@@ -92,7 +94,7 @@ class Session
     /**
      * @param \string[] $cardUuidList
      */
-    public function setCardUuidList(array $cardUuidList)
+    public function setCardUuidList(array $cardUuidList): void
     {
         $this->cardUuidList = $cardUuidList;
     }
@@ -108,7 +110,7 @@ class Session
     /**
      * @param int $currentCard
      */
-    public function setCurrentCard(int $currentCard)
+    public function setCurrentCard(int $currentCard): void
     {
         $this->currentCard = $currentCard;
     }
@@ -124,23 +126,23 @@ class Session
     /**
      * @param int $state
      */
-    public function setState(int $state)
+    public function setState(int $state): void
     {
         $this->state = $state;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getTimeStarted(): \DateTime
+    public function getTimeStarted(): DateTime
     {
         return $this->timeStarted;
     }
 
     /**
-     * @param \DateTime $timeStarted
+     * @param DateTime $timeStarted
      */
-    public function setTimeStarted(\DateTime $timeStarted)
+    public function setTimeStarted(DateTime $timeStarted): void
     {
         $this->timeStarted = $timeStarted;
     }

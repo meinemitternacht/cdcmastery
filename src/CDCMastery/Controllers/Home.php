@@ -10,118 +10,122 @@ namespace CDCMastery\Controllers;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
-use CDCMastery\Helpers\SessionHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
-use CDCMastery\Models\Statistics\Tests;
+use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\UserCollection;
+use DateTime;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class Home extends RootController
 {
+    private const NUM_COMPLETE_TESTS_DISPLAY = 5;
+
     /**
-     * @var Tests
+     * @var AuthHelpers
      */
-    private $tests;
+    private $auth_helpers;
+
+    /**
+     * @var TestStats
+     */
+    private $test_stats;
 
     /**
      * @var UserCollection
      */
-    private $userCollection;
+    private $users;
 
     /**
      * @var TestCollection
      */
-    private $testCollection;
+    private $tests;
 
     public function __construct(
         Logger $logger,
-        \Twig_Environment $twig,
-        Tests $tests,
-        UserCollection $userCollection,
-        TestCollection $testCollection
+        Environment $twig,
+        Session $session,
+        AuthHelpers $auth_helpers,
+        TestStats $test_stats,
+        UserCollection $users,
+        TestCollection $tests
     ) {
-        parent::__construct($logger, $twig);
+        parent::__construct($logger, $twig, $session);
 
+        $this->auth_helpers = $auth_helpers;
+        $this->test_stats = $test_stats;
+        $this->users = $users;
         $this->tests = $tests;
-        $this->userCollection = $userCollection;
-        $this->testCollection = $testCollection;
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function renderFrontPage(): Response
+    public function show_home(): Response
     {
-        return AuthHelpers::isLoggedIn()
-            ? $this->renderFrontPageAuth()
-            : $this->renderFrontPageAnon();
+        return $this->auth_helpers->assert_logged_in()
+            ? $this->show_home_authorized()
+            : $this->show_home_anonymous();
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    private function renderFrontPageAnon(): Response
+    private function show_home_anonymous(): Response
     {
         $data = [
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->averageLastSevenDays()),
-                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->countLastSevenDays())
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->averageLastSevenDays()),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->test_stats->countLastSevenDays()),
             ],
             'yearStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->averageByYear()),
-                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->countByYear())
-            ]
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->averageByYear()),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->test_stats->countByYear()),
+            ],
         ];
 
-        return $this->render(
-            'public/home/home.html.twig',
-            $data
-        );
+        return $this->render('public/home/home.html.twig',
+                             $data);
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     * @throws \Exception
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    private function renderFrontPageAuth(): Response
+    private function show_home_authorized(): Response
     {
-        $user = $this->userCollection->fetch(SessionHelpers::getUserUuid());
-        $tests = $this->testCollection->fetchAllByUser($user);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+        $tests = $this->tests->fetchAllByUser($user);
 
         uasort(
             $tests,
-            function ($a, $b) {
-                /** @var Test $a */
-                /** @var Test $b */
-                return $a->getTimeStarted()->format('U') <=> $b->getTimeStarted()->format('U');
+            static function (Test $a, Test $b) {
+                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
             }
         );
 
-        $tests = array_reverse(
-            $tests,
-            true
-        );
-
-        $testsComplete = [];
-        $testsIncomplete = [];
-
+        $tests_complete = [];
+        $tests_incomplete = [];
         /** @var Test $test */
         foreach ($tests as $test) {
-            if (empty($test->getUuid())) {
+            if (($test->getUuid() ?? '') === '') {
                 continue;
             }
 
@@ -129,17 +133,14 @@ class Home extends RootController
             $completed = $test->getTimeCompleted();
 
             if ($test->getTimeCompleted() !== null) {
-                if (count($testsComplete) === 5) {
+                if (count($tests_complete) === self::NUM_COMPLETE_TESTS_DISPLAY) {
                     continue;
                 }
 
-                $testsComplete[] = [
+                $tests_complete[] = [
                     'uuid' => $test->getUuid(),
                     'score' => $test->getScore(),
-                    'afsc' => implode(
-                        ', ',
-                        AfscHelpers::listNames($test->getAfscs())
-                    ),
+                    'afsc' => implode(', ', AfscHelpers::listNames($test->getAfscs())),
                     'questions' => $test->getNumQuestions(),
                     'time' => [
                         'started' => ($started !== null)
@@ -147,64 +148,61 @@ class Home extends RootController
                             : '',
                         'completed' => ($completed !== null)
                             ? $completed->format(DateTimeHelpers::DT_FMT_SHORT)
-                            : ''
-                    ]
+                            : '',
+                    ],
                 ];
+
                 continue;
             }
 
-            $testsIncomplete[] = [
+            $tests_incomplete[] = [
                 'uuid' => $test->getUuid(),
-                'afsc' => implode(
-                    ', ',
-                    AfscHelpers::listNames($test->getAfscs())
-                ),
+                'afsc' => implode(', ', AfscHelpers::listNames($test->getAfscs())),
                 'answered' => $test->getNumAnswered(),
                 'questions' => $test->getNumQuestions(),
                 'time' => [
                     'started' => ($started !== null)
                         ? $started->format(DateTimeHelpers::DT_FMT_SHORT)
-                        : ''
-                ]
+                        : '',
+                ],
             ];
         }
 
         $daysAgo_7 = DateTimeHelpers::xDaysAgo(7);
         $daysAgo_30 = DateTimeHelpers::xDaysAgo(30);
         $daysAgo_90 = DateTimeHelpers::xDaysAgo(90);
+        $now = new DateTime();
 
         $data = [
             'generalStats' => [
                 'avg' => [
-                    'overall' => $this->tests->userAverageOverall($user),
-                    'lastSeven' => $this->tests->userAverageBetween($user, $daysAgo_7, new \DateTime()),
-                    'lastThirty' => $this->tests->userAverageBetween($user, $daysAgo_30, new \DateTime()),
-                    'lastNinety' => $this->tests->userAverageBetween($user, $daysAgo_90, new \DateTime())
+                    'overall' => $this->test_stats->userAverageOverall($user),
+                    'lastSeven' => $this->test_stats->userAverageBetween($user, $daysAgo_7, $now),
+                    'lastThirty' => $this->test_stats->userAverageBetween($user, $daysAgo_30, $now),
+                    'lastNinety' => $this->test_stats->userAverageBetween($user, $daysAgo_90, $now),
                 ],
                 'count' => [
-                    'overall' => $this->tests->userCountOverall($user),
-                    'lastSeven' => $this->tests->userCountBetween($user, $daysAgo_7, new \DateTime()),
-                    'lastThirty' => $this->tests->userCountBetween($user, $daysAgo_30, new \DateTime()),
-                    'lastNinety' => $this->tests->userCountBetween($user, $daysAgo_90, new \DateTime())
-                ]
+                    'overall' => $this->test_stats->userCountOverall($user),
+                    'lastSeven' => $this->test_stats->userCountBetween($user, $daysAgo_7, $now),
+                    'lastThirty' => $this->test_stats->userCountBetween($user, $daysAgo_30, $now),
+                    'lastNinety' => $this->test_stats->userCountBetween($user, $daysAgo_90, $now),
+                ],
             ],
             'lastSevenStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->userAverageLastSevenDays($user)),
-                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->userCountLastSevenDays($user))
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->userAverageLastSevenDays($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->test_stats->userCountLastSevenDays($user)),
             ],
             'monthStats' => [
-                'avg' => StatisticsHelpers::formatGraphDataTests($this->tests->userAverageByMonth($user)),
-                'count' => StatisticsHelpers::formatGraphDataTests($this->tests->userCountByMonth($user))
+                'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->userAverageByMonth($user)),
+                'count' => StatisticsHelpers::formatGraphDataTests($this->test_stats->userCountByMonth($user)),
             ],
             'tests' => [
-                'complete' => $testsComplete,
-                'incomplete' => $testsIncomplete
-            ]
+                'complete' => $tests_complete,
+                'incomplete' => $tests_incomplete,
+            ],
         ];
 
-        return $this->render(
-            'home/home.html.twig',
-            $data
-        );
+        return $this->render('home/home.html.twig',
+                             $data);
     }
 }

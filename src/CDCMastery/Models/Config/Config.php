@@ -13,16 +13,21 @@ use CDCMastery\Exceptions\Configuration\ConfigFileEmptyException;
 use CDCMastery\Exceptions\Configuration\ConfigFileInvalidException;
 use CDCMastery\Exceptions\Files\FileNotFoundException;
 use CDCMastery\Exceptions\Files\FileNotReadableException;
+use stdClass;
 
 class Config
 {
     /**
-     * @var \stdClass
+     * @var stdClass
      */
     protected $configData;
 
     /**
-     * Configuration constructor.
+     * Config constructor.
+     * @throws ConfigFileEmptyException
+     * @throws ConfigFileInvalidException
+     * @throws FileNotFoundException
+     * @throws FileNotReadableException
      */
     public function __construct()
     {

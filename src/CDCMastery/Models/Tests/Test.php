@@ -11,6 +11,7 @@ namespace CDCMastery\Models\Tests;
 
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\Question;
+use DateTime;
 
 class Test
 {
@@ -30,12 +31,12 @@ class Test
     private $userUuid;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
     private $timeStarted;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      */
     private $timeCompleted;
 
@@ -112,33 +113,33 @@ class Test
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getTimeStarted(): ?\DateTime
+    public function getTimeStarted(): ?DateTime
     {
         return $this->timeStarted;
     }
 
     /**
-     * @param \DateTime|null $timeStarted
+     * @param DateTime|null $timeStarted
      */
-    public function setTimeStarted(?\DateTime $timeStarted)
+    public function setTimeStarted(?DateTime $timeStarted)
     {
         $this->timeStarted = $timeStarted;
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getTimeCompleted(): ?\DateTime
+    public function getTimeCompleted(): ?DateTime
     {
         return $this->timeCompleted;
     }
 
     /**
-     * @param \DateTime|null $timeCompleted
+     * @param DateTime|null $timeCompleted
      */
-    public function setTimeCompleted(?\DateTime $timeCompleted)
+    public function setTimeCompleted(?DateTime $timeCompleted)
     {
         $this->timeCompleted = $timeCompleted;
     }

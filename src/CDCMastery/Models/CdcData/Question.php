@@ -36,7 +36,7 @@ class Question
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -52,7 +52,7 @@ class Question
     /**
      * @param string $afscUuid
      */
-    public function setAfscUuid(string $afscUuid)
+    public function setAfscUuid(string $afscUuid): void
     {
         $this->afscUuid = $afscUuid;
     }
@@ -68,7 +68,7 @@ class Question
     /**
      * @param string $text
      */
-    public function setText(string $text)
+    public function setText(string $text): void
     {
         $this->text = $text;
     }

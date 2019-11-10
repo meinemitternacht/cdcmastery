@@ -14,70 +14,72 @@ use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\Users\User;
+use DateTime;
 use Monolog\Logger;
+use mysqli;
 
-class Tests
+class TestStats
 {
-    const PRECISION_AVG = 2;
+    private const PRECISION_AVG = 2;
 
-    const STAT_AVG_BETWEEN = 'avg_between';
-    const STAT_AVG_BY_MONTH = 'avg_by_month';
-    const STAT_AVG_BY_WEEK = 'avg_by_week';
-    const STAT_AVG_BY_YEAR = 'avg_by_year';
-    const STAT_AVG_LAST_SEVEN = 'avg_last_seven_days';
-    const STAT_AVG_OVERALL = 'avg_overall';
+    private const STAT_AVG_BETWEEN = 'avg_between';
+    private const STAT_AVG_BY_MONTH = 'avg_by_month';
+    private const STAT_AVG_BY_WEEK = 'avg_by_week';
+    private const STAT_AVG_BY_YEAR = 'avg_by_year';
+    private const STAT_AVG_LAST_SEVEN = 'avg_last_seven_days';
+    private const STAT_AVG_OVERALL = 'avg_overall';
 
-    const STAT_COUNT_BETWEEN = 'count_between';
-    const STAT_COUNT_BY_MONTH = 'count_by_month';
-    const STAT_COUNT_BY_WEEK = 'count_by_week';
-    const STAT_COUNT_BY_YEAR = 'count_by_year';
-    const STAT_COUNT_LAST_SEVEN = 'count_last_seven_days';
-    const STAT_COUNT_OVERALL = 'count_overall';
+    private const STAT_COUNT_BETWEEN = 'count_between';
+    private const STAT_COUNT_BY_MONTH = 'count_by_month';
+    private const STAT_COUNT_BY_WEEK = 'count_by_week';
+    private const STAT_COUNT_BY_YEAR = 'count_by_year';
+    private const STAT_COUNT_LAST_SEVEN = 'count_last_seven_days';
+    private const STAT_COUNT_OVERALL = 'count_overall';
 
-    const STAT_AFSC_AVG_BETWEEN = 'afsc_avg_between';
-    const STAT_AFSC_AVG_BY_MONTH = 'afsc_avg_by_month';
-    const STAT_AFSC_AVG_BY_WEEK = 'afsc_avg_by_week';
-    const STAT_AFSC_AVG_BY_YEAR = 'afsc_avg_by_year';
-    const STAT_AFSC_AVG_LAST_SEVEN = 'afsc_avg_last_seven_days';
-    const STAT_AFSC_AVG_OVERALL = 'afsc_avg_overall';
+    private const STAT_AFSC_AVG_BETWEEN = 'afsc_avg_between';
+    private const STAT_AFSC_AVG_BY_MONTH = 'afsc_avg_by_month';
+    private const STAT_AFSC_AVG_BY_WEEK = 'afsc_avg_by_week';
+    private const STAT_AFSC_AVG_BY_YEAR = 'afsc_avg_by_year';
+    private const STAT_AFSC_AVG_LAST_SEVEN = 'afsc_avg_last_seven_days';
+    private const STAT_AFSC_AVG_OVERALL = 'afsc_avg_overall';
 
-    const STAT_AFSC_COUNT_BETWEEN = 'afsc_count_between';
-    const STAT_AFSC_COUNT_BY_MONTH = 'afsc_count_by_month';
-    const STAT_AFSC_COUNT_BY_WEEK = 'afsc_count_by_week';
-    const STAT_AFSC_COUNT_BY_YEAR = 'afsc_count_by_year';
-    const STAT_AFSC_COUNT_LAST_SEVEN = 'afsc_count_last_seven_days';
-    const STAT_AFSC_COUNT_OVERALL = 'afsc_count_overall';
-    
-    const STAT_BASE_AVG_BETWEEN = 'base_avg_between';
-    const STAT_BASE_AVG_BY_MONTH = 'base_avg_by_month';
-    const STAT_BASE_AVG_BY_WEEK = 'base_avg_by_week';
-    const STAT_BASE_AVG_BY_YEAR = 'base_avg_by_year';
-    const STAT_BASE_AVG_LAST_SEVEN = 'base_avg_last_seven_days';
-    const STAT_BASE_AVG_OVERALL = 'base_avg_overall';
+    private const STAT_AFSC_COUNT_BETWEEN = 'afsc_count_between';
+    private const STAT_AFSC_COUNT_BY_MONTH = 'afsc_count_by_month';
+    private const STAT_AFSC_COUNT_BY_WEEK = 'afsc_count_by_week';
+    private const STAT_AFSC_COUNT_BY_YEAR = 'afsc_count_by_year';
+    private const STAT_AFSC_COUNT_LAST_SEVEN = 'afsc_count_last_seven_days';
+    private const STAT_AFSC_COUNT_OVERALL = 'afsc_count_overall';
 
-    const STAT_BASE_COUNT_BETWEEN = 'base_count_between';
-    const STAT_BASE_COUNT_BY_MONTH = 'base_count_by_month';
-    const STAT_BASE_COUNT_BY_WEEK = 'base_count_by_week';
-    const STAT_BASE_COUNT_BY_YEAR = 'base_count_by_year';
-    const STAT_BASE_COUNT_LAST_SEVEN = 'base_count_last_seven_days';
-    const STAT_BASE_COUNT_OVERALL = 'base_count_overall';
+    private const STAT_BASE_AVG_BETWEEN = 'base_avg_between';
+    private const STAT_BASE_AVG_BY_MONTH = 'base_avg_by_month';
+    private const STAT_BASE_AVG_BY_WEEK = 'base_avg_by_week';
+    private const STAT_BASE_AVG_BY_YEAR = 'base_avg_by_year';
+    private const STAT_BASE_AVG_LAST_SEVEN = 'base_avg_last_seven_days';
+    private const STAT_BASE_AVG_OVERALL = 'base_avg_overall';
 
-    const STAT_USER_AVG_BETWEEN = 'user_avg_between';
-    const STAT_USER_AVG_BY_MONTH = 'user_avg_by_month';
-    const STAT_USER_AVG_BY_WEEK = 'user_avg_by_week';
-    const STAT_USER_AVG_BY_YEAR = 'user_avg_by_year';
-    const STAT_USER_AVG_LAST_SEVEN = 'user_avg_last_seven_days';
-    const STAT_USER_AVG_OVERALL = 'user_avg_overall';
+    private const STAT_BASE_COUNT_BETWEEN = 'base_count_between';
+    private const STAT_BASE_COUNT_BY_MONTH = 'base_count_by_month';
+    private const STAT_BASE_COUNT_BY_WEEK = 'base_count_by_week';
+    private const STAT_BASE_COUNT_BY_YEAR = 'base_count_by_year';
+    private const STAT_BASE_COUNT_LAST_SEVEN = 'base_count_last_seven_days';
+    private const STAT_BASE_COUNT_OVERALL = 'base_count_overall';
 
-    const STAT_USER_COUNT_BETWEEN = 'user_count_between';
-    const STAT_USER_COUNT_BY_MONTH = 'user_count_by_month';
-    const STAT_USER_COUNT_BY_WEEK = 'user_count_by_week';
-    const STAT_USER_COUNT_BY_YEAR = 'user_count_by_year';
-    const STAT_USER_COUNT_LAST_SEVEN = 'user_count_last_seven_days';
-    const STAT_USER_COUNT_OVERALL = 'user_count_overall';
+    private const STAT_USER_AVG_BETWEEN = 'user_avg_between';
+    private const STAT_USER_AVG_BY_MONTH = 'user_avg_by_month';
+    private const STAT_USER_AVG_BY_WEEK = 'user_avg_by_week';
+    private const STAT_USER_AVG_BY_YEAR = 'user_avg_by_year';
+    private const STAT_USER_AVG_LAST_SEVEN = 'user_avg_last_seven_days';
+    private const STAT_USER_AVG_OVERALL = 'user_avg_overall';
+
+    private const STAT_USER_COUNT_BETWEEN = 'user_count_between';
+    private const STAT_USER_COUNT_BY_MONTH = 'user_count_by_month';
+    private const STAT_USER_COUNT_BY_WEEK = 'user_count_by_week';
+    private const STAT_USER_COUNT_BY_YEAR = 'user_count_by_year';
+    private const STAT_USER_COUNT_LAST_SEVEN = 'user_count_last_seven_days';
+    private const STAT_USER_COUNT_OVERALL = 'user_count_overall';
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -93,11 +95,11 @@ class Tests
 
     /**
      * Tests constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      * @param CacheHandler $cacheHandler
      */
-    public function __construct(\mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
+    public function __construct(mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -105,19 +107,14 @@ class Tests
     }
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function averageBetween(\DateTime $start, \DateTime $end): float
+    public function averageBetween(DateTime $start, DateTime $end): float
     {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
-
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
+        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AVG_BETWEEN, [
@@ -188,7 +185,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AVG_BY_WEEK:
@@ -201,7 +198,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_AVG_BY_YEAR:
@@ -214,7 +211,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AVG_LAST_SEVEN:
@@ -228,7 +225,7 @@ WHERE timeCompleted
   BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -323,7 +320,7 @@ SELECT
   AVG(score) AS tAvg
 FROM testCollection 
 WHERE score > 0
-  AND timeCompleted IS NOT NULL 
+  AND timeCompleted IS NOT NULL
 SQL;
 
         $res = $this->db->query($qry);
@@ -346,19 +343,14 @@ SQL;
     }
 
     /**
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return int
      */
-    public function countBetween(\DateTime $start, \DateTime $end): int
+    public function countBetween(DateTime $start, DateTime $end): int
     {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
-
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
+        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
         $cached = $this->cache->hashAndGet(
             self::STAT_COUNT_BETWEEN, [
@@ -377,7 +369,7 @@ SELECT
 FROM testCollection 
 WHERE timeCompleted BETWEEN ? AND ?
   AND score > 0
-  AND timeCompleted IS NOT NULL 
+  AND timeCompleted IS NOT NULL
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -425,7 +417,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_COUNT_BY_WEEK:
@@ -438,7 +430,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_COUNT_BY_YEAR:
@@ -451,7 +443,7 @@ FROM testCollection
 WHERE score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_COUNT_LAST_SEVEN:
@@ -465,7 +457,7 @@ WHERE timeCompleted
   BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0 
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -576,11 +568,11 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function afscAverageBetween(Afsc $afsc, \DateTime $start, \DateTime $end): float
+    public function afscAverageBetween(Afsc $afsc, DateTime $start, DateTime $end): float
     {
         if (empty($afsc->getUuid())) {
             return 0.00;
@@ -677,7 +669,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AFSC_AVG_BY_WEEK:
@@ -691,7 +683,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_AFSC_AVG_BY_YEAR:
@@ -705,7 +697,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AFSC_AVG_LAST_SEVEN:
@@ -719,7 +711,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -891,11 +883,11 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return int
      */
-    public function afscCountBetween(Afsc $afsc, \DateTime $start, \DateTime $end): int
+    public function afscCountBetween(Afsc $afsc, DateTime $start, DateTime $end): int
     {
         if (empty($afsc->getUuid())) {
             return 0;
@@ -987,7 +979,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AFSC_COUNT_BY_WEEK:
@@ -1001,7 +993,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_AFSC_COUNT_BY_YEAR:
@@ -1015,7 +1007,7 @@ WHERE afscList = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_AFSC_COUNT_LAST_SEVEN:
@@ -1029,7 +1021,7 @@ WHERE afscList = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -1193,11 +1185,11 @@ SQL;
 
     /**
      * @param Base $base
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function baseAverageBetween(Base $base, \DateTime $start, \DateTime $end): float
+    public function baseAverageBetween(Base $base, DateTime $start, DateTime $end): float
     {
         if (empty($base->getUuid())) {
             return 0.00;
@@ -1296,7 +1288,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASE_AVG_BY_WEEK:
@@ -1311,7 +1303,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_BASE_AVG_BY_YEAR:
@@ -1326,7 +1318,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASE_AVG_LAST_SEVEN:
@@ -1341,7 +1333,7 @@ WHERE userData.userBase = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -1514,11 +1506,11 @@ SQL;
 
     /**
      * @param Base $base
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return int
      */
-    public function baseCountBetween(Base $base, \DateTime $start, \DateTime $end): int
+    public function baseCountBetween(Base $base, DateTime $start, DateTime $end): int
     {
         if (empty($base->getUuid())) {
             return 0;
@@ -1612,7 +1604,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASE_COUNT_BY_WEEK:
@@ -1627,7 +1619,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_BASE_COUNT_BY_YEAR:
@@ -1642,7 +1634,7 @@ WHERE userData.userBase = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_BASE_COUNT_LAST_SEVEN:
@@ -1657,7 +1649,7 @@ WHERE userData.userBase = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -1822,11 +1814,11 @@ SQL;
 
     /**
      * @param User $user
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return float
      */
-    public function userAverageBetween(User $user, \DateTime $start, \DateTime $end): float
+    public function userAverageBetween(User $user, DateTime $start, DateTime $end): float
     {
         if (empty($user->getUuid())) {
             return 0.00;
@@ -1923,7 +1915,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_AVG_BY_WEEK:
@@ -1937,7 +1929,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_USER_AVG_BY_YEAR:
@@ -1951,7 +1943,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_AVG_LAST_SEVEN:
@@ -1965,7 +1957,7 @@ WHERE userUuid = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:
@@ -2137,11 +2129,11 @@ SQL;
 
     /**
      * @param User $user
-     * @param \DateTime $start
-     * @param \DateTime $end
+     * @param DateTime $start
+     * @param DateTime $end
      * @return int
      */
-    public function userCountBetween(User $user, \DateTime $start, \DateTime $end): int
+    public function userCountBetween(User $user, DateTime $start, DateTime $end): int
     {
         if (empty($user->getUuid())) {
             return 0;
@@ -2233,7 +2225,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_COUNT_BY_WEEK:
@@ -2247,7 +2239,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY YEARWEEK(testCollection.timeCompleted)
-ORDER BY YEARWEEK(testCollection.timeCompleted) ASC
+ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_USER_COUNT_BY_YEAR:
@@ -2261,7 +2253,7 @@ WHERE userUuid = ?
   AND score > 0
   AND timeCompleted IS NOT NULL 
 GROUP BY tDate
-ORDER BY tDate ASC
+ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_COUNT_LAST_SEVEN:
@@ -2275,7 +2267,7 @@ WHERE userUuid = ?
   AND timeCompleted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
   AND score > 0
 GROUP BY DAY(timeCompleted)
-ORDER BY timeCompleted ASC
+ORDER BY timeCompleted
 SQL;
                 break;
             default:

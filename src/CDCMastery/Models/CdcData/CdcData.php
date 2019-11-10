@@ -32,7 +32,7 @@ class CdcData
     /**
      * @param Afsc $afsc
      */
-    public function setAfsc(Afsc $afsc)
+    public function setAfsc(Afsc $afsc): void
     {
         $this->afsc = $afsc;
     }
@@ -48,7 +48,7 @@ class CdcData
     /**
      * @param QuestionAnswers[] $questionAnswerData
      */
-    public function setQuestionAnswerData(array $questionAnswerData)
+    public function setQuestionAnswerData(array $questionAnswerData): void
     {
         $this->questionAnswerData = $questionAnswerData;
     }

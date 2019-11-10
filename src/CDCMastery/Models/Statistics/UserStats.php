@@ -1,26 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 1:27 PM
- */
 
 namespace CDCMastery\Models\Statistics;
 
 
 use CDCMastery\Models\Cache\CacheHandler;
 use Monolog\Logger;
+use mysqli;
 
-class Users
+class UserStats
 {
-    const PRECISION_AVG = 2;
-
-    const STAT_USERS_BY_BASE = 'users_by_base';
-    const STAT_USERS_BY_GROUP = 'users_by_group';
+    private const STAT_USERS_BY_BASE = 'users_by_base';
+    private const STAT_USERS_BY_GROUP = 'users_by_group';
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -36,11 +29,11 @@ class Users
 
     /**
      * Users constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      * @param CacheHandler $cacheHandler
      */
-    public function __construct(\mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
+    public function __construct(mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -66,8 +59,8 @@ SELECT
   COUNT(*) AS uCount
 FROM userData
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
-GROUP BY uBase
-ORDER BY baseList.baseName ASC, uCount DESC
+GROUP BY baseList.baseName
+ORDER BY baseList.baseName, uCount DESC
 SQL;
 
         $res = $this->db->query($qry);

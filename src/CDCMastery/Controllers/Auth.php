@@ -1,127 +1,122 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/2/2017
- * Time: 2:59 PM
- */
 
 namespace CDCMastery\Controllers;
 
 
-use CDCMastery\Helpers\AppHelpers;
-use CDCMastery\Helpers\SessionHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
-use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class Auth extends RootController
 {
     /**
+     * @var AuthHelpers
+     */
+    private $auth_helpers;
+
+    /**
      * @var UserHelpers
      */
-    private $userHelpers;
+    private $user_helpers;
+
+    /**
+     * @var LoginRateLimiter
+     */
+    private $limiter;
 
     /**
      * @var UserCollection
      */
-    private $userCollection;
+    private $users;
 
     /**
      * @var RoleCollection
      */
-    private $roleCollection;
+    private $roles;
 
     public function __construct(
         Logger $logger,
-        \Twig_Environment $twig,
-        UserHelpers $userHelpers,
-        UserCollection $userCollection,
-        RoleCollection  $roleCollection
+        Environment $twig,
+        Session $session,
+        AuthHelpers $auth_helpers,
+        UserHelpers $user_helpers,
+        LoginRateLimiter $limiter,
+        UserCollection $users,
+        RoleCollection $roles
     ) {
-        parent::__construct($logger, $twig);
+        parent::__construct($logger, $twig, $session);
 
-        $this->userHelpers = $userHelpers;
-        $this->userCollection = $userCollection;
-        $this->roleCollection = $roleCollection;
+        $this->auth_helpers = $auth_helpers;
+        $this->user_helpers = $user_helpers;
+        $this->limiter = $limiter;
+        $this->users = $users;
+        $this->roles = $roles;
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function processLogin(): Response
+    public function do_login(): Response
     {
-        if (AuthHelpers::isLoggedIn()) {
-            $this->log->addWarning(
-                'failed login attempt :: already logged in :: account ' .
-                SessionHelpers::getUserUuid() .
-                ' :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+        if ($this->auth_helpers->assert_logged_in()) {
+            $this->log->addWarning('failed login attempt :: already logged in :: ' .
+                                   "account {$this->auth_helpers->get_user_uuid()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            Messages::add(
-                Messages::INFO,
-                'You are already logged in'
-            );
+            $this->flash()->add(MessageTypes::INFO,
+                                'You are already logged in');
 
-            return AppHelpers::redirect('/');
+            return $this->redirect('/');
         }
 
-        if (LoginRateLimiter::assertLimited()) {
-            $this->log->addWarning(
-                'rate-limited login attempt :: ' .
-                serialize($this->request) .
-                ' :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+        if ($this->limiter->assert_limited()) {
+            $req_str = json_encode($this->request->request->all());
+            $this->log->addWarning("rate-limited login attempt :: {$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            Messages::add(
-                Messages::WARNING,
-                'You have made too many login attempts, please try again at a later time'
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'You have made too many login attempts, please try again at a later time');
 
-            return self::renderLogin();
+            return $this->show_login();
         }
 
         $parameters = [
             'username',
-            'password'
+            'password',
         ];
 
-        if (!$this->checkParameters($parameters, $this->request)) {
-            LoginRateLimiter::increment();
+        if (!$this->checkParameters($parameters)) {
+            $this->limiter->increment();
 
-            $this->log->addWarning(
-                'login attempt missing parameters :: ' .
-                serialize($this->request) .
-                ' :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+            $req_str = json_encode($this->request->request->all());
+            $this->log->addWarning('login attempt missing parameters :: ' .
+                                   "{$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            Messages::add(
-                Messages::WARNING,
-                'A required field was not provided, please try again'
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'A required field was not provided, please try again');
 
-            return self::renderLogin();
+            return $this->show_login();
         }
 
         $username = $this->get('username');
         $password = $this->get('password');
 
-        $matchUsername = $this->userHelpers->findByUsername($username);
+        $matchUsername = $this->user_helpers->findByUsername($username);
 
         $matchEmail = null;
         if (filter_var($username, FILTER_VALIDATE_EMAIL) !== false) {
-            $matchEmail = $this->userHelpers->findByEmail($username);
+            $matchEmail = $this->user_helpers->findByEmail($username);
         }
 
         $uuid = $matchUsername === null
@@ -129,138 +124,97 @@ class Auth extends RootController
             : $matchUsername;
 
         if ($uuid === null) {
-            LoginRateLimiter::increment();
+            $this->limiter->increment();
+            $this->log->addWarning('failed login attempt :: unknown user :: ' .
+                                   "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            $this->log->addWarning(
-                'failed login attempt :: bad username :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your username or password is incorrect, please try again');
 
-            Messages::add(
-                Messages::WARNING,
-                'Your username or password is incorrect, please try again'
-            );
-
-            return self::renderLogin();
+            return $this->show_login();
         }
 
-        $user = $this->userCollection->fetch($uuid);
+        $user = $this->users->fetch($uuid);
 
-        if ($user->getUuid() === '') {
-            LoginRateLimiter::increment();
+        if (!$user->assert_valid()) {
+            $this->limiter->increment();
+            $this->log->addWarning('failed login attempt :: unknown user :: ' .
+                                   "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            $this->log->addWarning(
-                'failed login attempt :: bad username :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your username or password is incorrect, please try again');
 
-            Messages::add(
-                Messages::WARNING,
-                'Your username or password is incorrect, please try again'
-            );
-
-            return self::renderLogin();
+            return $this->show_login();
         }
 
         if ($user->isDisabled()) {
-            LoginRateLimiter::increment();
+            $this->limiter->increment();
+            $this->log->addWarning('failed login attempt :: account disabled :: ' .
+                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            $this->log->addWarning(
-                'failed login attempt :: disabled account :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your account has been disabled.  Please contact the help desk for more information.');
 
-            Messages::add(
-                Messages::WARNING,
-                'Your account has been disabled.  Please contact the helpdesk for more information.'
-            );
-
-            return self::renderLogin();
+            return $this->show_login();
         }
 
-        if (!AuthHelpers::comparePassword($password, $user->getPassword())) {
-            LoginRateLimiter::increment();
+        if (!$this->auth_helpers->compare($password, $user->getPassword())) {
+            $this->limiter->increment();
+            $this->log->addWarning('failed login attempt :: password mismatch :: ' .
+                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            $this->log->addWarning(
-                'failed login attempt :: bad password :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your username or password is incorrect, please try again');
 
-            Messages::add(
-                Messages::WARNING,
-                'Your username or password is incorrect, please try again'
-            );
-
-            return self::renderLogin();
+            return $this->show_login();
         }
 
-        $role = $this->roleCollection->fetch($user->getRole());
+        $this->auth_helpers->login_hook($user, $this->roles->fetch($user->getRole()));
 
-        AuthHelpers::postprocessLogin($user, $role);
+        $this->log->addInfo("login success :: account {$user->getUuid()} " .
+                            "'{$user->getName()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
-        $this->log->addInfo(
-            'login success :: account ' .
-            $user->getUuid() .
-            ' (' .
-            $user->getName() .
-            ') :: ip ' .
-            $_SERVER['REMOTE_ADDR']
-        );
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            "Welcome, {$user->getName()}! You are now signed in.");
 
-        Messages::add(
-            Messages::SUCCESS,
-            'Welcome, ' . $user->getName() . '! You are now signed in.'
-        );
-
-        return AppHelpers::redirect(
-            $_SESSION[AuthHelpers::KEY_REDIRECT] ?? '/'
-        );
+        return $this->redirect($this->auth_helpers->get_redirect() ?? '/');
     }
 
     /**
      * @return Response
      */
-    public function processLogout(): Response
+    public function do_logout(): Response
     {
-        $this->log->addInfo(
-            'logout success:: account ' .
-            SessionHelpers::getUserUuid() .
-            ' :: ip ' .
-            $_SERVER['REMOTE_ADDR']
-        );
+        $this->log->addInfo("logout success :: account {$this->auth_helpers->get_user_uuid()} " .
+                            "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
-        AuthHelpers::postprocessLogout();
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'You have been successfully logged out');
 
-        Messages::add(
-            Messages::SUCCESS,
-            'You have been successfully logged out'
-        );
+        $this->auth_helpers->logout_hook();
 
-        return AppHelpers::redirect('/');
+        return $this->redirect('/');
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function renderLogin(): Response
+    public function show_login(): Response
     {
-        if (AuthHelpers::isLoggedIn()) {
-            $this->log->addWarning(
-                'failed login attempt :: already logged in :: account ' .
-                SessionHelpers::getUserUuid() .
-                ' :: ip ' .
-                $_SERVER['REMOTE_ADDR']
-            );
+        if ($this->auth_helpers->assert_logged_in()) {
+            $this->log->addWarning('failed login attempt :: already logged in :: ' .
+                                   "account {$this->auth_helpers->get_user_uuid()} " .
+                                   "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
-            Messages::add(
-                Messages::INFO,
+            $this->flash()->add(
+                MessageTypes::INFO,
                 'You are already logged in'
             );
 
-            return AppHelpers::redirect('/');
+            return $this->redirect('/');
         }
 
         return $this->render('public/auth/login.html.twig');

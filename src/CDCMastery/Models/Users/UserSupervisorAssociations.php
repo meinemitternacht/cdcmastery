@@ -10,11 +10,12 @@ namespace CDCMastery\Models\Users;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class UserSupervisorAssociations
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -25,10 +26,10 @@ class UserSupervisorAssociations
 
     /**
      * UserSupervisorAssociations constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;

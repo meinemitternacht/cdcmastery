@@ -1,20 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/24/2017
- * Time: 4:07 PM
- */
 
 namespace CDCMastery\Models\Bases;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class BaseCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -24,29 +19,43 @@ class BaseCollection
     protected $log;
 
     /**
-     * @var Base[]
-     */
-    private $bases = [];
-
-    /**
      * BaseCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
     /**
-     * @param string $uuid
-     * @return Base
+     * @param array $data
+     * @return Base[]
      */
-    public function fetch(string $uuid): Base
+    private function create_objects(array $data): array
     {
-        if (empty($uuid)) {
-            return new Base();
+        $bases = [];
+        foreach ($data as $row) {
+            $base = new Base();
+            $base->setUuid($row['uuid']);
+            $base->setName($row['baseName']);
+            $bases[$row['uuid']] = $base;
+        }
+
+        return $bases;
+    }
+
+    /**
+     * @param string $uuid
+     * @return Base|null
+     */
+    public function fetch(string $uuid): ?Base
+    {
+        $base = null;
+
+        if ($uuid === '') {
+            goto out_return;
         }
 
         $qry = <<<SQL
@@ -58,27 +67,36 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
+
+        if ($stmt === false) {
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $uuid)) {
+            $stmt->close();
+            goto out_return;
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Base();
+            goto out_return;
         }
 
-        $stmt->bind_result(
-            $_uuid,
-            $name
-        );
+        if (!$stmt->bind_result($_uuid,
+                                $name)) {
+            $stmt->close();
+            goto out_return;
+        }
 
-        $stmt->fetch();
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            goto out_return;
+        }
+
         $stmt->close();
+        $base = $this->create_objects([['uuid' => $_uuid, 'baseName' => $name]])[0] ?? null;
 
-        $base = new Base();
-        $base->setUuid($_uuid);
-        $base->setName($name);
-
-        $this->bases[$uuid] = $base;
-
+        out_return:
         return $base;
     }
 
@@ -92,84 +110,70 @@ SELECT
   uuid,
   baseName
 FROM baseList
-ORDER BY baseName ASC
+ORDER BY baseName
 SQL;
 
         $res = $this->db->query($qry);
 
-        while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || empty($row['uuid'])) {
-                continue;
-            }
-
-            $base = new Base();
-            $base->setUuid($row['uuid'] ?? '');
-            $base->setName($row['baseName'] ?? '');
-
-            $this->bases[$row['uuid']] = $base;
-        }
-
-        $res->free();
-
-        return $this->bases;
-    }
-
-    /**
-     * @param string[] $uuidList
-     * @return Base[]
-     */
-    public function fetchArray(array $uuidList): array
-    {
-        if (empty($uuidList)) {
+        if ($res === false) {
             return [];
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
+        $rows = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row['uuid']) || $row['uuid'] === '') {
+                continue;
+            }
 
-        $uuidListString = implode("','", $uuidListFiltered);
+            $rows[] = $row;
+        }
+
+        $res->free();
+        return $this->create_objects($rows);
+    }
+
+    /**
+     * @param string[] $uuids
+     * @return Base[]
+     */
+    public function fetchArray(array $uuids): array
+    {
+        if (count($uuids) === 0) {
+            return [];
+        }
+
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 SELECT
   uuid,
   baseName
 FROM baseList
-WHERE uuid IN ('{$uuidListString}')
-ORDER BY baseName ASC
+WHERE uuid IN ('{$uuids_str}')
+ORDER BY baseName
 SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
             }
 
-            $base = new Base();
-            $base->setUuid($row['uuid'] ?? '');
-            $base->setName($row['baseName'] ?? '');
-
-            $this->bases[$row['uuid']] = $base;
+            $rows[] = $row;
         }
 
         $res->free();
 
-        return array_intersect_key(
-            $this->bases,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @return BaseCollection
-     */
-    public function reset(): self
-    {
-        $this->bases = [];
-
-        return $this;
+        return array_intersect_key($this->create_objects($rows),
+                                   array_flip($uuids));
     }
 
     /**
@@ -177,7 +181,7 @@ SQL;
      */
     public function save(Base $base): void
     {
-        if (empty($base->getUuid())) {
+        if (($base->getUuid() ?? '') === '') {
             return;
         }
 
@@ -194,20 +198,21 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $uuid,
-            $name
-        );
 
-        if (!$stmt->execute()) {
-            $stmt->close();
+        if ($stmt === false) {
             return;
         }
 
-        $stmt->close();
+        if (!$stmt->bind_param('ss',
+                               $uuid,
+                               $name)) {
+            goto out_close;
+        }
 
-        $this->bases[$uuid] = $base;
+        $stmt->execute();
+
+        out_close:
+        $stmt->close();
     }
 
     /**
@@ -215,21 +220,8 @@ SQL;
      */
     public function saveArray(array $bases): void
     {
-        if (empty($bases)) {
-            return;
-        }
-
-        $c = count($bases);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($bases[$i])) {
-                continue;
-            }
-
-            if (!$bases[$i] instanceof Base) {
-                continue;
-            }
-
-            $this->save($bases[$i]);
+        foreach ($bases as $base) {
+            $this->save($base);
         }
     }
 }

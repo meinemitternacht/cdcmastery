@@ -10,11 +10,12 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class CdcDataCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -24,16 +25,11 @@ class CdcDataCollection
     protected $log;
 
     /**
-     * @var CdcData[]
-     */
-    private $cdcData = [];
-
-    /**
      * CdcDataCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -47,10 +43,6 @@ class CdcDataCollection
     {
         if (empty($afscUuid)) {
             return new CdcData();
-        }
-
-        if (isset($this->cdcData[$afscUuid])) {
-            return $this->cdcData[$afscUuid];
         }
 
         $afscCollection = new AfscCollection(
@@ -74,20 +66,7 @@ class CdcDataCollection
         $cdcData = new CdcData();
         $cdcData->setAfsc($afsc);
         $cdcData->setQuestionAnswerData($cdcQuestionAnswers);
-
-        $this->cdcData[$afsc->getUuid()] = $cdcData;
-
         return $cdcData;
-    }
-
-    /**
-     * @return CdcDataCollection
-     */
-    public function refresh(): self
-    {
-        $this->cdcData = [];
-
-        return $this;
     }
 
     /**

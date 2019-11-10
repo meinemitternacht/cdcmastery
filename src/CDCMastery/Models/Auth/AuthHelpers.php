@@ -1,9 +1,9 @@
 <?php
 namespace CDCMastery\Models\Auth;
 
-use CDCMastery\Helpers\SessionHelpers;
 use CDCMastery\Models\Users\Role;
 use CDCMastery\Models\Users\User;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 
 /**
@@ -12,15 +12,29 @@ use CDCMastery\Models\Users\User;
  */
 class AuthHelpers
 {
-    const CLASS_ADMIN = 'admin';
-    const CLASS_SUPERVISOR = 'supervisor';
-    const CLASS_TRNG_MGR = 'training_manager';
+    private const KEY_AUTH = 'cdcmastery-auth';
+    private const KEY_ROLE = 'user-role';
+    private const KEY_REDIRECT = 'login-redirect';
+    private const KEY_USER_NAME = 'name';
+    private const KEY_USER_UUID = 'uuid';
 
-    const KEY_AUTH = 'cdcmastery-auth';
-    const KEY_CLASS = 'user_class';
-    const KEY_REDIRECT = 'login-redirect';
+    private const PASSWORD_HASH_ROUNDS = 13;
 
-    const PASSWORD_HASH_ROUNDS = 13;
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var LoginRateLimiter
+     */
+    private $limiter;
+
+    public function __construct(Session $session, LoginRateLimiter $limiter)
+    {
+        $this->session = $session;
+        $this->limiter = $limiter;
+    }
 
     /**
      * @param $password
@@ -28,11 +42,8 @@ class AuthHelpers
      * @param $email
      * @return array
      */
-    public static function checkPasswordComplexity(
-        string $password,
-        string $handle,
-        string $email
-    ): array {
+    public static function check_complexity(string $password, string $handle, string $email): array
+    {
         $errors = [];
         $noLetters = false;
 
@@ -73,7 +84,7 @@ class AuthHelpers
      * @param string $hash
      * @return bool
      */
-    public static function comparePassword(string $password, string $hash): bool
+    public static function compare(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
     }
@@ -82,7 +93,7 @@ class AuthHelpers
      * @param string $password
      * @return string
      */
-    public static function hashUserPassword(string $password): string
+    public static function hash(string $password): string
     {
         return password_hash(
             $password,
@@ -94,94 +105,109 @@ class AuthHelpers
     /**
      * @return bool
      */
-    public static function isLoggedIn(): bool
+    public function assert_logged_in(): bool
     {
-        return isset($_SESSION[self::KEY_AUTH]);
+        return $this->session->get(self::KEY_AUTH, false);
+    }
+
+    /**
+     * @param string $role
+     * @return bool
+     */
+    private function assert_role(string $role): bool
+    {
+        return $this->session->get(self::KEY_ROLE) === $role;
     }
 
     /**
      * @return bool
      */
-    public static function isAdmin(): bool
+    public function assert_admin(): bool
     {
-        if (!isset($_SESSION[self::KEY_CLASS])) {
-            return false;
-        }
-
-        return $_SESSION[self::KEY_CLASS] === Role::TYPE_ADMIN;
+        return $this->assert_role(Role::TYPE_ADMIN);
     }
 
     /**
      * @return bool
      */
-    public static function isQuestionEditor(): bool
+    public function assert_editor(): bool
     {
-        if (!isset($_SESSION[self::KEY_CLASS])) {
-            return false;
-        }
-
-        return $_SESSION[self::KEY_CLASS] === Role::TYPE_QUESTION_EDITOR;
+        return $this->assert_role(Role::TYPE_QUESTION_EDITOR);
     }
 
     /**
      * @return bool
      */
-    public static function isSupervisor(): bool
+    public function assert_supervisor(): bool
     {
-        if (!isset($_SESSION[self::KEY_CLASS])) {
-            return false;
-        }
-
-        return $_SESSION[self::KEY_CLASS] === Role::TYPE_SUPERVISOR;
+        return $this->assert_role(Role::TYPE_SUPERVISOR);
     }
 
     /**
      * @return bool
      */
-    public static function isTrainingManager(): bool
+    public function assert_training_manager(): bool
     {
-        if (!isset($_SESSION[self::KEY_CLASS])) {
-            return false;
-        }
-
-        return $_SESSION[self::KEY_CLASS] === Role::TYPE_TRAINING_MANAGER;
+        return $this->assert_role(Role::TYPE_TRAINING_MANAGER);
     }
 
     /**
      * @return bool
      */
-    public static function isUser(): bool
+    public function assert_user(): bool
     {
-        if (!isset($_SESSION[self::KEY_CLASS])) {
-            return false;
-        }
+        return $this->assert_role(Role::TYPE_USER);
+    }
 
-        return $_SESSION[self::KEY_CLASS] === Role::TYPE_USER;
+    /**
+     * @return null|string
+     */
+    public function get_user_name(): ?string
+    {
+        return $this->session->get(self::KEY_USER_NAME);
+    }
+
+    /**
+     * @return null|string
+     */
+    public function get_user_uuid(): ?string
+    {
+        return $this->session->get(self::KEY_USER_UUID);
+    }
+
+    public function get_redirect(): ?string
+    {
+        return $this->session->get(self::KEY_REDIRECT);
+    }
+
+    public function set_redirect(string $path): ?string
+    {
+        return $this->session->set(self::KEY_REDIRECT, $path);
     }
 
     /**
      * @param User $user
-     * @param Role $role
+     * @param Role|null $role
      */
-    public static function postprocessLogin(User $user, Role $role): void
+    public function login_hook(User $user, ?Role $role): void
     {
-        LoginRateLimiter::reset();
-        session_regenerate_id();
+        $this->limiter->destroy();
+        $this->session->migrate();
 
-        $_SESSION[self::KEY_AUTH] = true;
-        $_SESSION[SessionHelpers::KEY_USER_UUID] = $user->getUuid();
-        $_SESSION[SessionHelpers::KEY_USER_NAME] = $user->getName();
+        $this->session->set(self::KEY_AUTH, true);
+        $this->session->set(self::KEY_USER_NAME, $user->getName());
+        $this->session->set(self::KEY_USER_UUID, $user->getUuid());
 
-        if (empty($role->getUuid())) {
+        if ($role->getUuid() === null || $role->getUuid() === '') {
             return;
         }
 
-        $_SESSION[self::KEY_CLASS] = $role->getType();
+        $_SESSION[self::KEY_ROLE] = $role->getType();
     }
 
-    public static function postprocessLogout(): void
+    public function logout_hook(): void
     {
-        LoginRateLimiter::reset();
-        session_destroy();
+        $this->limiter->destroy();
+        $this->session->invalidate();
     }
 }

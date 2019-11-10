@@ -9,6 +9,9 @@
 namespace CDCMastery\Models\Email;
 
 
+use DateTime;
+use Exception;
+
 class Email
 {
     /**
@@ -17,7 +20,7 @@ class Email
     private $uuid;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $queueTime;
 
@@ -62,23 +65,24 @@ class Email
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
+     * @throws Exception
      */
-    public function getQueueTime(): \DateTime
+    public function getQueueTime(): DateTime
     {
-        return $this->queueTime ?? new \DateTime();
+        return $this->queueTime ?? new DateTime();
     }
 
     /**
-     * @param \DateTime $queueTime
+     * @param DateTime $queueTime
      */
-    public function setQueueTime(\DateTime $queueTime)
+    public function setQueueTime(DateTime $queueTime): void
     {
         $this->queueTime = $queueTime;
     }
@@ -94,7 +98,7 @@ class Email
     /**
      * @param string $sender
      */
-    public function setSender(string $sender)
+    public function setSender(string $sender): void
     {
         $this->sender = $sender;
     }
@@ -110,7 +114,7 @@ class Email
     /**
      * @param string $recipient
      */
-    public function setRecipient(string $recipient)
+    public function setRecipient(string $recipient): void
     {
         $this->recipient = $recipient;
     }
@@ -126,7 +130,7 @@ class Email
     /**
      * @param string $subject
      */
-    public function setSubject(string $subject)
+    public function setSubject(string $subject): void
     {
         $this->subject = $subject;
     }
@@ -142,7 +146,7 @@ class Email
     /**
      * @param string $bodyHtml
      */
-    public function setBodyHtml(string $bodyHtml)
+    public function setBodyHtml(string $bodyHtml): void
     {
         $this->bodyHtml = $bodyHtml;
     }
@@ -158,7 +162,7 @@ class Email
     /**
      * @param string $bodyTxt
      */
-    public function setBodyTxt(string $bodyTxt)
+    public function setBodyTxt(string $bodyTxt): void
     {
         $this->bodyTxt = $bodyTxt;
     }
@@ -174,7 +178,7 @@ class Email
     /**
      * @param string $userUuid
      */
-    public function setUserUuid(string $userUuid)
+    public function setUserUuid(string $userUuid): void
     {
         $this->userUuid = $userUuid;
     }

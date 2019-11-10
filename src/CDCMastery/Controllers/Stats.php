@@ -1,14 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 2:59 PM
- */
 
 namespace CDCMastery\Controllers;
-
-use CDCMastery\Helpers\AppHelpers;
 
 class Stats extends RootController
 {
@@ -20,8 +12,8 @@ class Stats extends RootController
     /**
      * @return string
      */
-    public function renderStatsHome(): string
+    public function show_stats_home(): string
     {
-        return AppHelpers::redirect('/stats/tests/month');
+        return $this->redirect('/stats/tests/month');
     }
 }

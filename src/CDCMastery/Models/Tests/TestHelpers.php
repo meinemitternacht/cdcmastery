@@ -14,19 +14,20 @@ use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Users\User;
 use Monolog\Logger;
+use mysqli;
 
 class TestHelpers
 {
-    const COUNT_COMPLETE = 0;
-    const COUNT_INCOMPLETE = 1;
-    const COUNT_ARCHIVED = 2;
-    const COUNT_COMBINED_COMPLETE = 3;
-    const COUNT_COMBINED_INCOMPLETE = 4;
-    const COUNT_PASSED = 5;
-    const COUNT_FAILED = 6;
+    private const COUNT_COMPLETE = 0;
+    private const COUNT_INCOMPLETE = 1;
+    private const COUNT_ARCHIVED = 2;
+    private const COUNT_COMBINED_COMPLETE = 3;
+    private const COUNT_COMBINED_INCOMPLETE = 4;
+    private const COUNT_PASSED = 5;
+    private const COUNT_FAILED = 6;
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -42,11 +43,11 @@ class TestHelpers
 
     /**
      * TestHelpers constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      * @param Config $config
      */
-    public function __construct(\mysqli $mysqli, Logger $logger, Config $config)
+    public function __construct(mysqli $mysqli, Logger $logger, Config $config)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -270,22 +271,15 @@ SQL;
      */
     public static function listUuid(array $tests): array
     {
-        $tests = array_values($tests);
-        $c = count($tests);
-
-        $uuidList = [];
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($tests[$i])) {
+        $uuids = [];
+        foreach ($tests as $test) {
+            if (!$test instanceof Test) {
                 continue;
             }
 
-            if (!$tests[$i] instanceof Test) {
-                continue;
-            }
-
-            $uuidList[] = $tests[$i]->getUuid();
+            $uuids[] = $test->getUuid();
         }
 
-        return $uuidList;
+        return $uuids;
     }
 }

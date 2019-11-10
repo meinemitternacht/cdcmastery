@@ -15,7 +15,9 @@ use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Users\User;
+use DateTime;
 use Monolog\Logger;
+use mysqli;
 
 class TestCollection
 {
@@ -38,7 +40,7 @@ class TestCollection
     const DEFAULT_ORDER = self::ORDER_DESC;
 
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -54,10 +56,10 @@ class TestCollection
 
     /**
      * TestCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -255,14 +257,14 @@ SQL;
         $questionArr = $questionCollection->fetchArrayMixed($questions);
 
         if ($timeStarted !== null) {
-            $timeStarted = \DateTime::createFromFormat(
+            $timeStarted = DateTime::createFromFormat(
                 DateTimeHelpers::DT_FMT_DB,
                 $timeStarted ?? ''
             );
         }
 
         if ($timeCompleted !== null) {
-            $timeCompleted = \DateTime::createFromFormat(
+            $timeCompleted = DateTime::createFromFormat(
                 DateTimeHelpers::DT_FMT_DB,
                 $timeCompleted ?? ''
             );
@@ -393,12 +395,12 @@ SQL;
             $afscArr = $afscCollection->fetchArray($afscs);
             $questionArr = $questionCollection->fetchArrayMixed($questions);
 
-            $tTimeStarted = \DateTime::createFromFormat(
+            $tTimeStarted = DateTime::createFromFormat(
                 DateTimeHelpers::DT_FMT_DB,
                 $datum['timeStarted'] ?? null
             );
 
-            $tTimeCompleted = \DateTime::createFromFormat(
+            $tTimeCompleted = DateTime::createFromFormat(
                 DateTimeHelpers::DT_FMT_DB,
                 $datum['timeCompleted'] ?? null
             );
@@ -523,7 +525,7 @@ SQL;
 
             if ($datum['timeStarted'] !== null) {
                 $test->setTimeStarted(
-                    \DateTime::createFromFormat(
+                    DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
                         $datum['timeStarted'] ?? ''
                     )
@@ -532,7 +534,7 @@ SQL;
 
             if ($datum['timeCompleted'] !== null) {
                 $test->setTimeCompleted(
-                    \DateTime::createFromFormat(
+                    DateTime::createFromFormat(
                         DateTimeHelpers::DT_FMT_DB,
                         $datum['timeCompleted'] ?? ''
                     )

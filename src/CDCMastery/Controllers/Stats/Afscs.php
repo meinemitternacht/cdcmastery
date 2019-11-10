@@ -1,66 +1,56 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 2:59 PM
- */
 
 namespace CDCMastery\Controllers\Stats;
 
 
 use CDCMastery\Controllers\Stats;
-use CDCMastery\Helpers\AppHelpers;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
-use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
-use CDCMastery\Models\Statistics\Tests;
+use CDCMastery\Models\Statistics\TestStats;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
 
 class Afscs extends Stats
 {
     /**
      * @var AfscCollection
      */
-    private $afscCollection;
+    private $afscs;
 
     /**
-     * @var Tests
+     * @var TestStats
      */
-    private $tests;
+    private $test_stats;
 
     public function __construct(
         Logger $logger,
-        \Twig_Environment $twig,
-        AfscCollection $afscCollection,
-        Tests $tests
+        Environment $twig,
+        Session $session,
+        AfscCollection $afscs,
+        TestStats $test_stats
     ) {
-        parent::__construct($logger, $twig);
+        parent::__construct($logger, $twig, $session);
 
-        $this->afscCollection = $afscCollection;
-        $this->tests = $tests;
+        $this->afscs = $afscs;
+        $this->test_stats = $test_stats;
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscsStatsHome(): Response
+    public function show_stats_afsc_home(): Response
     {
-        $afscList = AfscHelpers::listNames(
-            $this->afscCollection->fetchAll(
-                [],
-                AfscCollection::SHOW_FOUO | AfscCollection::SHOW_OBSOLETE
-            ),
-            true
-        );
+        $afscList = AfscHelpers::listNames($this->afscs->fetchAll(
+            AfscCollection::SHOW_FOUO | AfscCollection::SHOW_OBSOLETE
+        ));
 
         return $this->render(
-            'public/stats/afscs/home.html.twig', [
+            'public/stats/afscs/home.html.twig',
+            [
                 'afscList' => $afscList,
             ]
         );
@@ -70,44 +60,35 @@ class Afscs extends Stats
      * @param string $afscUuid
      * @return Response
      */
-    public function renderAfscTests(string $afscUuid): Response
+    public function show_stats_afsc_tests(string $afscUuid): Response
     {
-        return AppHelpers::redirect('/stats/afscs/' . $afscUuid . '/tests/month');
+        return $this->redirect('/stats/afscs/' . $afscUuid . '/tests/month');
     }
 
     /**
      * @param string $afscUuid
      * @param int $type
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    private function renderAfscTestsTimeSegment(string $afscUuid, int $type): Response
+    private function show_stats_afsc_tests_timespan(string $afscUuid, int $type): Response
     {
-        $afscList = AfscHelpers::listNames(
-            $this->afscCollection->fetchAll(
-                [],
-                PHP_INT_MAX
-            ),
-            true
-        );
+        $afsc_names = AfscHelpers::listNames($this->afscs->fetchAll(
+            AfscCollection::SHOW_FOUO | AfscCollection::SHOW_HIDDEN | AfscCollection::SHOW_OBSOLETE
+        ));
 
-        $afsc = $this->afscCollection->fetch($afscUuid);
+        $afsc = $this->afscs->fetch($afscUuid);
 
         if ($afsc->getUuid() === '') {
-            Messages::add(
-                Messages::INFO,
-                'The specified AFSC does not exist'
-            );
+            $this->flash()->add(MessageTypes::INFO,
+                                'The specified AFSC does not exist');
 
-            return AppHelpers::redirect('/stats/afscs');
+            return $this->redirect('/stats/afscs');
         }
 
         $data = [
             'uuid' => $afsc->getUuid(),
             'title' => $afsc->getName(),
-            'afscList' => $afscList,
+            'afscList' => $afsc_names,
         ];
 
         switch ($type) {
@@ -116,20 +97,20 @@ class Afscs extends Stats
                     'subTitle' => 'Tests Last Seven Days',
                     'period' => 'last-seven',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscAverageLastSevenDays($afsc)
+                        $this->test_stats->afscAverageLastSevenDays($afsc)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscCountLastSevenDays($afsc)
+                        $this->test_stats->afscCountLastSevenDays($afsc)
                     ),
                 ]);
 
                 if ($data['averages'] === '') {
-                    Messages::add(
-                        Messages::INFO,
+                    $this->flash()->add(
+                        MessageTypes::INFO,
                         "No tests have been taken with {$afsc->getName()} in the last seven days"
                     );
 
-                    return AppHelpers::redirect('/stats/afscs/tests');
+                    return $this->redirect('/stats/afscs/tests');
                 }
                 break;
             case self::TYPE_MONTH:
@@ -137,10 +118,10 @@ class Afscs extends Stats
                     'subTitle' => 'Tests By Month',
                     'period' => 'month',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscAverageByMonth($afsc)
+                        $this->test_stats->afscAverageByMonth($afsc)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscCountByMonth($afsc)
+                        $this->test_stats->afscCountByMonth($afsc)
                     ),
                 ]);
                 break;
@@ -149,10 +130,10 @@ class Afscs extends Stats
                     'subTitle' => 'Tests By Week',
                     'period' => 'week',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscAverageByWeek($afsc)
+                        $this->test_stats->afscAverageByWeek($afsc)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscCountByWeek($afsc)
+                        $this->test_stats->afscCountByWeek($afsc)
                     ),
                 ]);
                 break;
@@ -161,30 +142,30 @@ class Afscs extends Stats
                     'subTitle' => 'Tests By Year',
                     'period' => 'year',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscAverageByYear($afsc)
+                        $this->test_stats->afscAverageByYear($afsc)
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->afscCountByYear($afsc)
+                        $this->test_stats->afscCountByYear($afsc)
                     ),
                 ]);
                 break;
             default:
-                Messages::add(
-                    Messages::WARNING,
+                $this->flash()->add(
+                    MessageTypes::WARNING,
                     'Invalid time period'
                 );
 
-                return AppHelpers::redirect('/stats/afscs');
+                return $this->redirect('/stats/afscs');
                 break;
         }
 
         if ($data['averages'] === '') {
-            Messages::add(
-                Messages::INFO,
+            $this->flash()->add(
+                MessageTypes::INFO,
                 "No tests have been taken with {$afsc->getName()}"
             );
 
-            return AppHelpers::redirect('/stats/afscs/tests');
+            return $this->redirect('/stats/afscs/tests');
         }
 
         return $this->render(
@@ -196,48 +177,36 @@ class Afscs extends Stats
     /**
      * @param string $afscUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscTestsLastSeven(string $afscUuid): Response
+    public function show_afsc_stats_tests_last_seven(string $afscUuid): Response
     {
-        return $this->renderAfscTestsTimeSegment($afscUuid, self::TYPE_LAST_SEVEN);
+        return $this->show_stats_afsc_tests_timespan($afscUuid, self::TYPE_LAST_SEVEN);
     }
 
     /**
      * @param string $afscUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscTestsByMonth(string $afscUuid): Response
+    public function show_afsc_stats_tests_month(string $afscUuid): Response
     {
-        return $this->renderAfscTestsTimeSegment($afscUuid, self::TYPE_MONTH);
+        return $this->show_stats_afsc_tests_timespan($afscUuid, self::TYPE_MONTH);
     }
 
     /**
      * @param string $afscUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscTestsByWeek(string $afscUuid): Response
+    public function show_afsc_stats_tests_week(string $afscUuid): Response
     {
-        return $this->renderAfscTestsTimeSegment($afscUuid, self::TYPE_WEEK);
+        return $this->show_stats_afsc_tests_timespan($afscUuid, self::TYPE_WEEK);
     }
 
     /**
      * @param string $afscUuid
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderAfscTestsByYear(string $afscUuid): Response
+    public function show_afsc_stats_tests_year(string $afscUuid): Response
     {
-        return $this->renderAfscTestsTimeSegment($afscUuid, self::TYPE_YEAR);
+        return $this->show_stats_afsc_tests_timespan($afscUuid, self::TYPE_YEAR);
     }
 }

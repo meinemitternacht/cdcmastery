@@ -42,7 +42,7 @@ class Card
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -58,7 +58,7 @@ class Card
     /**
      * @param string $front
      */
-    public function setFront(string $front)
+    public function setFront(string $front): void
     {
         $this->front = $front;
     }
@@ -74,7 +74,7 @@ class Card
     /**
      * @param string $back
      */
-    public function setBack(string $back)
+    public function setBack(string $back): void
     {
         $this->back = $back;
     }
@@ -90,7 +90,7 @@ class Card
     /**
      * @param string $category
      */
-    public function setCategory(string $category)
+    public function setCategory(string $category): void
     {
         $this->category = $category;
     }

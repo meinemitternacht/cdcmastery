@@ -1,400 +1,380 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/2/2017
- * Time: 2:30 PM
- */
 
-return FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
+use CDCMastery\Controllers\Admin;
+use CDCMastery\Controllers\Admin\CdcData;
+use CDCMastery\Controllers\Auth;
+use CDCMastery\Controllers\Home;
+use CDCMastery\Controllers\Search;
+use CDCMastery\Controllers\Stats;
+use CDCMastery\Controllers\Stats\Afscs;
+use CDCMastery\Controllers\Stats\Bases;
+use CDCMastery\Controllers\Stats\Tests;
+use CDCMastery\Controllers\Stats\Users;
+use FastRoute\RouteCollector;
+use function FastRoute\simpleDispatcher;
+
+return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', [
-        \CDCMastery\Controllers\Home::class,
-        'renderFrontPage'
+        Home::class,
+        'show_home',
     ]);
 
     $r->addRoute('GET', '/admin', [
-        '\CDCMastery\Controllers\Admin',
-        'renderAdminHome'
+        Admin::class,
+        'show_admin_home',
     ]);
 
-    $r->addGroup('/admin', function (\FastRoute\RouteCollector $r) {
+    $r->addGroup('/admin', function (RouteCollector $r) {
         $r->addRoute('GET', '/cdc/afsc', [
-            \CDCMastery\Controllers\Admin\CdcData::class,
-            'renderAfscList'
+            CdcData::class,
+            'renderAfscList',
         ]);
 
         $r->addRoute('POST', '/cdc/afsc', [
-            \CDCMastery\Controllers\Admin\CdcData::class,
-            'processAddAfsc'
+            CdcData::class,
+            'processAddAfsc',
         ]);
 
-        $r->addGroup('/cdc/afsc', function (\FastRoute\RouteCollector $r) {
+        $r->addGroup('/cdc/afsc', function (RouteCollector $r) {
             $r->addRoute('GET', '/migrate', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'renderMigrateAfsc'
+                CdcData::class,
+                'renderMigrateAfsc',
             ]);
 
             $r->addRoute('POST', '/migrate', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'processMigrateAfsc'
+                CdcData::class,
+                'processMigrateAfsc',
             ]);
 
             $r->addRoute('GET', '/{afscUuid}', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'renderAfscHome'
+                CdcData::class,
+                'renderAfscHome',
             ]);
 
             $r->addRoute('POST', '/{afscUuid}', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'processEditAfsc'
+                CdcData::class,
+                'processEditAfsc',
             ]);
 
             $r->addRoute('GET', '/{afscUuid}/delete', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'renderDeleteAfsc'
+                CdcData::class,
+                'renderDeleteAfsc',
             ]);
 
             $r->addRoute('POST', '/{afscUuid}/delete', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'processDeleteAfsc'
+                CdcData::class,
+                'processDeleteAfsc',
             ]);
 
             $r->addRoute('POST', '/{afscUuid}/edit', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'renderEditAfsc'
+                CdcData::class,
+                'renderEditAfsc',
             ]);
 
             $r->addRoute('GET', '/{afscUuid}/questions', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'renderQuestions'
+                CdcData::class,
+                'renderQuestions',
             ]);
 
             $r->addRoute('POST', '/{afscUuid}/questions', [
-                \CDCMastery\Controllers\Admin\CdcData::class,
-                'processAddQuestion'
+                CdcData::class,
+                'processAddQuestion',
             ]);
 
-            $r->addGroup('/{afscUuid}/questions', function (\FastRoute\RouteCollector $r) {
+            $r->addGroup('/{afscUuid}/questions', function (RouteCollector $r) {
                 $r->addRoute('GET', '/{questionUuid}', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'renderQuestionHome'
+                    CdcData::class,
+                    'renderQuestionHome',
                 ]);
 
                 $r->addRoute('POST', '/{questionUuid}', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'processEditQuestion'
+                    CdcData::class,
+                    'processEditQuestion',
                 ]);
 
                 $r->addRoute('GET', '/{questionUuid}/delete', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'renderDeleteQuestion'
+                    CdcData::class,
+                    'renderDeleteQuestion',
                 ]);
 
                 $r->addRoute('POST', '/{questionUuid}/delete', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'processDeleteQuestion'
+                    CdcData::class,
+                    'processDeleteQuestion',
                 ]);
 
                 $r->addRoute('GET', '/{questionUuid}/edit', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'renderQuestionEdit'
+                    CdcData::class,
+                    'renderQuestionEdit',
                 ]);
 
                 $r->addRoute('POST', '/{questionUuid}/answers', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'processEditAnswers'
+                    CdcData::class,
+                    'processEditAnswers',
                 ]);
 
                 $r->addRoute('POST', '/{questionUuid}/answers/{answerUuid}', [
-                    \CDCMastery\Controllers\Admin\CdcData::class,
-                    'processEditAnswer'
+                    CdcData::class,
+                    'processEditAnswer',
                 ]);
             });
         });
     });
 
-    $r->addGroup('/auth', function (\FastRoute\RouteCollector $r) {
+    $r->addGroup('/auth', function (RouteCollector $r) {
         $r->addRoute('GET', '/activate', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderUserActivation'
+            Auth::class,
+            'show_activation',
         ]);
 
         $r->addRoute('POST', '/activate', [
-            \CDCMastery\Controllers\Auth::class,
-            'processUserActivation'
+            Auth::class,
+            'do_activation',
         ]);
 
         $r->addRoute('GET', '/activate/resend', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderUserActivationResendEmail'
+            Auth::class,
+            'show_activation_resend',
         ]);
 
         $r->addRoute('POST', '/activate/resend', [
-            \CDCMastery\Controllers\Auth::class,
-            'processUserActivationResendEmail'
+            Auth::class,
+            'do_activation_resend',
         ]);
 
         $r->addRoute('GET', '/login', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderLogin'
+            Auth::class,
+            'show_login',
         ]);
 
         $r->addRoute('POST', '/login', [
-            \CDCMastery\Controllers\Auth::class,
-            'processLogin'
+            Auth::class,
+            'do_login',
         ]);
 
         $r->addRoute('GET', '/logout', [
-            \CDCMastery\Controllers\Auth::class,
-            'processLogout'
+            Auth::class,
+            'do_logout',
         ]);
 
         $r->addRoute('GET', '/register', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderUserRegistration'
+            Auth::class,
+            'show_registration',
+        ]);
+
+        $r->addRoute('POST', '/register', [
+            Auth::class,
+            'do_registration',
         ]);
 
         $r->addRoute('GET', '/reset', [
-            \CDCMastery\Controllers\Auth::class,
-            'renderUserPasswordReset'
-        ]);
-    });
-
-    $r->addGroup('/errors', function (\FastRoute\RouteCollector $r) {
-        $r->addRoute('GET', '/400', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderError400'
+            Auth::class,
+            'show_reset',
         ]);
 
-        $r->addRoute('GET', '/401', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderError401'
-        ]);
-
-        $r->addRoute('GET', '/403', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderError403'
-        ]);
-
-        $r->addRoute('GET', '/404', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderError404'
-        ]);
-
-        $r->addRoute('GET', '/500', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderError500'
-        ]);
-
-        $r->addRoute('GET', '/maintenance', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderSiteMaintenance'
-        ]);
-
-        $r->addRoute('GET', '/offline', [
-            \CDCMastery\Controllers\Errors::class,
-            'renderSiteOffline'
+        $r->addRoute('POST', '/reset', [
+            Auth::class,
+            'do_reset',
         ]);
     });
 
     $r->addRoute('GET', '/search', [
-        \CDCMastery\Controllers\Search::class,
-        'renderSearchHome'
+        Search::class,
+        'show_search_home',
     ]);
 
     $r->addRoute('POST', '/search', [
-        \CDCMastery\Controllers\Search::class,
-        'processSearch'
+        Search::class,
+        'do_search',
     ]);
 
     $r->addRoute('GET', '/search/results', [
-        \CDCMastery\Controllers\Search::class,
-        'renderSearchResults'
+        Search::class,
+        'show_search_results',
     ]);
 
     $r->addRoute('GET', '/stats', [
-        \CDCMastery\Controllers\Stats::class,
-        'renderStatsHome'
+        Stats::class,
+        'show_stats_home',
     ]);
 
-    $r->addGroup('/stats', function (\FastRoute\RouteCollector $r) {
+    $r->addGroup('/stats', function (RouteCollector $r) {
         $r->addRoute('GET', '/afscs', [
-            \CDCMastery\Controllers\Stats\Afscs::class,
-            'renderAfscsStatsHome'
+            Afscs::class,
+            'show_stats_afsc_home',
         ]);
 
-        $r->addRoute('GET', '/afscs/tests', [
-            \CDCMastery\Controllers\Stats\Afscs::class,
-            'renderAfscsStatsHome'
-        ]);
-
-        $r->addGroup('/afscs', function (\FastRoute\RouteCollector $r) {
+        $r->addGroup('/afscs', function (RouteCollector $r) {
             $r->addRoute('GET', '/{afscUuid}/tests', [
-                \CDCMastery\Controllers\Stats\Afscs::class,
-                'renderAfscTests'
+                Afscs::class,
+                'show_stats_afsc_tests',
             ]);
 
-            $r->addGroup('/{afscUuid}/tests', function (\FastRoute\RouteCollector $r) {
+            $r->addGroup('/{afscUuid}/tests', function (RouteCollector $r) {
                 $r->addRoute('GET', '/last-seven', [
-                    \CDCMastery\Controllers\Stats\Afscs::class,
-                    'renderAfscTestsLastSeven'
+                    Afscs::class,
+                    'show_afsc_stats_tests_last_seven',
                 ]);
 
                 $r->addRoute('GET', '/month', [
-                    \CDCMastery\Controllers\Stats\Afscs::class,
-                    'renderAfscTestsByMonth'
+                    Afscs::class,
+                    'show_afsc_stats_tests_month',
                 ]);
 
                 $r->addRoute('GET', '/week', [
-                    \CDCMastery\Controllers\Stats\Afscs::class,
-                    'renderAfscTestsByWeek'
+                    Afscs::class,
+                    'show_afsc_stats_tests_week',
                 ]);
 
                 $r->addRoute('GET', '/year', [
-                    \CDCMastery\Controllers\Stats\Afscs::class,
-                    'renderAfscTestsByYear'
+                    Afscs::class,
+                    'show_afsc_stats_tests_year',
                 ]);
             });
         });
 
         $r->addRoute('GET', '/bases', [
-            \CDCMastery\Controllers\Stats\Bases::class,
-            'renderBasesStatsHome'
+            Bases::class,
+            'show_bases_home',
         ]);
 
         $r->addRoute('GET', '/bases/tests', [
-            \CDCMastery\Controllers\Stats\Bases::class,
-            'renderBasesTests'
+            Bases::class,
+            'show_bases_tests',
         ]);
 
-        $r->addGroup('/bases', function (\FastRoute\RouteCollector $r) {
+        $r->addGroup('/bases', function (RouteCollector $r) {
             $r->addRoute('GET', '/{baseUuid}/tests', [
-                \CDCMastery\Controllers\Stats\Bases::class,
-                'renderBaseTests'
+                Bases::class,
+                'show_bases_tests_timespan_home',
             ]);
 
-            $r->addGroup('/{baseUuid}/tests', function (\FastRoute\RouteCollector $r) {
+            $r->addGroup('/{baseUuid}/tests', function (RouteCollector $r) {
                 $r->addRoute('GET', '/last-seven', [
-                    \CDCMastery\Controllers\Stats\Bases::class,
-                    'renderBaseTestsLastSeven'
+                    Bases::class,
+                    'show_base_tests_last_seven',
                 ]);
 
                 $r->addRoute('GET', '/month', [
-                    \CDCMastery\Controllers\Stats\Bases::class,
-                    'renderBaseTestsByMonth'
+                    Bases::class,
+                    'show_base_tests_month',
                 ]);
 
                 $r->addRoute('GET', '/week', [
-                    \CDCMastery\Controllers\Stats\Bases::class,
-                    'renderBaseTestsByWeek'
+                    Bases::class,
+                    'show_base_tests_week',
                 ]);
 
                 $r->addRoute('GET', '/year', [
-                    \CDCMastery\Controllers\Stats\Bases::class,
-                    'renderBaseTestsByYear'
+                    Bases::class,
+                    'show_base_tests_year',
                 ]);
             });
         });
 
         $r->addRoute('GET', '/tests', [
-            \CDCMastery\Controllers\Stats\Tests::class,
-            'renderTestsStatsHome'
+            Tests::class,
+            'show_stats_tests_home',
         ]);
 
-        $r->addGroup('/tests', function (\FastRoute\RouteCollector $r) {
+        $r->addGroup('/tests', function (RouteCollector $r) {
             $r->addRoute('GET', '/last-seven', [
-                \CDCMastery\Controllers\Stats\Tests::class,
-                'renderTestsLastSeven'
+                Tests::class,
+                'show_tests_timespan_last_seven',
             ]);
 
             $r->addRoute('GET', '/month', [
-                \CDCMastery\Controllers\Stats\Tests::class,
-                'renderTestsByMonth'
+                Tests::class,
+                'show_tests_timespan_month',
             ]);
 
             $r->addRoute('GET', '/week', [
-                \CDCMastery\Controllers\Stats\Tests::class,
-                'renderTestsByWeek'
+                Tests::class,
+                'show_tests_timespan_week',
             ]);
 
             $r->addRoute('GET', '/year', [
-                \CDCMastery\Controllers\Stats\Tests::class,
-                'renderTestsByYear'
+                Tests::class,
+                'show_tests_timespan_year',
             ]);
         });
 
         $r->addRoute('GET', '/users', [
-            \CDCMastery\Controllers\Stats\Users::class,
-            'renderUsersStatsHome'
+            Users::class,
+            'show_stats_users_home',
         ]);
 
-        $r->addGroup('/users', function (\FastRoute\RouteCollector $r) {
+        $r->addGroup('/users', function (RouteCollector $r) {
             $r->addRoute('GET', '/bases', [
-                \CDCMastery\Controllers\Stats\Users::class,
-                'renderUsersByBase'
+                Users::class,
+                'show_users_by_base',
             ]);
 
             $r->addRoute('GET', '/groups', [
-                \CDCMastery\Controllers\Stats\Users::class,
-                'renderUsersByRole'
+                Users::class,
+                'show_users_by_role',
             ]);
         });
     });
 
     $r->addRoute('GET', '/tests', [
         \CDCMastery\Controllers\Tests::class,
-        'renderTestsHome'
+        'show_tests_home',
     ]);
 
-    $r->addGroup('/tests', function (\FastRoute\RouteCollector $r) {
+    $r->addGroup('/tests', function (RouteCollector $r) {
         $r->addRoute('GET', '/history', [
             \CDCMastery\Controllers\Tests::class,
-            'renderTestHistoryComplete'
+            'show_test_history_complete',
+        ]);
+
+        $r->addRoute('GET', '/history/all', [
+            \CDCMastery\Controllers\Tests::class,
+            'show_test_history_all',
         ]);
 
         $r->addRoute('GET', '/history/incomplete', [
             \CDCMastery\Controllers\Tests::class,
-            'renderTestHistoryIncomplete'
+            'show_test_history_incomplete',
         ]);
 
         $r->addRoute('GET', '/new', [
             \CDCMastery\Controllers\Tests::class,
-            'renderNewTest'
+            'show_new_test',
         ]);
 
         $r->addRoute('POST', '/new', [
             \CDCMastery\Controllers\Tests::class,
-            'processNewTest'
+            'do_new_test',
         ]);
 
         $r->addRoute('GET', '/incomplete/delete', [
             \CDCMastery\Controllers\Tests::class,
-            'renderDeleteIncompleteTests'
+            'show_delete_incomplete_tests',
         ]);
 
         $r->addRoute('POST', '/incomplete/delete', [
             \CDCMastery\Controllers\Tests::class,
-            'processDeleteIncompleteTests'
+            'do_delete_incomplete_tests',
         ]);
 
         $r->addRoute('GET', '/{testUuid}', [
             \CDCMastery\Controllers\Tests::class,
-            'renderTest'
+            'show_test',
         ]);
 
         $r->addRoute('POST', '/{testUuid}', [
             \CDCMastery\Controllers\Tests::class,
-            'processTest'
+            'do_test_handler',
         ]);
 
         $r->addRoute('GET', '/{testUuid}/delete', [
             \CDCMastery\Controllers\Tests::class,
-            'renderDeleteTest'
+            'show_delete_test',
         ]);
 
         $r->addRoute('POST', '/{testUuid}/delete', [
             \CDCMastery\Controllers\Tests::class,
-            'processDeleteTest'
+            'do_delete_test',
         ]);
     });
 });

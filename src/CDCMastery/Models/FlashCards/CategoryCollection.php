@@ -10,11 +10,12 @@ namespace CDCMastery\Models\FlashCards;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class CategoryCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -30,10 +31,10 @@ class CategoryCollection
 
     /**
      * CategoryCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -146,7 +147,7 @@ SELECT
   categoryCreatedBy,
   categoryComments
 FROM flashCardCategories
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);
@@ -203,7 +204,7 @@ SELECT
   categoryComments
 FROM flashCardCategories
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);

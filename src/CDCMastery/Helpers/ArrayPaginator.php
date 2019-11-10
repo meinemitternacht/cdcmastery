@@ -11,19 +11,19 @@ namespace CDCMastery\Helpers;
 
 class ArrayPaginator
 {
-    const LINK_TEXT_PAGE = 0;
-    const LINK_TEXT_FIRST = 1;
-    const LINK_TEXT_PREV = 2;
-    const LINK_TEXT_NEXT = 3;
-    const LINK_TEXT_LAST = 4;
+    private const LINK_TEXT_PAGE = 0;
+    private const LINK_TEXT_FIRST = 1;
+    private const LINK_TEXT_PREV = 2;
+    private const LINK_TEXT_NEXT = 3;
+    private const LINK_TEXT_LAST = 4;
 
-    const VAR_START = 'start';
-    const VAR_ROWS = 'rows';
-    const VAR_SORT = 'sort';
-    const VAR_DIRECTION = 'dir';
+    public const VAR_START = 'start';
+    public const VAR_ROWS = 'rows';
+    public const VAR_SORT = 'sort';
+    public const VAR_DIRECTION = 'dir';
 
-    const DEFAULT_START = 0;
-    const DEFAULT_ROWS = 20;
+    public const DEFAULT_START = 0;
+    public const DEFAULT_ROWS = 20;
 
     /**
      * @param array $data
@@ -225,8 +225,8 @@ class ArrayPaginator
         int $pageNum,
         int $rows,
         int $textType = self::LINK_TEXT_PAGE,
-        string $sort,
-        string $dir
+        ?string $sort = null,
+        ?string $dir = null
     ): string {
         $class = '';
 

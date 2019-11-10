@@ -9,17 +9,20 @@
 namespace CDCMastery\Models\Tests\Offline;
 
 
-use CDCMastery\Helpers\UuidHelpers;
+use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestOptions;
+use DateTime;
+use Exception;
 use Monolog\Logger;
+use mysqli;
 
 class OfflineTestHandler
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -35,22 +38,23 @@ class OfflineTestHandler
 
     /**
      * OfflineTestHandler constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
     /**
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      * @param TestOptions $options
-     * @return OfflineTestHandler
+     * @return static
+     * @throws Exception
      */
-    public static function factory(\mysqli $mysqli, Logger $logger, TestOptions $options): self
+    public static function factory(mysqli $mysqli, Logger $logger, TestOptions $options): self
     {
         $numAfscs = count($options->getAfscs());
         if ($numAfscs !== 1) {
@@ -99,26 +103,16 @@ class OfflineTestHandler
         }
 
         /** @var Question[] $questionList */
-        $questionList = array_slice(
-            $questions,
-            0,
-            $options->getNumQuestions()
-        );
+        $questionList = array_slice($questions,
+                                    0,
+                                    $options->getNumQuestions());
 
         $offlineTest = new OfflineTest();
-        $offlineTest->setUuid(UuidHelpers::generate());
-        $offlineTest->setAfsc(
-            $options->getAfscs()[0]
-        );
-        $offlineTest->setQuestions(
-            $questionList
-        );
-        $offlineTest->setUserUuid(
-            $options->getUser()->getUuid()
-        );
-        $offlineTest->setDateCreated(
-            new \DateTime()
-        );
+        $offlineTest->setUuid(UUID::generate());
+        $offlineTest->setAfsc($options->getAfscs()[0]);
+        $offlineTest->setQuestions($questionList);
+        $offlineTest->setUserUuid($options->getUser()->getUuid());
+        $offlineTest->setDateCreated(new DateTime());
 
         $offlineTestHandler = new self($mysqli, $logger);
         $offlineTestHandler->setTest($offlineTest);

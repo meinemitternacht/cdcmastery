@@ -32,7 +32,7 @@ class QuestionAnswer
     /**
      * @param Question $question
      */
-    public function setQuestion(Question $question)
+    public function setQuestion(Question $question): void
     {
         $this->question = $question;
     }
@@ -48,7 +48,7 @@ class QuestionAnswer
     /**
      * @param Answer $answer
      */
-    public function setAnswer(Answer $answer)
+    public function setAnswer(Answer $answer): void
     {
         $this->answer = $answer;
     }

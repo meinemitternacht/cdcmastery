@@ -57,7 +57,7 @@ class Afsc
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -73,7 +73,7 @@ class Afsc
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -89,7 +89,7 @@ class Afsc
     /**
      * @param null|string $description
      */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
@@ -105,7 +105,7 @@ class Afsc
     /**
      * @param null|string $version
      */
-    public function setVersion(?string $version)
+    public function setVersion(?string $version): void
     {
         $this->version = $version;
     }
@@ -121,7 +121,7 @@ class Afsc
     /**
      * @param bool $fouo
      */
-    public function setFouo(bool $fouo)
+    public function setFouo(bool $fouo): void
     {
         $this->fouo = $fouo;
     }
@@ -137,7 +137,7 @@ class Afsc
     /**
      * @param bool $hidden
      */
-    public function setHidden(bool $hidden)
+    public function setHidden(bool $hidden): void
     {
         $this->hidden = $hidden;
     }
@@ -153,7 +153,7 @@ class Afsc
     /**
      * @param bool $obsolete
      */
-    public function setObsolete(bool $obsolete)
+    public function setObsolete(bool $obsolete): void
     {
         $this->obsolete = $obsolete;
     }

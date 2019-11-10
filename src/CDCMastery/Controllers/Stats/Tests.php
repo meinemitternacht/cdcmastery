@@ -1,54 +1,48 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 2:59 PM
- */
 
 namespace CDCMastery\Controllers\Stats;
 
 
 use CDCMastery\Controllers\Stats;
-use CDCMastery\Helpers\AppHelpers;
-use CDCMastery\Models\Messages\Messages;
+use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
+use CDCMastery\Models\Statistics\TestStats;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
 
 class Tests extends Stats
 {
     /**
-     * @var \CDCMastery\Models\Statistics\Tests
+     * @var TestStats
      */
-    private $tests;
+    private $test_stats;
 
     public function __construct(
         Logger $logger,
-        \Twig_Environment $twig,
-        \CDCMastery\Models\Statistics\Tests $tests
+        Environment $twig,
+        Session $session,
+        TestStats $test_stats
     ) {
-        parent::__construct($logger, $twig);
+        parent::__construct($logger, $twig, $session);
 
-        $this->tests = $tests;
+        $this->test_stats = $test_stats;
     }
 
     /**
      * @return Response
      */
-    public function renderTestsStatsHome(): Response
+    public function show_stats_tests_home(): Response
     {
-        return AppHelpers::redirect('/stats/tests/last-seven');
+        return $this->redirect('/stats/tests/last-seven');
     }
 
     /**
      * @param int $type
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    private function renderTestsByTimeSegment(int $type): Response
+    private function show_tests_timespan(int $type): Response
     {
         $data = [
             'title' => 'All Tests'
@@ -60,10 +54,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests Last Seven Days',
                     'period' => 'last-seven',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->averageLastSevenDays()
+                        $this->test_stats->averageLastSevenDays()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->countLastSevenDays()
+                        $this->test_stats->countLastSevenDays()
                     )
                 ]);
                 break;
@@ -72,10 +66,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Month',
                     'period' => 'month',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->averageByMonth()
+                        $this->test_stats->averageByMonth()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->countByMonth()
+                        $this->test_stats->countByMonth()
                     )
                 ]);
                 break;
@@ -84,10 +78,10 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Week',
                     'period' => 'week',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->averageByWeek()
+                        $this->test_stats->averageByWeek()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->countByWeek()
+                        $this->test_stats->countByWeek()
                     ),
                 ]);
                 break;
@@ -96,29 +90,25 @@ class Tests extends Stats
                     'subTitle' => 'Tests By Year',
                     'period' => 'year',
                     'averages' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->averageByYear()
+                        $this->test_stats->averageByYear()
                     ),
                     'counts' => StatisticsHelpers::formatGraphDataTests(
-                        $this->tests->countByYear()
+                        $this->test_stats->countByYear()
                     ),
                 ]);
                 break;
             default:
-                Messages::add(
-                    Messages::WARNING,
-                    'Invalid time period'
-                );
+                $this->flash()->add(MessageTypes::WARNING,
+                                    'Invalid time period');
 
-                return AppHelpers::redirect('/stats/tests');
+                return $this->redirect('/stats/tests');
         }
 
         if ($data['averages'] === '') {
-            Messages::add(
-                Messages::INFO,
-                "No tests have been taken in the last seven days"
-            );
+            $this->flash()->add(MessageTypes::INFO,
+                                "No tests have been taken in the last seven days");
 
-            return AppHelpers::redirect('/stats/bases/tests');
+            return $this->redirect('/stats/bases/tests');
         }
 
         return $this->render(
@@ -129,45 +119,33 @@ class Tests extends Stats
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsLastSeven(): Response
+    public function show_tests_timespan_last_seven(): Response
     {
-        return $this->renderTestsByTimeSegment(self::TYPE_LAST_SEVEN);
+        return $this->show_tests_timespan(self::TYPE_LAST_SEVEN);
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByMonth(): Response
+    public function show_tests_timespan_month(): Response
     {
-        return $this->renderTestsByTimeSegment(self::TYPE_MONTH);
+        return $this->show_tests_timespan(self::TYPE_MONTH);
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByWeek(): Response
+    public function show_tests_timespan_week(): Response
     {
-        return $this->renderTestsByTimeSegment(self::TYPE_WEEK);
+        return $this->show_tests_timespan(self::TYPE_WEEK);
     }
 
     /**
      * @return Response
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
      */
-    public function renderTestsByYear(): Response
+    public function show_tests_timespan_year(): Response
     {
-        return $this->renderTestsByTimeSegment(self::TYPE_YEAR);
+        return $this->show_tests_timespan(self::TYPE_YEAR);
     }
 }

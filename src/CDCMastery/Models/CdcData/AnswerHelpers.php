@@ -10,11 +10,12 @@ namespace CDCMastery\Models\CdcData;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class AnswerHelpers
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -25,94 +26,36 @@ class AnswerHelpers
 
     /**
      * AnswerHelpers constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
     /**
-     * @param $answerOrUuid
-     * @return Afsc
-     */
-    public function getAnswerAfsc($answerOrUuid): Afsc
-    {
-        if ($answerOrUuid instanceof Answer) {
-            $answerOrUuid = $answerOrUuid->getUuid();
-        }
-
-        if (!is_string($answerOrUuid)) {
-            return new Afsc();
-        }
-
-        if (empty($answerOrUuid)) {
-            return new Afsc();
-        }
-
-        $answerUuid = $answerOrUuid;
-
-        $qry = <<<SQL
-SELECT
-  afscList.uuid
-FROM answerData
-LEFT JOIN questionData ON questionData.uuid = answerData.questionUUID
-LEFT JOIN afscList ON afscList.uuid = questionData.afscUUID
-SQL;
-
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $answerUuid);
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return new Afsc();
-        }
-
-        $stmt->bind_result(
-            $uuid
-        );
-
-        $stmt->fetch();
-        $stmt->close();
-
-        if (!isset($uuid) || $uuid  === null || $uuid === '') {
-            return new Afsc();
-        }
-
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        return $afscCollection->fetch($uuid);
-    }
-
-    /**
-     * @param array $uuidList
+     * @param array $uuids
      * @return array
      */
-    public function fetchCorrectArray(array $uuidList): array
+    public function fetchCorrectArray(array $uuids): array
     {
-        if (empty($uuidList)) {
+        if (count($uuids) === 0) {
             return [];
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
-
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 SELECT
   uuid,
   answerCorrect
 FROM answerData
-WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+WHERE uuid IN ('{$uuids_str}')
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);

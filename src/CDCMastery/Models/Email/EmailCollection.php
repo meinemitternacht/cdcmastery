@@ -10,12 +10,15 @@ namespace CDCMastery\Models\Email;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use DateTime;
+use Exception;
 use Monolog\Logger;
+use mysqli;
 
 class EmailCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -25,16 +28,11 @@ class EmailCollection
     protected $log;
 
     /**
-     * @var Email[]
-     */
-    private $emails = [];
-
-    /**
      * EmailCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
@@ -45,7 +43,7 @@ class EmailCollection
      */
     public function delete(string $uuid): void
     {
-        if (empty($uuid)) {
+        if ($uuid === '') {
             return;
         }
 
@@ -57,42 +55,27 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
-
-        if (isset($this->emails[$uuid])) {
-            array_splice(
-                $this->emails,
-                array_search(
-                    $uuid,
-                    $this->emails
-                ),
-                1
-            );
-        }
     }
 
     /**
-     * @param array $uuidList
+     * @param array $uuids
      */
-    public function deleteAll(array $uuidList): void
+    public function deleteAll(array $uuids): void
     {
-        if (empty($uuidList)) {
+        if (count($uuids) === 0) {
             return;
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
-
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
 
         $qry = <<<SQL
 DELETE FROM emailQueue
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 SQL;
 
         $this->db->query($qry);
-        $this->emails = [];
     }
 
     /**
@@ -115,6 +98,7 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $emails = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row['uuid']) || $row['uuid'] === null) {
                 continue;
@@ -122,12 +106,8 @@ SQL;
 
             $email = new Email();
             $email->setUuid($row['uuid'] ?? '');
-            $email->setQueueTime(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $row['queueTime'] ?? ''
-                )
-            );
+            $email->setQueueTime(DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                            $row['queueTime'] ?? ''));
             $email->setSender($row['emailSender'] ?? '');
             $email->setRecipient($row['emailRecipient'] ?? '');
             $email->setSubject($row['emailSubject'] ?? '');
@@ -135,25 +115,27 @@ SQL;
             $email->setBodyTxt($row['emailBodyText'] ?? '');
             $email->setUserUuid($row['queueUser'] ?? '');
 
-            $this->emails[$row['uuid']] = $email;
+            $emails[$row['uuid']] = $email;
         }
 
-        return $this->emails;
+        $res->free();
+
+        return $emails;
     }
 
     /**
      * @param Email $email
+     * @throws Exception
      */
-    public function save(Email $email): void
+    public function queue(Email $email): void
     {
-        if (empty($email->getUuid())) {
+        if (($email->getUuid() ?? '') === '') {
             return;
         }
 
         $uuid = $email->getUuid();
-        $queueTime = $email->getQueueTime()->format(
-            DateTimeHelpers::DT_FMT_DB
-        );
+        $queueTime = $email->getQueueTime()
+                           ->format(DateTimeHelpers::DT_FMT_DB);
         $sender = $email->getSender();
         $recipient = $email->getRecipient();
         $subject = $email->getSubject();
@@ -204,29 +186,16 @@ SQL;
         }
 
         $stmt->close();
-        $this->emails[$uuid] = $email;
     }
 
     /**
      * @param array $emails
+     * @throws Exception
      */
-    public function saveArray(array $emails): void
+    public function queueArray(array $emails): void
     {
-        if (empty($emails)) {
-            return;
-        }
-
-        $c = count($emails);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($emails[$i])) {
-                continue;
-            }
-
-            if (!$emails[$i] instanceof Email) {
-                continue;
-            }
-
-            $this->save($emails[$i]);
+        foreach ($emails as $email) {
+            $this->queue($email);
         }
     }
 }

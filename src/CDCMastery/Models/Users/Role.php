@@ -11,13 +11,13 @@ namespace CDCMastery\Models\Users;
 
 class Role
 {
-    const TYPE_ADMIN = 'admin';
-    const TYPE_QUESTION_EDITOR = 'editor';
-    const TYPE_SUPERVISOR = 'supervisor';
-    const TYPE_TRAINING_MANAGER = 'trainingManager';
-    const TYPE_USER = 'user';
+    public const TYPE_ADMIN = 'admin';
+    public const TYPE_QUESTION_EDITOR = 'editor';
+    public const TYPE_SUPERVISOR = 'supervisor';
+    public const TYPE_TRAINING_MANAGER = 'trainingManager';
+    public const TYPE_USER = 'user';
 
-    const VALID_TYPES = [
+    private const VALID_TYPES = [
         self::TYPE_ADMIN,
         self::TYPE_QUESTION_EDITOR,
         self::TYPE_SUPERVISOR,
@@ -46,9 +46,9 @@ class Role
     private $description;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUuid(): string
+    public function getUuid(): ?string
     {
         return $this->uuid;
     }
@@ -62,9 +62,9 @@ class Role
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -82,9 +82,9 @@ class Role
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -98,9 +98,9 @@ class Role
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
