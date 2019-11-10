@@ -412,23 +412,19 @@ class Tests extends RootController
                     );
                 }
 
-                $response = new Response(
+                return new Response(
                     json_encode([
                                     'redirect' => '/tests/' . $testUuid . '?score',
                                 ]),
                     200,
                     ['Content-Type', 'application/json']
                 );
-
-                return $response;
             default:
                 /** @todo handle bad action */
                 break;
         }
 
-        $response = new JsonResponse($testHandler->getDisplayData());
-
-        return $response;
+        return new JsonResponse($testHandler->getDisplayData());
     }
 
     /**
