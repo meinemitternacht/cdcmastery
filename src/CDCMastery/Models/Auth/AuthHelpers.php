@@ -202,7 +202,7 @@ class AuthHelpers
             return;
         }
 
-        $_SESSION[self::KEY_ROLE] = $role->getType();
+        $this->session->set(self::KEY_ROLE, $role->getType());
     }
 
     public function logout_hook(): void
