@@ -12,17 +12,21 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-/** @var ContainerInterface $container */
-$container = require __DIR__ . '/../src/CDCMastery/Bootstrap.php';
-$dispatcher = require APP_DIR . '/Routes.php';
 
 try {
+    /** @var ContainerInterface $container */
+    $container = require __DIR__ . '/../src/CDCMastery/Bootstrap.php';
+    $dispatcher = require APP_DIR . '/Routes.php';
+
     $config = $container->get(Config::class);
     $log = $container->get(Logger::class);
     $session = $container->get(Session::class);
     $auth_helpers = $container->get(AuthHelpers::class);
 } catch (Throwable $e) {
-    $msg = 'Unable to retrieve configuration or logger.';
+    if ($log instanceof Logger) {
+        $log->addDebug($e);
+    }
+    $msg = 'Unable to initialize application.';
     $response = new Response($msg, 500);
     goto out_respond;
 }
