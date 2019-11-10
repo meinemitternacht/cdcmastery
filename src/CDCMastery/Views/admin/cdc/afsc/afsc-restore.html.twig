@@ -1,0 +1,121 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Disable AFSC - #{afsc.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Disable {{ afsc.name }}</h3>
+    </div>
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                Are you sure you want to restore this AFSC? New users will be able to select this AFSC during
+                registration. If a newer AFSC has replaced this one, this may not be the intended outcome.
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Questions</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ afscQuestions|number_format }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Users</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ afscUsers|number_format }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>FOUO</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.fouo ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Obsolete</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.obsolete ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Hidden</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ afsc.hidden ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if afsc.version %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5>Version</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ afsc.version }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if afsc.description %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5>Description</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ afsc.description }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <form action="/admin/cdc/afsc/{{ afsc.uuid }}/restore"
+                          method="POST">
+                        <div class="form-group">
+                            <button class="btn btn-danger"
+                                    type="submit"
+                                    title="Restore AFSC">
+                                Restore
+                            </button>
+                            <a href="/admin/cdc/afsc/{{ afsc.uuid }}"
+                               class="btn btn-success"
+                               title="Return to AFSC home">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

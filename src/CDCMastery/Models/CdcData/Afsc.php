@@ -147,7 +147,7 @@ class Afsc
      */
     public function isObsolete(): bool
     {
-        return $this->obsolete;
+        return $this->obsolete ?? false;
     }
 
     /**

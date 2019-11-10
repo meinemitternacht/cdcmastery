@@ -27,96 +27,106 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addGroup('/admin', function (RouteCollector $r) {
         $r->addRoute('GET', '/cdc/afsc', [
             CdcData::class,
-            'renderAfscList',
+            'show_afsc_list',
         ]);
 
         $r->addRoute('POST', '/cdc/afsc', [
             CdcData::class,
-            'processAddAfsc',
+            'do_afsc_add',
         ]);
 
         $r->addGroup('/cdc/afsc', function (RouteCollector $r) {
             $r->addRoute('GET', '/migrate', [
                 CdcData::class,
-                'renderMigrateAfsc',
+                'show_afsc_migrate',
             ]);
 
             $r->addRoute('POST', '/migrate', [
                 CdcData::class,
-                'processMigrateAfsc',
+                'do_afsc_migrate',
             ]);
 
-            $r->addRoute('GET', '/{afscUuid}', [
+            $r->addRoute('GET', '/{uuid}', [
                 CdcData::class,
-                'renderAfscHome',
+                'show_afsc_home',
             ]);
 
-            $r->addRoute('POST', '/{afscUuid}', [
+            $r->addRoute('POST', '/{uuid}', [
                 CdcData::class,
-                'processEditAfsc',
+                'do_afsc_edit',
             ]);
 
-            $r->addRoute('GET', '/{afscUuid}/delete', [
+            $r->addRoute('GET', '/{uuid}/disable', [
                 CdcData::class,
-                'renderDeleteAfsc',
+                'show_afsc_disable',
             ]);
 
-            $r->addRoute('POST', '/{afscUuid}/delete', [
+            $r->addRoute('POST', '/{uuid}/disable', [
                 CdcData::class,
-                'processDeleteAfsc',
+                'do_afsc_disable',
             ]);
 
-            $r->addRoute('POST', '/{afscUuid}/edit', [
+            $r->addRoute('POST', '/{uuid}/edit', [
                 CdcData::class,
-                'renderEditAfsc',
+                'show_afsc_edit',
             ]);
 
-            $r->addRoute('GET', '/{afscUuid}/questions', [
+            $r->addRoute('GET', '/{uuid}/questions', [
                 CdcData::class,
-                'renderQuestions',
+                'show_afsc_questions',
             ]);
 
-            $r->addRoute('POST', '/{afscUuid}/questions', [
+            $r->addRoute('POST', '/{uuid}/questions', [
                 CdcData::class,
-                'processAddQuestion',
+                'do_afsc_question_add',
             ]);
 
-            $r->addGroup('/{afscUuid}/questions', function (RouteCollector $r) {
-                $r->addRoute('GET', '/{questionUuid}', [
+            $r->addGroup('/{uuid}/questions', function (RouteCollector $r) {
+                $r->addRoute('GET', '/{quuid}', [
                     CdcData::class,
-                    'renderQuestionHome',
+                    'show_afsc_question',
                 ]);
 
-                $r->addRoute('POST', '/{questionUuid}', [
+                $r->addRoute('POST', '/{quuid}', [
                     CdcData::class,
-                    'processEditQuestion',
+                    'do_afsc_question_edit',
                 ]);
 
-                $r->addRoute('GET', '/{questionUuid}/delete', [
+                $r->addRoute('GET', '/{quuid}/delete', [
                     CdcData::class,
-                    'renderDeleteQuestion',
+                    'show_afsc_question_delete',
                 ]);
 
-                $r->addRoute('POST', '/{questionUuid}/delete', [
+                $r->addRoute('POST', '/{quuid}/delete', [
                     CdcData::class,
-                    'processDeleteQuestion',
+                    'do_afsc_question_delete',
                 ]);
 
-                $r->addRoute('GET', '/{questionUuid}/edit', [
+                $r->addRoute('GET', '/{quuid}/edit', [
                     CdcData::class,
-                    'renderQuestionEdit',
+                    'show_afsc_question_edit',
                 ]);
 
-                $r->addRoute('POST', '/{questionUuid}/answers', [
+                $r->addRoute('POST', '/{quuid}/answers', [
                     CdcData::class,
-                    'processEditAnswers',
+                    'do_afsc_question_answers_edit',
                 ]);
 
-                $r->addRoute('POST', '/{questionUuid}/answers/{answerUuid}', [
+                $r->addRoute('POST', '/{quuid}/answers/{answerUuid}', [
                     CdcData::class,
-                    'processEditAnswer',
+                    'do_afsc_question_answer_edit',
                 ]);
             });
+
+            $r->addRoute('GET', '/{uuid}/restore', [
+                CdcData::class,
+                'show_afsc_restore',
+            ]);
+
+            $r->addRoute('POST', '/{uuid}/restore', [
+                CdcData::class,
+                'do_afsc_restore',
+            ]);
         });
     });
 

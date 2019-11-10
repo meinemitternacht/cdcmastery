@@ -50,7 +50,8 @@
                     </thead>
                     <tbody>
                     {% for afsc in afscs %}
-                        <tr{% if afsc.obsolete %} class="text-muted"{% endif %} data-uuid="{{ afsc.uuid }}" style="cursor:pointer">
+                        <tr{% if afsc.obsolete or afsc.hidden %} class="text-muted"{% endif %}
+                                data-uuid="{{ afsc.uuid }}" style="cursor:pointer">
                             <td>{{ afsc.name }}</td>
                             <td title="{{ afsc.version }}">
                                 {{ afsc.version|length > 40 ? afsc.version|slice(0, 40) ~ '...' : afsc.version }}

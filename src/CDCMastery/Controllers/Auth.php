@@ -13,9 +13,6 @@ use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 class Auth extends RootController
 {
@@ -65,9 +62,6 @@ class Auth extends RootController
 
     /**
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
     public function do_login(): Response
     {
@@ -91,12 +85,12 @@ class Auth extends RootController
             return $this->show_login();
         }
 
-        $parameters = [
+        $params = [
             'username',
             'password',
         ];
 
-        if (!$this->checkParameters($parameters)) {
+        if (!$this->checkParameters($params)) {
             $this->limiter->increment();
 
             $req_str = json_encode($this->request->request->all());
@@ -198,9 +192,6 @@ class Auth extends RootController
 
     /**
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
     public function show_login(): Response
     {

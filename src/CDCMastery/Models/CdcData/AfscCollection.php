@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\CdcData;
 
 
+use CDCMastery\Helpers\UUID;
 use Monolog\Logger;
 use mysqli;
 use function count;
@@ -58,6 +59,58 @@ class AfscCollection
     {
         $this->db = $mysqli;
         $this->log = $logger;
+    }
+
+    public function exists(Afsc $afsc): bool
+    {
+        if (($afsc->getUuid() ?? '') !== '') {
+            return ($this->fetch($afsc->getUuid())->getUuid() ?? '') !== '';
+        }
+
+        if ($afsc->getName() === '') {
+            return false;
+        }
+
+        $sql = <<<SQL
+SELECT 1 FROM afscList
+WHERE name = ?
+SQL;
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($stmt === false) {
+            return false;
+        }
+
+        $name = $afsc->getName();
+
+        if (!$stmt->bind_param('s', $name)) {
+            $stmt->close();
+            return false;
+        }
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return false;
+        }
+
+        if (!$stmt->bind_result($res)) {
+            $stmt->close();
+            return false;
+        }
+
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            return false;
+        }
+
+        $stmt->close();
+
+        if (!$res) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -306,22 +359,13 @@ SQL;
     }
 
     /**
-     * @return AfscCollection
-     */
-    public function refresh(): self
-    {
-        $this->afscs = [];
-
-        return $this;
-    }
-
-    /**
      * @param Afsc $afsc
+     * @return bool
      */
-    public function save(Afsc $afsc): void
+    public function save(Afsc $afsc): bool
     {
         if (empty($afsc->getUuid())) {
-            return;
+            $afsc->setUuid(UUID::generate());
         }
 
         $uuid = $afsc->getUuid();
@@ -355,23 +399,30 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssssiii',
-            $uuid,
-            $name,
-            $description,
-            $version,
-            $fouo,
-            $hidden,
-            $obsolete
-        );
+
+        if ($stmt === false) {
+            return false;
+        }
+
+        if (!$stmt->bind_param('ssssiii',
+                               $uuid,
+                               $name,
+                               $description,
+                               $version,
+                               $fouo,
+                               $hidden,
+                               $obsolete)) {
+            $stmt->close();
+            return false;
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return;
+            return false;
         }
 
         $stmt->close();
+        return true;
     }
 
     /**

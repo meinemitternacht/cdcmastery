@@ -133,6 +133,22 @@ class RootController
         return $this->request->request->filter($key, $default, $filter, $options);
     }
 
+    public function filter_bool_default(string $key, ?bool $default = null): ?bool
+    {
+        return $this->request->request->filter($key,
+                                               $default,
+                                               FILTER_VALIDATE_BOOLEAN,
+                                               FILTER_NULL_ON_FAILURE);
+    }
+
+    public function filter_string_default(string $key): ?string
+    {
+        return $this->request->request->filter($key,
+                                               null,
+                                               FILTER_SANITIZE_STRING,
+                                               FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+    }
+
     /**
      * @param string $key
      * @param null|mixed $default

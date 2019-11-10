@@ -177,12 +177,12 @@ class Tests extends RootController
      */
     public function do_new_test(): Response
     {
-        $parameters = [
+        $params = [
             'afscs',
             'numQuestions',
         ];
 
-        if (!$this->checkParameters($parameters)) {
+        if (!$this->checkParameters($params)) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'Please ensure all required options are selected before beginning a test'
@@ -194,7 +194,7 @@ class Tests extends RootController
         $afscs = $this->get('afscs');
         $numQuestions = $this->filter('numQuestions', FILTER_VALIDATE_INT);
 
-        if (!is_array($afscs) || empty($afscs)) {
+        if (!is_array($afscs) || count($afscs) === 0) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'You must select at least one AFSC'

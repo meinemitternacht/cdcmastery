@@ -11,6 +11,7 @@ namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionHelpers;
@@ -65,18 +66,53 @@ class CdcData extends Admin
         $this->test_stats = $test_stats;
     }
 
-    public function processAddAfsc(): Response
+    public function do_afsc_add(): Response
     {
+        $params = [
+            'name',
+        ];
 
+        $this->checkParameters($params);
+
+        $name = $this->filter_string_default('name');
+        $version = $this->filter_string_default('version');
+        $description = $this->filter_string_default('description');
+        $fouo = $this->filter_bool_default('fouo', false);
+        $hidden = $this->filter_bool_default('hidden', false);
+
+        $afsc = new Afsc();
+        $afsc->setName($name);
+        $afsc->setDescription($description);
+        $afsc->setVersion($version);
+        $afsc->setFouo($fouo);
+        $afsc->setHidden($hidden);
+
+        if ($this->afscs->exists($afsc)) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                "The specified AFSC '{$afsc->getName()}' already exists in the database");
+            goto out_return;
+        }
+
+        if (!$this->afscs->save($afsc)) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                "The specified AFSC '{$afsc->getName()}' could not be added to the database");
+            goto out_return;
+        }
+
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            "The specified AFSC '{$afsc->getName()}' was added to the database");
+
+        out_return:
+        return $this->redirect('/admin/cdc/afsc');
     }
 
     /**
-     * @param string $afscUuid
+     * @param string $uuid
      * @return Response
      */
-    public function renderAfscHome(string $afscUuid): Response
+    public function show_afsc_home(string $uuid): Response
     {
-        $afsc = $this->afscs->fetch($afscUuid);
+        $afsc = $this->afscs->fetch($uuid);
 
         if ($afsc->getUuid() === '') {
             $this->flash()->add(
@@ -87,21 +123,18 @@ class CdcData extends Admin
             return $this->redirect('/admin/cdc/afsc');
         }
 
-        $afscUsers = $this->user_afscs->fetchAllByAfsc($afsc);
-        $afscQuestionsArr = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
+        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc);
+        $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
 
-        if (!is_array($afscQuestionsArr) || count($afscQuestionsArr) === 0) {
-            $afscQuestions = 0;
-            goto out_return;
+        $n_afsc_questions = 0;
+        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
+            $n_afsc_questions = (int)array_shift($afsc_questions);
         }
 
-        $afscQuestions = intval(array_shift($afscQuestionsArr));
-
-        out_return:
         $data = [
             'afsc' => $afsc,
-            'afscUsers' => count($afscUsers->getUsers()),
-            'afscQuestions' => $afscQuestions,
+            'afscUsers' => count($afsc_users->getUsers()),
+            'afscQuestions' => $n_afsc_questions,
             'subTitle' => 'Tests By Month',
             'period' => 'month',
             'averages' => StatisticsHelpers::formatGraphDataTests(
@@ -118,10 +151,106 @@ class CdcData extends Admin
         );
     }
 
+    private function do_afsc_disable_restore(string $uuid, bool $disable): Response
+    {
+        $disable_restore_str = $disable
+            ? 'disable'
+            : 'restore';
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        if ($disable === $afsc->isHidden()) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                "The specified AFSC has already been {$disable_restore_str}d");
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $afsc->setHidden($disable);
+
+        if (!$this->afscs->save($afsc)) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                "AFSC '{$afsc->getName()}' could not be {$disable_restore_str}d due to a database error");
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        return $this->redirect('/admin/cdc/afsc');
+    }
+
+    public function do_afsc_disable(string $uuid): Response
+    {
+        return $this->do_afsc_disable_restore($uuid, true);
+    }
+
+    public function do_afsc_restore(string $uuid): Response
+    {
+        return $this->do_afsc_disable_restore($uuid, false);
+    }
+
+    private function show_afsc_disable_restore(string $uuid, bool $disable): Response
+    {
+        $disable_restore_str = $disable
+            ? 'disable'
+            : 'restore';
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        if ($disable === $afsc->isHidden()) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                "The specified AFSC has already been {$disable_restore_str}d");
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc);
+        $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
+
+        $n_afsc_questions = 0;
+        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
+            $n_afsc_questions = (int)array_shift($afsc_questions);
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'afscUsers' => count($afsc_users->getUsers()),
+            'afscQuestions' => $n_afsc_questions,
+        ];
+
+        return $this->render(
+            "admin/cdc/afsc/afsc-{$disable_restore_str}.html.twig",
+            $data
+        );
+    }
+
+    public function show_afsc_disable(string $uuid): Response
+    {
+        return $this->show_afsc_disable_restore($uuid, true);
+    }
+
+    public function show_afsc_restore(string $uuid): Response
+    {
+        return $this->show_afsc_disable_restore($uuid, false);
+    }
+
     /**
      * @return Response
      */
-    public function renderAfscList(): Response
+    public function show_afsc_list(): Response
     {
         $flags = AfscCollection::SHOW_FOUO;
 
