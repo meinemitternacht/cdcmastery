@@ -175,13 +175,13 @@
                     'processData': false,
                     'contentType': 'application/json',
                     'success': function ( data ) {
-                        if (typeof(payload.redirect) !== "undefined") {
-                            window.location.href = payload.redirect;
+                        if (typeof (data.redirect) !== "undefined") {
+                            window.location.href = data.redirect;
                         }
 
-                        populateQuestionAnswerData(payload);
-                        updateProgress(payload);
-                        populateUnansweredQuestions(payload);
+                        populateQuestionAnswerData(data);
+                        updateProgress(data);
+                        populateUnansweredQuestions(data);
                     },
                     'error': function ( data, status, error ) {
                         console.error(data, status, error);
