@@ -175,6 +175,7 @@
                     'processData': false,
                     'contentType': 'application/json',
                     'success': function ( data ) {
+                        console.info(typeof data, data);
                         payload = JSON.parse(data);
 
                         if (typeof(payload.redirect) !== "undefined") {
