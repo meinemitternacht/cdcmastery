@@ -29,7 +29,7 @@ set_error_handler(static function ($severity, $message, $file, $line)
 try{
     $builder = new ContainerBuilder;
     $container = $builder->addDefinitions(__DIR__ . '/DIConfig.php')->build();
-    $container->get(\mysqli::class);
+    $container->get(mysqli::class);
 } catch (Exception $e) {
     if ($container instanceof Container) {
         try {
