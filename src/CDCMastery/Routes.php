@@ -76,12 +76,17 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_afsc_questions',
             ]);
 
-            $r->addRoute('POST', '/{uuid}/questions', [
-                CdcData::class,
-                'do_afsc_question_add',
-            ]);
-
             $r->addGroup('/{uuid}/questions', function (RouteCollector $r) {
+                $r->addRoute('GET', '/{quuid}/new', [
+                    CdcData::class,
+                    'show_afsc_question_add',
+                ]);
+
+                $r->addRoute('POST', '/{quuid}/new', [
+                    CdcData::class,
+                    'do_afsc_question_add',
+                ]);
+
                 $r->addRoute('GET', '/{quuid}', [
                     CdcData::class,
                     'show_afsc_question',

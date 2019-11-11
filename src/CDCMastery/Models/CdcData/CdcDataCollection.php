@@ -45,27 +45,23 @@ class CdcDataCollection
             return new CdcData();
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
+        $afscs = new AfscCollection($this->db,
+                                    $this->log);
 
-        $afsc = $afscCollection->fetch($afscUuid);
+        $afsc = $afscs->fetch($afscUuid);
 
         if (empty($afsc->getUuid())) {
             return new CdcData();
         }
 
-        $questionAnswerCollection = new QuestionAnswersCollection(
-            $this->db,
-            $this->log
-        );
+        $qas = new QuestionAnswersCollection($this->db,
+                                             $this->log);
 
-        $cdcQuestionAnswers = $questionAnswerCollection->fetch($afsc);
+        $cdc_qas = $qas->fetch($afsc);
 
         $cdcData = new CdcData();
         $cdcData->setAfsc($afsc);
-        $cdcData->setQuestionAnswerData($cdcQuestionAnswers);
+        $cdcData->setQuestionAnswerData($cdc_qas);
         return $cdcData;
     }
 
@@ -74,22 +70,16 @@ class CdcDataCollection
      */
     public function save(CdcData $cdcData): void
     {
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
+        $afscs = new AfscCollection($this->db,
+                                    $this->log);
 
-        $afscCollection->save($cdcData->getAfsc());
+        $afscs->save($cdcData->getAfsc());
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
+        $questionCollection = new QuestionCollection($this->db,
+                                                     $this->log);
 
-        $answerCollection = new AnswerCollection(
-            $this->db,
-            $this->log
-        );
+        $answerCollection = new AnswerCollection($this->db,
+                                                 $this->log);
 
         $questions = [];
         $answers = [];
@@ -101,14 +91,10 @@ class CdcDataCollection
             );
         }
 
-        $questionCollection->saveArray(
-            $cdcData->getAfsc(),
-            $questions
-        );
+        $questionCollection->saveArray($cdcData->getAfsc(),
+                                       $questions);
 
-        $answerCollection->saveArray(
-            $cdcData->getAfsc(),
-            $answers
-        );
+        $answerCollection->saveArray($cdcData->getAfsc(),
+                                     $answers);
     }
 }

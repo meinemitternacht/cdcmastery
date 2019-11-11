@@ -1,0 +1,27 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Question - #{afsc.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Manage Question - {{ afsc.name }}</h3>
+    </div>
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="row">
+        <div class="col-md-9">
+            <div id="question" class="well well-lg">
+                {{ question.text }}
+            </div>
+            <div class="list-group">
+                {% for answer in answers %}
+                    <div href="#"
+                         class="list-group-item answer {% if answer.correct %} selected{% else %} text-muted{% endif %}">
+                        <span class="glyphicon glyphicon-{% if answer.correct %}ok text-white{% else %}remove text-danger{% endif %}"></span>
+                        {{ answer.text }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            {% include "blocks/admin/cdc/afsc/question-menu.html.twig" %}
+        </div>
+    </div>
+{% endblock %}

@@ -14,6 +14,9 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\AnswerCollection;
+use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
@@ -29,9 +32,24 @@ use function count;
 class CdcData extends Admin
 {
     /**
+     * @var CdcDataCollection
+     */
+    private $cdc_datas;
+
+    /**
      * @var AfscCollection
      */
     private $afscs;
+
+    /**
+     * @var QuestionCollection
+     */
+    private $questions;
+
+    /**
+     * @var AnswerCollection
+     */
+    private $answers;
 
     /**
      * @var QuestionHelpers
@@ -53,14 +71,20 @@ class CdcData extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CdcDataCollection $cdc_datas,
         AfscCollection $afscs,
+        QuestionCollection $questions,
+        AnswerCollection $answers,
         QuestionHelpers $question_helpers,
         UserAfscAssociations $user_afscs,
         TestStats $test_stats
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
 
+        $this->cdc_datas = $cdc_datas;
         $this->afscs = $afscs;
+        $this->questions = $questions;
+        $this->answers = $answers;
         $this->question_helpers = $question_helpers;
         $this->user_afscs = $user_afscs;
         $this->test_stats = $test_stats;
@@ -288,6 +312,126 @@ class CdcData extends Admin
 
         return $this->render(
             'admin/cdc/afsc/list.html.twig',
+            $data
+        );
+    }
+
+    public function show_afsc_question(string $uuid, string $quuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $answers = $this->answers->fetchByQuestion($afsc, $question);
+
+        if (!is_array($answers) || count($answers) === 0) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'There are no answers in the database for the specified question'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'question' => $question,
+            'answers' => $answers,
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc-question.html.twig',
+            $data
+        );
+    }
+
+    public function show_afsc_question_edit(string $uuid, string $quuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $answers = $this->answers->fetchByQuestion($afsc, $question);
+
+        if (!is_array($answers) || count($answers) === 0) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'There are no answers in the database for the specified question'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'question' => $question,
+            'answers' => $answers,
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc-question-edit.html.twig',
+            $data
+        );
+    }
+
+    public function show_afsc_questions(string $uuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $cdc_data = $this->cdc_datas->fetch($afsc->getUuid());
+
+        $data = [
+            'afsc' => $afsc,
+            'question_data' => $cdc_data->getQuestionAnswerData(),
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc-questions.html.twig',
             $data
         );
     }

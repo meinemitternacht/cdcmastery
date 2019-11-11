@@ -52,20 +52,16 @@ class QuestionAnswersCollection
             return [];
         }
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
+        $questionCollection = new QuestionCollection($this->db,
+                                                     $this->log);
 
         /** @var Question[] $questions */
         $questions = $questionCollection->fetchAfsc($afsc);
 
         $questionUuidList = QuestionHelpers::listUuid($questions);
 
-        $answerCollection = new AnswerCollection(
-            $this->db,
-            $this->log
-        );
+        $answerCollection = new AnswerCollection($this->db,
+                                                 $this->log);
 
         $answerCollection->preloadQuestionAnswers($afsc, $questionUuidList);
 

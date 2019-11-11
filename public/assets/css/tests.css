@@ -31,3 +31,20 @@ label.new-test-afsc {
     margin: 5px;
     min-width: 3em;
 }
+
+#question-edit-block .row {
+    display: flex;
+}
+
+#question-edit-block .row > .col-md-1 {
+    display: flex;
+    align-items: center;
+}
+
+#question-edit-block .row > .col-md-1 > input[type="radio"] {
+    margin-top: 2rem;
+}
+
+textarea.tall {
+    height: 14rem !important;
+}

@@ -1,0 +1,33 @@
+<form action="{{ form_action }}"
+      method="{{ form_method }}"
+      id="question-edit-block">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-11">
+                <label for="questionText">Question</label>
+                <textarea class="form-control tall" name="questionText" id="questionText">{{ question.text }}</textarea>
+            </div>
+        </div>
+        {% set i = 1 %}
+        {% for answer in answers %}
+            <div class="row row-spacer">
+                <div class="col-md-11">
+                    <label for="answer_{{ answer.uuid }}">
+                        Answer #{{ i }}
+                    </label>
+                    <input class="form-control"
+                           id="answer_{{ answer.uuid }}"
+                           name="answer_{{ answer.uuid }}"
+                           value="{{ answer.text }}">
+                </div>
+                <div class="col-md-1">
+                    <input type="radio"
+                           name="answerCorrect"
+                           value="{{ answer.uuid }}"
+                           title="Select answer #{{ i }} as the correct answer" {% if answer.correct %} CHECKED{% endif %}>
+                </div>
+            </div>
+            {% set i = i + 1 %}
+        {% endfor %}
+    </div>
+</form>

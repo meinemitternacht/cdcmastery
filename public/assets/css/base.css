@@ -17,3 +17,16 @@ div.main-container {
 .text-black {
     color: #000000;
 }
+
+.overflow {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.row-spacer {
+    margin-top: 2rem;
+}

@@ -23,10 +23,10 @@ try {
     $session = $container->get(Session::class);
     $auth_helpers = $container->get(AuthHelpers::class);
 } catch (Throwable $e) {
-    if ($log instanceof Logger) {
+    if (isset($log) && $log instanceof Logger) {
         $log->addDebug($e);
     }
-    $msg = 'Unable to initialize application.';
+    $msg = 'Unable to initialize application: ' . $e;
     $response = new Response($msg, 500);
     goto out_respond;
 }

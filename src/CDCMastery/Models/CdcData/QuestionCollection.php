@@ -62,6 +62,7 @@ SELECT
   questionText
 FROM questionData
 WHERE uuid = ?
+  AND afscUUID = ?
 SQL;
 
         if ($afsc->isFouo()) {
@@ -72,6 +73,7 @@ SELECT
   AES_DECRYPT(questionText, '%s') as questionText
 FROM questionData
 WHERE uuid = ?
+  AND afscUUID = ?
 SQL;
 
             $qry = sprintf(
@@ -80,8 +82,9 @@ SQL;
             );
         }
 
+        $afsc_uuid = $afsc->getUuid();
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
+        $stmt->bind_param('ss', $uuid, $afsc_uuid);
 
         if (!$stmt->execute()) {
             $stmt->close();
@@ -124,6 +127,7 @@ SELECT
   questionText
 FROM questionData
 WHERE afscUUID = ?
+ORDER BY questionText
 SQL;
 
         if ($afsc->isFouo()) {
@@ -131,9 +135,10 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
+  AES_DECRYPT(questionText, '%s') as qtext
 FROM questionData
 WHERE afscUUID = ?
+ORDER BY qtext
 SQL;
 
             $qry = sprintf(
