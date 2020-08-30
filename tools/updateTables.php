@@ -112,6 +112,12 @@ ALTER TABLE cdcmastery_main.afscList CHANGE afscFOUO fouo INT(1) NOT NULL DEFAUL
 ALTER TABLE cdcmastery_main.afscList CHANGE afscHidden hidden INT(1) NOT NULL DEFAULT 0;
 -- SPLIT ;;
 alter table afscList add obsolete int(1) default 0 not null;
+-- SPLIT ;;
+alter table questionData
+	add disabled tinyint default 0 not null;
+-- SPLIT ;;
+create index questionData_disabled_index
+	on questionData (disabled);
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

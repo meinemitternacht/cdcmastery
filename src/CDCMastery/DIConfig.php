@@ -27,12 +27,16 @@ return [
         $auth_helpers = $c->get(AuthHelpers::class);
         $loader = new FilesystemLoader(VIEWS_DIR);
 
-        $twig = $config->get(['system', 'debug'])
+        $debug = $config->get(['system', 'debug'])
+            ?: false;
+        $twig = $debug
             ? new Environment($loader, ['debug' => true])
             : new Environment($loader, ['debug' => false, 'cache' => '/tmp/twig_cache']);
 
         $loggedIn = $auth_helpers->assert_logged_in();
 
+        $twig->addGlobal('cdc_debug', $debug
+            ?: false);
         $twig->addGlobal('loggedIn', $loggedIn);
         $twig->addGlobal('cssList', $config->get(['twig', 'assets', 'css']));
         $twig->addGlobal('jsList', $config->get(['twig', 'assets', 'js']));
@@ -53,7 +57,7 @@ return [
             );
         }
 
-        if ($config->get(['system', 'debug'])) {
+        if ($debug) {
             $twig->addExtension(new DebugExtension());
         }
 

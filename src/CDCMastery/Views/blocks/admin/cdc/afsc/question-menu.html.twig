@@ -3,8 +3,21 @@
        class="list-group-item">
         Edit Question
     </a>
-    <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/{{ question.uuid }}/disable"
-       class="list-group-item">
-        Disable Question
-    </a>
+    {% if question.disabled %}
+        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/{{ question.uuid }}/enable"
+           class="list-group-item">
+            Enable Question
+        </a>
+    {% else %}
+        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/{{ question.uuid }}/disable"
+           class="list-group-item list-group-item-warning">
+            Disable Question
+        </a>
+    {% endif %}
+    {% if cdc_debug %}
+        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/{{ question.uuid }}/delete"
+           class="list-group-item list-group-item-danger">
+            Delete Question
+        </a>
+    {% endif %}
 </div>

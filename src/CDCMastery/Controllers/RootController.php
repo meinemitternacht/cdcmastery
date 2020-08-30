@@ -10,6 +10,7 @@ namespace CDCMastery\Controllers;
 
 
 use Monolog\Logger;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -63,12 +64,12 @@ class RootController
 
     public static function static_redirect(string $destination): Response
     {
-        $protocol = isset($_SERVER['HTTPS'])
+        $protocol = isset($_SERVER[ 'HTTPS' ])
             ? 'https://'
             : 'http://';
 
         $response = new Response();
-        $response->headers->add(['Location' => $protocol . $_SERVER['HTTP_HOST'] . $destination]);
+        $response->headers->add(['Location' => $protocol . $_SERVER[ 'HTTP_HOST' ] . $destination]);
 
         return $response;
     }
@@ -121,6 +122,15 @@ class RootController
         return true;
     }
 
+    private function get_param_source(string $key): ParameterBag
+    {
+        if ($this->request->query->has($key)) {
+            return $this->request->query;
+        }
+
+        return $this->request->request;
+    }
+
     /**
      * @param string $key
      * @param null|mixed $default
@@ -130,23 +140,35 @@ class RootController
      */
     public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, $options = [])
     {
-        return $this->request->request->filter($key, $default, $filter, $options);
+        return $this->get_param_source($key)
+                    ->filter($key, $default, $filter, $options);
     }
 
     public function filter_bool_default(string $key, ?bool $default = null): ?bool
     {
-        return $this->request->request->filter($key,
-                                               $default,
-                                               FILTER_VALIDATE_BOOLEAN,
-                                               FILTER_NULL_ON_FAILURE);
+        return $this->get_param_source($key)
+                    ->filter($key,
+                             $default,
+                             FILTER_VALIDATE_BOOLEAN,
+                             FILTER_NULL_ON_FAILURE);
+    }
+
+    public function filter_int_default(string $key, ?bool $default = null): ?int
+    {
+        return $this->get_param_source($key)
+                    ->filter($key,
+                             $default,
+                             FILTER_VALIDATE_INT,
+                             FILTER_NULL_ON_FAILURE);
     }
 
     public function filter_string_default(string $key): ?string
     {
-        return $this->request->request->filter($key,
-                                               null,
-                                               FILTER_SANITIZE_STRING,
-                                               FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        return $this->get_param_source($key)
+                    ->filter($key,
+                             null,
+                             FILTER_SANITIZE_STRING,
+                             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
     }
 
     /**
@@ -156,7 +178,8 @@ class RootController
      */
     public function get(string $key, $default = null)
     {
-        return $this->request->request->get($key, $default);
+        return $this->get_param_source($key)
+                    ->get($key, $default);
     }
 
     /**
@@ -165,7 +188,8 @@ class RootController
      */
     public function has(string $key): bool
     {
-        return $this->request->request->has($key);
+        return $this->request->request->has($key)
+               || $this->request->query->has($key);
     }
 
     /**

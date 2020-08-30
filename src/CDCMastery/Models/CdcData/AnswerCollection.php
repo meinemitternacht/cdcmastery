@@ -48,26 +48,59 @@ class AnswerCollection
     private function create_object(array $row): Answer
     {
         $answer = new Answer();
-        $answer->setUuid($row['uuid']);
-        $answer->setQuestionUuid($row['questionUUID']);
-        $answer->setText($row['answerText']);
-        $answer->setCorrect((bool)$row['answerCorrect']);
+        $answer->setUuid($row[ 'uuid' ]);
+        $answer->setQuestionUuid($row[ 'questionUUID' ]);
+        $answer->setText($row[ 'answerText' ]);
+        $answer->setCorrect((bool)$row[ 'answerCorrect' ]);
 
         $this->mapQuestionAnswer($answer);
         return $answer;
     }
 
+    /**
+     * @param array $data
+     * @return Answer[]
+     */
     private function create_objects(array $data): array
     {
         $answers = [];
         foreach ($data as $row) {
-            $answers[$row['uuid']] = $this->create_object($row);
+            $answers[ $row[ 'uuid' ] ] = $this->create_object($row);
         }
 
         $this->answers = array_merge($this->answers,
                                      $answers);
 
         return $answers;
+    }
+
+    public function delete(string $uuid): void
+    {
+        if (empty($uuid)) {
+            return;
+        }
+
+        $qry = <<<SQL
+DELETE FROM answerData
+WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $uuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        unset($this->answers[ $uuid ]);
+    }
+
+    public function deleteArray(array $uuids): void
+    {
+        foreach ($uuids as $uuid) {
+            $this->delete($uuid);
+        }
     }
 
     /**
@@ -204,6 +237,11 @@ SQL;
         );
     }
 
+    /**
+     * @param Afsc $afsc
+     * @param Question $question
+     * @return Answer[]
+     */
     public function fetchByQuestion(Afsc $afsc, Question $question): array
     {
         $question_uuid = $question->getUuid();
@@ -318,7 +356,7 @@ SQL;
 
     /**
      * @param Afsc $afsc
-     * @param array $uuids
+     * @param string[] $uuids
      */
     public function preloadQuestionAnswers(Afsc $afsc, array $uuids): void
     {
@@ -496,27 +534,18 @@ SQL;
             $correct
         );
 
-        $c = count($answers);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($answers[$i])) {
+        foreach ($answers as $answer) {
+            if (!$answer instanceof Answer) {
                 continue;
             }
 
-            if (!$answers[$i] instanceof Answer) {
-                continue;
-            }
+            $this->answers[ $answer->getUuid() ] = $answer;
+            $this->mapQuestionAnswer($answer);
 
-            $this->answers[$answers[$i]->getUuid()] = $answers[$i];
-            $this->mapQuestionAnswer($answers[$i]);
-
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $uuid = $answers[$i]->getUuid();
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $questionUuid = $answers[$i]->getQuestionUuid();
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $text = $answers[$i]->getText();
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $correct = $answers[$i]->isCorrect();
+            $uuid = $answer->getUuid();
+            $questionUuid = $answer->getQuestionUuid();
+            $text = $answer->getText();
+            $correct = $answer->isCorrect();
 
             if (!$stmt->execute()) {
                 continue;

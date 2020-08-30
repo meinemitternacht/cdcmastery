@@ -1,0 +1,58 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Delete Question - #{afsc.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Delete Question - {{ afsc.name }}</h3>
+    </div>
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                Are you sure you want to delete this question? The question and answer data will be removed
+                from the database, the question cannot be viewed on previous test results, and new tests will
+                not include the question when it is generated. <strong>THIS CANNOT BE UNDONE.</strong>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div id="question" class="well well-lg">
+                {{ question.text }}
+            </div>
+            <div class="list-group">
+                {% for answer in answers %}
+                    <div href="#"
+                         class="list-group-item answer{% if answer.correct %} selected{% endif %}">
+                        <div class="row">
+                            <div class="col-md-1">
+                                <span class="glyphicon glyphicon-{% if answer.correct %}ok text-white{% else %}remove text-danger{% endif %}"></span>
+                            </div>
+                            <div class="col-md-11{% if not answer.correct %} text-muted{% endif %}">
+                                {{ answer.text }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <form action="/admin/cdc/afsc/{{ afsc.uuid }}/questions/{{ question.uuid }}/delete"
+                          method="POST">
+                        <div class="form-group">
+                            <button class="btn btn-danger"
+                                    type="submit"
+                                    title="Delete Question">
+                                Delete
+                            </button>
+                            <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions"
+                               class="btn btn-success"
+                               title="Return to Question List">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

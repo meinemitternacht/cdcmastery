@@ -10,12 +10,15 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\Answer;
 use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -24,6 +27,7 @@ use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Users\AfscUserCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use Monolog\Logger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
@@ -31,6 +35,8 @@ use function count;
 
 class CdcData extends Admin
 {
+    private const NEW_QUESTION_TMP = 'new_question_tmp';
+
     /**
      * @var CdcDataCollection
      */
@@ -219,6 +225,487 @@ class CdcData extends Admin
         return $this->do_afsc_disable_restore($uuid, false);
     }
 
+    private function do_afsc_question_add_common(
+        Afsc $afsc,
+        Question $question,
+        array $answers,
+        bool $legacy
+    ): Response {
+        $this->questions->save($afsc, $question);
+        $this->answers->saveArray($afsc, $answers);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The question was added successfully'
+        );
+
+        $this->session->remove(self::NEW_QUESTION_TMP);
+        return $this->redirect($legacy
+                                   ? "/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy"
+                                   : "/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+    }
+
+    private function do_afsc_question_add_legacy(Afsc $afsc): Response
+    {
+        $params = [
+            'questionText',
+            'answerCorrect',
+            'answers',
+        ];
+
+        $this->checkParameters($params);
+
+        $qtext = $this->get('questionText');
+        $acorrect = $this->filter_int_default('answerCorrect');
+        $answers = $this->get('answers');
+
+        if (!is_array($answers)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided answer data was incorrectly formatted'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+        }
+
+        $new_question_tmp = [
+            'mode' => 'legacy',
+            'qtext' => $qtext,
+            'answers' => $answers,
+            'acorrect' => $acorrect,
+        ];
+
+        $this->session->set(self::NEW_QUESTION_TMP, $new_question_tmp);
+
+        if (count($answers) !== 4) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The request must include exactly four answers'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+        }
+
+        if (trim($qtext) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided question cannot be blank'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+        }
+
+        foreach ($answers as $answer) {
+            if (trim($answer) === '') {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'Each provided answer must have content'
+                );
+
+                return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+            }
+        }
+
+        if (!isset($answers[ $acorrect ])) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The answer marked as "correct" was not one of the provided answers'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+        }
+
+        $db_questions = $this->questions->fetchAfsc($afsc);
+
+        foreach ($db_questions as $db_question) {
+            if ($db_question->getText() === $qtext) {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The provided question already exists in the database -- edit or delete this question instead'
+                );
+
+                return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$db_question->getUuid()}");
+            }
+        }
+
+        $quuid = UUID::generate();
+        $question = new Question();
+        $question->setAfscUuid($afsc->getUuid());
+        $question->setUuid($quuid);
+        $question->setText($qtext);
+
+        $new_answers = [];
+        foreach ($answers as $k => $answer) {
+            $a_uuid = UUID::generate();
+            $new_answer = new Answer();
+            $new_answer->setUuid($a_uuid);
+            $new_answer->setText($answer);
+            $new_answer->setCorrect($acorrect === $k);
+            $new_answer->setQuestionUuid($quuid);
+
+            $new_answers[ $a_uuid ] = $new_answer;
+        }
+
+        return $this->do_afsc_question_add_common($afsc, $question, $new_answers, true);
+    }
+
+    private function do_afsc_question_add_combined(Afsc $afsc): Response
+    {
+        $params = [
+            'questionData',
+            'answerCorrect',
+        ];
+
+        $this->checkParameters($params);
+
+        $qdata = $this->get('questionData');
+        $acorrect = $this->filter_int_default('answerCorrect');
+
+        if (trim($qdata) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided question and answer data cannot be blank'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+        }
+
+        $new_question_tmp = [
+            'mode' => 'combined',
+            'qdata' => $qdata,
+        ];
+
+        $qdata_split = preg_split("/\r\n(.)\. /", $qdata);
+
+        if (count($qdata_split) === 1) {
+            $qdata_tmp = $qdata;
+            $qdata_tmp = preg_replace("/( [a]\. )/", "\r\na. ", $qdata_tmp);
+            $qdata_tmp = preg_replace("/( [b]\. )/", "\r\nb. ", $qdata_tmp);
+            $qdata_tmp = preg_replace("/( [c]\. )/", "\r\nc. ", $qdata_tmp);
+            $qdata_tmp = preg_replace("/( [d]\. )/", "\r\nd. ", $qdata_tmp);
+            $qdata_split = preg_split("/\r\n(.)\. /", $qdata_tmp);
+            unset($qdata_tmp);
+        }
+
+        $qtext = array_shift($qdata_split);
+        $qtext = preg_replace("/\r\n/", ' ', $qtext);
+        $qtext = preg_replace("/^[0-9]+\. \([0-9]+\)/", null, $qtext);
+        $answers = array_values($qdata_split);
+
+        unset($qdata_split);
+
+        $this->session->set(self::NEW_QUESTION_TMP, $new_question_tmp);
+
+        if (count($answers) !== 4) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The request must include exactly four answers'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+        }
+
+        if (trim($qtext) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided question cannot be blank'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+        }
+
+        foreach ($answers as $answer) {
+            if (trim($answer) === '') {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'You must provide four answers.  Make sure that each answer has a letter and a period ' .
+                    'followed by a space at the beginning: e.g., A._ where the underscore is a space.'
+                );
+
+                return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+            }
+        }
+
+        if (!isset($answers[ $acorrect ])) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The answer marked as "correct" was not one of the provided answers'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+        }
+
+        array_walk(
+            $answers,
+            static function ($v) {
+                return preg_replace("/\.$/", null, $v);
+            }
+        );
+
+        $quuid = UUID::generate();
+        $question = new Question();
+        $question->setAfscUuid($afsc->getUuid());
+        $question->setUuid($quuid);
+        $question->setText($qtext);
+
+        $new_answers = [];
+        foreach ($answers as $k => $answer) {
+            $a_uuid = UUID::generate();
+            $new_answer = new Answer();
+            $new_answer->setUuid($a_uuid);
+            $new_answer->setText($answer);
+            $new_answer->setCorrect($acorrect === $k);
+            $new_answer->setQuestionUuid($quuid);
+
+            $new_answers[ $a_uuid ] = $new_answer;
+        }
+
+        return $this->do_afsc_question_add_common($afsc, $question, $new_answers, false);
+    }
+
+    public function do_afsc_question_add(string $uuid): Response
+    {
+        $this->session->remove(self::NEW_QUESTION_TMP);
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        if ($this->has('questionText')) {
+            return $this->do_afsc_question_add_legacy($afsc);
+        }
+
+        return $this->do_afsc_question_add_combined($afsc);
+    }
+
+    public function do_afsc_question_delete(string $uuid, string $quuid): Response
+    {
+        if (!CDC_DEBUG) {
+            throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
+        }
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $this->questions->delete($quuid);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The question was successfully deleted'
+        );
+
+        return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
+    }
+
+    private function do_afsc_question_disable_restore(string $uuid, string $quuid, bool $disable): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        if ($disable === $question->isDisabled()) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question is already in the desired state'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
+        }
+
+        $question->setDisabled($disable);
+        $this->questions->save($afsc, $question);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The question was successfully ' . ($disable
+                ? 'disabled'
+                : 'restored')
+        );
+
+        return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
+    }
+
+    public function do_afsc_question_disable(string $uuid, string $quuid): Response
+    {
+        return $this->do_afsc_question_disable_restore($uuid, $quuid, true);
+    }
+
+    public function do_afsc_question_restore(string $uuid, string $quuid): Response
+    {
+        return $this->do_afsc_question_disable_restore($uuid, $quuid, false);
+    }
+
+    public function do_afsc_question_edit(string $uuid, string $quuid): Response
+    {
+        $params = [
+            'questionText',
+            'answerCorrect',
+        ];
+
+        $this->checkParameters($params);
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $qtext = $this->get('questionText');
+        $acorrect = $this->filter_string_default('answerCorrect');
+
+        $all_params = $this->request->request->all();
+
+        $answers = [];
+        foreach ($all_params as $key => $val) {
+            if (strpos($key, 'answer_') !== 0) {
+                continue;
+            }
+
+            $nkey = str_replace('answer_', null, $key);
+
+            $answers[ $nkey ] = $val;
+        }
+
+        if (count($answers) !== 4) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'There must be exactly four answers provided in the request'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
+        }
+
+        if ($acorrect === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'None of the provided answers were marked as "correct"'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
+        }
+
+        if (!isset($answers[ $acorrect ])) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The answer marked as "correct" was not one of the provided answers'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
+        }
+
+        $db_answers = $this->answers->fetchByQuestion($afsc, $question);
+
+        if (!is_array($db_answers) || count($db_answers) === 0) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'There are no answers in the database for the specified question; please create a new question'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $valid_answers = array_intersect_key($db_answers, $answers);
+
+        if (count($valid_answers) !== 4) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'Some of the provided answers are not associated with the question; please contact the site administrator'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
+        }
+
+        $changed = false;
+
+        if ($question->getText() !== $qtext) {
+            $changed = true;
+            $question->setText($qtext);
+        }
+
+        foreach ($db_answers as $db_answer) {
+            $a_uuid = $db_answer->getUuid();
+
+            if (!isset($answers[ $a_uuid ])) {
+                throw new RuntimeException("request answer uuid not present: {$a_uuid}");
+            }
+
+            if ($db_answer->getText() === $answers[ $a_uuid ] &&
+                $db_answer->isCorrect() === ($acorrect === $a_uuid)) {
+                /* no change */
+                continue;
+            }
+
+            $changed = true;
+            $db_answer->setText($answers[ $a_uuid ]);
+            $db_answer->setCorrect($acorrect === $a_uuid);
+        }
+
+        if ($changed) {
+            $this->answers->saveArray($afsc, $db_answers);
+            $this->questions->save($afsc, $question);
+        }
+
+        $this->flash()->add(
+            $changed
+                ? MessageTypes::SUCCESS
+                : MessageTypes::INFO,
+            $changed
+                ? 'The question data has been modified successfully'
+                : 'No modifications were made to the question or answer data'
+        );
+
+        return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
+    }
+
     private function show_afsc_disable_restore(string $uuid, bool $disable): Response
     {
         $disable_restore_str = $disable
@@ -271,9 +758,6 @@ class CdcData extends Admin
         return $this->show_afsc_disable_restore($uuid, false);
     }
 
-    /**
-     * @return Response
-     */
     public function show_afsc_list(): Response
     {
         $flags = AfscCollection::SHOW_FOUO;
@@ -301,7 +785,7 @@ class CdcData extends Admin
         $afscUserCounts = [];
         /** @var AfscUserCollection $afscUser */
         foreach ($afscUsers as $afscUser) {
-            $afscUserCounts[$afscUser->getAfsc()] = count($afscUser->getUsers());
+            $afscUserCounts[ $afscUser->getAfsc() ] = count($afscUser->getUsers());
         }
 
         $data = [
@@ -361,6 +845,158 @@ class CdcData extends Admin
             'admin/cdc/afsc/afsc-question.html.twig',
             $data
         );
+    }
+
+    public function show_afsc_question_delete(string $uuid, string $quuid): Response
+    {
+        if (!CDC_DEBUG) {
+            throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
+        }
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $answers = $this->answers->fetchByQuestion($afsc, $question);
+
+        if (!is_array($answers) || count($answers) === 0) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'There are no answers in the database for the specified question'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'question' => $question,
+            'answers' => $answers,
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc-question-delete.html.twig',
+            $data
+        );
+    }
+
+    private function show_afsc_question_disable_restore(string $uuid, string $quuid, bool $disable): Response
+    {
+        $disable_restore_str = $disable
+            ? 'disable'
+            : 'restore';
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $question = $this->questions->fetch($afsc, $quuid);
+
+        if ($question->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question does not exist or does not belong to this AFSC'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        if ($disable === $question->isDisabled()) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified question is already in the desired state'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
+        }
+
+        $answers = $this->answers->fetchByQuestion($afsc, $question);
+
+        if (!is_array($answers) || count($answers) === 0) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'There are no answers in the database for the specified question'
+            );
+
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'question' => $question,
+            'answers' => $answers,
+        ];
+
+        return $this->render(
+            "admin/cdc/afsc/afsc-question-{$disable_restore_str}.html.twig",
+            $data
+        );
+    }
+
+    public function show_afsc_question_disable(string $uuid, string $quuid): Response
+    {
+        return $this->show_afsc_question_disable_restore($uuid, $quuid, true);
+    }
+
+    public function show_afsc_question_restore(string $uuid, string $quuid): Response
+    {
+        return $this->show_afsc_question_disable_restore($uuid, $quuid, false);
+    }
+
+    public function show_afsc_question_add(string $uuid, bool $legacy = false): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'new_question_tmp' => $this->session->get(self::NEW_QUESTION_TMP),
+        ];
+
+        return $this->render(
+            $legacy
+                ? 'admin/cdc/afsc/afsc-question-add-legacy.html.twig'
+                : 'admin/cdc/afsc/afsc-question-add-combined.html.twig',
+            $data
+        );
+    }
+
+    public function show_afsc_question_add_legacy(string $uuid): Response
+    {
+        return $this->show_afsc_question_add($uuid, true);
     }
 
     public function show_afsc_question_edit(string $uuid, string $quuid): Response

@@ -1,0 +1,18 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Add Question - #{afsc.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Add Question - {{ afsc.name }}</h3>
+    </div>
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="row">
+        <div class="col-md-9">
+            <a class="text-primary" href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add">Switch to Modern View</a>
+        </div>
+    </div>
+    <div class="row row-spacer">
+        <div class="col-md-9">
+            {% include 'blocks/admin/cdc/afsc/question-edit-block.html.twig' with {'form_action': '/admin/cdc/afsc/' ~ afsc.uuid ~ '/questions/add', 'form_method': 'POST', 'new_question': true} %}
+        </div>
+    </div>
+{% endblock %}

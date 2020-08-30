@@ -40,6 +40,48 @@ class QuestionCollection
         $this->log = $logger;
     }
 
+    public function delete(string $uuid): void
+    {
+        if (empty($uuid)) {
+            return;
+        }
+
+        $qry = <<<SQL
+DELETE FROM questionData
+WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $uuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        $qry = <<<SQL
+DELETE FROM answerData
+WHERE questionUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $uuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        unset($this->questions[ $uuid ]);
+    }
+
+    public function deleteArray(array $uuids): void
+    {
+        foreach ($uuids as $uuid) {
+            $this->delete($uuid);
+        }
+    }
+
     /**
      * @param Afsc $afsc
      * @param string $uuid
@@ -51,15 +93,16 @@ class QuestionCollection
             return new Question();
         }
 
-        if (isset($this->questions[$uuid])) {
-            return $this->questions[$uuid];
+        if (isset($this->questions[ $uuid ])) {
+            return $this->questions[ $uuid ];
         }
 
         $qry = <<<SQL
 SELECT
   uuid,
   afscUUID,
-  questionText
+  questionText,
+  disabled
 FROM questionData
 WHERE uuid = ?
   AND afscUUID = ?
@@ -70,7 +113,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
+  AES_DECRYPT(questionText, '%s') as questionText,
+  disabled
 FROM questionData
 WHERE uuid = ?
   AND afscUUID = ?
@@ -94,7 +138,8 @@ SQL;
         $stmt->bind_result(
             $_uuid,
             $afscUuid,
-            $text
+            $text,
+            $disabled
         );
 
         $stmt->fetch();
@@ -104,8 +149,9 @@ SQL;
         $question->setUuid($_uuid);
         $question->setAfscUuid($afscUuid);
         $question->setText($text);
+        $question->setDisabled((bool)($disabled ?? false));
 
-        $this->questions[$uuid] = $question;
+        $this->questions[ $uuid ] = $question;
 
         return $question;
     }
@@ -124,7 +170,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  questionText
+  questionText,
+  disabled
 FROM questionData
 WHERE afscUUID = ?
 ORDER BY questionText
@@ -135,7 +182,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as qtext
+  AES_DECRYPT(questionText, '%s') as qtext,
+  disabled
 FROM questionData
 WHERE afscUUID = ?
 ORDER BY qtext
@@ -160,7 +208,8 @@ SQL;
         $stmt->bind_result(
             $_uuid,
             $afscUuid,
-            $text
+            $text,
+            $disabled
         );
 
         $uuidList = [];
@@ -173,8 +222,9 @@ SQL;
             $question->setUuid($_uuid);
             $question->setAfscUuid($afscUuid);
             $question->setText($text);
+            $question->setDisabled((bool)($disabled ?? false));
 
-            $this->questions[$_uuid] = $question;
+            $this->questions[ $_uuid ] = $question;
             $uuidList[] = $_uuid;
         }
 
@@ -208,7 +258,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  questionText
+  questionText,
+  disabled
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid
@@ -219,7 +270,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
+  AES_DECRYPT(questionText, '%s') as questionText,
+  disabled
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid
@@ -234,16 +286,17 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
             $question = new Question();
-            $question->setUuid($row['uuid'] ?? '');
-            $question->setAfscUuid($row['afscUUID'] ?? '');
-            $question->setText($row['questionText'] ?? '');
+            $question->setUuid($row[ 'uuid' ] ?? '');
+            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
+            $question->setText($row[ 'questionText' ] ?? '');
+            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
 
-            $this->questions[$row['uuid']] = $question;
+            $this->questions[ $row[ 'uuid' ] ] = $question;
         }
 
         $res->free();
@@ -274,11 +327,11 @@ SQL;
 
         $uuidFouo = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || !isset($row['fouo'])) {
+            if (!isset($row[ 'uuid' ]) || !isset($row[ 'fouo' ])) {
                 continue;
             }
 
-            $uuidFouo[$row['uuid'] ?? ''] = (bool)($row['fouo'] ?? false);
+            $uuidFouo[ $row[ 'uuid' ] ?? '' ] = (bool)($row[ 'fouo' ] ?? false);
         }
 
         $res->free();
@@ -303,7 +356,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as questionText
+  AES_DECRYPT(questionText, '%s') as questionText,
+  disabled
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid
@@ -317,16 +371,17 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
             $question = new Question();
-            $question->setUuid($row['uuid'] ?? '');
-            $question->setAfscUuid($row['afscUUID'] ?? '');
-            $question->setText($row['questionText'] ?? '');
+            $question->setUuid($row[ 'uuid' ] ?? '');
+            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
+            $question->setText($row[ 'questionText' ] ?? '');
+            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
 
-            $this->questions[$row['uuid']] = $question;
+            $this->questions[ $row[ 'uuid' ] ] = $question;
         }
 
         $res->free();
@@ -349,7 +404,8 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  questionText
+  questionText,
+  disabled
 FROM questionData
 WHERE uuid IN ('{$uuidListString}')
 ORDER BY uuid
@@ -358,16 +414,17 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
             $question = new Question();
-            $question->setUuid($row['uuid'] ?? '');
-            $question->setAfscUuid($row['afscUUID'] ?? '');
-            $question->setText($row['questionText'] ?? '');
+            $question->setUuid($row[ 'uuid' ] ?? '');
+            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
+            $question->setText($row[ 'questionText' ] ?? '');
+            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
 
-            $this->questions[$row['uuid']] = $question;
+            $this->questions[ $row[ 'uuid' ] ] = $question;
         }
 
         $res->free();
@@ -434,26 +491,29 @@ SQL;
         $uuid = $question->getUuid();
         $afscUuid = $question->getAfscUuid();
         $text = $question->getText();
+        $disabled = (int)$question->isDisabled();
 
         $qry = <<<SQL
 INSERT INTO questionData
-  (uuid, afscUUID, questionText)
-VALUES (?, ?, ?)
+  (uuid, afscUUID, questionText, disabled)
+VALUES (?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
   afscUUID=VALUES(afscUUID),
-  questionText=VALUES(questionText)
+  questionText=VALUES(questionText),
+  disabled=VALUES(disabled)
 SQL;
 
         if ($afsc->isFouo()) {
             $qry = <<<SQL
 INSERT INTO questionData
-  (uuid, afscUUID, questionText)
-VALUES (?, ?, AES_ENCRYPT(?, '%s'))
+  (uuid, afscUUID, questionText, disabled)
+VALUES (?, ?, AES_ENCRYPT(?, '%s'), ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
   afscUUID=VALUES(afscUUID),
-  questionText=VALUES(questionText)
+  questionText=VALUES(questionText),
+  disabled=VALUES(disabled)
 SQL;
 
             $qry = sprintf(
@@ -464,10 +524,11 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
-            'sss',
+            'sssi',
             $uuid,
             $afscUuid,
-            $text
+            $text,
+            $disabled
         );
 
         if (!$stmt->execute()) {
@@ -490,15 +551,15 @@ SQL;
 
         $c = count($questions);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($questions[$i])) {
+            if (!isset($questions[ $i ])) {
                 continue;
             }
 
-            if (!$questions[$i] instanceof Question) {
+            if (!$questions[ $i ] instanceof Question) {
                 continue;
             }
 
-            $this->save($afsc, $questions[$i]);
+            $this->save($afsc, $questions[ $i ]);
         }
     }
 }

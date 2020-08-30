@@ -17,6 +17,8 @@ use stdClass;
 
 class Config
 {
+    private const CONFIG_FILE = APP_DIR . '/config.json';
+
     /**
      * @var stdClass
      */
@@ -47,24 +49,24 @@ class Config
             die('You are not supposed to be here.');
         }
 
-        if (!file_exists(APP_DIR . '/config.json')) {
-            throw new FileNotFoundException("Configuration file does not exist: " . APP_DIR . '/config.json');
+        if (!file_exists(self::CONFIG_FILE)) {
+            throw new FileNotFoundException("Configuration file does not exist: " . self::CONFIG_FILE);
         }
 
-        $configFile = file_get_contents(APP_DIR . '/config.json');
+        $configFile = file_get_contents(self::CONFIG_FILE);
 
         if ($configFile === false) {
-            throw new FileNotReadableException("Configuration file was not readable: " . APP_DIR . '/config.json');
+            throw new FileNotReadableException("Configuration file was not readable: " . self::CONFIG_FILE);
         }
 
         if (empty($configFile)) {
-            throw new ConfigFileEmptyException("Configuration file was empty: " . APP_DIR . '/config.json');
+            throw new ConfigFileEmptyException("Configuration file was empty: " . self::CONFIG_FILE);
         }
 
         $this->configData = json_decode($configFile);
 
         if ($this->configData === false) {
-            throw new ConfigFileInvalidException("Configuration file could not be decoded: " . APP_DIR . '/config.json');
+            throw new ConfigFileInvalidException("Configuration file could not be decoded: " . self::CONFIG_FILE);
         }
 
         return !empty($this->configData);

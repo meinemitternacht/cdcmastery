@@ -1,0 +1,77 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Add Question - #{afsc.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Add Question - {{ afsc.name }}</h3>
+    </div>
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="row">
+        <div class="col-md-9">
+            <a class="text-primary" href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add/legacy">Switch to Legacy
+                View</a>
+        </div>
+    </div>
+    <div class="row row-spacer">
+        <div class="col-md-9">
+            <form action="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add"
+                  method="POST"
+                  id="question-edit-block">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="questionData">Question and Answer Data</label>
+                            <textarea class="form-control tall"
+                                      name="questionData"
+                                      id="questionData"
+                                      placeholder="Enter question and answer text here...">{% if new_question_tmp.qdata is defined %}{{ new_question_tmp.qdata }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                    <div class="row row-spacer">
+                        <div class="col-md-12">
+                            <label>Select the Correct Answer</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% set answer_labels = [
+                            'A',
+                            'B',
+                            'C',
+                            'D',
+                        ] %}
+                        {% for i in 0..3 %}
+                            <div class="col-md-3">
+                                <div class="row">
+                                    <div class="col-md-2" id="qdataCorrectAnswer">
+                                        <input type="radio"
+                                               id="answer_{{ i }}"
+                                               name="answerCorrect"
+                                               value="{{ i }}">
+                                    </div>
+                                    <div class="col-md-10 cursor-pointer">
+                                        <label for="answer_{{ i }}" class="cursor-pointer">
+                                            <span class="h1">
+                                                {{ answer_labels[i] }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row row-spacer">
+                        <div class="col-md-3">
+                            <button type="submit"
+                                    class="btn btn-success">
+                                Add Question
+                            </button>
+                            <a class="btn btn-primary"
+                               href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

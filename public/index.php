@@ -12,7 +12,6 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-
 try {
     /** @var ContainerInterface $container */
     $container = require __DIR__ . '/../src/CDCMastery/Bootstrap.php';
@@ -31,13 +30,16 @@ try {
     goto out_respond;
 }
 
+define('CDC_DEBUG', $config->get(['system', 'debug'])
+    ?: false);
+
 $path = parse_url(
-    $_SERVER['REQUEST_URI'],
+    $_SERVER[ 'REQUEST_URI' ],
     PHP_URL_PATH
 );
 
 $route = $dispatcher->dispatch(
-    $_SERVER['REQUEST_METHOD'],
+    $_SERVER[ 'REQUEST_METHOD' ],
     $path
 );
 

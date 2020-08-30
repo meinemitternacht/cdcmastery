@@ -5,29 +5,82 @@
         <div class="row">
             <div class="col-md-11">
                 <label for="questionText">Question</label>
-                <textarea class="form-control tall" name="questionText" id="questionText">{{ question.text }}</textarea>
+                <textarea class="form-control tall"
+                          name="questionText"
+                          id="questionText"
+                          {% if new_question %}
+                            placeholder="Enter question text here..."
+                          {% endif %}>{% if new_question and new_question_tmp.qtext is defined %}{{ new_question_tmp.qtext }}{% else %}{{ question.text }}{% endif %}</textarea>
             </div>
         </div>
-        {% set i = 1 %}
-        {% for answer in answers %}
-            <div class="row row-spacer">
-                <div class="col-md-11">
-                    <label for="answer_{{ answer.uuid }}">
-                        Answer #{{ i }}
-                    </label>
-                    <input class="form-control"
-                           id="answer_{{ answer.uuid }}"
-                           name="answer_{{ answer.uuid }}"
-                           value="{{ answer.text }}">
-                </div>
-                <div class="col-md-1">
-                    <input type="radio"
-                           name="answerCorrect"
-                           value="{{ answer.uuid }}"
-                           title="Select answer #{{ i }} as the correct answer" {% if answer.correct %} CHECKED{% endif %}>
-                </div>
+        <div class="row row-spacer">
+            <div class="col-md-11">
+                <label>
+                    Answers
+                </label>
             </div>
-            {% set i = i + 1 %}
-        {% endfor %}
+            <div class="col-md-1">
+                <label>
+                    Correct
+                </label>
+            </div>
+        </div>
+        {% if new_question %}
+            {% for i in 0..3 %}
+                <div class="row row-spacer">
+                    <div class="col-md-11">
+                        <input class="form-control"
+                               id="answers_{{ i }}"
+                               name="answers[]"
+                               title="Answer #{{ i + 1 }}"
+                               placeholder="Answer #{{ i + 1 }}"
+                               {% if new_question_tmp.answers[i] is defined %}value="{{ new_question_tmp.answers[i] }}"{% endif %}>
+                    </div>
+                    <div class="col-md-1">
+                        <input type="radio"
+                               name="answerCorrect"
+                               value="{{ i }}"
+                               title="Select answer #{{ i + 1 }} as the correct answer"
+                               {% if new_question_tmp.acorrect is defined and new_questions_tmp.acorrect == i %}CHECKED{% endif %}>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% set i = 1 %}
+            {% for answer in answers %}
+                <div class="row row-spacer">
+                    <div class="col-md-11">
+                        <input class="form-control"
+                               id="answer_{{ answer.uuid }}"
+                               name="answer_{{ answer.uuid }}"
+                               title="Answer #{{ i }}"
+                               value="{{ answer.text }}">
+                    </div>
+                    <div class="col-md-1">
+                        <input type="radio"
+                               name="answerCorrect"
+                               value="{{ answer.uuid }}"
+                               title="Select answer #{{ i }} as the correct answer" {% if answer.correct %} CHECKED{% endif %}>
+                    </div>
+                </div>
+                {% set i = i + 1 %}
+            {% endfor %}
+        {% endif %}
+        <div class="row row-spacer">
+            <div class="col-md-3">
+                <button type="submit"
+                        class="btn btn-success">
+                    {% if new_question %}
+                        Add Question
+                    {% else %}
+                        Save Changes
+                    {% endif %}
+                </button>
+                <a class="btn btn-primary"
+                   href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">
+                    Cancel
+                </a>
+            </div>
+        </div>
     </div>
 </form>

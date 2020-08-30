@@ -26,6 +26,11 @@ class Question
     private $text;
 
     /**
+     * @var bool
+     */
+    private $disabled;
+
+    /**
      * @return string
      */
     public function getUuid(): string
@@ -71,5 +76,21 @@ class Question
     public function setText(string $text): void
     {
         $this->text = $text;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDisabled(): bool
+    {
+        return $this->disabled ?? false;
+    }
+
+    /**
+     * @param bool $disabled
+     */
+    public function setDisabled(bool $disabled): void
+    {
+        $this->disabled = $disabled;
     }
 }
