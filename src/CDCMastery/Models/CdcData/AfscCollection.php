@@ -12,6 +12,7 @@ namespace CDCMastery\Models\CdcData;
 use CDCMastery\Helpers\UUID;
 use Monolog\Logger;
 use mysqli;
+use RuntimeException;
 use function count;
 
 class AfscCollection
@@ -28,6 +29,7 @@ class AfscCollection
     public const ORDER_ASC = 'ASC';
     public const ORDER_DESC = 'DESC';
 
+    public const SHOW_ALL = PHP_INT_MAX;
     public const SHOW_HIDDEN = 1 << 0;
     public const SHOW_FOUO = 1 << 1;
     public const SHOW_OBSOLETE = 1 << 2;
@@ -62,6 +64,46 @@ class AfscCollection
         $this->log = $logger;
     }
 
+    public function delete(Afsc $afsc): void
+    {
+        if (!CDC_DEBUG) {
+            throw new RuntimeException('Cannot delete AFSC when running in production mode');
+        }
+
+        if ($afsc->getUuid() === '') {
+            return;
+        }
+
+        $sql = <<<SQL
+DELETE FROM afscList
+WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($sql);
+
+        if ($stmt === false) {
+            goto out_error;
+        }
+
+        $uuid = $afsc->getUuid();
+
+        if (!$stmt->bind_param('s', $uuid)) {
+            $stmt->close();
+            goto out_error;
+        }
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            goto out_error;
+        }
+
+        $stmt->close();
+        return;
+
+        out_error:
+        throw new RuntimeException("Unable to remove AFSC {$afsc->getUuid()}");
+    }
+
     public function exists(Afsc $afsc): bool
     {
         if (($afsc->getUuid() ?? '') !== '') {
@@ -75,6 +117,7 @@ class AfscCollection
         $sql = <<<SQL
 SELECT 1 FROM afscList
 WHERE name = ?
+  AND editCode = ?
 SQL;
 
         $stmt = $this->db->prepare($sql);
@@ -84,8 +127,9 @@ SQL;
         }
 
         $name = $afsc->getName();
+        $editcode = $afsc->getEditCode();
 
-        if (!$stmt->bind_param('s', $name)) {
+        if (!$stmt->bind_param('ss', $name, $editcode)) {
             $stmt->close();
             return false;
         }

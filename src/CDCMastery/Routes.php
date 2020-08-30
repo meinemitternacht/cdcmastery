@@ -64,6 +64,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_afsc_edit',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_delete() */
+            $r->addRoute('GET', '/{uuid}/delete', [
+                CdcData::class,
+                'show_afsc_delete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_delete() */
+            $r->addRoute('POST', '/{uuid}/delete', [
+                CdcData::class,
+                'do_afsc_delete',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_disable() */
             $r->addRoute('GET', '/{uuid}/disable', [
                 CdcData::class,
@@ -77,9 +89,15 @@ return simpleDispatcher(function (RouteCollector $r) {
             ]);
 
             /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_edit() */
-            $r->addRoute('POST', '/{uuid}/edit', [
+            $r->addRoute('GET', '/{uuid}/edit', [
                 CdcData::class,
                 'show_afsc_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_edit() */
+            $r->addRoute('POST', '/{uuid}/edit', [
+                CdcData::class,
+                'do_afsc_edit',
             ]);
 
             /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_questions() */

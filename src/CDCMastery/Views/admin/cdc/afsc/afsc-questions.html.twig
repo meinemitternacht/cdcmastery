@@ -2,10 +2,10 @@
 {% set page_title = "Manage AFSC Questions - #{afsc.name}" %}
 {% set num_questions = question_data|length %}
 {% block main %}
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="page-header">
         <h3>Manage AFSC Questions - {{ afsc.name }}</h3>
     </div>
-    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
         <div class="col-md-12">
             <div class="row">

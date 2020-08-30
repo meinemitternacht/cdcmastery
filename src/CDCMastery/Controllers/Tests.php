@@ -529,18 +529,6 @@ class Tests extends RootController
         }
 
         $userAfscs = $this->afscs->fetchArray($userAfscCollection->getAfscs());
-
-        $userAfscList = [];
-        /** @var Afsc $afsc */
-        foreach ($userAfscs as $afsc) {
-            $userAfscList[] = [
-                'uuid' => $afsc->getUuid(),
-                'name' => $afsc->getName(),
-                'description' => $afsc->getDescription(),
-                'version' => $afsc->getVersion(),
-            ];
-        }
-
         $tests = $this->tests->fetchAllByUser($user);
 
         $tests = array_filter(
@@ -564,7 +552,7 @@ class Tests extends RootController
         $tests = TestHelpers::formatHtml($tests);
 
         $data = [
-            'afscList' => $userAfscList,
+            'afscList' => $userAfscs,
             'tests' => $tests,
             'disableNewTest' => count($tests) >= $this->config->get(['testing', 'maxIncomplete']) ?? 0,
         ];

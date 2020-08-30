@@ -1,0 +1,130 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Edit AFSC - " ~ afsc.name %}
+{% block main %}
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Edit {{ afsc.name }}</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                <form action="/admin/cdc/afsc/{{ afsc.uuid }}/edit" method="POST">
+                    <fieldset>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label"
+                                       for="name">
+                                    AFSC
+                                </label>
+                                <div class="col-md-9">
+                                    <input class="form-control"
+                                           id="name"
+                                           name="name"
+                                           placeholder="2W151B"
+                                           value="{{ afsc.name }}">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label"
+                                       for="version">
+                                    Version
+                                </label>
+                                <div class="col-md-9">
+                                    <input class="form-control"
+                                           id="version"
+                                           name="version"
+                                           placeholder="e.g., 01 1216, 02 1115"
+                                           value="{{ afsc.version }}">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label"
+                                       for="editcode">
+                                    Edit Code
+                                </label>
+                                <div class="col-md-2">
+                                    <input class="form-control"
+                                           id="editcode"
+                                           name="editcode"
+                                           placeholder="01"
+                                           value="{{ afsc.editCode }}">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label"
+                                       for="description">
+                                    Description
+                                </label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control tall"
+                                              id="description"
+                                              name="description"
+                                              placeholder="e.g., Self-test questions, latest version, etc.">{{ afsc.description }}</textarea>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label">
+                                    Attributes
+                                </label>
+                                <div class="container col-md-9">
+                                    <div class="checkbox">
+                                        <label for="fouo">
+                                            <input type="checkbox"
+                                                   id="fouo"
+                                                   name="fouo"
+                                                   {% if afsc.isFouo %}CHECKED{% endif %}>
+                                            FOUO
+                                        </label>
+                                        <div class="help-block">
+                                            Check this if the AFSC is marked "FOR OFFICIAL USE ONLY".
+                                        </div>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label for="hidden">
+                                            <input type="checkbox"
+                                                   id="hidden"
+                                                   name="hidden"
+                                                   {% if afsc.isHidden %}CHECKED{% endif %}>
+                                            Hidden
+                                        </label>
+                                        <div class="help-block">
+                                            If checked, this AFSC will not appear on the registration screen.
+                                        </div>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label for="obsolete">
+                                            <input type="checkbox"
+                                                   id="obsolete"
+                                                   name="obsolete"
+                                                   {% if afsc.isObsolete %}CHECKED{% endif %}>
+                                            Obsolete
+                                        </label>
+                                        <div class="help-block">
+                                            This can be used when a new edit code is released.
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-success">Save Changes</button>
+                                    <button type="reset" class="btn btn-default">Reset</button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

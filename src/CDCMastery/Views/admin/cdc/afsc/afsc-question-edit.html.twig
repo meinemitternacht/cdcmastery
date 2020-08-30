@@ -1,10 +1,10 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Edit Question - #{afsc.name}" %}
 {% block main %}
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="page-header">
         <h3>Edit Question - {{ afsc.name }}</h3>
     </div>
-    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
         <div class="col-md-9">
             {% include 'blocks/admin/cdc/afsc/question-edit-block.html.twig' with {'form_action': '/admin/cdc/afsc/' ~ afsc.uuid ~ '/questions/' ~ question.uuid ~ '/edit', 'form_method': 'POST', 'new_question': false} %}

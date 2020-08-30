@@ -22,7 +22,7 @@
                                 <label class="col-md-2 control-label">
                                     AFSC(s)
                                 </label>
-                                <div class="col-md-10">
+                                <div class="col-md-10" id="newTestAfscList">
                                     {% for afsc in afscList %}
                                         <div class="checkbox new-test-afsc">
                                             <label for="afsc-{{ afsc.uuid }}"
@@ -32,7 +32,12 @@
                                                        name="afscs[]"
                                                        id="afsc-{{ afsc.uuid }}"
                                                        value="{{ afsc.uuid }}">
-                                                {{ afsc.name|length > 45 ? afsc.name|slice(0, 45) ~ '...' : afsc.name  }}
+                                                {{ afsc.name|length > 45 ? afsc.name|slice(0, 45) ~ '...' : afsc.name }}
+                                                {% if afsc.editCode %}
+                                                    <span class="badge badge-info badge-sm">
+                                                        EC {{ afsc.editCode }}
+                                                    </span>
+                                                {% endif %}
                                             </label>
                                         </div>
                                     {% endfor %}

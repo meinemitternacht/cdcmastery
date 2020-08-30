@@ -9,6 +9,9 @@
         {% else %}
             <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/disable">Disable</a></li>
         {% endif %}
+        {% if cdc_debug %}
+            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/delete">Delete</a></li>
+        {% endif %}
     {% endif %}
 </ul>
 <div class="clearfix">&nbsp;</div>

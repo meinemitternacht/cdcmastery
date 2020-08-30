@@ -1,10 +1,10 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Manage Question - #{afsc.name}" %}
 {% block main %}
+    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="page-header">
         <h3>Manage Question - {{ afsc.name }}</h3>
     </div>
-    {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
         <div class="col-md-9">
             <div id="question" class="well well-lg">

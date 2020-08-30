@@ -113,6 +113,8 @@ ALTER TABLE cdcmastery_main.afscList CHANGE afscHidden hidden INT(1) NOT NULL DE
 -- SPLIT ;;
 alter table afscList add obsolete int(1) default 0 not null;
 -- SPLIT ;;
+alter table afscList DROP oldID;
+-- SPLIT ;;
 alter table questionData
 	add disabled tinyint default 0 not null;
 -- SPLIT ;;

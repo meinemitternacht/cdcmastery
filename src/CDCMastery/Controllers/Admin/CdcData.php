@@ -96,13 +96,17 @@ class CdcData extends Admin
         $this->test_stats = $test_stats;
     }
 
-    public function do_afsc_add(): Response
+    public function do_afsc_add(?Afsc $afsc = null): Response
     {
-        $params = [
-            'name',
-        ];
+        $edit = $afsc !== null;
 
-        $this->checkParameters($params);
+        if (!$edit) {
+            $params = [
+                'name',
+            ];
+
+            $this->checkParameters($params);
+        }
 
         $name = $this->filter_string_default('name');
         $version = $this->filter_string_default('version');
@@ -111,7 +115,10 @@ class CdcData extends Admin
         $fouo = $this->filter_bool_default('fouo', false);
         $hidden = $this->filter_bool_default('hidden', false);
 
-        $afsc = new Afsc();
+        if (!$edit) {
+            $afsc = new Afsc();
+        }
+
         $afsc->setName($name);
         $afsc->setDescription($description);
         $afsc->setVersion($version);
@@ -119,7 +126,17 @@ class CdcData extends Admin
         $afsc->setFouo($fouo);
         $afsc->setHidden($hidden);
 
-        if ($this->afscs->exists($afsc)) {
+        $db_afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
+        foreach ($db_afscs as $db_afsc) {
+            if ($edit && $db_afsc->getUuid() === $afsc->getUuid()) {
+                continue;
+            }
+
+            if ($db_afsc->getName() !== $name ||
+                $db_afsc->getEditCode() !== $edit_code) {
+                continue;
+            }
+
             $this->flash()->add(MessageTypes::ERROR,
                                 "The specified AFSC '{$afsc->getName()}' already exists in the database");
             goto out_return;
@@ -132,55 +149,26 @@ class CdcData extends Admin
         }
 
         $this->flash()->add(MessageTypes::SUCCESS,
-                            "The specified AFSC '{$afsc->getName()}' was added to the database");
+                            $edit
+                                ? "The specified AFSC '{$afsc->getName()}' was modified successfully"
+                                : "The specified AFSC '{$afsc->getName()}' was added to the database");
 
         out_return:
         return $this->redirect('/admin/cdc/afsc');
     }
 
-    /**
-     * @param string $uuid
-     * @return Response
-     */
-    public function show_afsc_home(string $uuid): Response
+    public function do_afsc_edit(string $uuid): Response
     {
         $afsc = $this->afscs->fetch($uuid);
 
         if ($afsc->getUuid() === '') {
-            $this->flash()->add(
-                MessageTypes::WARNING,
-                'The specified AFSC does not exist'
-            );
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
 
             return $this->redirect('/admin/cdc/afsc');
         }
 
-        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc);
-        $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
-
-        $n_afsc_questions = 0;
-        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
-            $n_afsc_questions = (int)array_shift($afsc_questions);
-        }
-
-        $data = [
-            'afsc' => $afsc,
-            'afscUsers' => count($afsc_users->getUsers()),
-            'afscQuestions' => $n_afsc_questions,
-            'subTitle' => 'Tests By Month',
-            'period' => 'month',
-            'averages' => StatisticsHelpers::formatGraphDataTests(
-                $this->test_stats->afscAverageByMonth($afsc)
-            ),
-            'counts' => StatisticsHelpers::formatGraphDataTests(
-                $this->test_stats->afscCountByMonth($afsc)
-            ),
-        ];
-
-        return $this->render(
-            'admin/cdc/afsc/afsc.html.twig',
-            $data
-        );
+        return $this->do_afsc_add($afsc);
     }
 
     private function do_afsc_disable_restore(string $uuid, bool $disable): Response
@@ -225,6 +213,28 @@ class CdcData extends Admin
     public function do_afsc_restore(string $uuid): Response
     {
         return $this->do_afsc_disable_restore($uuid, false);
+    }
+
+    public function do_afsc_delete(string $uuid): Response
+    {
+        if (!CDC_DEBUG) {
+            throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
+        }
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $this->afscs->delete($afsc);
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'The specified AFSC was removed successfully');
+
+        return $this->redirect('/admin/cdc/afsc');
     }
 
     private function do_afsc_question_add_common(
@@ -708,6 +718,47 @@ class CdcData extends Admin
         return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
     }
 
+    public function show_afsc_home(string $uuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc);
+        $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
+
+        $n_afsc_questions = 0;
+        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
+            $n_afsc_questions = (int)array_shift($afsc_questions);
+        }
+
+        $data = [
+            'afsc' => $afsc,
+            'afscUsers' => count($afsc_users->getUsers()),
+            'afscQuestions' => $n_afsc_questions,
+            'subTitle' => 'Tests By Month',
+            'period' => 'month',
+            'averages' => StatisticsHelpers::formatGraphDataTests(
+                $this->test_stats->afscAverageByMonth($afsc)
+            ),
+            'counts' => StatisticsHelpers::formatGraphDataTests(
+                $this->test_stats->afscCountByMonth($afsc)
+            ),
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc.html.twig',
+            $data
+        );
+    }
+
     private function show_afsc_disable_restore(string $uuid, bool $disable): Response
     {
         $disable_restore_str = $disable
@@ -753,6 +804,52 @@ class CdcData extends Admin
     public function show_afsc_disable(string $uuid): Response
     {
         return $this->show_afsc_disable_restore($uuid, true);
+    }
+
+    public function show_afsc_delete(string $uuid): Response
+    {
+        if (!CDC_DEBUG) {
+            throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
+        }
+
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $data = [
+            'afsc' => $afsc,
+        ];
+
+        return $this->render(
+            "admin/cdc/afsc/afsc-delete.html.twig",
+            $data
+        );
+    }
+
+    public function show_afsc_edit(string $uuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if ($afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC does not exist');
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $data = [
+            'afsc' => $afsc,
+        ];
+
+        return $this->render(
+            "admin/cdc/afsc/afsc-edit.html.twig",
+            $data
+        );
     }
 
     public function show_afsc_restore(string $uuid): Response
