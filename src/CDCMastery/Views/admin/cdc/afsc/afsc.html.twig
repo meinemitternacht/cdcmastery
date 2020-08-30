@@ -127,18 +127,32 @@
                     </div>
                 </div>
             </div>
-            {% if afsc.version %}
+            {% if afsc.version or afsc.editCode %}
                 <div class="row">
-                    <div class="col-md-12 text-center">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h5>Version</h5>
-                            </div>
-                            <div class="panel-body">
-                                <strong>{{ afsc.version }}</strong>
+                    {% if afsc.version %}
+                        <div class="{% if afsc.editCode %}col-md-8{% else %}col-md-12{% endif %} text-center">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h5>Version</h5>
+                                </div>
+                                <div class="panel-body">
+                                    <strong>{{ afsc.version }}</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
+                    {% if afsc.editCode %}
+                        <div class="{% if afsc.version %}col-md-4{% else %}col-md-12{% endif %} text-center">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h5>Edit Code</h5>
+                                </div>
+                                <div class="panel-body">
+                                    <strong>{{ afsc.editCode }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
             {% if afsc.description %}

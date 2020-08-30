@@ -32,6 +32,11 @@ class Afsc
     private $version;
 
     /**
+     * @var string|null
+     */
+    private $edit_code;
+
+    /**
      * @var bool
      */
     private $fouo;
@@ -108,6 +113,22 @@ class Afsc
     public function setVersion(?string $version): void
     {
         $this->version = $version;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEditCode(): ?string
+    {
+        return $this->edit_code;
+    }
+
+    /**
+     * @param string|null $edit_code
+     */
+    public function setEditCode(?string $edit_code): void
+    {
+        $this->edit_code = $edit_code;
     }
 
     /**

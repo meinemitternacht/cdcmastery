@@ -20,6 +20,7 @@ class AfscCollection
     public const COL_NAME = 'name';
     public const COL_DESCRIPTION = 'description';
     public const COL_VERSION = 'version';
+    public const COL_EDIT_CODE = 'editCode';
     public const COL_IS_FOUO = 'fouo';
     public const COL_IS_HIDDEN = 'hidden';
     public const COL_IS_OBSOLETE = 'obsolete';
@@ -106,11 +107,7 @@ SQL;
 
         $stmt->close();
 
-        if (!$res) {
-            return false;
-        }
-
-        return true;
+        return !!$res;
     }
 
     /**
@@ -130,6 +127,7 @@ SQL;
                 case self::COL_NAME:
                 case self::COL_DESCRIPTION:
                 case self::COL_VERSION:
+                case self::COL_EDIT_CODE:
                 case self::COL_IS_FOUO:
                 case self::COL_IS_HIDDEN:
                     $str = self::TABLE_NAME . '.' . $column;
@@ -210,6 +208,7 @@ SELECT
   name,
   description,
   version,
+  editCode,
   fouo,
   hidden,
   obsolete
@@ -230,6 +229,7 @@ SQL;
             $name,
             $description,
             $version,
+            $edit_code,
             $fouo,
             $hidden,
             $obsolete
@@ -243,6 +243,7 @@ SQL;
         $afsc->setName($name);
         $afsc->setDescription($description);
         $afsc->setVersion($version);
+        $afsc->setEditCode($edit_code);
         $afsc->setFouo((bool)$fouo);
         $afsc->setHidden((bool)$hidden);
         $afsc->setObsolete((bool)$obsolete);
@@ -265,6 +266,7 @@ SELECT
   name,
   description,
   version,
+  editCode,
   fouo,
   hidden,
   obsolete
@@ -285,8 +287,9 @@ SQL;
             $afsc->setUuid($row['uuid'] ?? '');
             $afsc->setName($row['name'] ?? '');
             $afsc->setDescription($row['description'] ?? '');
-            $afsc->setVersion($row['version'] ?? '');
-            $afsc->setFouo((bool)($row['fouo'] ?? false));
+            $afsc->setVersion($row[ 'version' ] ?? '');
+            $afsc->setEditCode($row[ 'editCode' ] ?? null);
+            $afsc->setFouo((bool)($row[ 'fouo' ] ?? false));
             $afsc->setHidden((bool)($row['hidden'] ?? false));
             $afsc->setObsolete((bool)($row['obsolete'] ?? false));
 
@@ -301,7 +304,7 @@ SQL;
     /**
      * @param array $uuidList
      * @param array $columnOrders
-     * @return array
+     * @return Afsc[]
      */
     public function fetchArray(array $uuidList, array $columnOrders = []): array
     {
@@ -322,6 +325,7 @@ SELECT
   name,
   description,
   version,
+  editCode,
   fouo,
   hidden,
   obsolete
@@ -342,8 +346,9 @@ SQL;
             $afsc->setUuid($row['uuid'] ?? '');
             $afsc->setName($row['name'] ?? '');
             $afsc->setDescription($row['description'] ?? '');
-            $afsc->setVersion($row['version'] ?? '');
-            $afsc->setFouo((bool)$row['fouo'] ?? false);
+            $afsc->setVersion($row[ 'version' ] ?? '');
+            $afsc->setEditCode($row[ 'editCode' ] ?? null);
+            $afsc->setFouo((bool)$row[ 'fouo' ] ?? false);
             $afsc->setHidden((bool)$row['hidden'] ?? false);
             $afsc->setObsolete((bool)($row['obsolete'] ?? false));
 
@@ -372,6 +377,7 @@ SQL;
         $name = $afsc->getName();
         $description = $afsc->getDescription();
         $version = $afsc->getVersion();
+        $edit_code = $afsc->getEditCode();
         $fouo = $afsc->isFouo();
         $hidden = $afsc->isHidden();
         $obsolete = $afsc->isObsolete();
@@ -379,20 +385,22 @@ SQL;
         $qry = <<<SQL
 INSERT INTO afscList
   (
-    uuid, 
-    name, 
-    description, 
-    version, 
-    fouo, 
+    uuid,
+    name,
+    description,
+    version,
+    editCode,
+    fouo,
     hidden,
     obsolete
   ) 
-VALUES (?, ?, ?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
   name=VALUES(name),
   description=VALUES(description),
   version=VALUES(version),
+  editCode=VALUES(editCode),
   fouo=VALUES(fouo),
   hidden=VALUES(hidden),
   obsolete=VALUES(obsolete)
@@ -404,11 +412,12 @@ SQL;
             return false;
         }
 
-        if (!$stmt->bind_param('ssssiii',
+        if (!$stmt->bind_param('sssssiii',
                                $uuid,
                                $name,
                                $description,
                                $version,
+                               $edit_code,
                                $fouo,
                                $hidden,
                                $obsolete)) {

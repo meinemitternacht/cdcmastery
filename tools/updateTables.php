@@ -118,6 +118,20 @@ alter table questionData
 -- SPLIT ;;
 create index questionData_disabled_index
 	on questionData (disabled);
+-- SPLIT ;;
+alter table afscList modify version varchar(191) null;
+-- SPLIT ;;
+alter table afscList
+	add editCode VARCHAR(191) default NULL null after version;
+-- SPLIT ;;
+drop index afscDescription on afscList;
+-- SPLIT ;;
+alter table afscList modify description MEDIUMTEXT null;
+-- SPLIT ;;
+drop index afscName on afscList;
+-- SPLIT ;;
+create unique index afscName
+	on afscList (name, editCode);
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);
@@ -129,6 +143,10 @@ if (!is_array($queries) || \count($queries) === 0) {
 
 echo (new DateTime())->format('Y-m-d H:i:s') . "  starting execution\n";
 foreach ($queries as $query) {
+    if (trim($query) === '') {
+        continue;
+    }
+
     if (!$db->query($query)) {
         echo (new DateTime())->format('Y-m-d H:i:s') . "  ";
         echo "failed to execute query: {$query}\n\nerror: {$db->error}\n";

@@ -4,32 +4,49 @@
     {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-sm addAfscFormWell">
-                <form id="addAfscForm" class="form-inline" action="/admin/cdc/afsc" method="POST">
-                    <div class="form-group name-fg">
-                        <label class="sr-only" for="name">Name</label>
-                        <input name="name" id="name" class="form-control" placeholder="Name">
-                    </div>
-                    <div class="form-group version-fg">
-                        <label class="sr-only" for="version">Version</label>
-                        <input name="version" id="version" class="form-control" placeholder="Version">
-                    </div>
-                    <div class="form-group description-fg">
-                        <label class="sr-only" for="description">Description</label>
-                        <input name="description" id="description" class="form-control" placeholder="Description">
-                    </div>
-                    <div class="form-group fouo-fg">
-                        <label for="fouo">
-                            <input type="checkbox" name="fouo" id="fouo" value="1"> FOUO
-                        </label>
-                    </div>
-                    <div class="form-group hidden-fg">
-                        <label for="hidden">
-                            <input type="checkbox" name="hidden" id="hidden" value="1"> Hidden
-                        </label>
-                    </div>
-                    <button class="btn btn-success" id="addAfsc">Add AFSC</button>
-                </form>
+            <div id="addAfscWell" class="well well-sm addAfscFormWell">
+                <div class="container">
+                    <form id="addAfscForm" class="form form-inline" action="/admin/cdc/afsc" method="POST">
+                        <div class="form-group col-lg-2 col-sm-12">
+                            <label class="sr-only" for="name">Name</label>
+                            <input name="name" id="name" class="form-control" placeholder="AFSC">
+                        </div>
+                        <div class="form-group col-lg-3 col-sm-12">
+                            <label class="sr-only" for="version">Version</label>
+                            <input name="version" id="version" class="form-control" placeholder="Version">
+                        </div>
+                        <div class="form-group col-lg-1 col-sm-12">
+                            <label class="sr-only" for="editcode">Edit Code</label>
+                            <input name="version" id="editcode" class="form-control" placeholder="Edit Code">
+                        </div>
+                        <div class="form-group col-lg-4 col-sm-12">
+                            <label class="sr-only" for="description">Description</label>
+                            <input name="description" id="description" class="form-control"
+                                   placeholder="Description">
+                        </div>
+                        <div class="col-lg-1 col-sm-12">
+                            <div class="row">
+                                <div class="container">
+                                    <div class="checkbox-inline col-xs-12">
+                                        <input type="checkbox" name="fouo" id="fouo" value="1">
+                                        <label for="fouo">FOUO</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="container">
+                                    <div class="checkbox-inline col-xs-12">
+                                        <input type="checkbox" name="hidden" id="hidden" value="1">
+                                        <label for="hidden">Hidden</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-1 col-sm-12">
+                            <button class="btn btn-sm btn-success" id="addAfsc">Add AFSC</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -41,9 +58,8 @@
                     <tr>
                         <th>Name</th>
                         <th>Version</th>
+                        <th>Edit Code</th>
                         <th>Description</th>
-                        <th>FOUO</th>
-                        <th>Hidden</th>
                         <th>Questions</th>
                         <th>Users</th>
                     </tr>
@@ -52,15 +68,26 @@
                     {% for afsc in afscs %}
                         <tr{% if afsc.obsolete or afsc.hidden %} class="text-muted"{% endif %}
                                 data-uuid="{{ afsc.uuid }}" style="cursor:pointer">
-                            <td>{{ afsc.name }}</td>
+                            <td>
+                                {{ afsc.name }}
+                                {% if afsc.isFouo %}
+                                    <span class="badge badge-danger badge-sm"
+                                          title="FOR OFFICIAL USE ONLY">F</span>
+                                {% endif %}
+                                {% if afsc.isHidden %}
+                                    <span class="badge badge-warning badge-sm"
+                                          title="This AFSC is not shown on the registration screen">!</span>
+                                {% endif %}
+                            </td>
                             <td title="{{ afsc.version }}">
                                 {{ afsc.version|length > 40 ? afsc.version|slice(0, 40) ~ '...' : afsc.version }}
+                            </td>
+                            <td title="{{ afsc.editCode }}">
+                                {{ afsc.editCode|length > 10 ? afsc.editCode|slice(0,10) ~ '...' : afsc.editCode }}
                             </td>
                             <td title="{{ afsc.description }}">
                                 {{ afsc.description|length > 40 ? afsc.description|slice(0, 40) ~ '...' : afsc.description }}
                             </td>
-                            <td>{{ afsc.isFouo ? 'Yes' : 'No' }}</td>
-                            <td>{{ afsc.isHidden ? 'Yes' : 'No' }}</td>
                             <td>{{ afscQuestions[afsc.uuid]|default(0)|number_format }}</td>
                             <td>{{ afscUsers[afsc.uuid]|default(0)|number_format }}</td>
                         </tr>

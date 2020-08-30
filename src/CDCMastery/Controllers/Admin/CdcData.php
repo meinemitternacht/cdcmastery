@@ -106,6 +106,7 @@ class CdcData extends Admin
 
         $name = $this->filter_string_default('name');
         $version = $this->filter_string_default('version');
+        $edit_code = $this->filter_string_default('editcode');
         $description = $this->filter_string_default('description');
         $fouo = $this->filter_bool_default('fouo', false);
         $hidden = $this->filter_bool_default('hidden', false);
@@ -114,6 +115,7 @@ class CdcData extends Admin
         $afsc->setName($name);
         $afsc->setDescription($description);
         $afsc->setVersion($version);
+        $afsc->setEditCode($edit_code);
         $afsc->setFouo($fouo);
         $afsc->setHidden($hidden);
 
