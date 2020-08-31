@@ -105,7 +105,9 @@ class CdcData extends Admin
                 'name',
             ];
 
-            $this->checkParameters($params);
+            if (!$this->checkParameters($params)) {
+                goto out_return;
+            }
         }
 
         $name = $this->filter_string_default('name');
@@ -265,7 +267,9 @@ class CdcData extends Admin
             'answers',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
+        }
 
         $qtext = $this->get('questionText');
         $acorrect = $this->filter_int_default('answerCorrect');
@@ -368,7 +372,9 @@ class CdcData extends Admin
             'answerCorrect',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
+        }
 
         $qdata = $this->get('questionData');
         $acorrect = $this->filter_int_default('answerCorrect');
@@ -587,8 +593,6 @@ class CdcData extends Admin
             'answerCorrect',
         ];
 
-        $this->checkParameters($params);
-
         $afsc = $this->afscs->fetch($uuid);
 
         if ($afsc->getUuid() === '') {
@@ -598,6 +602,10 @@ class CdcData extends Admin
             );
 
             return $this->redirect('/admin/cdc/afsc');
+        }
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
         }
 
         $question = $this->questions->fetch($afsc, $quuid);

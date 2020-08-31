@@ -7,10 +7,10 @@
         {% if afsc.hidden %}
             <li class="bg-success"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/restore">Restore</a></li>
         {% else %}
-            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/disable">Disable</a></li>
+            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/disable">Disable AFSC</a></li>
         {% endif %}
         {% if cdc_debug %}
-            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/delete">Delete</a></li>
+            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/delete">Delete AFSC</a></li>
         {% endif %}
     {% endif %}
 </ul>

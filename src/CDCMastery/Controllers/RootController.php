@@ -9,6 +9,7 @@
 namespace CDCMastery\Controllers;
 
 
+use CDCMastery\Models\Messages\MessageTypes;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -113,13 +114,24 @@ class RootController
      */
     public function checkParameters(array $parameters): bool
     {
+        $missing = [];
         foreach ($parameters as $parameter) {
             if (!$this->has($parameter)) {
-                return false;
+                $missing[] = $parameter;
             }
         }
 
-        return true;
+        if (!$missing) {
+            return true;
+        }
+
+        $this->flash()->add(
+            MessageTypes::ERROR,
+            'Your request was missing one or more required parameters: ' .
+            implode(', ', $missing)
+        );
+
+        return false;
     }
 
     private function get_param_source(string $key): ParameterBag
@@ -141,34 +153,34 @@ class RootController
     public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, $options = [])
     {
         return $this->get_param_source($key)
-                    ->filter($key, $default, $filter, $options);
+            ->filter($key, $default, $filter, $options);
     }
 
     public function filter_bool_default(string $key, ?bool $default = null): ?bool
     {
         return $this->get_param_source($key)
-                    ->filter($key,
-                             $default,
-                             FILTER_VALIDATE_BOOLEAN,
-                             FILTER_NULL_ON_FAILURE);
+            ->filter($key,
+                     $default,
+                     FILTER_VALIDATE_BOOLEAN,
+                     FILTER_NULL_ON_FAILURE);
     }
 
     public function filter_int_default(string $key, ?bool $default = null): ?int
     {
         return $this->get_param_source($key)
-                    ->filter($key,
-                             $default,
-                             FILTER_VALIDATE_INT,
-                             FILTER_NULL_ON_FAILURE);
+            ->filter($key,
+                     $default,
+                     FILTER_VALIDATE_INT,
+                     FILTER_NULL_ON_FAILURE);
     }
 
     public function filter_string_default(string $key): ?string
     {
         return $this->get_param_source($key)
-                    ->filter($key,
-                             null,
-                             FILTER_SANITIZE_STRING,
-                             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+            ->filter($key,
+                     null,
+                     FILTER_SANITIZE_STRING,
+                     FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
     }
 
     /**
@@ -179,7 +191,7 @@ class RootController
     public function get(string $key, $default = null)
     {
         return $this->get_param_source($key)
-                    ->get($key, $default);
+            ->get($key, $default);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\CdcData;
+use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Auth;
 use CDCMastery\Controllers\Home;
 use CDCMastery\Controllers\Search;
@@ -33,13 +34,13 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_afsc_list',
         ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_add() */
-        $r->addRoute('POST', '/cdc/afsc', [
-            CdcData::class,
-            'do_afsc_add',
-        ]);
-
         $r->addGroup('/cdc/afsc', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_add() */
+            $r->addRoute('POST', '/add', [
+                CdcData::class,
+                'do_afsc_add',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_migrate() */
             $r->addRoute('GET', '/migrate', [
                 CdcData::class,
@@ -210,6 +211,42 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_afsc_restore',
             ]);
         });
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_home() */
+        $r->addRoute('GET', '/office-symbols', [
+            OfficeSymbols::class,
+            'show_home',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_add() */
+        $r->addRoute('POST', '/office-symbols/add', [
+            OfficeSymbols::class,
+            'do_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_delete() */
+        $r->addRoute('GET', '/office-symbols/{uuid}/delete', [
+            OfficeSymbols::class,
+            'show_delete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_delete() */
+        $r->addRoute('POST', '/office-symbols/{uuid}/delete', [
+            OfficeSymbols::class,
+            'do_delete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_edit() */
+        $r->addRoute('GET', '/office-symbols/{uuid}/edit', [
+            OfficeSymbols::class,
+            'show_edit',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_edit() */
+        $r->addRoute('POST', '/office-symbols/{uuid}/edit', [
+            OfficeSymbols::class,
+            'do_edit',
+        ]);
     });
 
     $r->addGroup('/auth', function (RouteCollector $r) {

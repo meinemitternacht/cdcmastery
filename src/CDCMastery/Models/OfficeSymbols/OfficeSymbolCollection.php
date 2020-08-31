@@ -41,15 +41,74 @@ class OfficeSymbolCollection
     }
 
     /**
-     * @param string $uuid
+     * @param array $data
+     * @return OfficeSymbol[]
      */
-    public function delete(string $uuid): void
+    private function create_objects(array $data): array
     {
-        if (empty($uuid)) {
+        if (!$data) {
+            return [];
+        }
+
+        $uuids = [];
+        foreach ($data as $row) {
+            $symbol = new OfficeSymbol();
+            $symbol->setUuid($row[ 'uuid' ]);
+            $symbol->setSymbol($row[ 'officeSymbol' ]);
+
+            $uuids[] = $row[ 'uuid' ];
+            $this->symbols[ $row[ 'uuid' ] ] = $symbol;
+        }
+
+        $this->fetch_aggregate_data($this->symbols);
+        return array_intersect_key($this->symbols, array_flip($uuids));
+    }
+
+    /**
+     * @param OfficeSymbol[] $symbols
+     */
+    private function fetch_aggregate_data(array $symbols): void
+    {
+        if (!$symbols) {
             return;
         }
 
-        $uuid = $this->db->real_escape_string($uuid);
+        $sql = <<<SQL
+SELECT
+    COUNT(*) AS count,
+    officeSymbolList.uuid AS uuid,
+    officeSymbolList.officeSymbol AS symbol
+FROM userData
+LEFT JOIN officeSymbolList
+    ON userData.userOfficeSymbol = officeSymbolList.uuid
+GROUP BY userData.userOfficeSymbol
+ORDER BY userData.userOfficeSymbol
+SQL;
+
+        $res = $this->db->query($sql);
+
+        if ($res === false) {
+            return;
+        }
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($symbols[ $row[ 'uuid' ] ])) {
+                continue;
+            }
+
+            $symbols[ $row[ 'uuid' ] ]->setUsers((int)$row[ 'count' ]);
+        }
+
+        $res->free();
+    }
+
+    public function delete(OfficeSymbol $osymbol): void
+    {
+        if ($osymbol->getUuid() === '') {
+            return;
+        }
+
+        $uuid = $this->db->real_escape_string($osymbol->getUuid());
 
         $qry = <<<SQL
 DELETE FROM officeSymbolList
@@ -57,6 +116,8 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
+
+        unset($this->symbols[ $uuid ]);
     }
 
     /**
@@ -80,17 +141,21 @@ DELETE FROM officeSymbolList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
 
+        foreach ($uuidList as $uuid) {
+            unset($this->symbols[ $uuid ]);
+        }
+
         $this->db->query($qry);
     }
 
     /**
      * @param string $uuid
-     * @return OfficeSymbol
+     * @return OfficeSymbol|null
      */
-    public function fetch(string $uuid): OfficeSymbol
+    public function fetch(string $uuid): ?OfficeSymbol
     {
-        if (empty($uuid)) {
-            return new OfficeSymbol();
+        if (!$uuid) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -106,7 +171,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new OfficeSymbol();
+            return null;
         }
 
         $stmt->bind_result(
@@ -118,16 +183,15 @@ SQL;
         $stmt->close();
 
         if (!isset($_uuid) || $_uuid === null) {
-            return new OfficeSymbol();
+            return null;
         }
 
-        $os = new OfficeSymbol();
-        $os->setUuid($_uuid ?? '');
-        $os->setSymbol($symbol ?? '');
+        $rows[] = [
+            'uuid' => $_uuid,
+            'officeSymbol' => $symbol,
+        ];
 
-        $this->symbols[$_uuid] = $os;
-
-        return $os;
+        return $this->create_objects($rows)[ $uuid ] ?? null;
     }
 
     /**
@@ -145,21 +209,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
-            $os = new OfficeSymbol();
-            $os->setUuid($row['uuid'] ?? '');
-            $os->setSymbol($row['officeSymbol'] ?? '');
-
-            $this->symbols[$row['uuid']] = $os;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return $this->symbols;
+        return $this->create_objects($rows);
     }
 
     /**
@@ -190,34 +250,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
-            $os = new OfficeSymbol();
-            $os->setUuid($row['uuid'] ?? '');
-            $os->setSymbol($row['officeSymbol'] ?? '');
-
-            $this->symbols[$row['uuid']] = $os;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return array_intersect_key(
-            $this->symbols,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @return OfficeSymbolCollection
-     */
-    public function refresh(): self
-    {
-        $this->symbols = [];
-
-        return $this;
+        return $this->create_objects($rows);
     }
 
     /**
@@ -257,6 +300,7 @@ SQL;
         }
 
         $stmt->close();
+        $this->symbols[ $uuid ] = $officeSymbol;
     }
 
     /**
@@ -271,15 +315,15 @@ SQL;
         $values = [];
         $c = count($officeSymbols);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($officeSymbols[$i])) {
+            if (!isset($officeSymbols[ $i ])) {
                 continue;
             }
 
-            if (!$officeSymbols[$i] instanceof OfficeSymbol) {
+            if (!$officeSymbols[ $i ] instanceof OfficeSymbol) {
                 continue;
             }
 
-            $values[] = "('" . $officeSymbols[$i]->getUuid() . "','" . $officeSymbols[$i]->getSymbol() . "')";
+            $values[] = "('" . $officeSymbols[ $i ]->getUuid() . "','" . $officeSymbols[ $i ]->getSymbol() . "')";
         }
 
         if (empty($values)) {
@@ -301,5 +345,9 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $this->db->query($qry);
+
+        foreach ($officeSymbols as $officeSymbol) {
+            $this->symbols[ $officeSymbol->getUuid() ] = $officeSymbol;
+        }
     }
 }

@@ -22,6 +22,11 @@ class OfficeSymbol
     private $symbol;
 
     /**
+     * @var int
+     */
+    private $users = 0;
+
+    /**
      * @return string
      */
     public function getUuid(): string
@@ -51,5 +56,21 @@ class OfficeSymbol
     public function setSymbol(string $symbol): void
     {
         $this->symbol = $symbol;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUsers(): int
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param int $users
+     */
+    public function setUsers(int $users): void
+    {
+        $this->users = $users;
     }
 }

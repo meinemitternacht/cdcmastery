@@ -1,0 +1,20 @@
+.table-header-form-well {
+    padding-left: 0;
+}
+
+.table-header-form {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+
+.table-header-form > .form-group {
+    padding: 0 0.5em 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.table-header-form > .form-group input,
+.table-header-form > .form-group label {
+    width: 100%;
+}

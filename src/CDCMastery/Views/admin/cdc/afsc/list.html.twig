@@ -4,18 +4,18 @@
     {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
     <div class="row">
         <div class="col-md-12">
-            <div id="addAfscWell" class="well well-sm addAfscFormWell">
-                <div class="container">
-                    <form id="addAfscForm" class="form form-inline" action="/admin/cdc/afsc" method="POST">
+            <div class="well well-sm table-header-form-well">
+                <div class="container-fluid">
+                    <form class="form form-inline table-header-form" action="/admin/cdc/afsc/add" method="POST">
                         <div class="form-group col-lg-2 col-sm-12">
                             <label class="sr-only" for="name">Name</label>
                             <input name="name" id="name" class="form-control" placeholder="AFSC">
                         </div>
-                        <div class="form-group col-lg-3 col-sm-12">
+                        <div class="form-group col-lg-2 col-sm-12">
                             <label class="sr-only" for="version">Version</label>
                             <input name="version" id="version" class="form-control" placeholder="Version">
                         </div>
-                        <div class="form-group col-lg-1 col-sm-12">
+                        <div class="form-group col-lg-2 col-sm-12">
                             <label class="sr-only" for="editcode">Edit Code</label>
                             <input name="editcode" id="editcode" class="form-control" placeholder="Edit Code">
                         </div>

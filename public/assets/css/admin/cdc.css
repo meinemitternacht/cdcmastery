@@ -12,23 +12,12 @@
     width: 100%;
 }
 
-#qdataCorrectAnswer {
+.qdataCorrectAnswer {
     display: flex;
     align-items: center;
+    flex-flow: column nowrap;
 }
 
-#addAfscWell {
-    padding-left: 0;
-}
-
-#addAfscForm > .form-group {
-    padding: 0;
-    display: flex;
-    align-content: center;
-    align-items: center;
-}
-
-#addAfscForm > .form-group > input,
-#addAfscForm > .form-group > label {
+.qdataCorrectAnswer input {
     width: 100%;
 }

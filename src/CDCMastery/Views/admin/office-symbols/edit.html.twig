@@ -1,0 +1,41 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Edit Office Symbol - " ~ osymbol.symbol %}
+{% block main %}
+    <div class="page-header">
+        <h3>Edit {{ osymbol.symbol }}</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="well">
+                <form action="/admin/office-symbols/{{ osymbol.uuid }}/edit" method="POST">
+                    <fieldset>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-3 control-label"
+                                       for="symbol">
+                                    Office Symbol
+                                </label>
+                                <div class="col-md-9">
+                                    <input class="form-control"
+                                           id="symbol"
+                                           name="symbol"
+                                           placeholder="MXAAW"
+                                           value="{{ osymbol.symbol }}">
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-success">Save Changes</button>
+                                    <a class="btn btn-default"
+                                       href="/admin/office-symbols">Cancel</a>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

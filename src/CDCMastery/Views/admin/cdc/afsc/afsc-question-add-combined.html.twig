@@ -13,65 +13,69 @@
     </div>
     <div class="row row-spacer">
         <div class="col-md-9">
-            <form action="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add"
-                  method="POST"
-                  id="question-edit-block">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label for="questionData">Question and Answer Data</label>
-                            <textarea class="form-control tall"
-                                      name="questionData"
-                                      id="questionData"
-                                      placeholder="Enter question and answer text here...">{% if new_question_tmp.qdata is defined %}{{ new_question_tmp.qdata }}{% endif %}</textarea>
+            <div class="well">
+                <form action="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add"
+                      method="POST"
+                      id="question-edit-block">
+                    <fieldset>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="col-md-12">
+                                    <label for="questionData">Question and Answer Data</label>
+                                    <textarea class="form-control tall"
+                                              name="questionData"
+                                              id="questionData"
+                                              placeholder="Enter question and answer text here...">{% if new_question_tmp.qdata is defined %}{{ new_question_tmp.qdata }}{% endif %}</textarea>
+                                </div>
+                            </fieldset>
                         </div>
-                    </div>
-                    <div class="row row-spacer">
-                        <div class="col-md-12">
-                            <label>Select the Correct Answer</label>
+                        <div class="form-group">
+                            <fieldset>
+                                <label class="col-md-12">
+                                    Select the Correct Answer
+                                </label>
+                            </fieldset>
                         </div>
-                    </div>
-                    <div class="row">
-                        {% set answer_labels = [
-                            'A',
-                            'B',
-                            'C',
-                            'D',
-                        ] %}
-                        {% for i in 0..3 %}
-                            <div class="col-md-3">
-                                <div class="row">
-                                    <div class="col-md-2" id="qdataCorrectAnswer">
+                        <div class="form-group">
+                            <fieldset>
+                                {% set answer_labels = [
+                                    'A',
+                                    'B',
+                                    'C',
+                                    'D',
+                                ] %}
+                                {% for i in 0..3 %}
+                                    <div class="col-md-3 qdataCorrectAnswer">
+                                        <label for="answer_{{ i }}" class="cursor-pointer">
+                                        <span class="h2">
+                                            {{ answer_labels[i] }}
+                                        </span>
+                                        </label>
                                         <input type="radio"
                                                id="answer_{{ i }}"
                                                name="answerCorrect"
                                                value="{{ i }}">
                                     </div>
-                                    <div class="col-md-10 cursor-pointer">
-                                        <label for="answer_{{ i }}" class="cursor-pointer">
-                                            <span class="h1">
-                                                {{ answer_labels[i] }}
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="row row-spacer">
-                        <div class="col-md-3">
-                            <button type="submit"
-                                    class="btn btn-success">
-                                Add Question
-                            </button>
-                            <a class="btn btn-primary"
-                               href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">
-                                Cancel
-                            </a>
+                                {% endfor %}
+                            </fieldset>
                         </div>
-                    </div>
-                </div>
-            </form>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="col-md-12">
+                                    <button type="submit"
+                                            class="btn btn-success">
+                                        Add Question
+                                    </button>
+                                    <a class="btn btn-primary"
+                                       href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">
+                                        Cancel
+                                    </a>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}
