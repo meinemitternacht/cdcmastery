@@ -22,6 +22,11 @@ class Base
     private $name;
 
     /**
+     * @var int
+     */
+    private $users = 0;
+
+    /**
      * @return string
      */
     public function getUuid(): string
@@ -51,5 +56,21 @@ class Base
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUsers(): int
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param int $users
+     */
+    public function setUsers(int $users): void
+    {
+        $this->users = $users;
     }
 }

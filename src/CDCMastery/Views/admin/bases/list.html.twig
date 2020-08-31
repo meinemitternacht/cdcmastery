@@ -1,0 +1,58 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Bases" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Manage Bases</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="well well-sm table-header-form-well">
+                <div class="container-fluid">
+                    <form class="form form-inline table-header-form" action="/admin/bases/add" method="POST">
+                        <div class="form-group col-lg-10 col-sm-12">
+                            <label class="sr-only" for="name">Base Name</label>
+                            <input name="name" id="name" class="form-control" placeholder="Base Name">
+                        </div>
+                        <div class="form-group col-lg-1 col-sm-12">
+                            <button class="btn btn-sm btn-success"
+                                    type="submit">
+                                Add
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="afscs-table">
+                    <thead>
+                    <tr>
+                        <th class="col-md-6">Base Name</th>
+                        <th class="col-md-3">Users</th>
+                        <th class="col-md-3">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for base in bases %}
+                        <tr>
+                            <td>{{ base.name }}</td>
+                            <td>{{ base.users|number_format }}</td>
+                            <td>
+                                <a class="btn btn-xs btn-warning"
+                                   href="/admin/bases/{{ base.uuid }}/edit"
+                                   title="Edit Base Name">Edit</a>
+                                <a class="btn btn-xs btn-info"
+                                   href="/admin/bases/{{ base.uuid }}/overview"
+                                   title="View Base Stats">Stats</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

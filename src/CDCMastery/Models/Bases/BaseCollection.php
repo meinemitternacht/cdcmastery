@@ -38,12 +38,49 @@ class BaseCollection
         $bases = [];
         foreach ($data as $row) {
             $base = new Base();
-            $base->setUuid($row['uuid']);
-            $base->setName($row['baseName']);
-            $bases[$row['uuid']] = $base;
+            $base->setUuid($row[ 'uuid' ]);
+            $base->setName($row[ 'baseName' ]);
+            $bases[ $row[ 'uuid' ] ] = $base;
         }
 
+        $this->fetch_aggregate_data($bases);
         return $bases;
+    }
+
+    /**
+     * @param Base[] $bases
+     */
+    private function fetch_aggregate_data(array $bases): void
+    {
+        if (!$bases) {
+            return;
+        }
+
+        $sql = <<<SQL
+SELECT
+    COUNT(*) AS count,
+    baseList.uuid AS uuid
+FROM userData
+LEFT JOIN baseList ON userData.userBase = baseList.uuid
+GROUP BY userData.userBase
+ORDER BY userData.userBase
+SQL;
+
+        $res = $this->db->query($sql);
+
+        if ($res === false) {
+            return;
+        }
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($bases[ $row[ 'uuid' ] ])) {
+                continue;
+            }
+
+            $bases[ $row[ 'uuid' ] ]->setUsers((int)$row[ 'count' ]);
+        }
+
+        $res->free();
     }
 
     /**
@@ -94,7 +131,7 @@ SQL;
         }
 
         $stmt->close();
-        $base = $this->create_objects([['uuid' => $_uuid, 'baseName' => $name]])[0] ?? null;
+        $base = $this->create_objects([['uuid' => $_uuid, 'baseName' => $name]])[ $uuid ] ?? null;
 
         out_return:
         return $base;

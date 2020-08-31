@@ -76,8 +76,7 @@ class OfficeSymbolCollection
         $sql = <<<SQL
 SELECT
     COUNT(*) AS count,
-    officeSymbolList.uuid AS uuid,
-    officeSymbolList.officeSymbol AS symbol
+    officeSymbolList.uuid AS uuid
 FROM userData
 LEFT JOIN officeSymbolList
     ON userData.userOfficeSymbol = officeSymbolList.uuid

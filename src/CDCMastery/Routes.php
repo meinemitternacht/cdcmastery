@@ -28,6 +28,32 @@ return simpleDispatcher(function (RouteCollector $r) {
     ]);
 
     $r->addGroup('/admin', function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\Admin\Bases::show_home() */
+        $r->addRoute('GET', '/bases', [
+            Admin\Bases::class,
+            'show_home',
+        ]);
+
+        $r->addGroup('/bases', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\Bases::do_edit() */
+            $r->addRoute('POST', '/add', [
+                Admin\Bases::class,
+                'do_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_edit() */
+            $r->addRoute('GET', '/{uuid}/edit', [
+                Admin\Bases::class,
+                'show_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Bases::do_edit() */
+            $r->addRoute('POST', '/{uuid}/edit', [
+                Admin\Bases::class,
+                'do_edit',
+            ]);
+        });
+
         /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_list() */
         $r->addRoute('GET', '/cdc/afsc', [
             CdcData::class,
@@ -218,35 +244,37 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_home',
         ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_add() */
-        $r->addRoute('POST', '/office-symbols/add', [
-            OfficeSymbols::class,
-            'do_add',
-        ]);
+        $r->addGroup('/office-symbols', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_add() */
+            $r->addRoute('POST', '/add', [
+                OfficeSymbols::class,
+                'do_add',
+            ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_delete() */
-        $r->addRoute('GET', '/office-symbols/{uuid}/delete', [
-            OfficeSymbols::class,
-            'show_delete',
-        ]);
+            /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_delete() */
+            $r->addRoute('GET', '/{uuid}/delete', [
+                OfficeSymbols::class,
+                'show_delete',
+            ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_delete() */
-        $r->addRoute('POST', '/office-symbols/{uuid}/delete', [
-            OfficeSymbols::class,
-            'do_delete',
-        ]);
+            /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_delete() */
+            $r->addRoute('POST', '/{uuid}/delete', [
+                OfficeSymbols::class,
+                'do_delete',
+            ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_edit() */
-        $r->addRoute('GET', '/office-symbols/{uuid}/edit', [
-            OfficeSymbols::class,
-            'show_edit',
-        ]);
+            /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_edit() */
+            $r->addRoute('GET', '/{uuid}/edit', [
+                OfficeSymbols::class,
+                'show_edit',
+            ]);
 
-        /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_edit() */
-        $r->addRoute('POST', '/office-symbols/{uuid}/edit', [
-            OfficeSymbols::class,
-            'do_edit',
-        ]);
+            /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_edit() */
+            $r->addRoute('POST', '/{uuid}/edit', [
+                OfficeSymbols::class,
+                'do_edit',
+            ]);
+        });
     });
 
     $r->addGroup('/auth', function (RouteCollector $r) {
