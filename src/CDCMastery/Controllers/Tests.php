@@ -492,7 +492,7 @@ class Tests extends RootController
         }
 
         $data = [
-            'test' => TestHelpers::formatHtml([$test])[0] ?? [],
+            'test' => TestHelpers::formatHtml([$test])[ 0 ] ?? [],
         ];
 
         return $this->render(
@@ -600,7 +600,6 @@ class Tests extends RootController
                 );
 
                 return $this->redirect('/');
-                break;
         }
 
         $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
@@ -611,11 +610,10 @@ class Tests extends RootController
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
         [$col, $dir] = self::validate_sort($sortCol, $sortDir);
-        $userTests = $this->tests->fetchAllByUser(
-            $user, [
-                     $col => $dir,
-                 ]
-        );
+        $userTests = $this->tests->fetchAllByUser($user,
+                                                  [
+                                                      $col => $dir,
+                                                  ]);
 
         if (empty($userTests)) {
             $this->flash()->add(
@@ -632,7 +630,6 @@ class Tests extends RootController
                 switch ($type) {
                     case Tests::TYPE_ALL:
                         return true;
-                        break;
                     case Tests::TYPE_COMPLETE:
                         if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
                             return true;
@@ -683,23 +680,16 @@ class Tests extends RootController
         );
 
         return $this->render(
-            $template, [
-                         'tests' => $filteredList,
-                         'pagination' => $pagination,
-                         'sort' => [
-                             'col' => $sortCol,
-                             'dir' => $sortDir,
-                         ],
-                     ]
+            $template,
+            [
+                'tests' => $filteredList,
+                'pagination' => $pagination,
+                'sort' => [
+                    'col' => $sortCol,
+                    'dir' => $sortDir,
+                ],
+            ]
         );
-    }
-
-    /**
-     * @return Response
-     */
-    public function show_test_history_all(): Response
-    {
-        return $this->show_test_history(self::TYPE_ALL);
     }
 
     /**

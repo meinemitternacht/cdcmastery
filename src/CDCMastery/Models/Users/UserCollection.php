@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Users;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Models\Sorting\Users\UserSortOption;
 use Monolog\Logger;
 
 class UserCollection
@@ -174,13 +175,39 @@ SQL;
     }
 
     /**
+     * @param UserSortOption[]|null $sort_options
      * @return User[]
      */
-    public function fetchAll(): array
+    public function fetchAll(?array $sort_options = null): array
     {
+        if (!$sort_options) {
+            $sort_options = [new UserSortOption(UserSortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`userData`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
         $qry = <<<SQL
+# noinspection SqlResolve
+
 SELECT
-  uuid,
+  userData.uuid,
   userFirstName,
   userLastName,
   userHandle,
@@ -198,7 +225,8 @@ SELECT
   userDisabled,
   reminderSent
 FROM userData
-ORDER BY uuid ASC
+{$join_str}
+{$sort_str}
 SQL;
 
         $res = $this->db->query($qry);

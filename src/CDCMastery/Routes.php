@@ -281,6 +281,12 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_edit',
             ]);
         });
+
+        /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
+        $r->addRoute('GET', '/users', [
+            Admin\Users::class,
+            'show_home',
+        ]);
     });
 
     $r->addGroup('/auth', function (RouteCollector $r) {
@@ -526,12 +532,6 @@ return simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('GET', '/history', [
             \CDCMastery\Controllers\Tests::class,
             'show_test_history_complete',
-        ]);
-
-        /** @uses \CDCMastery\Controllers\Tests::show_test_history_all() */
-        $r->addRoute('GET', '/history/all', [
-            \CDCMastery\Controllers\Tests::class,
-            'show_test_history_all',
         ]);
 
         /** @uses \CDCMastery\Controllers\Tests::show_test_history_incomplete() */

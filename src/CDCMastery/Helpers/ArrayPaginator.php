@@ -76,22 +76,13 @@ class ArrayPaginator
         ) - 1;
     }
 
-    /**
-     * @param string $path
-     * @param int $curPage
-     * @param int $numPages
-     * @param int $rows
-     * @param string $sort
-     * @param string $dir
-     * @return string
-     */
     public static function buildLinks(
         string $path,
         int $curPage,
         int $numPages,
         int $rows,
-        string $sort = '',
-        string $dir = ''
+        ?string $sort = null,
+        ?string $dir = null
     ): string {
         if ($numPages <= 1) {
             return '';
@@ -209,16 +200,6 @@ class ArrayPaginator
         );
     }
 
-    /**
-     * @param string $path
-     * @param int $curPage
-     * @param int $pageNum
-     * @param int $rows
-     * @param int $textType
-     * @param string $sort
-     * @param string $dir
-     * @return string
-     */
     private static function createHtmlLinkPart(
         string $path,
         int $curPage,
