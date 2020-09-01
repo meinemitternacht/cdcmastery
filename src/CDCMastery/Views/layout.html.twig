@@ -19,89 +19,86 @@
     {% endfor %}
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button"
-                        class="navbar-toggle collapsed"
-                        data-toggle="collapse"
-                        data-target="#navbar"
-                        aria-expanded="false"
-                        aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand"
-                   href="/"
-                   title="Learning - Enabled">
-                    {% if cdc_debug %}
-                        <span class="text-danger" title="DEBUG MODE ENABLED">CDCMastery</span>
-                    {% else %}
-                        CDCMastery
-                    {% endif %}
-                </a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/stats">Statistics</a></li>
-                    {% if loggedIn and not error %}
-                        {% if isAdmin %}
-                            <li class="dropdown">
-                                <a href="#"
-                                   class="dropdown-toggle"
-                                   data-toggle="dropdown"
-                                   role="button"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">Admin Panel <span class="caret"></span></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="/admin/cdc/afsc" title="AFSC Manager">AFSC Manager</a></li>
-                                    <li><a href="/admin/bases" title="Manage Bases">Base Manager</a></li>
-                                    <li><a href="/admin/cards/categories" title="Flash Card Categories">Flash Card
-                                            Categories</a></li>
-                                    <li><a href="/admin/cards/data" title="Flash Card Data">Flash Card Data</a></li>
-                                    <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
-                                    <li><a href="/admin/search" title="Search">Search</a></li>
-                                    <li><a href="/admin/users" title="User Manager">User Manager</a></li>
-                                    <li><a href="/admin/users/profiles" title="User Profiles">User Profiles</a></li>
-                                </ul>
-                            </li>
-                        {% elseif isSupervisor or isTrainingManager %}
-                            <li><a href="/overview/training">Training Panel</a></li>
-                        {% endif %}
-                        {% if notificationCount %}
-                            <li>
-                                <a href="/account/events">
-                                    <i class="fa fa-bell events-bell"></i>
-                                    <span class="badge badge-events">{{ notificationCount }}</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                        <li><a href="/auth/logout">Sign Out</a></li>
-                    {% elseif not error %}
-                        <li><a href="/auth/login">Sign In</a></li>
-                        <li><a href="/auth/register">Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#navbar"
+                    aria-expanded="false"
+                    aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand"
+               href="/"
+               title="Learning - Enabled">
+                {% if cdc_debug %}
+                    <span class="text-danger" title="DEBUG MODE ENABLED">CDCMastery</span>
+                {% else %}
+                    CDCMastery
+                {% endif %}
+            </a>
         </div>
-    </nav>
-    <div class="container main-container" role="main">
-        {% include "blocks/messages.html.twig" %}
-        {% block main %}{% endblock %}
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/stats">Statistics</a></li>
+                {% if loggedIn and not error %}
+                    {% if isAdmin %}
+                        <li class="dropdown">
+                            <a href="#"
+                               class="dropdown-toggle"
+                               data-toggle="dropdown"
+                               role="button"
+                               aria-haspopup="true"
+                               aria-expanded="false">Admin Panel <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/admin/cdc/afsc" title="AFSC Manager">AFSC Manager</a></li>
+                                <li><a href="/admin/cards" title="Flash Cards">Flash Cards</a></li>
+                                <li><a href="/admin/users" title="User Manager">User Manager</a></li>
+                                <li><a href="/admin/bases" title="Base Manager">Base Manager</a></li>
+                                <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
+                                <li><a href="/admin/search" title="Search">Search</a></li>
+                            </ul>
+                        </li>
+                    {% elseif isSupervisor or isTrainingManager %}
+                        <li><a href="/overview/training">Training Panel</a></li>
+                    {% endif %}
+                    {% if notificationCount %}
+                        <li>
+                            <a href="/account/events">
+                                <i class="fa fa-bell events-bell"></i>
+                                <span class="badge badge-events">{{ notificationCount }}</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    <li><a href="/auth/logout">Sign Out</a></li>
+                {% elseif not error %}
+                    <li><a href="/auth/login">Sign In</a></li>
+                    <li><a href="/auth/register">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-    <div class="clearfix">&nbsp;</div>
-    <footer class="footer">
-        <div class="container text-center">
-            <p class="text-muted">
-                &copy; 2020 Bing Technology Services, LLC<br>
-                <em>This application is not endorsed by, affiliated with, or an official product of the United States
-                    Air Force.</em><br>
-            </p>
-        </div>
-    </footer>
+</nav>
+<div class="container main-container" role="main">
+    {% include "blocks/messages.html.twig" %}
+    {% block main %}{% endblock %}
+</div>
+<div class="clearfix">&nbsp;</div>
+<footer class="footer">
+    <div class="container text-center">
+        <p class="text-muted">
+            &copy; 2020 Bing Technology Services, LLC<br>
+            <em>This application is not endorsed by, affiliated with, or an official product of the United States
+                Air Force.</em><br>
+        </p>
+    </div>
+</footer>
 </body>
 </html>
