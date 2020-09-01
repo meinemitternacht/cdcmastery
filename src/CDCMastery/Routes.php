@@ -52,6 +52,12 @@ return simpleDispatcher(function (RouteCollector $r) {
                 Admin\Bases::class,
                 'do_edit',
             ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_overview() */
+            $r->addRoute('GET', '/{uuid}/overview', [
+                Admin\Bases::class,
+                'show_overview',
+            ]);
         });
 
         /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_list() */

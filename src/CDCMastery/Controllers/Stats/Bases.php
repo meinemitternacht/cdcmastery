@@ -7,7 +7,7 @@ use CDCMastery\Controllers\Stats;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\Bases\BaseHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
-use CDCMastery\Models\Statistics\BaseStats;
+use CDCMastery\Models\Statistics\Bases\BasesGrouped;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use Monolog\Logger;
@@ -23,7 +23,7 @@ class Bases extends Stats
     private $baseCollection;
 
     /**
-     * @var BaseStats
+     * @var BasesGrouped
      */
     private $base_stats;
 
@@ -37,7 +37,7 @@ class Bases extends Stats
         Environment $twig,
         Session $session,
         BaseCollection $baseCollection,
-        BaseStats $bases,
+        BasesGrouped $bases,
         TestStats $tests
     ) {
         parent::__construct($logger, $twig, $session);

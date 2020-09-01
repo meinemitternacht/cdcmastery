@@ -1,87 +1,28 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 7/8/2017
- * Time: 1:27 PM
- */
 
-namespace CDCMastery\Models\Statistics;
-
+namespace CDCMastery\Models\Statistics\Bases;
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Cache\CacheHandler;
 use DateTime;
-use Monolog\Logger;
-use mysqli;
+use DateTimeInterface;
 
-class BaseStats
+class Bases implements IBaseStats
 {
+    use TBaseStats;
+
     private const PRECISION_AVG = 2;
 
-    private const STAT_BASES_AVG_BETWEEN = 'bases_avg_between';
-    private const STAT_BASES_AVG_BY_MONTH = 'bases_avg_by_month';
-    private const STAT_BASES_AVG_BY_WEEK = 'bases_avg_by_week';
-    private const STAT_BASES_AVG_BY_YEAR = 'bases_avg_by_year';
-    private const STAT_BASES_AVG_LAST_SEVEN = 'bases_avg_last_seven';
-    private const STAT_BASES_AVG_OVERALL = 'bases_avg_overall';
-
-    private const STAT_BASES_COUNT_BETWEEN = 'bases_count_between';
-    private const STAT_BASES_COUNT_BY_MONTH = 'bases_count_by_month';
-    private const STAT_BASES_COUNT_BY_WEEK = 'bases_count_by_week';
-    private const STAT_BASES_COUNT_BY_YEAR = 'bases_count_by_year';
-    private const STAT_BASES_COUNT_LAST_SEVEN = 'bases_count_last_seven';
-    private const STAT_BASES_COUNT_OVERALL = 'bases_count_overall';
-
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var CacheHandler
-     */
-    protected $cache;
-
-    /**
-     * Tests constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     * @param CacheHandler $cacheHandler
-     */
-    public function __construct(mysqli $mysqli, Logger $logger, CacheHandler $cacheHandler)
+    public function averageBetween(Base $base, DateTime $start, DateTime $end): ?float
     {
-        $this->db = $mysqli;
-        $this->log = $logger;
-        $this->cache = $cacheHandler;
-    }
+        $buuid = $base->getUuid();
 
-    /**
-     * @param DateTime $start
-     * @param DateTime $end
-     * @return array
-     */
-    public function averagesBetween(DateTime $start, DateTime $end): array
-    {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASES_AVG_BETWEEN, [
-                $tStart,
-                $tEnd
-            ]
-        );
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_AVG_BETWEEN,
+                                           [$tStart, $tEnd, $buuid]);
 
         if ($cached !== false) {
             return $cached;
@@ -89,120 +30,86 @@ class BaseStats
 
         $qry = <<<SQL
 SELECT 
-  userData.userBase AS tBase,
   AVG(score) AS tAvg
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
   AND testCollection.score > 0
-GROUP BY tBase
-HAVING tBase IS NOT NULL
+  AND userData.userBase = ?
 SQL;
 
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
+        $stmt = $this->prepare_and_bind($qry, 'sss', $tStart, $tEnd, $buuid);
 
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return [];
-        }
-
-        $stmt->bind_result(
-            $tBase,
-            $tAvg
-        );
-
-        $data = [];
-        while ($stmt->fetch()) {
-            if (!isset($tBase) || empty($tBase)) {
-                continue;
-            }
-
-            $data[] = [
-                'uuid' => $tBase,
-                'avg' => round(
-                    $tAvg,
-                    self::PRECISION_AVG
-                )
-            ];
-        }
-
+        $stmt->bind_result($tAvg);
+        $stmt->fetch();
         $stmt->close();
 
-        $this->cache->hashAndSet(
-            $data,
-            self::STAT_BASES_AVG_BETWEEN,
-            CacheHandler::TTL_XLARGE, [
-                $tStart,
-                $tEnd
-           ]
-        );
+        $data = round($tAvg,
+                      self::PRECISION_AVG);
+
+        $this->cache->hashAndSet($data,
+                                 IBaseStats::STAT_BASE_AVG_BETWEEN,
+                                 CacheHandler::TTL_XLARGE,
+                                 [$tStart, $tEnd, $buuid,]);
 
         return $data;
     }
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    private function averagesByTimeSegment(string $type): array
+    private function averageByTimeSegment(Base $base, string $type): array
     {
+        $buuid = $base->getUuid();
+
         switch ($type) {
-            case self::STAT_BASES_AVG_BY_MONTH:
+            case IBaseStats::STAT_BASE_AVG_BY_MONTH:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT
-  userData.userBase AS tBase,
   DATE_FORMAT(testCollection.timeStarted, '%Y-%m') AS tDate,
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
-GROUP BY tDate, tBase
+  AND userData.userBase = ?
+GROUP BY tDate
 ORDER BY tDate, tAvg DESC
 SQL;
                 break;
-            case self::STAT_BASES_AVG_BY_WEEK:
+            case IBaseStats::STAT_BASE_AVG_BY_WEEK:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT
-  userData.userBase AS tBase,
   YEARWEEK(testCollection.timeStarted) AS tDate,
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
-GROUP BY YEARWEEK(testCollection.timeStarted), tBase
+  AND userData.userBase = ?
+GROUP BY YEARWEEK(testCollection.timeStarted)
 ORDER BY YEARWEEK(testCollection.timeStarted), tAvg DESC
 SQL;
                 break;
-            case self::STAT_BASES_AVG_BY_YEAR:
+            case IBaseStats::STAT_BASE_AVG_BY_YEAR:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT
-  userData.userBase AS tBase,
   DATE_FORMAT(testCollection.timeStarted, '%Y') AS tDate,
   AVG(testCollection.score) AS tAvg
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
-GROUP BY tDate, tBase
+  AND userData.userBase = ?
+GROUP BY tDate
 ORDER BY tDate, tAvg DESC
 SQL;
                 break;
-            case self::STAT_BASES_AVG_LAST_SEVEN:
+            case IBaseStats::STAT_BASE_AVG_LAST_SEVEN:
                 $timeout = CacheHandler::TTL_LARGE;
                 $qry = <<<SQL
 SELECT
-  userData.userBase AS tBase,
   DATE_FORMAT(testCollection.timeStarted, '%Y-%m-%d') AS tDate,
   AVG(testCollection.score) AS tAvg
 FROM testCollection
@@ -210,13 +117,13 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.score > 0
   AND testCollection.timeStarted BETWEEN DATE_SUB(NOW(), INTERVAL 7 DAY) AND NOW()
-GROUP BY tDate, tBase
-ORDER BY tDate
+  AND userData.userBase = ?
+GROUP BY tDate
+ORDER BY tDate DESC
 SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -227,26 +134,25 @@ SQL;
             return $cached;
         }
 
-        $res = $this->db->query($qry);
+        $stmt = $this->prepare_and_bind($qry, 's', $buuid);
+
+        $stmt->bind_result($tDate, $tAvg);
 
         $averages = [];
-        while ($row = $res->fetch_assoc()) {
-            $averages[$row['tBase']][] = [
-                'tDate' => $row['tDate'] ?? '',
-                'tAvg' => round(
-                    $row['tAvg'] ?? 0.00,
-                    self::PRECISION_AVG
-                )
+        while ($stmt->fetch()) {
+            $averages[] = [
+                'tDate' => $tDate,
+                'tAvg' => round($tAvg,
+                                self::PRECISION_AVG),
             ];
         }
 
-        $res->free();
+        $stmt->close();
 
-        $this->cache->hashAndSet(
-            $averages,
-            $type,
-            $timeout
-        );
+        $this->cache->hashAndSet($averages,
+                                 $type,
+                                 $timeout,
+                                 [$buuid,]);
 
         return $averages;
     }
@@ -254,43 +160,41 @@ SQL;
     /**
      * @return array
      */
-    public function averagesByMonth(): array
+    public function averageByMonth(): array
     {
-        return $this->averagesByTimeSegment(self::STAT_BASES_AVG_BY_MONTH);
+        return $this->averageByTimeSegment(IBaseStats::STAT_BASE_AVG_BY_MONTH);
     }
 
     /**
      * @return array
      */
-    public function averagesByWeek(): array
+    public function averageByWeek(): array
     {
-        return $this->averagesByTimeSegment(self::STAT_BASES_AVG_BY_WEEK);
+        return $this->averageByTimeSegment(IBaseStats::STAT_BASE_AVG_BY_WEEK);
     }
 
     /**
      * @return array
      */
-    public function averagesByYear(): array
+    public function averageByYear(): array
     {
-        return $this->averagesByTimeSegment(self::STAT_BASES_AVG_BY_YEAR);
+        return $this->averageByTimeSegment(IBaseStats::STAT_BASE_AVG_BY_YEAR);
     }
 
     /**
      * @return array
      */
-    public function averagesLastSevenDays(): array
+    public function averageLastSevenDays(): array
     {
-        return $this->averagesByTimeSegment(self::STAT_BASES_AVG_LAST_SEVEN);
+        return $this->averageByTimeSegment(IBaseStats::STAT_BASE_AVG_LAST_SEVEN);
     }
 
-    /**
-     * @return array
-     */
-    public function averagesOverall(): array
+    public function averageOverall(Base $base): ?float
     {
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASES_AVG_OVERALL
-        );
+        $buuid = $base->getUuid();
+
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_AVG_OVERALL,
+                                           [$buuid,]);
 
         if ($cached !== false) {
             return $cached;
@@ -298,36 +202,81 @@ SQL;
 
         $qry = <<<SQL
 SELECT 
-  userData.userBase AS tBase,
   AVG(score) AS tAvg
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
-LEFT JOIN baseList ON userData.userBase = baseList.uuid
 WHERE testCollection.score > 0
   AND testCollection.timeCompleted IS NOT NULL
-GROUP BY baseList.baseName
-ORDER BY baseList.baseName
+  AND userData.userBase = ?
 SQL;
 
-        $res = $this->db->query($qry);
+        $stmt = $this->prepare_and_bind($qry, 's', $buuid);
 
-        $averages = [];
-        while ($row = $res->fetch_assoc()) {
-            $averages[$row['tBase']] = round(
-                $row['tAvg'] ?? 0.00,
-                self::PRECISION_AVG
-            );
+        $stmt->bind_result($tAvg);
+        $stmt->fetch();
+        $stmt->close();
+
+        $tAvg = round($tAvg,
+                      self::PRECISION_AVG);
+
+        $this->cache->hashAndSet($tAvg,
+                                 IBaseStats::STAT_BASE_AVG_OVERALL,
+                                 CacheHandler::TTL_XLARGE,
+                                 [$buuid,]);
+
+        return $tAvg;
+    }
+
+    public function averageCountOverallByUser(Base $base, ?DateTimeInterface $cutoff = null): array
+    {
+        if ($cutoff === null) {
+            $cutoff = new DateTime();
+            $cutoff->modify(IBaseStats::DEFAULT_CUTOFF);
         }
 
-        $res->free();
+        $buuid = $base->getUuid();
 
-        $this->cache->hashAndSet(
-            $averages,
-            self::STAT_BASES_AVG_OVERALL,
-            CacheHandler::TTL_XLARGE
-        );
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_AVG_COUNT_OVERALL_BY_USER,
+                                           [$buuid, $cutoff->format(DATE_RFC3339_EXTENDED)]);
 
-        return $averages;
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT
+    userData.uuid,
+    COUNT(*) AS tCount,
+    AVG(testCollection.score) AS tAvg
+FROM testCollection
+LEFT JOIN userData ON testCollection.userUuid = userData.uuid
+WHERE userData.userBase = ?
+    AND userData.userLastActive > ?
+GROUP BY userData.uuid
+ORDER BY tAvg DESC, tCount DESC, userData.uuid
+SQL;
+
+        $cutoff_fmt = $cutoff->format(DateTimeHelpers::D_FMT_SHORT);
+        $stmt = $this->prepare_and_bind($qry, 'ss', $buuid, $cutoff_fmt);
+
+        $stmt->bind_result($user, $tCount, $tAvg);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[ $user ] = [
+                'tAvg' => round($tAvg,
+                                self::PRECISION_AVG),
+                'tCount' => $tCount,
+            ];
+        }
+        $stmt->close();
+
+        $this->cache->hashAndSet($data,
+                                 IBaseStats::STAT_BASE_AVG_COUNT_OVERALL_BY_USER,
+                                 CacheHandler::TTL_XLARGE,
+                                 [$buuid, $cutoff->format(DATE_RFC3339_EXTENDED)]);
+
+        return $data;
     }
 
     /**
@@ -335,7 +284,7 @@ SQL;
      * @param DateTime $end
      * @return array
      */
-    public function countsBetween(DateTime $start, DateTime $end): array
+    public function countBetween(DateTime $start, DateTime $end): array
     {
         $tStart = $start->format(
             DateTimeHelpers::DT_FMT_DB_DAY_START
@@ -346,10 +295,10 @@ SQL;
         );
 
         $cached = $this->cache->hashAndGet(
-            self::STAT_BASES_COUNT_BETWEEN, [
-                $tStart,
-                $tEnd
-            ]
+            IBaseStats::STAT_BASE_COUNT_BETWEEN, [
+                                                   $tStart,
+                                                   $tEnd,
+                                               ]
         );
 
         if ($cached !== false) {
@@ -389,7 +338,7 @@ SQL;
         while ($stmt->fetch()) {
             $data[] = [
                 'base' => $tBase,
-                'count' => $tCount
+                'count' => $tCount,
             ];
         }
 
@@ -397,10 +346,10 @@ SQL;
 
         $this->cache->hashAndSet(
             $data,
-            self::STAT_BASES_COUNT_BETWEEN,
+            IBaseStats::STAT_BASE_COUNT_BETWEEN,
             CacheHandler::TTL_XLARGE, [
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -411,10 +360,10 @@ SQL;
      * @param string $type
      * @return array
      */
-    private function countsByTimeSegment(string $type): array
+    private function countByTimeSegment(string $type): array
     {
         switch ($type) {
-            case self::STAT_BASES_COUNT_BY_MONTH:
+            case IBaseStats::STAT_BASE_COUNT_BY_MONTH:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT
@@ -429,7 +378,7 @@ GROUP BY tDate, tBase
 ORDER BY tDate
 SQL;
                 break;
-            case self::STAT_BASES_COUNT_BY_WEEK:
+            case IBaseStats::STAT_BASE_COUNT_BY_WEEK:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT 
@@ -444,7 +393,7 @@ GROUP BY YEARWEEK(testCollection.timeStarted), tBase
 ORDER BY YEARWEEK(testCollection.timeStarted)
 SQL;
                 break;
-            case self::STAT_BASES_COUNT_BY_YEAR:
+            case IBaseStats::STAT_BASE_COUNT_BY_YEAR:
                 $timeout = CacheHandler::TTL_XLARGE;
                 $qry = <<<SQL
 SELECT
@@ -459,7 +408,7 @@ GROUP BY tDate, tBase
 ORDER BY tDate
 SQL;
                 break;
-            case self::STAT_BASES_COUNT_LAST_SEVEN:
+            case IBaseStats::STAT_BASE_COUNT_LAST_SEVEN:
                 $timeout = CacheHandler::TTL_LARGE;
                 $qry = <<<SQL
 SELECT 
@@ -477,7 +426,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -492,9 +440,9 @@ SQL;
 
         $counts = [];
         while ($row = $res->fetch_assoc()) {
-            $counts[$row['tBase']][] = [
-                'tDate' => $row['tDate'] ?? '',
-                'tCount' => (int)($row['tCount'] ?? 0)
+            $counts[ $row[ 'tBase' ] ][] = [
+                'tDate' => $row[ 'tDate' ] ?? '',
+                'tCount' => (int)($row[ 'tCount' ] ?? 0),
             ];
         }
 
@@ -512,43 +460,41 @@ SQL;
     /**
      * @return array
      */
-    public function countsByMonth(): array
+    public function countByMonth(): array
     {
-        return $this->countsByTimeSegment(self::STAT_BASES_COUNT_BY_MONTH);
+        return $this->countByTimeSegment(IBaseStats::STAT_BASE_COUNT_BY_MONTH);
     }
 
     /**
      * @return array
      */
-    public function countsByWeek(): array
+    public function countByWeek(): array
     {
-        return $this->countsByTimeSegment(self::STAT_BASES_COUNT_BY_WEEK);
+        return $this->countByTimeSegment(IBaseStats::STAT_BASE_COUNT_BY_WEEK);
     }
 
     /**
      * @return array
      */
-    public function countsByYear(): array
+    public function countByYear(): array
     {
-        return $this->countsByTimeSegment(self::STAT_BASES_COUNT_BY_YEAR);
+        return $this->countByTimeSegment(IBaseStats::STAT_BASE_COUNT_BY_YEAR);
     }
 
     /**
      * @return array
      */
-    public function countsLastSevenDays(): array
+    public function countLastSevenDays(): array
     {
-        return $this->countsByTimeSegment(self::STAT_BASES_COUNT_LAST_SEVEN);
+        return $this->countByTimeSegment(IBaseStats::STAT_BASE_COUNT_LAST_SEVEN);
     }
 
-    /**
-     * @return array
-     */
-    public function countsOverall(): array
+    public function countOverall(Base $base): ?int
     {
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASES_COUNT_OVERALL
-        );
+        $buuid = $base->getUuid();
+
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_COUNT_OVERALL,
+                                           [$buuid,]);
 
         if ($cached !== false) {
             return $cached;
@@ -556,32 +502,25 @@ SQL;
 
         $qry = <<<SQL
 SELECT 
-  userData.userBase AS tBase,
   COUNT(*) AS tCount
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
-LEFT JOIN baseList ON userData.userBase = baseList.uuid
 WHERE testCollection.score > 0
-  AND testCollection.timeCompleted IS NOT NULL 
-GROUP BY baseList.baseName
-ORDER BY baseList.baseName
+  AND testCollection.timeCompleted IS NOT NULL
+  AND userData.userBase = ?
 SQL;
 
-        $res = $this->db->query($qry);
+        $stmt = $this->prepare_and_bind($qry, 's', $buuid);
 
-        $counts = [];
-        while ($row = $res->fetch_assoc()) {
-            $counts[$row['tBase']] = (int)($row['tCount'] ?? 0);
-        }
+        $stmt->bind_result($tCount);
+        $stmt->fetch();
+        $stmt->close();
 
-        $res->free();
+        $this->cache->hashAndSet($tCount,
+                                 IBaseStats::STAT_BASE_COUNT_OVERALL,
+                                 CacheHandler::TTL_XLARGE,
+                                 [$buuid,]);
 
-        $this->cache->hashAndSet(
-            $counts,
-            self::STAT_BASES_COUNT_OVERALL,
-            CacheHandler::TTL_XLARGE
-        );
-
-        return $counts;
+        return $tCount;
     }
 }

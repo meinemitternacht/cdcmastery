@@ -1,0 +1,167 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Base Overview - #{base.name}" %}
+{% block main %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-8">
+                <h3>Overview for {{ base.name }}</h3>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group form-inline">
+                    <label class="sr-only" for="base-chooser">
+                        Change Base
+                    </label>
+                    <select class="form-control"
+                            id="base-chooser"
+                            size="1"
+                            title="Choose base...">
+                        {% for base_list_item in bases %}
+                            <option value="{{ base_list_item.uuid }}"{% if base_list_item.uuid == base.uuid %} SELECTED{% endif %}>
+                                {{ base_list_item.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="panel panel-primary">
+                <div class="panel-body panel-min-250">
+                    <div id="overview-chart" style="height:330px">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="help-block">
+                        Note: The graph and table below only show data for users that have been active in the past year.
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="overview-detail-table" class="table table-striped table-hover cursor-pointer">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Tests Taken</th>
+                            <th>Average Score</th>
+                            <th>Last Login</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set i = 1 %}
+                        {% for user_uuid, row in stats.data %}
+                            <tr data-uuid="{{ user_uuid }}" {% if i > stats.limit %} class="text-muted"{% endif %}>
+                                <td>{{ row.name }}</td>
+                                <td>{{ row.tCount }}</td>
+                                <td>{{ row.tAvg|number_format(2) }}%</td>
+                                <td>{{ row.last_login }}</td>
+                            </tr>
+                            {% set i = i + 1 %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% set tableSelector = "#overview-detail-table" %}
+                    {% set redirectPath = "/admin/users" %}
+                    {% include "utilities/table-row-link.html.twig" %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Users</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ base.users|number_format }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Tests</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ stats.tests|number_format }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Avg. Score</h5>
+                        </div>
+                        <div class="panel-body">
+                            {{ stats.average }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            $('#base-chooser').click(function (e) {
+                let tgt_uuid = e.target.value;
+
+                window.location.href = '/admin/bases/' + tgt_uuid + '/overview';
+            });
+
+            var overviewChart = new CanvasJS.Chart("overview-chart",
+                {
+                    title: {
+                        text: "Top 100 Users",
+                        fontSize: 16,
+                    },
+                    zoomEnabled: false,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: " ",
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        shared: true
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            lineThickness: 1,
+                            name: "Tests Taken",
+                            axisYType: "primary",
+                            dataPoints: {{ graph.count|raw }}
+                        },
+                        {
+                            type: "line",
+                            lineThickness: 1,
+                            axisYType: "secondary",
+                            name: "Average Score",
+                            dataPoints: {{ graph.avg|raw }}
+                        }
+                    ],
+                    legend: {
+                        verticalAlign: "bottom",
+                        horizontalAlign: "center",
+                        fontSize: 15,
+                        fontFamily: "Lucida Sans Unicode",
+                        cursor: "pointer"
+                    }
+                });
+
+            overviewChart.render();
+        }
+    </script>
+{% endblock %}
