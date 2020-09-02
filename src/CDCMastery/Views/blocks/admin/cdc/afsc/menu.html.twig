@@ -1,17 +1,27 @@
-<ul class="nav nav-pills">
-    <li><a href="/admin/cdc/afsc">AFSC List</a></li>
-    <li><a href="/admin/cdc/afsc/migrate">Migrate Associations</a></li>
-    {% if afsc %}
-        <li><a href="/admin/cdc/afsc/{{ afsc.uuid }}/edit">Edit</a></li>
-        <li><a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">Manage Questions</a></li>
-        {% if afsc.hidden %}
-            <li class="bg-success"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/restore">Restore</a></li>
-        {% else %}
-            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/disable">Disable AFSC</a></li>
-        {% endif %}
-        {% if cdc_debug %}
-            <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/delete">Delete AFSC</a></li>
-        {% endif %}
-    {% endif %}
-</ul>
+<nav class="navbar navbar-sub">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="afsc-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% if cur_url == "/admin/cdc/afsc" %} class="active"{% endif %}><a href="/admin/cdc/afsc">AFSC
+                        List</a></li>
+                <li{% if cur_url == "/admin/cdc/afsc/migrate" %} class="active"{% endif %}><a
+                            href="/admin/cdc/afsc/migrate">Migrate Associations</a></li>
+                {% if afsc %}
+                    <li{% if cur_url == "/admin/cdc/afsc/" ~ afsc.uuid ~ "/edit" %} class="active"{% endif %}><a
+                                href="/admin/cdc/afsc/{{ afsc.uuid }}/edit">Edit</a></li>
+                    <li{% if cur_url starts with "/admin/cdc/afsc/" ~ afsc.uuid ~ "/questions" %} class="active"{% endif %}>
+                        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">Manage Questions</a></li>
+                    {% if afsc.hidden %}
+                        <li class="bg-success"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/restore">Restore</a></li>
+                    {% else %}
+                        <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/disable">Disable AFSC</a></li>
+                    {% endif %}
+                    {% if cdc_debug %}
+                        <li class="bg-danger"><a href="/admin/cdc/afsc/{{ afsc.uuid }}/delete">Delete AFSC</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="clearfix">&nbsp;</div>

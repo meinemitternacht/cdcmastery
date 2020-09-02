@@ -1,0 +1,91 @@
+<nav class="navbar navbar-sub">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="user-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% if cur_url == "/admin/cdc/afsc" %} class="active"{% endif %}><a href="/admin/users">User List</a>
+                </li>
+                {% if user %}
+                    <li{% if cur_url == "/admin/users/" ~ user.uuid %} class="active"{% endif %}><a
+                                href="/admin/users/{{ user.uuid }}">Profile</a></li>
+
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Account <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/edit" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/edit">Edit</a>
+                            </li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/delete" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/delete">Delete</a>
+                            </li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/ban" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/ban">Ban</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/resend-activation" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/resend-activation">Resend Activation</a>
+                            </li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/reset-password" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/reset-password">Reset Password</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Testing <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/tests" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/tests">Completed Tests</a></li>
+                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/tests/incomplete" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/tests/incomplete">Incomplete Tests</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/delete/all" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/delete">Delete All Tests</a>
+                            </li>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/delete/incomplete" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/delete">Delete All Incomplete Tests</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Associations <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/afsc" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/afsc">AFSCs</a>
+                            </li>
+                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/supervisors" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/supervisors">Supervisors</a>
+                            </li>
+                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/training-managers" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/training-managers">Training Managers</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="clearfix">&nbsp;</div>

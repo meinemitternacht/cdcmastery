@@ -37,8 +37,8 @@ return [
 
         $loggedIn = $auth_helpers->assert_logged_in();
 
-        $twig->addGlobal('cdc_debug', $debug
-            ?: false);
+        $twig->addGlobal('cdc_debug', $debug);
+        $twig->addGlobal('cur_url', parse_url($_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH));
         $twig->addGlobal('loggedIn', $loggedIn);
         $twig->addGlobal('cssList', $config->get(['twig', 'assets', 'css']));
         $twig->addGlobal('jsList', $config->get(['twig', 'assets', 'js']));
@@ -71,9 +71,9 @@ return [
             true
         );
 
-        if ($config->get(['system','debug'])) {
+        if ($config->get(['system', 'debug'])) {
             $debugHandler = new StreamHandler(
-                $config->get(['system','log','debug']),
+                $config->get(['system', 'log', 'debug']),
                 Logger::DEBUG
             );
 
@@ -81,14 +81,14 @@ return [
             $logger->pushHandler($debugHandler);
         }
 
-        $general_log = $config->get(['system','log','general']);
+        $general_log = $config->get(['system', 'log', 'general']);
         if (file_exists($general_log) && !is_writable($general_log)) {
-            $logger->alert('Log file is not writable: ' . $config->get(['system','log','general']));
+            $logger->alert('Log file is not writable: ' . $config->get(['system', 'log', 'general']));
             goto out_return;
         }
 
         $streamHandler = new StreamHandler(
-            $config->get(['system','log','general']),
+            $config->get(['system', 'log', 'general']),
             Logger::INFO
         );
         $streamHandler->setFormatter($formatter);
@@ -126,9 +126,9 @@ return [
     mysqli::class => function (ContainerInterface $c) {
         $config = $c->get(Config::class);
 
-        $db_conf = $config->get(['system','debug'])
-            ? $config->get(['database','dev'])
-            : $config->get(['database','prod']);
+        $db_conf = $config->get(['system', 'debug'])
+            ? $config->get(['database', 'dev'])
+            : $config->get(['database', 'prod']);
 
         define('ENCRYPTION_KEY', $config->get(['encryption', 'key']));
 
@@ -154,5 +154,5 @@ return [
         $session->start();
 
         return $session;
-    }
+    },
 ];
