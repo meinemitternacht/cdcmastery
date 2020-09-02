@@ -107,7 +107,7 @@ class Bases extends Admin
                                 : "The specified Base '{$base->getName()}' was added successfully");
 
         out_return:
-        return $this->redirect('/admin/bases');
+        return $this->redirect("/admin/bases/{$base->getUuid()}");
     }
 
     public function do_edit(string $uuid): Response

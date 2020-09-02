@@ -12,7 +12,7 @@
                 </div>
             {% endif %}
             <div class="table-responsive">
-                <table class="table table-striped table-hover cursor-pointer" id="users-table">
+                <table class="table table-striped table-hover" id="users-table">
                     <thead>
                     <tr>
                         <th class="col-md-3">{{ sortlink('userLastName','Last Name',sort)|raw }}</th>
@@ -24,7 +24,8 @@
                     </thead>
                     <tbody>
                     {% for user in users %}
-                        <tr data-uuid="{{ user.uuid }}" {% if user.isDisabled %} class="text-muted"{% endif %}>
+                        <tr data-uuid="{{ user.uuid }}"
+                            class="cursor-pointer{% if user.isDisabled %} text-muted{% endif %}">
                             <td>{{ user.lastName }}</td>
                             <td>{{ user.firstName }}</td>
                             <td>{{ user.rank }}</td>
