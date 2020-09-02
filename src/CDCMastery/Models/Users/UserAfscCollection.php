@@ -22,6 +22,16 @@ class UserAfscCollection
     private $afscs;
 
     /**
+     * @var string[]|null
+     */
+    private $authorized;
+
+    /**
+     * @var string[]|null
+     */
+    private $pending;
+
+    /**
      * @return string
      */
     public function getUser(): string
@@ -32,7 +42,7 @@ class UserAfscCollection
     /**
      * @param string $user
      */
-    public function setUser(string $user)
+    public function setUser(string $user): void
     {
         $this->user = $user;
     }
@@ -40,7 +50,7 @@ class UserAfscCollection
     /**
      * @param string $afscUuid
      */
-    public function addAfsc(string $afscUuid)
+    public function addAfsc(string $afscUuid): void
     {
         $this->afscs[] = $afscUuid;
     }
@@ -56,8 +66,40 @@ class UserAfscCollection
     /**
      * @param \string[] $afscs
      */
-    public function setAfscs(array $afscs)
+    public function setAfscs(array $afscs): void
     {
         $this->afscs = $afscs;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getAuthorized(): ?array
+    {
+        return $this->authorized;
+    }
+
+    /**
+     * @param string[]|null $authorized
+     */
+    public function setAuthorized(?array $authorized): void
+    {
+        $this->authorized = $authorized;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getPending(): ?array
+    {
+        return $this->pending;
+    }
+
+    /**
+     * @param string[]|null $pending
+     */
+    public function setPending(?array $pending): void
+    {
+        $this->pending = $pending;
     }
 }

@@ -235,6 +235,90 @@ SQL;
 
     /**
      * @param User $user
+     * @return string[]
+     *  A list of supervisor user UUIDs
+     */
+    public function fetchAllByUser(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $user_uuid = $user->getUuid();
+
+        $qry = <<<SQL
+SELECT supervisorUUID
+FROM userSupervisorAssociations
+WHERE userUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $user_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($su_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $su_uuid;
+        }
+
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * @param User $user
+     * @return string[]
+     *  A list of subordinate user UUIDs
+     */
+    public function fetchAllBySupervisor(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $su_uuid = $user->getUuid();
+
+        $qry = <<<SQL
+SELECT userUUID
+FROM userSupervisorAssociations
+WHERE supervisorUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $su_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($user_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $user_uuid;
+        }
+
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * @param User $user
      * @param User $supervisor
      */
     public function remove(User $user, User $supervisor): void

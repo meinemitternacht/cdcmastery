@@ -10,6 +10,8 @@ use CDCMastery\Exceptions\Database\DatabaseConnectionFailedException;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Twig\CreateSortLink;
+use CDCMastery\Models\Twig\RoleTypes;
+use CDCMastery\Models\Twig\UserProfileLink;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogHandler;
@@ -43,18 +45,9 @@ return [
         $twig->addGlobal('passingScore', $config->get(['testing', 'passingScore']));
 
         if ($loggedIn) {
-            $twig->addGlobal(
-                'isAdmin',
-                $auth_helpers->assert_admin()
-            );
-            $twig->addGlobal(
-                'isSupervisor',
-                $auth_helpers->assert_supervisor()
-            );
-            $twig->addGlobal(
-                'isTrainingManager',
-                $auth_helpers->assert_training_manager()
-            );
+            $twig->addGlobal('isAdmin', $auth_helpers->assert_admin());
+            $twig->addGlobal('isSupervisor', $auth_helpers->assert_supervisor());
+            $twig->addGlobal('isTrainingManager', $auth_helpers->assert_training_manager());
         }
 
         if ($debug) {
@@ -62,6 +55,8 @@ return [
         }
 
         $twig->addExtension(new CreateSortLink());
+        $twig->addExtension(new UserProfileLink());
+        $twig->addExtension(new RoleTypes());
 
         return $twig;
     },

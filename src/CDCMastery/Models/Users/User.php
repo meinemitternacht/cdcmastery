@@ -308,17 +308,17 @@ class User
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getRole(): ?string
+    public function getRole(): string
     {
         return $this->role;
     }
 
     /**
-     * @param null|string $role
+     * @param string $role
      */
-    public function setRole(?string $role)
+    public function setRole(string $role)
     {
         $this->role = $role;
     }

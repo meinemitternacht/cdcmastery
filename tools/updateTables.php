@@ -134,6 +134,35 @@ drop index afscName on afscList;
 -- SPLIT ;;
 create unique index afscName
 	on afscList (name, editCode);
+-- SPLIT ;;
+create index supervisorUUID
+	on userSupervisorAssociations (supervisorUUID);
+drop index userSupervisor on userSupervisorAssociations;
+alter table userSupervisorAssociations drop primary key;
+alter table userSupervisorAssociations drop column uuid;
+alter table userSupervisorAssociations
+	add constraint userSupervisor
+		primary key (supervisorUUID, userUUID);
+-- SPLIT ;;
+alter table userTrainingManagerAssociations drop primary key;
+alter table userTrainingManagerAssociations drop column uuid;
+-- SPLIT ;;
+CREATE TEMPORARY TABLE user_tm_assoc_tmp SELECT * FROM userTrainingManagerAssociations LIMIT 0;
+INSERT INTO user_tm_assoc_tmp SELECT DISTINCT trainingManagerUUID, userUUID FROM userTrainingManagerAssociations;
+TRUNCATE userTrainingManagerAssociations;
+INSERT INTO userTrainingManagerAssociations SELECT * FROM user_tm_assoc_tmp;
+DROP TEMPORARY TABLE user_tm_assoc_tmp;
+-- SPLIT ;;
+alter table userTrainingManagerAssociations
+	add constraint userTrainingManagerAssociations_pk
+		primary key (trainingManagerUUID, userUUID);
+-- SPLIT ;;
+alter table userTrainingManagerAssociations
+	add constraint userTrainingManagerAssociations_pk
+		primary key (trainingManagerUUID, userUUID);
+-- SPLIT ;;
+DELETE FROM userSupervisorAssociations WHERE supervisorUUID = userUUID;
+DELETE FROM userTrainingManagerAssociations WHERE trainingManagerUUID = userUUID;
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

@@ -9,7 +9,10 @@
 namespace CDCMastery\Models\Twig;
 
 
-class CreateSortLink extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+
+class CreateSortLink extends AbstractExtension
 {
     const DIR_ASC = "ASC";
     const DIR_DESC = "DESC";
@@ -20,7 +23,7 @@ class CreateSortLink extends \Twig_Extension
     public function getFunctions(): array
     {
         return [
-            new \Twig_Function('sortlink', [$this, 'createSortLink'])
+            new TwigFunction('sortlink', [$this, 'createSortLink']),
         ];
     }
 
@@ -42,13 +45,5 @@ class CreateSortLink extends \Twig_Extension
             : self::DIR_DESC;
 
         return '<a href="?sort=' . $column . '&dir=' . $newDirection . '">' . $text . '</a>';
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'CreateSortLink';
     }
 }

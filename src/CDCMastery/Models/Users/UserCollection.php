@@ -11,12 +11,15 @@ namespace CDCMastery\Models\Users;
 
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
+use DateTime;
 use Monolog\Logger;
+use mysqli;
+use RuntimeException;
 
 class UserCollection
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -26,19 +29,72 @@ class UserCollection
     protected $log;
 
     /**
-     * @var User[]
-     */
-    private $users = [];
-
-    /**
      * UserCollection constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
+    }
+
+    private function create_objects(array $rows): array
+    {
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $user = new User();
+            $user->setUuid($row[ 'uuid' ] ?? '');
+            $user->setFirstName($row[ 'userFirstName' ] ?? '');
+            $user->setLastName($row[ 'userLastName' ] ?? '');
+            $user->setHandle($row[ 'userHandle' ] ?? '');
+            $user->setPassword($row[ 'userPassword' ] ?? '');
+            $user->setLegacyPassword($row[ 'userLegacyPassword' ] ?? '');
+            $user->setEmail($row[ 'userEmail' ] ?? '');
+            $user->setRank($row[ 'userRank' ] ?? '');
+
+            if (($row[ 'userDateRegistered' ] ?? null) !== null) {
+                $user->setDateRegistered(
+                    DateTime::createFromFormat(
+                        DateTimeHelpers::DT_FMT_DB,
+                        $row[ 'userDateRegistered' ] ?? ''
+                    )
+                );
+            }
+
+            if (($row[ 'userLastLogin' ] ?? null) !== null) {
+                $user->setLastLogin(
+                    DateTime::createFromFormat(
+                        DateTimeHelpers::DT_FMT_DB,
+                        $row[ 'userLastLogin' ] ?? ''
+                    )
+                );
+            }
+
+            if (($row[ 'userLastActive' ] ?? null) !== null) {
+                $user->setLastActive(
+                    DateTime::createFromFormat(
+                        DateTimeHelpers::DT_FMT_DB,
+                        $row[ 'userLastActive' ] ?? ''
+                    )
+                );
+            }
+
+            $user->setTimeZone($row[ 'userTimeZone' ] ?? '');
+            $user->setRole($row[ 'userRole' ] ?? '');
+            $user->setOfficeSymbol($row[ 'userOfficeSymbol' ] ?? '');
+            $user->setBase($row[ 'userBase' ] ?? '');
+            $user->setDisabled((bool)($row[ 'userDisabled' ] ?? false));
+            $user->setReminderSent((bool)($row[ 'reminderSent' ] ?? false));
+
+            $out[ $row[ 'uuid' ] ] = $user;
+        }
+
+        return $out;
     }
 
     /**
@@ -58,17 +114,6 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
-
-        if (isset($this->users[$uuid])) {
-            array_splice(
-                $this->users,
-                array_search(
-                    $uuid,
-                    $this->users
-                ),
-                1
-            );
-        }
     }
 
     /**
@@ -135,41 +180,31 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $user = new User();
-        $user->setUuid($_uuid);
-        $user->setFirstName($firstName);
-        $user->setLastName($lastName);
-        $user->setHandle($handle);
-        $user->setPassword($password);
-        $user->setLegacyPassword($legacyPassword);
-        $user->setEmail($email);
-        $user->setRank($rank);
-        $user->setDateRegistered(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $dateRegistered
-            )
-        );
-        $user->setLastLogin(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $lastLogin
-            )
-        );
-        $user->setLastActive(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $lastActive
-            )
-        );
-        $user->setTimeZone($timeZone);
-        $user->setRole($role);
-        $user->setOfficeSymbol($officeSymbol);
-        $user->setBase($base);
-        $user->setDisabled($disabled);
-        $user->setReminderSent($reminderSent);
+        $row = [
+            'uuid' => $_uuid,
+            'userFirstName' => $firstName,
+            'userLastName' => $lastName,
+            'userHandle' => $handle,
+            'userPassword' => $password,
+            'userLegacyPassword' => $legacyPassword,
+            'userEmail' => $email,
+            'userRank' => $rank,
+            'userDateRegistered' => $dateRegistered,
+            'userLastLogin' => $lastLogin,
+            'userLastActive' => $lastActive,
+            'userTimeZone' => $timeZone,
+            'userRole' => $role,
+            'userOfficeSymbol' => $officeSymbol,
+            'userBase' => $base,
+            'userDisabled' => $disabled,
+            'reminderSent' => $reminderSent,
+        ];
 
-        $this->users[$uuid] = $user;
+        $user = $this->create_objects([$row])[ $_uuid ] ?? null;
+
+        if ($user === null) {
+            throw new RuntimeException('unable to create user object');
+        }
 
         return $user;
     }
@@ -231,68 +266,26 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
-            $user = new User();
-            $user->setUuid($row['uuid'] ?? '');
-            $user->setFirstName($row['userFirstName'] ?? '');
-            $user->setLastName($row['userLastName'] ?? '');
-            $user->setHandle($row['userHandle'] ?? '');
-            $user->setPassword($row['userPassword'] ?? '');
-            $user->setLegacyPassword($row['userLegacyPassword'] ?? '');
-            $user->setEmail($row['userEmail'] ?? '');
-            $user->setRank($row['userRank'] ?? '');
-
-            if (($row['userDateRegistered'] ?? null) !== null) {
-                $user->setDateRegistered(
-                    \DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row['userDateRegistered'] ?? ''
-                    )
-                );
-            }
-
-            if (($row['userLastLogin'] ?? null) !== null) {
-                $user->setLastLogin(
-                    \DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row['userLastLogin'] ?? ''
-                    )
-                );
-            }
-
-            if (($row['userLastActive'] ?? null) !== null) {
-                $user->setLastActive(
-                    \DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row['userLastActive'] ?? ''
-                    )
-                );
-            }
-
-            $user->setTimeZone($row['userTimeZone'] ?? '');
-            $user->setRole($row['userRole'] ?? '');
-            $user->setOfficeSymbol($row['userOfficeSymbol'] ?? '');
-            $user->setBase($row['userBase'] ?? '');
-            $user->setDisabled((bool)($row['userDisabled'] ?? false));
-            $user->setReminderSent((bool)($row['reminderSent'] ?? false));
-
-            $this->users[$row['uuid']] = $user;
+            $rows[] = $row;
         }
 
         $res->free();
 
-        return $this->users;
+        return $this->create_objects($rows);
     }
 
     /**
      * @param string[] $uuidList
+     * @param array|null $sort_options
      * @return User[]
      */
-    public function fetchArray(array $uuidList): array
+    public function fetchArray(array $uuidList, ?array $sort_options = null): array
     {
         if (empty($uuidList)) {
             return [];
@@ -305,9 +298,34 @@ SQL;
 
         $uuidListString = implode("','", $uuidListFiltered);
 
+        if (!$sort_options) {
+            $sort_options = [new UserSortOption(UserSortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`userData`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
         $qry = <<<SQL
+# noinspection SqlResolve
+
 SELECT
-  uuid,
+  userData.uuid,
   userFirstName,
   userLastName,
   userHandle,
@@ -325,70 +343,28 @@ SELECT
   userDisabled,
   reminderSent
 FROM userData
-WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+{$join_str}
+WHERE userData.uuid IN ('{$uuidListString}')
+{$sort_str}
 SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
                 continue;
             }
 
-            $user = new User();
-            $user->setUuid($row['uuid'] ?? '');
-            $user->setFirstName($row['userFirstName'] ?? '');
-            $user->setLastName($row['userLastName'] ?? '');
-            $user->setHandle($row['userHandle'] ?? '');
-            $user->setPassword($row['userPassword'] ?? '');
-            $user->setLegacyPassword($row['userLegacyPassword'] ?? '');
-            $user->setEmail($row['userEmail'] ?? '');
-            $user->setRank($row['userRank'] ?? '');
-            $user->setDateRegistered(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $row['userDateRegistered'] ?? ''
-                )
-            );
-            $user->setLastLogin(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $row['userLastLogin'] ?? ''
-                )
-            );
-            $user->setLastActive(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $row['userLastActive'] ?? ''
-                )
-            );
-            $user->setTimeZone($row['userTimeZone'] ?? '');
-            $user->setRole($row['userRole'] ?? '');
-            $user->setOfficeSymbol($row['userOfficeSymbol'] ?? '');
-            $user->setBase($row['userBase'] ?? '');
-            $user->setDisabled((bool)($row['userDisabled'] ?? false));
-            $user->setReminderSent((bool)($row['reminderSent'] ?? false));
-
-            $this->users[$row['uuid']] = $user;
+            $rows[] = $row;
         }
 
         $res->free();
 
         return array_intersect_key(
-            $this->users,
+            $this->create_objects($rows),
             array_flip($uuidList)
         );
-    }
-
-    /**
-     * @return UserCollection
-     */
-    public function reset(): self
-    {
-        $this->users = [];
-
-        return $this;
     }
 
     /**
@@ -494,8 +470,6 @@ SQL;
         }
 
         $stmt->close();
-
-        $this->users[$uuid] = $user;
     }
 
     /**
@@ -509,15 +483,15 @@ SQL;
 
         $c = count($users);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[$i])) {
+            if (!isset($users[ $i ])) {
                 continue;
             }
 
-            if (!$users[$i] instanceof User) {
+            if (!$users[ $i ] instanceof User) {
                 continue;
             }
 
-            $this->save($users[$i]);
+            $this->save($users[ $i ]);
         }
     }
 }

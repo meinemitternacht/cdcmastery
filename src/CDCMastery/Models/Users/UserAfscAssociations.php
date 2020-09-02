@@ -629,7 +629,8 @@ SQL;
 
         $qry = <<<SQL
 SELECT
-  afscUUID
+    afscUUID,
+    userAuthorized
 FROM userAFSCAssociations
 WHERE userUUID = ?
 SQL;
@@ -642,20 +643,31 @@ SQL;
             return $userAfscCollection;
         }
 
-        $stmt->bind_result($afscUuid);
+        $stmt->bind_result($afscUuid, $authorized);
 
         $afscList = [];
+        $afscsAuthorized = [];
+        $afscsPending = [];
         while ($stmt->fetch()) {
             if (!isset($afscUuid) || $afscUuid === null) {
                 continue;
             }
 
             $afscList[] = $afscUuid;
+
+            if ($authorized) {
+                $afscsAuthorized[] = $afscUuid;
+                continue;
+            }
+
+            $afscsPending[] = $afscUuid;
         }
 
         $stmt->close();
 
         $userAfscCollection->setAfscs($afscList);
+        $userAfscCollection->setAuthorized($afscsAuthorized);
+        $userAfscCollection->setPending($afscsPending);
 
         return $userAfscCollection;
     }

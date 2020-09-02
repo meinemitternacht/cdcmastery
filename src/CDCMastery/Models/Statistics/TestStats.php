@@ -230,7 +230,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -462,7 +461,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -716,7 +714,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -1026,7 +1023,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -1338,7 +1334,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -1654,7 +1649,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -1880,10 +1874,10 @@ SQL;
         $this->cache->hashAndSet(
             $avgScore,
             self::STAT_USER_AVG_BETWEEN,
-            CacheHandler::TTL_XLARGE, [
+            CacheHandler::TTL_TINY, [
                 $userUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -1905,7 +1899,7 @@ SQL;
 
         switch ($type) {
             case self::STAT_USER_AVG_BY_MONTH:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate, 
@@ -1919,7 +1913,7 @@ ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_AVG_BY_WEEK:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   YEARWEEK(testCollection.timeCompleted) AS tDate, 
@@ -1933,7 +1927,7 @@ ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_USER_AVG_BY_YEAR:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
@@ -1947,7 +1941,7 @@ ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_AVG_LAST_SEVEN:
-                $timeout = CacheHandler::TTL_LARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m-%d') AS tDate, 
@@ -1962,7 +1956,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -2119,8 +2112,8 @@ SQL;
         $this->cache->hashAndSet(
             $average,
             self::STAT_USER_AVG_OVERALL,
-            CacheHandler::TTL_XLARGE, [
-                $userUuid
+            CacheHandler::TTL_TINY, [
+                $userUuid,
             ]
         );
 
@@ -2190,10 +2183,10 @@ SQL;
         $this->cache->hashAndSet(
             $tCount,
             self::STAT_USER_COUNT_BETWEEN,
-            CacheHandler::TTL_XLARGE, [
+            CacheHandler::TTL_TINY, [
                 $userUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -2215,7 +2208,7 @@ SQL;
 
         switch ($type) {
             case self::STAT_USER_COUNT_BY_MONTH:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m') AS tDate,  
@@ -2229,7 +2222,7 @@ ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_COUNT_BY_WEEK:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   YEARWEEK(testCollection.timeCompleted) AS tDate,  
@@ -2243,7 +2236,7 @@ ORDER BY YEARWEEK(testCollection.timeCompleted)
 SQL;
                 break;
             case self::STAT_USER_COUNT_BY_YEAR:
-                $timeout = CacheHandler::TTL_XLARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y') AS tDate, 
@@ -2257,7 +2250,7 @@ ORDER BY tDate
 SQL;
                 break;
             case self::STAT_USER_COUNT_LAST_SEVEN:
-                $timeout = CacheHandler::TTL_LARGE;
+                $timeout = CacheHandler::TTL_TINY;
                 $qry = <<<SQL
 SELECT 
   DATE_FORMAT(testCollection.timeCompleted, '%Y-%m-%d') AS tDate,  
@@ -2272,7 +2265,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $cached = $this->cache->hashAndGet(
@@ -2421,8 +2413,8 @@ SQL;
         $this->cache->hashAndSet(
             $tCount ?? 0,
             self::STAT_USER_COUNT_OVERALL,
-            CacheHandler::TTL_XLARGE, [
-                $userUuid
+            CacheHandler::TTL_TINY, [
+                $userUuid,
             ]
         );
 

@@ -54,7 +54,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             ]);
 
             /** @uses \CDCMastery\Controllers\Admin\Bases::show_overview() */
-            $r->addRoute('GET', '/{uuid}/overview', [
+            $r->addRoute('GET', '/{uuid}', [
                 Admin\Bases::class,
                 'show_overview',
             ]);
@@ -287,6 +287,14 @@ return simpleDispatcher(function (RouteCollector $r) {
             Admin\Users::class,
             'show_home',
         ]);
+
+        $r->addGroup('/users', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
+            $r->addRoute('GET', '/{uuid}', [
+                Admin\Users::class,
+                'show_profile',
+            ]);
+        });
     });
 
     $r->addGroup('/auth', function (RouteCollector $r) {

@@ -1,0 +1,92 @@
+.profile-group-container {
+    display: flex;
+}
+
+.profile-group {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    margin: 0;
+}
+
+.profile-label {
+    margin: 0;
+}
+
+.profile-data {
+    margin-bottom: 0.3em;
+}
+
+.profile-two-col-container {
+    column-count: 2;
+    min-height: 103px;
+}
+
+@media only screen and (min-width: 1200px) {
+    .profile-group-container {
+        flex-flow: column wrap;
+    }
+
+    .profile-group {
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .profile-group-container {
+        flex-flow: row wrap;
+    }
+
+    .profile-label,
+    .profile-data {
+        width: auto;
+    }
+}
+
+/* @media only screen and (max-width : 992px) {} */
+/* use max-width 1200px instead */
+
+@media only screen and (max-width: 768px) {
+    .profile-group {
+        flex-flow: row wrap;
+        justify-content: center;
+    }
+
+    .profile-label,
+    .profile-data {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .profile-group-container {
+        flex-flow: row wrap;
+    }
+
+    .profile-group {
+        flex-flow: initial;
+        justify-content: space-between;
+        margin: 0 2em 0 2em;
+    }
+
+    .profile-label,
+    .profile-data {
+        width: auto;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .profile-group-container {
+        flex-flow: row wrap;
+    }
+
+    .profile-group {
+        flex-flow: column wrap;
+        margin: 0;
+    }
+
+    .profile-label {
+        width: 100%;
+    }
+}

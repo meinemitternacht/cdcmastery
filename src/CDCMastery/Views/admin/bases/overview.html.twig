@@ -27,49 +27,56 @@
     </div>
     <div class="row">
         <div class="col-md-10">
-            <div class="panel panel-primary">
-                <div class="panel-body panel-min-250">
-                    <div id="overview-chart" style="height:330px">
-                        &nbsp;
+            {% if graph.count and graph.avg %}
+                <div class="panel panel-primary">
+                    <div class="panel-body panel-min-250">
+                        <div id="overview-chart" style="height:330px">
+                            &nbsp;
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="help-block">
-                        Note: The graph and table below only show data for users that have been active in the past year.
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="help-block">
+                            Note: The graph and table below only show data for users that have been active in the past
+                            year.
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <table id="overview-detail-table" class="table table-striped table-hover cursor-pointer">
-                        <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Tests Taken</th>
-                            <th>Average Score</th>
-                            <th>Last Login</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% set i = 1 %}
-                        {% for user_uuid, row in stats.data %}
-                            <tr data-uuid="{{ user_uuid }}" {% if i > stats.limit %} class="text-muted"{% endif %}>
-                                <td>{{ row.name }}</td>
-                                <td>{{ row.tCount }}</td>
-                                <td>{{ row.tAvg|number_format(2) }}%</td>
-                                <td>{{ row.last_login }}</td>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="overview-detail-table" class="table table-striped table-hover cursor-pointer">
+                            <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Tests Taken</th>
+                                <th>Average Score</th>
+                                <th>Last Login</th>
                             </tr>
-                            {% set i = i + 1 %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    {% set tableSelector = "#overview-detail-table" %}
-                    {% set redirectPath = "/admin/users" %}
-                    {% include "utilities/table-row-link.html.twig" %}
+                            </thead>
+                            <tbody>
+                            {% set i = 1 %}
+                            {% for user_uuid, row in stats.data %}
+                                <tr data-uuid="{{ user_uuid }}" {% if i > stats.limit %} class="text-muted"{% endif %}>
+                                    <td>{{ row.name }}</td>
+                                    <td>{{ row.tCount }}</td>
+                                    <td>{{ row.tAvg|number_format(2) }}%</td>
+                                    <td>{{ row.last_login }}</td>
+                                </tr>
+                                {% set i = i + 1 %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% set tableSelector = "#overview-detail-table" %}
+                        {% set redirectPath = "/admin/users" %}
+                        {% include "utilities/table-row-link.html.twig" %}
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="alert alert-info">
+                    This base does not have any data to view.
+                </div>
+            {% endif %}
         </div>
         <div class="col-md-2">
             <div class="row">
@@ -111,9 +118,10 @@
             $('#base-chooser').click(function (e) {
                 let tgt_uuid = e.target.value;
 
-                window.location.href = '/admin/bases/' + tgt_uuid + '/overview';
+                window.location.href = '/admin/bases/' + tgt_uuid;
             });
 
+            {% if graph.count and graph.avg %}
             var overviewChart = new CanvasJS.Chart("overview-chart",
                 {
                     title: {
@@ -162,6 +170,7 @@
                 });
 
             overviewChart.render();
+            {% endif %}
         }
     </script>
 {% endblock %}

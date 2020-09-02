@@ -152,20 +152,19 @@ SQL;
 
         $c = count($trainingManagers);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($trainingManagers[$i])) {
+            if (!isset($trainingManagers[ $i ])) {
                 continue;
             }
 
-            if (!$trainingManagers[$i] instanceof User) {
+            if (!$trainingManagers[ $i ] instanceof User) {
                 continue;
             }
 
-            if (empty($trainingManagers[$i]->getUuid())) {
+            if (empty($trainingManagers[ $i ]->getUuid())) {
                 continue;
             }
 
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $trainingManagerUuid = $trainingManagers[$i]->getUuid();
+            $trainingManagerUuid = $trainingManagers[ $i ]->getUuid();
 
             if (!$stmt->execute()) {
                 /** @todo log */
@@ -209,20 +208,19 @@ SQL;
 
         $c = count($users);
         for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[$i])) {
+            if (!isset($users[ $i ])) {
                 continue;
             }
 
-            if (!$users[$i] instanceof User) {
+            if (!$users[ $i ] instanceof User) {
                 continue;
             }
 
-            if (empty($users[$i]->getUuid())) {
+            if (empty($users[ $i ]->getUuid())) {
                 continue;
             }
 
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $userUuid = $users[$i]->getUuid();
+            $userUuid = $users[ $i ]->getUuid();
 
             if (!$stmt->execute()) {
                 /** @todo log */
@@ -231,6 +229,90 @@ SQL;
         }
 
         $stmt->close();
+    }
+
+    /**
+     * @param User $user
+     * @return string[]
+     *  A list of training manager user UUIDs
+     */
+    public function fetchAllByUser(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $user_uuid = $user->getUuid();
+
+        $qry = <<<SQL
+SELECT trainingManagerUUID
+FROM userTrainingManagerAssociations
+WHERE userUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $user_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($tm_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $tm_uuid;
+        }
+
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * @param User $user
+     * @return string[]
+     *  A list of subordinate user UUIDs
+     */
+    public function fetchAllByTrainingManager(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $tm_uuid = $user->getUuid();
+
+        $qry = <<<SQL
+SELECT userUUID
+FROM userTrainingManagerAssociations
+WHERE trainingManagerUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $tm_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($user_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $user_uuid;
+        }
+
+        $stmt->close();
+        return $data;
     }
 
     /**
