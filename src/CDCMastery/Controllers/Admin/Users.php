@@ -115,7 +115,8 @@ class Users extends Admin
 
         $sort[] = new UserSortOption(UserSortOption::COL_UUID);
 
-        $users = $this->users->fetchAll($sort);
+        $n_users = $this->users->count();
+        $users = $this->users->fetchAll($sort, $curPage * $numRecords, $numRecords);
         $bases = $this->bases->fetchArray(array_map(static function (User $v): string {
             return $v->getBase();
         }, $users));
@@ -126,17 +127,11 @@ class Users extends Admin
             return $v->getOfficeSymbol();
         }, $users));
 
-        $filteredList = ArrayPaginator::paginate(
-            $users,
-            $curPage,
-            $numRecords
-        );
-
         $pagination = ArrayPaginator::buildLinks(
             '/admin/users',
             $curPage,
-            ArrayPaginator::calcNumPagesData(
-                $users,
+            ArrayPaginator::calcNumPagesNoData(
+                $n_users,
                 $numRecords
             ),
             $numRecords,
@@ -145,7 +140,7 @@ class Users extends Admin
         );
 
         $data = [
-            'users' => $filteredList,
+            'users' => $users,
             'bases' => $bases,
             'roles' => $roles,
             'symbols' => $symbols,

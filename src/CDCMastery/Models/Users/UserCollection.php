@@ -97,6 +97,24 @@ class UserCollection
         return $out;
     }
 
+    public function count(): int
+    {
+        $qry = <<<SQL
+SELECT COUNT(*) AS count FROM userData
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)$row[ 'count' ];
+    }
+
     /**
      * @param string $uuid
      */
@@ -211,9 +229,11 @@ SQL;
 
     /**
      * @param UserSortOption[]|null $sort_options
+     * @param int|null $start
+     * @param int|null $limit
      * @return User[]
      */
-    public function fetchAll(?array $sort_options = null): array
+    public function fetchAll(?array $sort_options = null, ?int $start = null, ?int $limit = null): array
     {
         if (!$sort_options) {
             $sort_options = [new UserSortOption(UserSortOption::COL_UUID)];
@@ -237,6 +257,11 @@ SQL;
             ? implode("\n", $join_strs)
             : null;
         $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
 
         $qry = <<<SQL
 # noinspection SqlResolve
@@ -262,6 +287,7 @@ SELECT
 FROM userData
 {$join_str}
 {$sort_str}
+{$limit_str}
 SQL;
 
         $res = $this->db->query($qry);
