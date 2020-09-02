@@ -9,6 +9,7 @@ use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
+use DateTime;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -164,6 +165,11 @@ class Auth extends RootController
         }
 
         $this->auth_helpers->login_hook($user, $this->roles->fetch($user->getRole()));
+
+        $now = new DateTime();
+        $user->setLastActive($now);
+        $user->setLastLogin($now);
+        $this->users->save($user);
 
         $this->log->addInfo("login success :: account {$user->getUuid()} " .
                             "'{$user->getName()}' :: ip {$_SERVER['REMOTE_ADDR']}");

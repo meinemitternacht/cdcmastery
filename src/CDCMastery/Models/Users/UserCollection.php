@@ -444,7 +444,7 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
-            'ssssssssssssssii',
+            'sssssssssssssssii',
             $uuid,
             $firstName,
             $lastName,

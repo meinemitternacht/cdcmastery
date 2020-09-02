@@ -180,9 +180,9 @@ class AuthHelpers
         return $this->session->get(self::KEY_REDIRECT);
     }
 
-    public function set_redirect(string $path): ?string
+    public function set_redirect(string $path): void
     {
-        return $this->session->set(self::KEY_REDIRECT, $path);
+        $this->session->set(self::KEY_REDIRECT, $path);
     }
 
     /**
