@@ -118,6 +118,11 @@ class Bases extends Admin
     public function show_home(): Response
     {
         $bases = $this->bases->fetchAll();
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if ($user->getBase()) {
+            $my_base = $this->bases->fetch($user->getBase());
+        }
 
         usort(
             $bases,
@@ -128,6 +133,7 @@ class Bases extends Admin
 
         $data = [
             'bases' => $bases,
+            'my_base' => $my_base ?? null,
         ];
 
         return $this->render(
