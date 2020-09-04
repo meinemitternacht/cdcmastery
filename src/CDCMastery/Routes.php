@@ -295,16 +295,52 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_profile',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_disable() */
+            $r->addRoute('GET', '/{uuid}/disable', [
+                Admin\Users::class,
+                'show_disable',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::toggle_disabled() */
+            $r->addRoute('POST', '/{uuid}/disable', [
+                Admin\Users::class,
+                'toggle_disabled',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_reactivate() */
+            $r->addRoute('GET', '/{uuid}/reactivate', [
+                Admin\Users::class,
+                'show_reactivate',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::toggle_disabled() */
+            $r->addRoute('POST', '/{uuid}/reactivate', [
+                Admin\Users::class,
+                'toggle_disabled',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
             $r->addRoute('GET', '/{uuid}/tests', [
                 Admin\Users::class,
                 'show_test_history_complete',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_incomplete() */
             $r->addRoute('GET', '/{uuid}/tests/incomplete', [
                 Admin\Users::class,
                 'show_test_history_incomplete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_delete_incomplete_tests() */
+            $r->addRoute('GET', '/{uuid}/tests/incomplete/delete', [
+                Admin\Users::class,
+                'show_delete_incomplete_tests',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_delete_incomplete_tests() */
+            $r->addRoute('POST', '/{uuid}/tests/incomplete/delete', [
+                Admin\Users::class,
+                'do_delete_incomplete_tests',
             ]);
 
             /** @uses \CDCMastery\Controllers\Admin\Users::show_test() */

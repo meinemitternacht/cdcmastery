@@ -85,9 +85,9 @@ class UserCollection
             }
 
             $user->setTimeZone($row[ 'userTimeZone' ] ?? '');
-            $user->setRole($row[ 'userRole' ] ?? '');
-            $user->setOfficeSymbol($row[ 'userOfficeSymbol' ] ?? '');
-            $user->setBase($row[ 'userBase' ] ?? '');
+            $user->setRole($row[ 'userRole' ]);
+            $user->setOfficeSymbol($row[ 'userOfficeSymbol' ]);
+            $user->setBase($row[ 'userBase' ]);
             $user->setDisabled((bool)($row[ 'userDisabled' ] ?? false));
             $user->setReminderSent((bool)($row[ 'reminderSent' ] ?? false));
 

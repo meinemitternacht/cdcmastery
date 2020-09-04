@@ -3,7 +3,12 @@
 {% block main %}
     {% include "blocks/admin/users/menu.html.twig" %}
     <div class="page-header">
-        <h3>{{ user.name }}</h3>
+        <h3>
+            {{ user.name }}
+            {% if user.isDisabled %}
+                <span class="badge badge-danger" title="This user is currently disabled">DISABLED</span>
+            {% endif %}
+        </h3>
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">

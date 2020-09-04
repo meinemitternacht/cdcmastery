@@ -37,12 +37,15 @@
                             <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/edit" %} class="active"{% endif %}>
                                 <a href="/admin/users/{{ user.uuid }}/edit">Edit</a>
                             </li>
-                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/delete" %} class="active"{% endif %}>
-                                <a href="/admin/users/{{ user.uuid }}/delete">Delete</a>
-                            </li>
-                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/ban" %} class="active"{% endif %}>
-                                <a href="/admin/users/{{ user.uuid }}/ban">Ban</a>
-                            </li>
+                            {% if user.isDisabled %}
+                                <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/reactivate" %} class="active"{% endif %}>
+                                    <a href="/admin/users/{{ user.uuid }}/reactivate">Reactivate</a>
+                                </li>
+                            {% else %}
+                                <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/disable" %} class="active"{% endif %}>
+                                    <a href="/admin/users/{{ user.uuid }}/disable">Disable</a>
+                                </li>
+                            {% endif %}
                             <li role="separator" class="divider"></li>
                             <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/resend-activation" %} class="active"{% endif %}>
                                 <a href="/admin/users/{{ user.uuid }}/resend-activation">Resend Activation</a>
@@ -69,8 +72,9 @@
                                 <a href="/admin/users/{{ user.uuid }}/tests/incomplete">Incomplete Tests</a>
                             </li>
                             <li role="separator" class="divider"></li>
-                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/delete/incomplete" %} class="active"{% endif %}>
-                                <a href="/admin/users/{{ user.uuid }}/delete">Delete Incomplete Tests</a>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/incomplete/delete" %} class="active"{% endif %}>
+                                <a href="/admin/users/{{ user.uuid }}/tests/incomplete/delete">Delete Incomplete
+                                    Tests</a>
                             </li>
                         </ul>
                     </li>

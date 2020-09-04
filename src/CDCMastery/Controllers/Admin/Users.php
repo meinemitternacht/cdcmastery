@@ -108,6 +108,57 @@ class Users extends Admin
         }
     }
 
+    public function do_delete_incomplete_tests(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $tests = $this->tests->fetchAllByUser($user);
+
+        $tests = array_filter(
+            $tests,
+            function ($v) {
+                if (!$v instanceof Test) {
+                    return false;
+                }
+
+                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+            }
+        );
+
+        if (!is_array($tests) || count($tests) === 0) {
+            $this->flash()->add(MessageTypes::INFO,
+                                'There are no tests to delete for this user');
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $this->tests->deleteArray(
+            TestHelpers::listUuid($tests)
+        );
+
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'All incomplete tests for this user have been removed from the database');
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+    }
+
+    public function toggle_disabled(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $was_disabled = $user->isDisabled();
+        $user->setDisabled(!$was_disabled);
+        $this->users->save($user);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The specified user account has been ' .
+            ($was_disabled
+                ? 'reactivated'
+                : 'disabled')
+        );
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+    }
+
     public function show_home(): Response
     {
         $sortCol = $this->get(ArrayPaginator::VAR_SORT);
@@ -164,6 +215,56 @@ class Users extends Admin
 
         return $this->render(
             "admin/users/list.html.twig",
+            $data
+        );
+    }
+
+    public function show_disable(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        if ($user->isDisabled()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'That user is already disabled'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $data = [
+            'user' => $user,
+            'base' => $this->bases->fetch($user->getBase()),
+            'role' => $this->roles->fetch($user->getRole()),
+        ];
+
+        return $this->render(
+            'admin/users/disable.html.twig',
+            $data
+        );
+    }
+
+    public function show_reactivate(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        if (!$user->isDisabled()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'That user is not currently disabled'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $data = [
+            'user' => $user,
+            'base' => $this->bases->fetch($user->getBase()),
+            'role' => $this->roles->fetch($user->getRole()),
+        ];
+
+        return $this->render(
+            'admin/users/reactivate.html.twig',
             $data
         );
     }
@@ -238,6 +339,47 @@ class Users extends Admin
 
         return $this->render(
             'admin/users/profile.html.twig',
+            $data
+        );
+    }
+
+    public function show_delete_incomplete_tests(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $tests = $this->tests->fetchAllByUser($user);
+
+        $tests = array_filter(
+            $tests,
+            function (Test $v) {
+                return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
+            }
+        );
+
+        if (count($tests) === 0) {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                'There are no incomplete tests to delete for this user'
+            );
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        uasort(
+            $tests,
+            function (Test $a, Test $b) {
+                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+            }
+        );
+
+        $tests = TestHelpers::formatHtml($tests);
+
+        $data = [
+            'user' => $user,
+            'tests' => $tests,
+        ];
+
+        return $this->render(
+            'admin/users/tests/delete-incomplete.html.twig',
             $data
         );
     }

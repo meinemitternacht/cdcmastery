@@ -430,7 +430,7 @@ class Tests extends RootController
     /**
      * @return Response
      */
-    public function show_delete_incomplete_Tests(): Response
+    public function show_delete_incomplete_tests(): Response
     {
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
         $tests = $this->tests->fetchAllByUser($user);
