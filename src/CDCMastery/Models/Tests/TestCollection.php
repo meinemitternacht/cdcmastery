@@ -90,8 +90,7 @@ class TestCollection
                     $str = self::TABLE_NAME . '.' . $column;
                     break;
                 default:
-                    $str = '';
-                    continue;
+                    continue 2;
             }
 
             switch ($order) {
@@ -279,6 +278,7 @@ SQL;
         $test->setQuestions($questionArr);
         $test->setCurrentQuestion($curQuestion ?? 0);
         $test->setNumAnswered($numAnswered ?? 0);
+        $test->setNumMissed($numMissed ?? 0);
         $test->setScore((float)$score ?? 0.00);
         $test->setCombined((bool)($combined ?? false));
         $test->setArchived((bool)($archived ?? false));
