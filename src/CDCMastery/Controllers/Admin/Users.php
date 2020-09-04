@@ -207,6 +207,7 @@ class Users extends Admin
             'roles' => $roles,
             'symbols' => $symbols,
             'pagination' => $pagination,
+            'n_users' => $n_users,
             'sort' => [
                 'col' => $sortCol,
                 'dir' => $sortDir,
