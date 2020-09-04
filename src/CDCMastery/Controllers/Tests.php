@@ -609,7 +609,7 @@ class Tests extends RootController
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
-        [$col, $dir] = self::validate_sort($sortCol, $sortDir);
+        [$col, $dir] = self::validate_test_sort($sortCol, $sortDir);
         $userTests = $this->tests->fetchAllByUser($user,
                                                   [
                                                       $col => $dir,
@@ -760,9 +760,10 @@ class Tests extends RootController
     private function show_test_incomplete(string $testUuid): Response
     {
         return $this->render(
-            'tests/test.html.twig', [
-                                      'testUuid' => $testUuid,
-                                  ]
+            'tests/test.html.twig',
+            [
+                'testUuid' => $testUuid,
+            ]
         );
     }
 
@@ -771,7 +772,7 @@ class Tests extends RootController
      * @param null|string $direction
      * @return array
      */
-    private function validate_sort(?string $column, ?string $direction): array
+    public static function validate_test_sort(?string $column, ?string $direction): array
     {
         $column = $column ?? 'timeStarted';
         $direction = $direction ?? 'DESC';

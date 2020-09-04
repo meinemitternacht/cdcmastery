@@ -53,7 +53,7 @@
                         </ul>
                     </li>
 
-                    <li class="dropdown">
+                    <li class="dropdown{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/tests" %} active{% endif %}">
                         <a href="#"
                            class="dropdown-toggle"
                            data-toggle="dropdown"
@@ -69,11 +69,8 @@
                                 <a href="/admin/users/{{ user.uuid }}/tests/incomplete">Incomplete Tests</a>
                             </li>
                             <li role="separator" class="divider"></li>
-                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/delete/all" %} class="active"{% endif %}>
-                                <a href="/admin/users/{{ user.uuid }}/delete">Delete All Tests</a>
-                            </li>
                             <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/delete/incomplete" %} class="active"{% endif %}>
-                                <a href="/admin/users/{{ user.uuid }}/delete">Delete All Incomplete Tests</a>
+                                <a href="/admin/users/{{ user.uuid }}/delete">Delete Incomplete Tests</a>
                             </li>
                         </ul>
                     </li>

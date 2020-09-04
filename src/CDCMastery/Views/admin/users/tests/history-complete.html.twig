@@ -1,0 +1,53 @@
+{% extends "layout.html.twig" %}
+{% set page_title = 'Test History - ' ~ user.name %}
+{% block main %}
+    {% include "blocks/admin/users/menu.html.twig" %}
+    <div class="page-header">
+        <h3>{{ user.name }} &mdash; Completed Tests</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table id="tests-table" class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>{{ sortlink('afscList','AFSC',sort)|raw }}</th>
+                        <th>Questions</th>
+                        <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
+                        <th>{{ sortlink('timeCompleted','Time Completed',sort)|raw }}</th>
+                        <th>{{ sortlink('score','Score',sort)|raw }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for test in tests %}
+                        <tr class="{% if test.score >= passingScore %} bg-success{% else %} bg-danger{% endif %}"
+                            style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                            <td title="{{ test.afsc }}">
+                                {% if test.afsc|length > 0 %}
+                                    {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
+                                {% else %}
+                                    No Data
+                                {% endif %}
+                            </td>
+                            <td>{{ test.questions }}</td>
+                            <td>{{ test.time.started }}</td>
+                            <td>{{ test.time.completed }}</td>
+                            <td>{{ test.score }}%</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if pagination %}
+                <div class="text-center">
+                    {{ pagination|raw }}
+                </div>
+            {% endif %}
+            {% if tests|length > 0 %}
+                {% set tableSelector = "#tests-table" %}
+                {% set redirectPath = "/admin/users/" ~ user.uuid ~ "/tests" %}
+                {% include "utilities/table-row-link.html.twig" %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

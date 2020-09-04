@@ -3,16 +3,21 @@
 namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Controllers\Tests;
 use CDCMastery\Helpers\ArrayPaginator;
+use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
+use CDCMastery\Models\Tests\TestDataHelpers;
+use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Users\Role;
 use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\User;
@@ -28,12 +33,16 @@ use Twig\Environment;
 
 class Users extends Admin
 {
+    private const TYPE_COMPLETE = 0;
+    private const TYPE_INCOMPLETE = 1;
+
     private UserCollection $users;
     private BaseCollection $bases;
     private RoleCollection $roles;
     private OfficeSymbolCollection $symbols;
     private TestStats $test_stats;
     private TestCollection $tests;
+    private TestDataHelpers $test_data_helpers;
     private AfscCollection $afscs;
     private UserAfscAssociations $afsc_assocs;
     private UserTrainingManagerAssociations $tm_assocs;
@@ -50,6 +59,7 @@ class Users extends Admin
         OfficeSymbolCollection $symbols,
         TestStats $test_stats,
         TestCollection $tests,
+        TestDataHelpers $test_data_helpers,
         AfscCollection $afscs,
         UserAfscAssociations $afsc_assocs,
         UserTrainingManagerAssociations $tm_assocs,
@@ -63,6 +73,7 @@ class Users extends Admin
         $this->symbols = $symbols;
         $this->test_stats = $test_stats;
         $this->tests = $tests;
+        $this->test_data_helpers = $test_data_helpers;
         $this->afscs = $afscs;
         $this->afsc_assocs = $afsc_assocs;
         $this->tm_assocs = $tm_assocs;
@@ -229,5 +240,174 @@ class Users extends Admin
             'admin/users/profile.html.twig',
             $data
         );
+    }
+
+    public function show_test(string $uuid, string $test_uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $test = $this->tests->fetch($test_uuid);
+
+        if (!$test->getUuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test could not be found'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        if (!$test->isComplete()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'Tests that are still in-progress cannot be viewed'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        return $this->show_test_complete($user, $test);
+    }
+
+    private function show_test_complete(User $user, Test $test): Response
+    {
+        $testData = $this->test_data_helpers->list($test);
+
+        $data = [
+            'user' => $user,
+            'timeStarted' => $test->getTimeStarted()->format(
+                DateTimeHelpers::DT_FMT_LONG
+            ),
+            'timeCompleted' => $test->getTimeCompleted()->format(
+                DateTimeHelpers::DT_FMT_LONG
+            ),
+            'afscList' => AfscHelpers::listNames($test->getAfscs()),
+            'numQuestions' => $test->getNumQuestions(),
+            'numMissed' => $test->getNumMissed(),
+            'score' => $test->getScore(),
+            'isArchived' => $test->isArchived(),
+            'testData' => $testData,
+        ];
+
+        return $this->render(
+            'admin/users/tests/completed.html.twig',
+            $data
+        );
+    }
+
+    private function show_test_history(User $user, int $type): Response
+    {
+        switch ($type) {
+            case self::TYPE_COMPLETE:
+                $path = "/admin/users/{$user->getUuid()}/tests";
+                $typeStr = 'complete';
+                $template = 'admin/users/tests/history-complete.html.twig';
+                break;
+            case self::TYPE_INCOMPLETE:
+                $path = "/admin/users/{$user->getUuid()}/tests/incomplete";
+                $typeStr = 'incomplete';
+                $template = 'admin/users/tests/history-incomplete.html.twig';
+                break;
+            default:
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'We made a mistake when processing that request'
+                );
+
+                return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+
+        [$col, $dir] = Tests::validate_test_sort($sortCol, $sortDir);
+        $userTests = $this->tests->fetchAllByUser($user,
+                                                  [
+                                                      $col => $dir,
+                                                  ]);
+
+        if (empty($userTests)) {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                'This user has not taken any tests'
+            );
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $userTests = array_filter(
+            $userTests,
+            function (Test $v) use ($type) {
+                switch ($type) {
+                    case self::TYPE_COMPLETE:
+                        if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
+                            return true;
+                        }
+                        break;
+                    case self::TYPE_INCOMPLETE:
+                        if ($v->getScore() < 1 && $v->getTimeCompleted() === null) {
+                            return true;
+                        }
+                        break;
+                }
+
+                return false;
+            }
+        );
+
+        $userTests = TestHelpers::formatHtml($userTests);
+
+        $filteredList = ArrayPaginator::paginate(
+            $userTests,
+            $curPage,
+            $numRecords
+        );
+
+        if (count($filteredList) === 0) {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                $type === self::TYPE_INCOMPLETE
+                    ? 'This account does not have ' . $typeStr . ' tests'
+                    : 'This account has not taken any ' . $typeStr . ' tests'
+            );
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $pagination = ArrayPaginator::buildLinks(
+            $path,
+            $curPage,
+            ArrayPaginator::calcNumPagesData(
+                $userTests,
+                $numRecords
+            ),
+            $numRecords,
+            $col,
+            $dir
+        );
+
+        return $this->render(
+            $template,
+            [
+                'user' => $user,
+                'tests' => $filteredList,
+                'pagination' => $pagination,
+                'sort' => [
+                    'col' => $sortCol,
+                    'dir' => $sortDir,
+                ],
+            ]
+        );
+    }
+
+    public function show_test_history_complete(string $uuid): Response
+    {
+        return $this->show_test_history($this->get_user($uuid), self::TYPE_COMPLETE);
+    }
+
+    public function show_test_history_incomplete(string $uuid): Response
+    {
+        return $this->show_test_history($this->get_user($uuid), self::TYPE_INCOMPLETE);
     }
 }

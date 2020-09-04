@@ -294,6 +294,24 @@ return simpleDispatcher(function (RouteCollector $r) {
                 Admin\Users::class,
                 'show_profile',
             ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
+            $r->addRoute('GET', '/{uuid}/tests', [
+                Admin\Users::class,
+                'show_test_history_complete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
+            $r->addRoute('GET', '/{uuid}/tests/incomplete', [
+                Admin\Users::class,
+                'show_test_history_incomplete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_test() */
+            $r->addRoute('GET', '/{uuid}/tests/{test_uuid}', [
+                Admin\Users::class,
+                'show_test',
+            ]);
         });
     });
 
