@@ -81,7 +81,8 @@ class RootController
      */
     public function redirect(string $destination): Response
     {
-        return self::static_redirect($destination);
+        self::static_redirect($destination)->send();
+        exit;
     }
 
     /**
