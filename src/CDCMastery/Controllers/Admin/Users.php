@@ -185,7 +185,7 @@ class Users extends Admin
         $roles = $this->roles->fetchArray(array_map(static function (User $v): string {
             return $v->getRole();
         }, $users));
-        $symbols = $this->symbols->fetchArray(array_map(static function (User $v): string {
+        $symbols = $this->symbols->fetchArray(array_map(static function (User $v): ?string {
             return $v->getOfficeSymbol();
         }, $users));
 
