@@ -18,9 +18,6 @@
                 <li{% if cur_url == "/admin/cdc/afsc" %} class="active"{% endif %}>
                     <a href="/admin/cdc/afsc">AFSC List</a>
                 </li>
-                <li{% if cur_url == "/admin/cdc/afsc/migrate" %} class="active"{% endif %}>
-                    <a href="/admin/cdc/afsc/migrate">Migrate Associations</a>
-                </li>
                 {% if afsc %}
                     <li{% if cur_url == "/admin/cdc/afsc/" ~ afsc.uuid ~ "/edit" %} class="active"{% endif %}>
                         <a href="/admin/cdc/afsc/{{ afsc.uuid }}/edit">Edit</a>
