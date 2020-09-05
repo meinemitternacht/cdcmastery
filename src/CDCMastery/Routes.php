@@ -319,6 +319,30 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'toggle_disabled',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_afsc_associations() */
+            $r->addRoute('GET', '/{uuid}/afsc', [
+                Admin\Users::class,
+                'show_afsc_associations',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_add() */
+            $r->addRoute('POST', '/{uuid}/afsc/add', [
+                Admin\Users::class,
+                'do_afsc_association_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_approve() */
+            $r->addRoute('POST', '/{uuid}/afsc/approve', [
+                Admin\Users::class,
+                'do_afsc_association_approve',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_remove() */
+            $r->addRoute('POST', '/{uuid}/afsc/remove', [
+                Admin\Users::class,
+                'do_afsc_association_remove',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
             $r->addRoute('GET', '/{uuid}/tests', [
                 Admin\Users::class,

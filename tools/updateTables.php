@@ -163,6 +163,15 @@ alter table userTrainingManagerAssociations
 -- SPLIT ;;
 DELETE FROM userSupervisorAssociations WHERE supervisorUUID = userUUID;
 DELETE FROM userTrainingManagerAssociations WHERE trainingManagerUUID = userUUID;
+-- SPLIT ;;
+alter table userAFSCAssociations drop primary key;
+alter table userAFSCAssociations drop column uuid;
+-- SPLIT ;;
+alter table userAFSCAssociations
+	add constraint userAFSCAssociations_pk
+		primary key (userUUID, afscUUID);
+-- SPLIT ;;
+alter table userAFSCAssociations drop key user_afsc;
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

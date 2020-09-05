@@ -8,6 +8,7 @@ use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
+use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -106,6 +107,121 @@ class Users extends Admin
             unset($e);
             return null;
         }
+    }
+
+    public function do_afsc_association_add(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        $params = [
+            'new_afsc',
+        ];
+
+        $this->checkParameters($params);
+
+        $new_afsc = $this->get('new_afsc');
+
+        if (!is_array($new_afsc)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        $tgt_afscs = $this->afscs->fetchArray($new_afsc);
+
+        if (!$tgt_afscs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected AFSCs were not valid'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
+
+        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+    }
+
+    public function do_afsc_association_approve(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        $params = [
+            'approve_afsc',
+        ];
+
+        $this->checkParameters($params);
+
+        $approve_afsc = $this->get('approve_afsc');
+
+        if (!is_array($approve_afsc)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        $tgt_afscs = $this->afscs->fetchArray($approve_afsc);
+
+        if (!$tgt_afscs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected AFSCs were not valid'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        foreach ($tgt_afscs as $tgt_afsc) {
+            $this->afsc_assocs->authorize($user, $tgt_afsc);
+        }
+
+        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+    }
+
+    public function do_afsc_association_remove(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        $params = [
+            'del_afsc',
+        ];
+
+        $this->checkParameters($params);
+
+        $del_afsc = $this->get('del_afsc');
+
+        if (!is_array($del_afsc)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        $tgt_afscs = $this->afscs->fetchArray($del_afsc);
+
+        if (!$tgt_afscs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected AFSCs were not valid'
+            );
+
+            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
+
+        foreach ($tgt_afscs as $tgt_afsc) {
+            $this->afsc_assocs->remove($user, $tgt_afsc);
+        }
+
+        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
     }
 
     public function do_delete_incomplete_tests(string $uuid): Response
@@ -216,6 +332,40 @@ class Users extends Admin
 
         return $this->render(
             "admin/users/list.html.twig",
+            $data
+        );
+    }
+
+    public function show_afsc_associations(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
+        $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
+
+        $cmp = static function (Afsc $a, Afsc $b): int {
+            return $a->getName() . $a->getEditCode() <=> $b->getName() . $b->getEditCode();
+        };
+
+        uasort($afscs, $cmp);
+
+        $available = array_filter(
+            $afscs,
+            static function (Afsc $v): bool {
+                return !$v->isHidden() && !$v->isObsolete();
+            }
+        );
+
+        $data = [
+            'user' => $user,
+            'afscs' => [
+                'authorized' => array_intersect_key($afscs, array_flip($afsc_assocs->getAuthorized())),
+                'pending' => array_intersect_key($afscs, array_flip($afsc_assocs->getPending())),
+                'available' => array_diff_key($available, array_flip($afsc_assocs->getAfscs())),
+            ],
+        ];
+
+        return $this->render(
+            'admin/users/afsc/associations.html.twig',
             $data
         );
     }

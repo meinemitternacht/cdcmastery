@@ -293,39 +293,23 @@ SQL;
         $afscUuid = null;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssi',
-            $userUuid,
-            $afscUuid,
-            $authorized
-        );
 
-        $c = count($afscs);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($afscs[$i])) {
-                continue;
-            }
+        foreach ($afscs as $afsc) {
+            $afscUuid = $afsc->getUuid();
 
-            if (!$afscs[$i] instanceof Afsc) {
-                continue;
-            }
-
-            if (empty($afscs[$i]->getUuid())) {
-                continue;
-            }
-
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $afscUuid = $afscs[$i]->getUuid();
+            $stmt->bind_param(
+                'ssi',
+                $userUuid,
+                $afscUuid,
+                $authorized
+            );
 
             if (!$stmt->execute()) {
                 /** @todo log */
                 continue;
             }
-        }
 
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return;
+            $stmt->reset();
         }
 
         $stmt->close();
@@ -382,7 +366,6 @@ SQL;
                 continue;
             }
 
-            /** @noinspection PhpUnusedLocalVariableInspection */
             $userUuid = $users[$i]->getUuid();
 
             if (!$stmt->execute()) {
@@ -518,7 +501,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         $res = $this->db->query($qry);
@@ -558,7 +540,6 @@ SQL;
                 break;
             default:
                 return [];
-                break;
         }
 
         return $out;
