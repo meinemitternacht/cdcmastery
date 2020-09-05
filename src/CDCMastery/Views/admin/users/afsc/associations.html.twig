@@ -83,27 +83,10 @@
                       method="POST">
                     <fieldset>
                         <legend>Current Associations</legend>
-                        <div class="form-group">
-                            <fieldset>
-                                {% for afsc in afscs.authorized %}
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                            <input type="checkbox"
-                                                   id="del-afsc-{{ afsc.uuid }}"
-                                                   name="del_afsc[]"
-                                                   value="{{ afsc.uuid }}">
-                                        </div>
-                                        <div class="col-md-11">
-                                            <label for="del-afsc-{{ afsc.uuid }}">
-                                                {{ afsc.name }}
-                                                {% if afsc.editCode %}<span class="text-info">
-                                                    [EC {{ afsc.editCode }}]</span>{% endif %}
-                                            </label>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                                {% if afscs.pending %}
-                                    {% for afsc in afscs.pending %}
+                        {% if afscs.authorized or afscs.pending %}
+                            <div class="form-group">
+                                <fieldset>
+                                    {% for afsc in afscs.authorized %}
                                         <div class="row">
                                             <div class="col-md-1">
                                                 <input type="checkbox"
@@ -116,19 +99,43 @@
                                                     {{ afsc.name }}
                                                     {% if afsc.editCode %}<span class="text-info">
                                                         [EC {{ afsc.editCode }}]</span>{% endif %}
-                                                    <span class="badge badge-warning badge-sm" title="PENDING">!</span>
                                                 </label>
                                             </div>
                                         </div>
                                     {% endfor %}
-                                {% endif %}
-                            </fieldset>
-                        </div>
-                        <div class="form-group">
-                            <fieldset>
-                                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                            </fieldset>
-                        </div>
+                                    {% if afscs.pending %}
+                                        {% for afsc in afscs.pending %}
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                    <input type="checkbox"
+                                                           id="del-afsc-{{ afsc.uuid }}"
+                                                           name="del_afsc[]"
+                                                           value="{{ afsc.uuid }}">
+                                                </div>
+                                                <div class="col-md-11">
+                                                    <label for="del-afsc-{{ afsc.uuid }}">
+                                                        {{ afsc.name }}
+                                                        {% if afsc.editCode %}<span class="text-info">
+                                                            [EC {{ afsc.editCode }}]</span>{% endif %}
+                                                        <span class="badge badge-warning badge-sm"
+                                                              title="PENDING">!</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </fieldset>
+                            </div>
+                            <div class="form-group">
+                                <fieldset>
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </fieldset>
+                            </div>
+                        {% else %}
+                            <div class="help-block">
+                                There are no AFSC associations in the database for this user.
+                            </div>
+                        {% endif %}
                     </fieldset>
                 </form>
             </div>

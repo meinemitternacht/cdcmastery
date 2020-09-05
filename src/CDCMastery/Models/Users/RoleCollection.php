@@ -189,6 +189,61 @@ SQL;
                                    array_flip($uuids));
     }
 
+    public function fetchType(string $type): ?Role
+    {
+        $role = null;
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  roleType,
+  roleName,
+  roleDescription
+FROM roleList
+WHERE roleType = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $type)) {
+            $stmt->close();
+            goto out_return;
+        }
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            goto out_return;
+        }
+
+        if (!$stmt->bind_result($_uuid,
+                                $type,
+                                $name,
+                                $description)) {
+            $stmt->close();
+            goto out_return;
+        }
+
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            goto out_return;
+        }
+
+        $stmt->close();
+
+        $role = new Role();
+        $role->setUuid($_uuid);
+        $role->setType($type);
+        $role->setName($name);
+        $role->setDescription($description);
+
+        out_return:
+        return $role;
+    }
+
     /**
      * @param Role $role
      */

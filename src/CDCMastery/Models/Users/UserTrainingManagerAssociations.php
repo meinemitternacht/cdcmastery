@@ -144,27 +144,15 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $trainingManagerUuid,
-            $userUuid
-        );
 
-        $c = count($trainingManagers);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($trainingManagers[ $i ])) {
-                continue;
-            }
+        foreach ($trainingManagers as $trainingManager) {
+            $trainingManagerUuid = $trainingManager->getUuid();
 
-            if (!$trainingManagers[ $i ] instanceof User) {
-                continue;
-            }
-
-            if (empty($trainingManagers[ $i ]->getUuid())) {
-                continue;
-            }
-
-            $trainingManagerUuid = $trainingManagers[ $i ]->getUuid();
+            $stmt->bind_param(
+                'ss',
+                $trainingManagerUuid,
+                $userUuid
+            );
 
             if (!$stmt->execute()) {
                 /** @todo log */
@@ -200,27 +188,15 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $trainingManagerUuid,
-            $userUuid
-        );
 
-        $c = count($users);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[ $i ])) {
-                continue;
-            }
+        foreach ($users as $user) {
+            $userUuid = $user->getUuid();
 
-            if (!$users[ $i ] instanceof User) {
-                continue;
-            }
-
-            if (empty($users[ $i ]->getUuid())) {
-                continue;
-            }
-
-            $userUuid = $users[ $i ]->getUuid();
+            $stmt->bind_param(
+                'ss',
+                $trainingManagerUuid,
+                $userUuid
+            );
 
             if (!$stmt->execute()) {
                 /** @todo log */

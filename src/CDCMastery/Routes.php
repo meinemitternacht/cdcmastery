@@ -325,23 +325,65 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_afsc_associations',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_add() */
-            $r->addRoute('POST', '/{uuid}/afsc/add', [
+            $r->addGroup('/{uuid}/afsc', function (RouteCollector $r) {
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_add() */
+                $r->addRoute('POST', '/add', [
+                    Admin\Users::class,
+                    'do_afsc_association_add',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_approve() */
+                $r->addRoute('POST', '/approve', [
+                    Admin\Users::class,
+                    'do_afsc_association_approve',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_remove() */
+                $r->addRoute('POST', '/remove', [
+                    Admin\Users::class,
+                    'do_afsc_association_remove',
+                ]);
+            });
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_supervisor_associations() */
+            $r->addRoute('GET', '/{uuid}/supervisors', [
                 Admin\Users::class,
-                'do_afsc_association_add',
+                'show_supervisor_associations',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_approve() */
-            $r->addRoute('POST', '/{uuid}/afsc/approve', [
+            $r->addGroup('/{uuid}/supervisors', function (RouteCollector $r) {
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_supervisor_association_add() */
+                $r->addRoute('POST', '/add', [
+                    Admin\Users::class,
+                    'do_supervisor_association_add',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_supervisor_association_remove() */
+                $r->addRoute('POST', '/remove', [
+                    Admin\Users::class,
+                    'do_supervisor_association_remove',
+                ]);
+            });
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_tm_associations() */
+            $r->addRoute('GET', '/{uuid}/training-managers', [
                 Admin\Users::class,
-                'do_afsc_association_approve',
+                'show_tm_associations',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_remove() */
-            $r->addRoute('POST', '/{uuid}/afsc/remove', [
-                Admin\Users::class,
-                'do_afsc_association_remove',
-            ]);
+            $r->addGroup('/{uuid}/training-managers', function (RouteCollector $r) {
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_tm_association_add() */
+                $r->addRoute('POST', '/add', [
+                    Admin\Users::class,
+                    'do_tm_association_add',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_tm_association_remove() */
+                $r->addRoute('POST', '/remove', [
+                    Admin\Users::class,
+                    'do_tm_association_remove',
+                ]);
+            });
 
             /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_complete() */
             $r->addRoute('GET', '/{uuid}/tests', [
@@ -349,29 +391,31 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_test_history_complete',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_incomplete() */
-            $r->addRoute('GET', '/{uuid}/tests/incomplete', [
-                Admin\Users::class,
-                'show_test_history_incomplete',
-            ]);
+            $r->addGroup('/{uuid}/tests', function (RouteCollector $r) {
+                /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_incomplete() */
+                $r->addRoute('GET', '/incomplete', [
+                    Admin\Users::class,
+                    'show_test_history_incomplete',
+                ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::show_delete_incomplete_tests() */
-            $r->addRoute('GET', '/{uuid}/tests/incomplete/delete', [
-                Admin\Users::class,
-                'show_delete_incomplete_tests',
-            ]);
+                /** @uses \CDCMastery\Controllers\Admin\Users::show_delete_incomplete_tests() */
+                $r->addRoute('GET', '/incomplete/delete', [
+                    Admin\Users::class,
+                    'show_delete_incomplete_tests',
+                ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::do_delete_incomplete_tests() */
-            $r->addRoute('POST', '/{uuid}/tests/incomplete/delete', [
-                Admin\Users::class,
-                'do_delete_incomplete_tests',
-            ]);
+                /** @uses \CDCMastery\Controllers\Admin\Users::do_delete_incomplete_tests() */
+                $r->addRoute('POST', '/incomplete/delete', [
+                    Admin\Users::class,
+                    'do_delete_incomplete_tests',
+                ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Users::show_test() */
-            $r->addRoute('GET', '/{uuid}/tests/{test_uuid}', [
-                Admin\Users::class,
-                'show_test',
-            ]);
+                /** @uses \CDCMastery\Controllers\Admin\Users::show_test() */
+                $r->addRoute('GET', '/{test_uuid}', [
+                    Admin\Users::class,
+                    'show_test',
+                ]);
+            });
         });
     });
 

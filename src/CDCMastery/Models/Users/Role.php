@@ -11,6 +11,7 @@ namespace CDCMastery\Models\Users;
 
 class Role
 {
+    public const TYPE_SUPER_ADMIN = 'super_admin';
     public const TYPE_ADMIN = 'admin';
     public const TYPE_QUESTION_EDITOR = 'editor';
     public const TYPE_SUPERVISOR = 'supervisor';
@@ -18,11 +19,12 @@ class Role
     public const TYPE_USER = 'user';
 
     private const VALID_TYPES = [
+        self::TYPE_SUPER_ADMIN,
         self::TYPE_ADMIN,
         self::TYPE_QUESTION_EDITOR,
         self::TYPE_SUPERVISOR,
         self::TYPE_TRAINING_MANAGER,
-        self::TYPE_USER
+        self::TYPE_USER,
     ];
 
     /**

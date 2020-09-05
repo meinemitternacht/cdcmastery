@@ -172,6 +172,10 @@ alter table userAFSCAssociations
 		primary key (userUUID, afscUUID);
 -- SPLIT ;;
 alter table userAFSCAssociations drop key user_afsc;
+-- SPLIT ;;
+drop index roleType on roleList;
+create unique index roleType
+	on roleList (roleType);
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

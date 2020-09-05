@@ -144,28 +144,15 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $supervisorUuid,
-            $userUuid
-        );
 
-        $c = count($supervisors);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($supervisors[$i])) {
-                continue;
-            }
+        foreach ($supervisors as $supervisor) {
+            $supervisorUuid = $supervisor->getUuid();
 
-            if (!$supervisors[$i] instanceof User) {
-                continue;
-            }
-
-            if (empty($supervisors[$i]->getUuid())) {
-                continue;
-            }
-
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $supervisorUuid = $supervisors[$i]->getUuid();
+            $stmt->bind_param(
+                'ss',
+                $supervisorUuid,
+                $userUuid
+            );
 
             if (!$stmt->execute()) {
                 /** @todo log */
@@ -201,28 +188,15 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $supervisorUuid,
-            $userUuid
-        );
 
-        $c = count($users);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[$i])) {
-                continue;
-            }
+        foreach ($users as $user) {
+            $userUuid = $user->getUuid();
 
-            if (!$users[$i] instanceof User) {
-                continue;
-            }
-
-            if (empty($users[$i]->getUuid())) {
-                continue;
-            }
-
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $userUuid = $users[$i]->getUuid();
+            $stmt->bind_param(
+                'ss',
+                $supervisorUuid,
+                $userUuid
+            );
 
             if (!$stmt->execute()) {
                 /** @todo log */

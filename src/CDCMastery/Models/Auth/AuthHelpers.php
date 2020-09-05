@@ -124,7 +124,7 @@ class AuthHelpers
      */
     public function assert_admin(): bool
     {
-        return $this->assert_role(Role::TYPE_ADMIN);
+        return $this->assert_role(Role::TYPE_ADMIN) || $this->assert_role(Role::TYPE_SUPER_ADMIN);
     }
 
     /**

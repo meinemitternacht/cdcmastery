@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Users;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use DateTime;
 use Monolog\Logger;
@@ -391,6 +392,124 @@ SQL;
             $this->create_objects($rows),
             array_flip($uuidList)
         );
+    }
+
+    /* @todo proper filter function for each column */
+
+    public function filterByBase(Base $base, ?array $sort_options = null): array
+    {
+        if (!$base->getUuid()) {
+            return [];
+        }
+
+        if (!$sort_options) {
+            $sort_options = [new UserSortOption(UserSortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`userData`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
+        $qry = <<<SQL
+# noinspection SqlResolve
+
+SELECT
+  userData.uuid,
+  userFirstName,
+  userLastName,
+  userHandle,
+  userPassword,
+  userLegacyPassword,
+  userEmail,
+  userRank,
+  userDateRegistered,
+  userLastLogin,
+  userLastActive,
+  userTimeZone,
+  userRole,
+  userOfficeSymbol,
+  userBase,
+  userDisabled,
+  reminderSent
+FROM userData
+{$join_str}
+WHERE userBase = ?
+{$sort_str}
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        $base_uuid = $base->getUuid();
+        if (!$stmt->bind_param('s', $base_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $uuid,
+            $userFirstName,
+            $userLastName,
+            $userHandle,
+            $userPassword,
+            $userLegacyPassword,
+            $userEmail,
+            $userRank,
+            $userDateRegistered,
+            $userLastLogin,
+            $userLastActive,
+            $userTimeZone,
+            $userRole,
+            $userOfficeSymbol,
+            $userBase,
+            $userDisabled,
+            $reminderSent
+        );
+
+        $rows = [];
+        while ($stmt->fetch()) {
+            $rows[] = [
+                'uuid' => $uuid,
+                'userFirstName' => $userFirstName,
+                'userLastName' => $userLastName,
+                'userHandle' => $userHandle,
+                'userPassword' => $userPassword,
+                'userLegacyPassword' => $userLegacyPassword,
+                'userEmail' => $userEmail,
+                'userRank' => $userRank,
+                'userDateRegistered' => $userDateRegistered,
+                'userLastLogin' => $userLastLogin,
+                'userLastActive' => $userLastActive,
+                'userTimeZone' => $userTimeZone,
+                'userRole' => $userRole,
+                'userOfficeSymbol' => $userOfficeSymbol,
+                'userBase' => $userBase,
+                'userDisabled' => $userDisabled,
+                'reminderSent' => $reminderSent,
+            ];
+        }
+
+        $stmt->close();
+        return $this->create_objects($rows);
     }
 
     /**
