@@ -7,10 +7,14 @@ use CDCMastery\Controllers\Tests;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
+use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\Email\EmailCollection;
+use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
@@ -37,6 +41,7 @@ class Users extends Admin
     private const TYPE_COMPLETE = 0;
     private const TYPE_INCOMPLETE = 1;
 
+    private EmailCollection $emails;
     private UserCollection $users;
     private BaseCollection $bases;
     private RoleCollection $roles;
@@ -48,12 +53,14 @@ class Users extends Admin
     private UserAfscAssociations $afsc_assocs;
     private UserTrainingManagerAssociations $tm_assocs;
     private UserSupervisorAssociations $su_assocs;
+    private PasswordResetCollection $pw_resets;
 
     public function __construct(
         Logger $logger,
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        EmailCollection $emails,
         UserCollection $users,
         BaseCollection $bases,
         RoleCollection $roles,
@@ -64,10 +71,12 @@ class Users extends Admin
         AfscCollection $afscs,
         UserAfscAssociations $afsc_assocs,
         UserTrainingManagerAssociations $tm_assocs,
-        UserSupervisorAssociations $su_assocs
+        UserSupervisorAssociations $su_assocs,
+        PasswordResetCollection $pw_resets
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
 
+        $this->emails = $emails;
         $this->users = $users;
         $this->bases = $bases;
         $this->roles = $roles;
@@ -79,6 +88,7 @@ class Users extends Admin
         $this->afsc_assocs = $afsc_assocs;
         $this->tm_assocs = $tm_assocs;
         $this->su_assocs = $su_assocs;
+        $this->pw_resets = $pw_resets;
     }
 
     private function get_user(string $uuid): ?User
@@ -444,6 +454,30 @@ class Users extends Admin
         return $this->redirect("/admin/users/{$user->getUuid()}");
     }
 
+    public function do_password_reset(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $initiator = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        if ($this->pw_resets->fetchByUser($user) !== null) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'An active password reset request for this user already exists');
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $pw_reset = PasswordReset::factory($user);
+        $email = ResetPassword::email($initiator, $user, $pw_reset);
+
+        $this->emails->queue($email);
+        $this->pw_resets->save($pw_reset);
+
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'A password reset request for this user was successfully initiated');
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+    }
+
     public function toggle_disabled(string $uuid): Response
     {
         $user = $this->get_user($uuid);
@@ -699,6 +733,29 @@ class Users extends Admin
 
         return $this->render(
             'admin/users/reactivate.html.twig',
+            $data
+        );
+    }
+
+    public function show_password_reset(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        if ($this->pw_resets->fetchByUser($user) !== null) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'An active password reset request for this user already exists');
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
+        $data = [
+            'user' => $user,
+            'base' => $this->bases->fetch($user->getBase()),
+            'role' => $this->roles->fetch($user->getRole()),
+        ];
+
+        return $this->render(
+            'admin/users/password-reset.html.twig',
             $data
         );
     }

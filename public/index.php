@@ -30,8 +30,8 @@ try {
     goto out_respond;
 }
 
-define('CDC_DEBUG', $config->get(['system', 'debug'])
-    ?: false);
+define('CDC_DEBUG', !!$config->get(['system', 'debug']));
+define('SUPPORT_EMAIL', $config->get(['email', 'username']));
 
 $path = parse_url(
     $_SERVER[ 'REQUEST_URI' ],

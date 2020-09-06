@@ -319,6 +319,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'toggle_disabled',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_password_reset() */
+            $r->addRoute('GET', '/{uuid}/reset-password', [
+                Admin\Users::class,
+                'show_password_reset',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_password_reset() */
+            $r->addRoute('POST', '/{uuid}/reset-password', [
+                Admin\Users::class,
+                'do_password_reset',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_afsc_associations() */
             $r->addRoute('GET', '/{uuid}/afsc', [
                 Admin\Users::class,

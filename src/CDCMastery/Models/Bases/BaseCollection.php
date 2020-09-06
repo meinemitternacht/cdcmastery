@@ -209,8 +209,7 @@ SQL;
 
         $res->free();
 
-        return array_intersect_key($this->create_objects($rows),
-                                   array_flip($uuids));
+        return $this->create_objects($rows);
     }
 
     /**
