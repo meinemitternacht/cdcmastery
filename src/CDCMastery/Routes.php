@@ -331,6 +331,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_password_reset',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_resend_activation() */
+            $r->addRoute('GET', '/{uuid}/resend-activation', [
+                Admin\Users::class,
+                'show_resend_activation',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_resend_activation() */
+            $r->addRoute('POST', '/{uuid}/resend-activation', [
+                Admin\Users::class,
+                'do_resend_activation',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_afsc_associations() */
             $r->addRoute('GET', '/{uuid}/afsc', [
                 Admin\Users::class,

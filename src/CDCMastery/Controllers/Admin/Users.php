@@ -6,6 +6,8 @@ use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Tests;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Models\Auth\Activation\Activation;
+use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
@@ -14,6 +16,7 @@ use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Email\EmailCollection;
+use CDCMastery\Models\Email\Templates\ActivateAccount;
 use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
@@ -54,6 +57,7 @@ class Users extends Admin
     private UserTrainingManagerAssociations $tm_assocs;
     private UserSupervisorAssociations $su_assocs;
     private PasswordResetCollection $pw_resets;
+    private ActivationCollection $activations;
 
     public function __construct(
         Logger $logger,
@@ -72,7 +76,8 @@ class Users extends Admin
         UserAfscAssociations $afsc_assocs,
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $su_assocs,
-        PasswordResetCollection $pw_resets
+        PasswordResetCollection $pw_resets,
+        ActivationCollection $activations
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
 
@@ -89,6 +94,7 @@ class Users extends Admin
         $this->tm_assocs = $tm_assocs;
         $this->su_assocs = $su_assocs;
         $this->pw_resets = $pw_resets;
+        $this->activations = $activations;
     }
 
     private function get_user(string $uuid): ?User
@@ -478,6 +484,23 @@ class Users extends Admin
         return $this->redirect("/admin/users/{$user->getUuid()}");
     }
 
+    public function do_resend_activation(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $initiator = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $activation = Activation::factory($user);
+        $email = ActivateAccount::email($initiator, $user, $activation);
+
+        $this->emails->queue($email);
+        $this->activations->save($activation);
+
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'An activation request for this user was successfully initiated');
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+    }
+
     public function toggle_disabled(string $uuid): Response
     {
         $user = $this->get_user($uuid);
@@ -756,6 +779,22 @@ class Users extends Admin
 
         return $this->render(
             'admin/users/password-reset.html.twig',
+            $data
+        );
+    }
+
+    public function show_resend_activation(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        $data = [
+            'user' => $user,
+            'base' => $this->bases->fetch($user->getBase()),
+            'role' => $this->roles->fetch($user->getRole()),
+        ];
+
+        return $this->render(
+            'admin/users/resend-activation.html.twig',
             $data
         );
     }
