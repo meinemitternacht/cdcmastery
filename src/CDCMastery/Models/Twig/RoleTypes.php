@@ -2,7 +2,7 @@
 
 namespace CDCMastery\Models\Twig;
 
-use CDCMastery\Models\Users\Role;
+use CDCMastery\Models\Users\Roles\Role;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

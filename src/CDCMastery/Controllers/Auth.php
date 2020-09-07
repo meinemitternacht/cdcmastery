@@ -6,7 +6,7 @@ namespace CDCMastery\Controllers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
 use CDCMastery\Models\Messages\MessageTypes;
-use CDCMastery\Models\Users\RoleCollection;
+use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use DateTime;
@@ -38,7 +38,7 @@ class Auth extends RootController
     private $users;
 
     /**
-     * @var RoleCollection
+     * @var \CDCMastery\Models\Users\Roles\RoleCollection
      */
     private $roles;
 

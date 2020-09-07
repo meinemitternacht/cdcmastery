@@ -6,7 +6,7 @@
  * Time: 9:33 PM
  */
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Roles;
 
 
 class Role

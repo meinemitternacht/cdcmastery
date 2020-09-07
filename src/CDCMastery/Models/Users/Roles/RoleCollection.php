@@ -6,7 +6,7 @@
  * Time: 8:37 PM
  */
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Roles;
 
 
 use Monolog\Logger;

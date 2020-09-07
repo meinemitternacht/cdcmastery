@@ -1,7 +1,7 @@
 <?php
 namespace CDCMastery\Models\Auth;
 
-use CDCMastery\Models\Users\Role;
+use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\User;
 use Symfony\Component\HttpFoundation\Session\Session;
 

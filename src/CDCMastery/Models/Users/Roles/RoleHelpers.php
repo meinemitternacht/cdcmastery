@@ -6,7 +6,7 @@
  * Time: 2:56 PM
  */
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Roles;
 
 
 class RoleHelpers
