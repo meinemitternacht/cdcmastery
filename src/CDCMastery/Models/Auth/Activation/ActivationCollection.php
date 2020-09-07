@@ -27,16 +27,16 @@ class ActivationCollection
      */
     private function create_objects(array $rows): array
     {
-        $resets = [];
+        $activations = [];
         foreach ($rows as $row) {
             $expires = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB, $row[ 'timeExpires' ]);
 
-            $resets[ $row[ 'activationCode' ] ] = new Activation($row[ 'activationCode' ],
-                                                                 $row[ 'userUUID' ],
-                                                                 $expires);
+            $activations[ $row[ 'activationCode' ] ] = new Activation($row[ 'activationCode' ],
+                                                                      $row[ 'userUUID' ],
+                                                                      $expires);
         }
 
-        return $resets;
+        return $activations;
     }
 
     public function fetch(string $code): ?Activation
@@ -183,6 +183,40 @@ SQL;
         ];
 
         return $this->create_objects([$row])[ $uuid ] ?? null;
+    }
+
+    public function remove(Activation $activation): void
+    {
+        $code = $activation->getCode();
+
+        $qry = <<<SQL
+DELETE FROM queueUnactivatedUsers
+WHERE activationCode = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $code)) {
+            $stmt->close();
+            return;
+        }
+
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    /**
+     * @param Activation[] $activations
+     */
+    public function removeArray(array $activations): void
+    {
+        foreach ($activations as $activation) {
+            $this->remove($activation);
+        }
     }
 
     public function save(Activation $activation): void

@@ -1,0 +1,53 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Unactivated Users" %}
+{% block main %}
+    <div class="page-header">
+        <h3>
+            Unactivated Users
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="table-responsive">
+                <form action="/admin/activations"
+                      method="POST">
+                    <table class="table table-condensed table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-xs-1">&nbsp;</th>
+                            <th>Name</th>
+                            <th>Date Registered</th>
+                            <th>Code Expires</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for activation in activations %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           title="Toggle Selection"
+                                           name="codes[]"
+                                           id="code-{{ activation.code }}"
+                                           value="{{ activation.code }}">
+                                </td>
+                                <td>
+                                    {% if users[activation.userUuid] %}
+                                        {{ users[activation.userUuid].name }}
+                                    {% else %}
+                                        <span class="text-danger">UNKNOWN USER</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ users[activation.userUuid].dateRegistered|date("F j, Y \\a\\t g:ia") }}</td>
+                                <td>{{ activation.dateExpires|date("F j, Y \\a\\t g:ia") }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success">Activate Users</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

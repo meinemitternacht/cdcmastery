@@ -1,6 +1,7 @@
 <?php
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Controllers\Admin\Activations;
 use CDCMastery\Controllers\Admin\CdcData;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Auth;
@@ -28,6 +29,18 @@ return simpleDispatcher(function (RouteCollector $r) {
     ]);
 
     $r->addGroup('/admin', function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\Admin\Activations::show_home() */
+        $r->addRoute('GET', '/activations', [
+            Activations::class,
+            'show_home',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\Activations::do_manual_activation() */
+        $r->addRoute('POST', '/activations', [
+            Activations::class,
+            'do_manual_activation',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Admin\Bases::show_home() */
         $r->addRoute('GET', '/bases', [
             Admin\Bases::class,
