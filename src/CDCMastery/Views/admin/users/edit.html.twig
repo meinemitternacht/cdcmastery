@@ -1,0 +1,182 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Edit User - #{user.name}" %}
+{% block main %}
+    {% include "blocks/admin/users/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            Edit {{ user.name }}
+            {% if user.isDisabled %}
+                <span class="badge badge-danger" title="This user is currently disabled">DISABLED</span>
+            {% endif %}
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-8">
+            <form action="/admin/users/{{ user.uuid }}/edit"
+                  method="POST">
+                <div class="well">
+                    <fieldset>
+                        <legend>
+                            Account Details
+                        </legend>
+                        <div class="form-group col-md-12">
+                            <label for="handle">
+                                Username
+                            </label>
+                            <input class="form-control"
+                                   id="handle"
+                                   name="handle"
+                                   value="{{ user.handle }}">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="new_password">
+                                New Password
+                            </label>
+                            <input class="form-control"
+                                   type="password"
+                                   id="new_password"
+                                   name="new_password">
+                            <div class="help-block">
+                                To keep the previous password, leave this field blank.
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="email">
+                                E-mail Address
+                            </label>
+                            <input class="form-control"
+                                   type="email"
+                                   id="email"
+                                   name="email"
+                                   value="{{ user.email }}">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="role">
+                                Role
+                            </label>
+                            <select name="role"
+                                    id="role"
+                                    size="1"
+                                    class="form-control"{% if not isAdmin %} disabled="disabled"{% endif %}>
+                                {% for role_opt in roles %}
+                                    <option value="{{ role_opt.uuid }}"{% if user.role == role_opt.uuid %} SELECTED{% endif %}>{{ role_opt.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="well">
+                    <fieldset>
+                        <legend>
+                            Personal Details
+                        </legend>
+                        <div class="form-group col-md-12">
+                            <label for="rank">
+                                Rank
+                            </label>
+                            <select name="rank"
+                                    id="rank"
+                                    size="1"
+                                    class="form-control">
+                                {% for rank_group, rank_opts in ranks %}
+                                    <optgroup label="{{ rank_group }}">
+                                        {% for rank_opt, rank_name in rank_opts %}
+                                            <option value="{{ rank_opt }}"{% if user.rank == rank_opt %} SELECTED{% endif %}>{{ rank_name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="first_name">
+                                    First Name
+                                </label>
+                                <input class="form-control"
+                                       id="first_name"
+                                       name="first_name"
+                                       value="{{ user.firstName }}">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="last_name">
+                                    Last Name
+                                </label>
+                                <input class="form-control"
+                                       id="last_name"
+                                       name="last_name"
+                                       value="{{ user.lastName }}">
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="well">
+                    <fieldset>
+                        <legend>
+                            Location Details
+                        </legend>
+                        <div class="form-group col-md-12">
+                            <label for="base">
+                                Base
+                            </label>
+                            <select name="base"
+                                    id="base"
+                                    size="1"
+                                    class="form-control">
+                                {% for base_opt in bases %}
+                                    <option value="{{ base_opt.uuid }}"{% if user.base == base_opt.uuid %} SELECTED{% endif %}>{{ base_opt.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="office_symbol">
+                                    Office Symbol
+                                </label>
+                                <select name="office_symbol"
+                                        id="office_symbol"
+                                        size="1"
+                                        class="form-control">
+                                    <option value="">(none)</option>
+                                    {% for symbol_opt in symbols %}
+                                        <option value="{{ symbol_opt.uuid }}"{% if user.symbol == symbol_opt.uuid %} SELECTED{% endif %}>{{ symbol_opt.symbol }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6">
+                            <div class="form-group">
+                                <label for="time_zone">
+                                    Time Zone
+                                </label>
+                                <select name="time_zone"
+                                        id="time_zone"
+                                        size="1"
+                                        class="form-control">
+                                    {% for tz_region, tz_opts in time_zones %}
+                                        <optgroup label="{{ tz_region }}">
+                                            {% for tz_opt in tz_opts %}
+                                                <option value="{{ tz_opt }}"{% if user.timeZone == tz_opt %} SELECTED{% endif %}>{{ tz_opt }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="text-center">
+                    <fieldset>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success">Save Changes</button>
+                                <a href="/admin/users/{{ user.uuid }}" class="btn btn-primary">Cancel</a>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

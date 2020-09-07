@@ -168,9 +168,9 @@ class Home extends RootController
             ];
         }
 
-        $daysAgo_7 = DateTimeHelpers::xDaysAgo(7);
-        $daysAgo_30 = DateTimeHelpers::xDaysAgo(30);
-        $daysAgo_90 = DateTimeHelpers::xDaysAgo(90);
+        $daysAgo_7 = DateTimeHelpers::x_days_ago(7);
+        $daysAgo_30 = DateTimeHelpers::x_days_ago(30);
+        $daysAgo_90 = DateTimeHelpers::x_days_ago(90);
         $now = new DateTime();
 
         $data = [

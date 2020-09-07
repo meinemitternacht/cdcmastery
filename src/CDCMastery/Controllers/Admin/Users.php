@@ -31,6 +31,7 @@ use CDCMastery\Models\Users\RoleCollection;
 use CDCMastery\Models\Users\User;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
+use CDCMastery\Models\Users\UserHelpers;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
@@ -123,6 +124,196 @@ class Users extends Admin
             unset($e);
             return null;
         }
+    }
+
+    public function do_edit(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+
+        $params = [
+            'handle',
+            'email',
+            'rank',
+            'first_name',
+            'last_name',
+            'base',
+            'time_zone',
+        ];
+
+        $this->checkParameters($params);
+
+        $handle = $this->filter_string_default('handle');
+        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
+        $rank = $this->filter_string_default('rank');
+        $first_name = $this->get('first_name');
+        $last_name = $this->get('last_name');
+        $base = $this->get('base');
+        $time_zone = $this->get('time_zone');
+
+        /* optional */
+        $office_symbol = $this->get('office_symbol');
+        $role = $this->get('role');
+        $new_password = $this->get('new_password');
+
+        if ($office_symbol === '') {
+            $office_symbol = null;
+        }
+
+        if ($role === '') {
+            $role = null;
+        }
+
+        if ($new_password === '') {
+            $new_password = null;
+        }
+
+        if (!$handle || trim($handle) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The Username field cannot be empty'
+            );
+
+            goto out_return;
+        }
+
+        if (!$email) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified e-mail address is invalid'
+            );
+
+            goto out_return;
+        }
+
+        $valid_ranks = UserHelpers::listRanks(false);
+        if (!$rank || trim($rank) === '' || !isset($valid_ranks[ $rank ])) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided rank is invalid'
+            );
+
+            goto out_return;
+        }
+
+        if (!$first_name || trim($first_name) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The First Name field cannot be empty'
+            );
+
+            goto out_return;
+        }
+
+        if (!$last_name || trim($last_name) === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The Last Name field cannot be empty'
+            );
+
+            goto out_return;
+        }
+
+        $new_base = $this->bases->fetch($base);
+        if (!$new_base || $new_base->getUuid() === '' || !$base) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The chosen Base is invalid'
+            );
+
+            goto out_return;
+        }
+
+        $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
+        if (!$time_zone || !in_array($time_zone, $valid_time_zones)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The chosen Time Zone is invalid'
+            );
+
+            goto out_return;
+        }
+
+        if (!$this->auth_helpers->assert_admin() && $role !== $user->getRole()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'Your account type cannot change the role for this user'
+            );
+
+            goto out_return;
+        }
+
+        if ($office_symbol) {
+            $new_office_symbol = $this->symbols->fetch($office_symbol);
+
+            if (!$new_office_symbol || $new_office_symbol->getUuid() === '') {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The chosen Office Symbol is invalid'
+                );
+
+                goto out_return;
+            }
+        }
+
+        if ($role) {
+            $new_role = $this->roles->fetch($role);
+
+            if (!$new_role || $new_role->getUuid() === '') {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The chosen Role is invalid'
+                );
+
+                goto out_return;
+            }
+        }
+
+        if ($new_password !== null) {
+            $complexity_check = AuthHelpers::check_complexity($new_password, $handle, $email);
+
+            if ($complexity_check) {
+                foreach ($complexity_check as $complexity_error) {
+                    $this->flash()->add(
+                        MessageTypes::ERROR,
+                        $complexity_error
+                    );
+                }
+
+                goto out_return;
+            }
+        }
+
+        $user->setHandle($handle);
+        $user->setEmail($email);
+        $user->setRank($rank);
+        $user->setFirstName($first_name);
+        $user->setLastName($last_name);
+        $user->setBase($new_base->getUuid());
+        $user->setTimeZone($time_zone);
+
+        if ($office_symbol) {
+            $user->setOfficeSymbol($new_office_symbol->getUuid());
+        }
+
+        if ($role) {
+            $user->setRole($new_role->getUuid());
+        }
+
+        if ($new_password) {
+            $user->setPassword(AuthHelpers::hash($new_password));
+        }
+
+        $this->users->save($user);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The information for that user was successfully saved'
+        );
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+
+        out_return:
+        return $this->redirect("/admin/users/{$user->getUuid()}/edit");
     }
 
     public function do_afsc_association_add(string $uuid): Response
@@ -576,6 +767,35 @@ class Users extends Admin
 
         return $this->render(
             "admin/users/list.html.twig",
+            $data
+        );
+    }
+
+    public function show_edit(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $base = $this->bases->fetch($user->getBase());
+        $role = $this->roles->fetch($user->getRole());
+
+        $u_symbol = $user->getOfficeSymbol();
+        if ($u_symbol) {
+            $symbol = $this->symbols->fetch($u_symbol);
+        }
+
+        $data = [
+            'user' => $user,
+            'base' => $base,
+            'bases' => $this->bases->fetchAll(),
+            'symbol' => $symbol ?? null,
+            'symbols' => $this->symbols->fetchAll(),
+            'ranks' => UserHelpers::listRanks(),
+            'role' => $role,
+            'roles' => $this->roles->fetchAll(),
+            'time_zones' => DateTimeHelpers::list_time_zones(),
+        ];
+
+        return $this->render(
+            'admin/users/edit.html.twig',
             $data
         );
     }

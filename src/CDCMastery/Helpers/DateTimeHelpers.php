@@ -10,6 +10,7 @@ namespace CDCMastery\Helpers;
 
 
 use DateTime;
+use DateTimeZone;
 
 class DateTimeHelpers
 {
@@ -22,7 +23,7 @@ class DateTimeHelpers
     public const DT_FMT_LONG = 'l, F jS, Y g:i:s A';
     public const DT_FMT_SHORT = 'd-M-y H:i:s';
 
-    public static function xDaysAgo(int $days): DateTime
+    public static function x_days_ago(int $days): DateTime
     {
         $dt = new DateTime();
 
@@ -33,5 +34,31 @@ class DateTimeHelpers
         $dt->modify("-{$days} days");
 
         return $dt;
+    }
+
+    public static function list_time_zones(bool $keyed = true): array
+    {
+        $regions = [
+            'Africa' => DateTimeZone::AFRICA,
+            'America' => DateTimeZone::AMERICA,
+            'Antarctica' => DateTimeZone::ANTARCTICA,
+            'Asia' => DateTimeZone::ASIA,
+            'Atlantic' => DateTimeZone::ATLANTIC,
+            'Europe' => DateTimeZone::EUROPE,
+            'Indian' => DateTimeZone::INDIAN,
+            'Pacific' => DateTimeZone::PACIFIC,
+        ];
+
+        $tzlist = [];
+        foreach ($regions as $name => $mask) {
+            if (!$keyed) {
+                $tzlist[] = DateTimeZone::listIdentifiers($mask);
+                continue;
+            }
+
+            $tzlist[ $name ] = DateTimeZone::listIdentifiers($mask);
+        }
+
+        return $tzlist;
     }
 }

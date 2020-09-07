@@ -203,7 +203,7 @@ SELECT
  uuid,
  officeSymbol
 FROM officeSymbolList
-ORDER BY uuid
+ORDER BY officeSymbol
 SQL;
 
         $res = $this->db->query($qry);

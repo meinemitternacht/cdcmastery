@@ -295,6 +295,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_profile',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_edit() */
+            $r->addRoute('GET', '/{uuid}/edit', [
+                Admin\Users::class,
+                'show_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_edit() */
+            $r->addRoute('POST', '/{uuid}/edit', [
+                Admin\Users::class,
+                'do_edit',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_disable() */
             $r->addRoute('GET', '/{uuid}/disable', [
                 Admin\Users::class,

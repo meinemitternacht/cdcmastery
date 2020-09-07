@@ -10,11 +10,12 @@ namespace CDCMastery\Models\Users;
 
 
 use Monolog\Logger;
+use mysqli;
 
 class UserHelpers
 {
     /**
-     * @var \mysqli
+     * @var mysqli
      */
     protected $db;
 
@@ -25,13 +26,55 @@ class UserHelpers
 
     /**
      * AuthProcessor constructor.
-     * @param \mysqli $mysqli
+     * @param mysqli $mysqli
      * @param Logger $logger
      */
-    public function __construct(\mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
+    }
+
+    public static function listRanks(bool $keyed = true): array
+    {
+        $enlisted = [
+            'AB' => 'Airman Basic',
+            'Amn' => 'Airman',
+            'A1C' => "Airman First Class",
+            'SrA' => 'Senior Airman',
+            'SSgt' => 'Staff Sergeant',
+            'TSgt' => 'Technical Sergeant',
+            'MSgt' => 'Master Sergeant',
+            'SMSgt' => 'Senior Master Sergeant',
+            'CMSgt' => 'Chief Master Sergeant',
+        ];
+
+        $officer = [
+            '2LT' => 'Second Lieutenant',
+            '1LT' => 'First Lieutenant',
+            'Cpt' => 'Captain',
+            'Maj' => 'Major',
+            'Lt Col' => 'Lieutenant Colonel',
+            'Col' => 'Colonel',
+            'Brig Gen' => 'Brigadier General',
+            'Maj Gen' => 'Major General',
+            'Lt Gen' => 'Lieutenant General',
+            'Gen' => 'General',
+        ];
+
+        $special = [
+            'SSgt (Ret.)' => 'Staff Sergeant (Retired)',
+        ];
+
+        if (!$keyed) {
+            return array_merge($enlisted, $officer, $special);
+        }
+
+        return [
+            'Enlisted' => $enlisted,
+            'Officer' => $officer,
+            'Special' => $special,
+        ];
     }
 
     /**
