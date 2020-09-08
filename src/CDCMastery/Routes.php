@@ -2,6 +2,7 @@
 
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\Activations;
+use CDCMastery\Controllers\Admin\AfscApprovals;
 use CDCMastery\Controllers\Admin\CdcData;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
@@ -295,6 +296,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_edit',
             ]);
         });
+
+        /** @uses \CDCMastery\Controllers\Admin\AfscApprovals::show_home() */
+        $r->addRoute('GET', '/pending-afscs', [
+            AfscApprovals::class,
+            'show_home',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\AfscApprovals::do_approve_assocs() */
+        $r->addRoute('POST', '/pending-afscs', [
+            AfscApprovals::class,
+            'do_approve_assocs',
+        ]);
 
         /** @uses \CDCMastery\Controllers\Admin\RoleApprovals::show_home() */
         $r->addRoute('GET', '/pending-roles', [

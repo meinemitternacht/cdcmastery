@@ -1,0 +1,65 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Pending AFSC Associations" %}
+{% block main %}
+    <div class="page-header">
+        <h3>
+            Pending AFSC Associations
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="table-responsive">
+                <form action="/admin/pending-afscs"
+                      method="POST">
+                    <table class="table table-condensed table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-xs-1">&nbsp;</th>
+                            <th>Name</th>
+                            <th>AFSC</th>
+                            <th>Date Registered</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for pending_assoc in pending %}
+                            {% for pending_afsc in pending_assoc.pending %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox"
+                                               title="Toggle Selection"
+                                               name="user_afscs[]"
+                                               id="user-afscs-{{ pending_assoc.user }}_{{ pending_afsc }}"
+                                               value="{{ pending_assoc.user }}_{{ pending_afsc }}">
+                                    </td>
+                                    <td>
+                                        {% if users[pending_assoc.user] %}
+                                            <a href="/admin/users/{{ pending_assoc.user }}">
+                                                {{ users[pending_assoc.user].name }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-danger">UNKNOWN USER</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if afscs[pending_afsc] %}
+                                            <a href="/admin/cdc/afsc/{{ pending_afsc }}">
+                                                {{ afscs[pending_afsc].name }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-danger">UNKNOWN AFSC</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ users[pending_assoc.user].dateRegistered|date("F j, Y \\a\\t g:ia") }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success">Approve AFSCs</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

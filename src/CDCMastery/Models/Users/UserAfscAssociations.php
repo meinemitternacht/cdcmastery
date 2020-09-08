@@ -382,6 +382,24 @@ SQL;
         $stmt->close();
     }
 
+    public function countPending(): int
+    {
+        $qry = <<<SQL
+SELECT COUNT(*) AS count FROM userAFSCAssociations WHERE userAuthorized = 0
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)($row[ 'count' ] ?? 0);
+    }
+
     /**
      * @param User $user
      * @param Afsc $afsc
@@ -591,6 +609,59 @@ SQL;
         $afscUserCollection->setUsers($userList);
 
         return $afscUserCollection;
+    }
+
+    /**
+     * @return UserAfscCollection[]
+     */
+    public function fetchAllPending(): array
+    {
+        $qry = <<<SQL
+SELECT
+    afscUUID,
+    userUUID,
+    userAuthorized
+FROM userAFSCAssociations
+WHERE userAuthorized = 0
+ORDER BY userUUID
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            return [];
+        }
+
+        $data = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($data[ $row[ 'userUUID' ] ])) {
+                $data[ $row[ 'userUUID' ] ] = [
+                    'afsc_list' => [],
+                    'pending' => [],
+                ];
+            }
+
+            $data[ $row[ 'userUUID' ] ][ 'afsc_list' ][] = $row[ 'afscUUID' ];
+            $data[ $row[ 'userUUID' ] ][ 'pending' ][] = $row[ 'afscUUID' ];
+        }
+
+        $res->free();
+
+        if (!$data) {
+            return [];
+        }
+
+        $assocs = [];
+        foreach ($data as $user_uuid => $afsc_assocs) {
+            $assoc = new UserAfscCollection();
+            $assoc->setUser($user_uuid);
+            $assoc->setAfscs($afsc_assocs[ 'afsc_list' ]);
+            $assoc->setAuthorized([]);
+            $assoc->setPending($afsc_assocs[ 'pending' ]);
+            $assocs[ $user_uuid ] = $assoc;
+        }
+
+        return $assocs;
     }
 
     /**
