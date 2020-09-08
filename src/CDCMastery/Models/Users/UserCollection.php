@@ -626,17 +626,12 @@ SQL;
             return;
         }
 
-        $c = count($users);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[ $i ])) {
+        foreach ($users as $user) {
+            if (!$user instanceof User) {
                 continue;
             }
 
-            if (!$users[ $i ] instanceof User) {
-                continue;
-            }
-
-            $this->save($users[ $i ]);
+            $this->save($user);
         }
     }
 }

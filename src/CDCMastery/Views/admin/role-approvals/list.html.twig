@@ -1,0 +1,55 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Pending Role Requests" %}
+{% block main %}
+    <div class="page-header">
+        <h3>
+            Pending Role Requests
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="table-responsive">
+                <form action="/admin/pending-roles"
+                      method="POST">
+                    <table class="table table-condensed table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-xs-1">&nbsp;</th>
+                            <th>Name</th>
+                            <th>Date Registered</th>
+                            <th>Date Requested</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for pending_role in pending_roles %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           title="Toggle Selection"
+                                           name="user_uuids[]"
+                                           id="user-uuid-{{ pending_role.userUuid }}"
+                                           value="{{ pending_role.userUuid }}">
+                                </td>
+                                <td>
+                                    {% if users[pending_role.userUuid] %}
+                                        <a href="/admin/users/{{ pending_role.userUuid }}">
+                                            {{ users[pending_role.userUuid].name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-danger">UNKNOWN USER</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ users[pending_role.userUuid].dateRegistered|date("F j, Y \\a\\t g:ia") }}</td>
+                                <td>{{ pending_role.dateRequested|date("F j, Y \\a\\t g:ia") }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-success">Approve Roles</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

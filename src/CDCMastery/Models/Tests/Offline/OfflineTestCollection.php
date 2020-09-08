@@ -622,17 +622,12 @@ SQL;
             return;
         }
 
-        $c = count($offlineTests);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($offlineTests[$i])) {
+        foreach ($offlineTests as $offlineTest) {
+            if (!$offlineTest instanceof OfflineTest) {
                 continue;
             }
 
-            if (!$offlineTests[$i] instanceof OfflineTest) {
-                continue;
-            }
-
-            $this->save($offlineTests[$i]);
+            $this->save($offlineTest);
         }
     }
 }

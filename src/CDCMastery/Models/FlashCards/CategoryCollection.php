@@ -307,17 +307,12 @@ SQL;
             return;
         }
 
-        $c = count($categories);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($categories[$i])) {
+        foreach ($categories as $category) {
+            if (!$category instanceof Category) {
                 continue;
             }
 
-            if (!$categories[$i] instanceof Category) {
-                continue;
-            }
-
-            $this->save($categories[$i]);
+            $this->save($category);
         }
     }
 }

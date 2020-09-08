@@ -487,17 +487,12 @@ SQL;
             return;
         }
 
-        $c = count($afscs);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($afscs[$i])) {
+        foreach ($afscs as $afsc) {
+            if (!$afsc instanceof Afsc) {
                 continue;
             }
 
-            if (!$afscs[$i] instanceof Afsc) {
-                continue;
-            }
-
-            $this->save($afscs[$i]);
+            $this->save($afsc);
         }
     }
 }

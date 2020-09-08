@@ -549,17 +549,12 @@ SQL;
             return;
         }
 
-        $c = count($questions);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($questions[ $i ])) {
+        foreach ($questions as $question) {
+            if (!$question instanceof Question) {
                 continue;
             }
 
-            if (!$questions[ $i ] instanceof Question) {
-                continue;
-            }
-
-            $this->save($afsc, $questions[ $i ]);
+            $this->save($afsc, $question);
         }
     }
 }

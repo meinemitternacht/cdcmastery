@@ -669,17 +669,12 @@ SQL;
             return;
         }
 
-        $c = count($tests);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($tests[$i])) {
+        foreach ($tests as $test) {
+            if (!$test instanceof Test) {
                 continue;
             }
 
-            if (!$tests[$i] instanceof Test) {
-                continue;
-            }
-
-            $this->save($tests[$i]);
+            $this->save($test);
         }
     }
 }

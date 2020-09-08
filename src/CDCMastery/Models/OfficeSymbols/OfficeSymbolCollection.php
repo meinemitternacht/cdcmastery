@@ -312,17 +312,12 @@ SQL;
         }
 
         $values = [];
-        $c = count($officeSymbols);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($officeSymbols[ $i ])) {
+        foreach ($officeSymbols as $officeSymbol) {
+            if (!$officeSymbol instanceof OfficeSymbol) {
                 continue;
             }
 
-            if (!$officeSymbols[ $i ] instanceof OfficeSymbol) {
-                continue;
-            }
-
-            $values[] = "('" . $officeSymbols[ $i ]->getUuid() . "','" . $officeSymbols[ $i ]->getSymbol() . "')";
+            $values[] = "('" . $officeSymbol->getUuid() . "','" . $officeSymbol->getSymbol() . "')";
         }
 
         if (empty($values)) {

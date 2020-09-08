@@ -343,17 +343,12 @@ SQL;
             return;
         }
 
-        $c = count($cards);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($cards[$i])) {
+        foreach ($cards as $card) {
+            if (!$card instanceof Card) {
                 continue;
             }
 
-            if (!$cards[$i] instanceof Card) {
-                continue;
-            }
-
-            $this->save($category, $cards[$i]);
+            $this->save($category, $card);
         }
     }
 }

@@ -4,6 +4,7 @@ use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\Activations;
 use CDCMastery\Controllers\Admin\CdcData;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
+use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
 use CDCMastery\Controllers\Home;
 use CDCMastery\Controllers\Search;
@@ -294,6 +295,18 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'do_edit',
             ]);
         });
+
+        /** @uses \CDCMastery\Controllers\Admin\RoleApprovals::show_home() */
+        $r->addRoute('GET', '/pending-roles', [
+            RoleApprovals::class,
+            'show_home',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\RoleApprovals::do_approve_roles() */
+        $r->addRoute('POST', '/pending-roles', [
+            RoleApprovals::class,
+            'do_approve_roles',
+        ]);
 
         /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
         $r->addRoute('GET', '/users', [

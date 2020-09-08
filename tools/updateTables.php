@@ -176,6 +176,13 @@ alter table userAFSCAssociations drop key user_afsc;
 drop index roleType on roleList;
 create unique index roleType
 	on roleList (roleType);
+-- SPLIT ;;
+alter table queueRoleAuthorization drop primary key;
+alter table queueRoleAuthorization drop column uuid;
+alter table queueRoleAuthorization
+	add constraint queueRoleAuthorization_pk
+		primary key (userUUID);
+alter table queueRoleAuthorization drop key userUUID_2;
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

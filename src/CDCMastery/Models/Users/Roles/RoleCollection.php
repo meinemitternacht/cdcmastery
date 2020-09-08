@@ -151,7 +151,7 @@ SQL;
      */
     public function fetchArray(array $uuids): array
     {
-        if (count($uuids) === 0) {
+        if (!$uuids) {
             return [];
         }
 
@@ -289,11 +289,7 @@ SQL;
             return;
         }
 
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return;
-        }
-
+        $stmt->execute();
         $stmt->close();
     }
 
