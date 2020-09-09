@@ -4,6 +4,7 @@
 namespace CDCMastery\Controllers\Admin;
 
 
+use CDCMastery\Controllers\Admin;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
-class AfscApprovals extends \CDCMastery\Controllers\Admin
+class AfscApprovals extends Admin
 {
     private UserAfscAssociations $assocs;
     private UserCollection $users;
