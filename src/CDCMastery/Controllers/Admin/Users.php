@@ -19,6 +19,7 @@ use CDCMastery\Models\Email\EmailCollection;
 use CDCMastery\Models\Email\Templates\ActivateAccount;
 use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
@@ -782,12 +783,17 @@ class Users extends Admin
             $symbol = $this->symbols->fetch($u_symbol);
         }
 
+        $symbols = $this->symbols->fetchAll();
+        uasort($symbols, static function (OfficeSymbol $a, OfficeSymbol $b): int {
+            return $a->getSymbol() <=> $b->getSymbol();
+        });
+
         $data = [
             'user' => $user,
             'base' => $base,
             'bases' => $this->bases->fetchAll(),
             'symbol' => $symbol ?? null,
-            'symbols' => $this->symbols->fetchAll(),
+            'symbols' => $symbols,
             'ranks' => UserHelpers::listRanks(),
             'role' => $role,
             'roles' => $this->roles->fetchAll(),

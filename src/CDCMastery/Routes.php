@@ -8,6 +8,7 @@ use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
 use CDCMastery\Controllers\Home;
+use CDCMastery\Controllers\Profile;
 use CDCMastery\Controllers\Search;
 use CDCMastery\Controllers\Stats;
 use CDCMastery\Controllers\Stats\Afscs;
@@ -561,6 +562,30 @@ return simpleDispatcher(function (RouteCollector $r) {
             'do_reset',
         ]);
     });
+
+    /**
+     * @uses \CDCMastery\Controllers\Profile::show_home()
+     */
+    $r->addRoute('GET', '/profile', [
+        Profile::class,
+        'show_home',
+    ]);
+
+    /**
+     * @uses \CDCMastery\Controllers\Profile::show_edit()
+     */
+    $r->addRoute('GET', '/profile/edit', [
+        Profile::class,
+        'show_edit',
+    ]);
+
+    /**
+     * @uses \CDCMastery\Controllers\Profile::do_edit()
+     */
+    $r->addRoute('POST', '/profile/edit', [
+        Profile::class,
+        'do_edit',
+    ]);
 
     /** @uses \CDCMastery\Controllers\Search::show_search_home() */
     $r->addRoute('GET', '/search', [

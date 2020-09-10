@@ -45,14 +45,23 @@ $route = $dispatcher->dispatch(
 
 if (!$auth_helpers->assert_logged_in()) {
     $publicRoutes = array_flip($config->get(['system', 'routing', 'public']));
+    $publicPrefixes = $config->get(['system', 'routing', 'public_prefix']);
 
-    if (!isset($publicRoutes[$path])) {
+    foreach ($publicPrefixes as $publicPrefix) {
+        if (strpos($path, $publicPrefix) === 0) {
+            goto public_route_ok;
+        }
+    }
+
+    if (!isset($publicRoutes[ $path ])) {
         $auth_helpers->set_redirect($path);
         $session->getFlashBag()->add(MessageTypes::WARNING,
                                      'You must log in to continue');
         $response = RootController::static_redirect('/auth/login');
         goto out_respond;
     }
+
+    public_route_ok:
 }
 
 switch ($route[0]) {

@@ -1,18 +1,15 @@
 {% extends "layout.html.twig" %}
-{% set page_title = "Edit User - #{user.name}" %}
+{% set page_title = "Edit My Profile" %}
 {% block main %}
-    {% include "blocks/admin/users/menu.html.twig" %}
+    {% include "blocks/profile/menu.html.twig" %}
     <div class="page-header">
         <h3>
-            Edit {{ user.name }}
-            {% if user.isDisabled %}
-                <span class="badge badge-danger" title="This user is currently disabled">DISABLED</span>
-            {% endif %}
+            Edit My Profile
         </h3>
     </div>
     <div class="row">
         <div class="col-xs-12 col-md-8">
-            <form action="/admin/users/{{ user.uuid }}/edit"
+            <form action="/profile/edit"
                   method="POST">
                 <div class="well">
                     <fieldset>
@@ -37,7 +34,7 @@
                                    id="new_password"
                                    name="new_password">
                             <div class="help-block">
-                                To keep the previous password, leave this field blank.
+                                To keep your previous password, leave this field blank.
                             </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -49,19 +46,6 @@
                                    id="email"
                                    name="email"
                                    value="{{ user.email }}">
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label for="role">
-                                Role
-                            </label>
-                            <select name="role"
-                                    id="role"
-                                    size="1"
-                                    class="form-control"{% if not is_admin %} disabled="disabled"{% endif %}>
-                                {% for role_opt in roles %}
-                                    <option value="{{ role_opt.uuid }}"{% if user.role == role_opt.uuid %} SELECTED{% endif %}>{{ role_opt.name }}</option>
-                                {% endfor %}
-                            </select>
                         </div>
                     </fieldset>
                 </div>
@@ -171,7 +155,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <button type="submit" class="btn btn-success">Save Changes</button>
-                                <a href="/admin/users/{{ user.uuid }}" class="btn btn-primary">Cancel</a>
+                                <a href="/profile" class="btn btn-primary">Cancel</a>
                             </div>
                         </div>
                     </fieldset>

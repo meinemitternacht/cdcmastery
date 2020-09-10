@@ -35,7 +35,7 @@ class UserHelpers
         $this->log = $logger;
     }
 
-    public static function listRanks(bool $keyed = true): array
+    public static function listRanks(bool $keyed = true, bool $show_special = true): array
     {
         $enlisted = [
             'AB' => 'Airman Basic',
@@ -67,7 +67,16 @@ class UserHelpers
         ];
 
         if (!$keyed) {
-            return array_merge($enlisted, $officer, $special);
+            return $show_special
+                ? array_merge($enlisted, $officer, $special)
+                : array_merge($enlisted, $officer);
+        }
+
+        if (!$show_special) {
+            return [
+                'Enlisted' => $enlisted,
+                'Officer' => $officer,
+            ];
         }
 
         return [

@@ -39,15 +39,17 @@ return [
 
         $twig->addGlobal('cdc_debug', $debug);
         $twig->addGlobal('cur_url', parse_url($_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH));
-        $twig->addGlobal('loggedIn', $loggedIn);
-        $twig->addGlobal('cssList', $config->get(['twig', 'assets', 'css']));
-        $twig->addGlobal('jsList', $config->get(['twig', 'assets', 'js']));
-        $twig->addGlobal('passingScore', $config->get(['testing', 'passingScore']));
+        $twig->addGlobal('logged_in', $loggedIn);
+        $twig->addGlobal('css_assets', $config->get(['twig', 'assets', 'css']));
+        $twig->addGlobal('js_assets', $config->get(['twig', 'assets', 'js']));
+        $twig->addGlobal('passing_score', $config->get(['testing', 'passingScore']));
 
         if ($loggedIn) {
-            $twig->addGlobal('isAdmin', $auth_helpers->assert_admin());
-            $twig->addGlobal('isSupervisor', $auth_helpers->assert_supervisor());
-            $twig->addGlobal('isTrainingManager', $auth_helpers->assert_training_manager());
+            $twig->addGlobal('cur_user_uuid', $auth_helpers->get_user_uuid());
+            $twig->addGlobal('cur_user_name', $auth_helpers->get_user_name());
+            $twig->addGlobal('is_admin', $auth_helpers->assert_admin());
+            $twig->addGlobal('is_supervisor', $auth_helpers->assert_supervisor());
+            $twig->addGlobal('is_training_manager', $auth_helpers->assert_training_manager());
         }
 
         if ($debug) {

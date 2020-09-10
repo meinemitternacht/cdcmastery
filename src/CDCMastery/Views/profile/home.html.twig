@@ -1,0 +1,194 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "My Profile" %}
+{% block main %}
+    {% include "blocks/profile/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            My Profile
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-primary text-center">
+                <div class="panel-heading">
+                    <h5>Dates</h5>
+                </div>
+                <div class="panel-body profile-group-container">
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Registered</label>
+                        <div class="profile-data">
+                            {{ user.dateRegistered|date }}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Last Active</label>
+                        <div class="profile-data">
+                            {% if user.lastActive %}{{ user.lastActive|date }}{% else %}Never{% endif %}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Last Login</label>
+                        <div class="profile-data">
+                            {% if user.lastLogin %}{{ user.lastLogin|date }}{% else %}Never{% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-warning text-center">
+                <div class="panel-heading">
+                    <h5>Account Information</h5>
+                </div>
+                <div class="panel-body profile-group-container">
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Role</label>
+                        <div class="profile-data">
+                            {{ role.name }}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Username</label>
+                        <div class="profile-data">
+                            {{ user.handle }}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">E-mail</label>
+                        <div class="profile-data">
+                            {{ user.email }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-info text-center">
+                <div class="panel-heading">
+                    <h5>Locale</h5>
+                </div>
+                <div class="panel-body profile-group-container">
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Base</label>
+                        <div class="profile-data">
+                            {{ base.name }}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Office Symbol</label>
+                        <div class="profile-data">
+                            {% if symbol %}{{ symbol.symbol }}{% else %}N/A{% endif %}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Time Zone</label>
+                        <div class="profile-data">
+                            {{ user.timeZone }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-danger text-center">
+                <div class="panel-heading">
+                    <h5>Testing Summary</h5>
+                </div>
+                <div class="panel-body profile-group-container">
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Average Score</label>
+                        <div class="profile-data">
+                            {{ stats.tests.complete.avg|number_format(2) }}%
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Tests Taken</label>
+                        <div class="profile-data">
+                            {{ stats.tests.complete.count|number_format }}
+                        </div>
+                    </div>
+                    <div class="profile-group col-xs-12">
+                        <label class="profile-label">Incomplete Tests</label>
+                        <div class="profile-data">
+                            {{ stats.tests.incomplete.count|number_format }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-danger text-center">
+                <div class="panel-heading">
+                    <h5>AFSC Associations</h5>
+                </div>
+                <div class="panel-body profile-two-col-container">
+                    {% if afscs.authorized or afscs.pending %}
+                        {% for afsc in afscs.authorized %}
+                            <div>{{ afsc.name }}</div>
+                        {% endfor %}
+                        {% for afsc in afscs.pending %}
+                            <div>
+                                {{ afsc.name }}
+                                <span class="badge badge-warning badge-sm" title="PENDING">!</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No associations found.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-success text-center">
+                <div class="panel-heading">
+                    <h5>Training Managers</h5>
+                </div>
+                <div class="panel-body profile-two-col-container">
+                    {% if assocs.tm %}
+                        {% for tm in assocs.tm %}
+                            <div>{{ tm.name }}</div>
+                        {% endfor %}
+                    {% else %}
+                        No associations found.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+            <div class="panel panel-success text-center">
+                <div class="panel-heading">
+                    <h5>Supervisors</h5>
+                </div>
+                <div class="panel-body profile-two-col-container">
+                    {% if assocs.su %}
+                        {% for su in assocs.su %}
+                            <div>{{ su.name }}</div>
+                        {% endfor %}
+                    {% else %}
+                        No associations found.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if role_is_training_manager(role) or role_is_supervisor(role) %}
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                <div class="panel panel-success text-center">
+                    <div class="panel-heading">
+                        <h5>Subordinates</h5>
+                    </div>
+                    <div class="panel-body profile-two-col-container">
+                        {% if assocs.subordinates %}
+                            {% for sub in assocs.subordinates %}
+                                <div>{{ sub.name }}</div>
+                            {% endfor %}
+                        {% else %}
+                            No associations found.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -11,10 +11,10 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% for cssPath in cssList %}
+    {% for cssPath in css_assets %}
         <link href="{{ cssPath }}" rel="stylesheet" type="text/css">
     {% endfor %}
-    {% for jsPath in jsList %}
+    {% for jsPath in js_assets %}
         <script src="{{ jsPath }}"></script>
     {% endfor %}
 </head>
@@ -45,12 +45,12 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/stats">Statistics</a></li>
-                {% if loggedIn and not error %}
-                    {% if isAdmin %}
-                        <li class="dropdown">
+                <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
+                <li{% if cur_url starts with "/about" %} class="active"{% endif %}><a href="/about">About</a></li>
+                <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a></li>
+                {% if logged_in and not error %}
+                    {% if is_admin %}
+                        <li class="dropdown{% if cur_url starts with "/admin" %} active{% endif %}">
                             <a href="#"
                                class="dropdown-toggle"
                                data-toggle="dropdown"
@@ -58,31 +58,37 @@
                                aria-haspopup="true"
                                aria-expanded="false">Admin Panel <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/admin/cdc/afsc" title="AFSC Manager">AFSC Manager</a></li>
-                                <li><a href="/admin/cards" title="Flash Cards">Flash Cards</a></li>
-                                <li><a href="/admin/users" title="User Manager">User Manager</a></li>
-                                <li><a href="/admin/bases" title="Base Manager">Base Manager</a></li>
-                                <li><a href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
-                                <li><a href="/admin/search" title="Search">Search</a></li>
+                                <li{% if cur_url starts with "/admin/cdc/afsc" %} class="active"{% endif %}><a
+                                            href="/admin/cdc/afsc" title="AFSC Manager">AFSC Manager</a></li>
+                                <li{% if cur_url starts with "/admin/cards" %} class="active"{% endif %}><a
+                                            href="/admin/cards" title="Flash Cards">Flash Cards</a></li>
+                                <li{% if cur_url starts with "/admin/users" %} class="active"{% endif %}><a
+                                            href="/admin/users" title="User Manager">User Manager</a></li>
+                                <li{% if cur_url starts with "/admin/bases" %} class="active"{% endif %}><a
+                                            href="/admin/bases" title="Base Manager">Base Manager</a></li>
+                                <li{% if cur_url starts with "/admin/office-symbols" %} class="active"{% endif %}><a
+                                            href="/admin/office-symbols" title="Office Symbols">Office Symbols</a></li>
+                                <li{% if cur_url starts with "/admin/search" %} class="active"{% endif %}><a
+                                            href="/admin/search" title="Search">Search</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="/admin/activations" title="View Unactivated Users">Unactivated Users</a>
-                                <li><a href="/admin/pending-roles" title="View Role Requests">Pending Role Requests</a>
-                                <li><a href="/admin/pending-afscs" title="View Pending AFSC Associations">Pending AFSC
+                                <li{% if cur_url starts with "/admin/activations" %} class="active"{% endif %}><a
+                                            href="/admin/activations" title="View Unactivated Users">Unactivated
+                                        Users</a>
+                                <li{% if cur_url starts with "/admin/pending-roles" %} class="active"{% endif %}><a
+                                            href="/admin/pending-roles" title="View Role Requests">Pending Role
+                                        Requests</a>
+                                <li{% if cur_url starts with "/admin/pending-afscs" %} class="active"{% endif %}><a
+                                            href="/admin/pending-afscs" title="View Pending AFSC Associations">Pending
+                                        AFSC
                                         Associations</a>
                                 </li>
                             </ul>
                         </li>
-                    {% elseif isSupervisor or isTrainingManager %}
+                    {% elseif is_supervisor or is_training_manager %}
                         <li><a href="/overview/training">Training Panel</a></li>
                     {% endif %}
-                    {% if notificationCount %}
-                        <li>
-                            <a href="/account/events">
-                                <i class="fa fa-bell events-bell"></i>
-                                <span class="badge badge-events">{{ notificationCount }}</span>
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li{% if cur_url starts with "/profile" %} class="active"{% endif %}><a href="/profile">My
+                            Profile</a></li>
                     <li><a href="/auth/logout">Sign Out</a></li>
                 {% elseif not error %}
                     <li><a href="/auth/login">Sign In</a></li>
