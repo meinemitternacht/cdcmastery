@@ -5,6 +5,7 @@ use CDCMastery\Controllers\RootController;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\Users\UserCollection;
 use Invoker\Exception\NotCallableException;
 use Invoker\Exception\NotEnoughParametersException;
 use Monolog\Logger;
@@ -32,6 +33,8 @@ try {
 
 define('CDC_DEBUG', !!$config->get(['system', 'debug']));
 define('SUPPORT_EMAIL', $config->get(['email', 'username']));
+define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
+define('SUPPORT_FACEBOOK_DISPLAY', $config->get(['support', 'facebook', 'display']));
 
 $path = parse_url(
     $_SERVER[ 'REQUEST_URI' ],
@@ -43,7 +46,9 @@ $route = $dispatcher->dispatch(
     $path
 );
 
-if (!$auth_helpers->assert_logged_in()) {
+$logged_in = $auth_helpers->assert_logged_in();
+
+if (!$logged_in) {
     $publicRoutes = array_flip($config->get(['system', 'routing', 'public']));
     $publicPrefixes = $config->get(['system', 'routing', 'public_prefix']);
 
@@ -64,14 +69,32 @@ if (!$auth_helpers->assert_logged_in()) {
     public_route_ok:
 }
 
-switch ($route[0]) {
+if ($logged_in) {
+    $users = $container->get(UserCollection::class);
+    $user = $users->fetch($auth_helpers->get_user_uuid());
+
+    if ($auth_helpers->get_role_uuid() !== $user->getRole()) {
+        $auth_helpers->logout_hook();
+        $session->start();
+
+        $session->getFlashBag()->add(
+            MessageTypes::INFO,
+            'Your role has been changed. Please log in again.'
+        );
+
+        $response = RootController::static_redirect('/auth/login');
+        goto out_respond;
+    }
+}
+
+switch ($route[ 0 ]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        $msg = '404: ' . $_SERVER['REQUEST_URI'] . ' could not be found';
+        $msg = '404: ' . $_SERVER[ 'REQUEST_URI' ] . ' could not be found';
         $response = new Response($msg, 404);
         $log->error($msg);
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        $msg = '405: ' . $_SERVER['REQUEST_URI'] . ' method not allowed';
+        $msg = '405: ' . $_SERVER[ 'REQUEST_URI' ] . ' method not allowed';
         $response = new Response($msg, 405);
         $log->error($msg);
         break;

@@ -42,11 +42,13 @@ class RoleApprovals extends Admin
     {
         $params = [
             'user_uuids',
+            'determination',
         ];
 
         $this->checkParameters($params);
 
         $user_uuids = $this->get('user_uuids');
+        $determination = $this->filter_string_default('determination');
 
         if (!is_array($user_uuids) || !$user_uuids) {
             $this->flash()->add(
@@ -73,6 +75,16 @@ class RoleApprovals extends Admin
             return $this->redirect('/admin/pending-roles');
         }
 
+        switch ($determination) {
+            case 'approve':
+                $requests_approved = true;
+                break;
+            case 'reject':
+            default:
+                $requests_approved = false;
+                break;
+        }
+
         $success = [];
         $tgt_users = $this->users->fetchArray($user_uuids);
         $all_roles = $this->roles->fetchAll();
@@ -94,9 +106,16 @@ class RoleApprovals extends Admin
                 continue;
             }
 
-            $tgt_user->setRole($role->getRoleUuid());
+            if ($requests_approved) {
+                $tgt_user->setRole($role->getRoleUuid());
+            }
+
+            $this->log->addNotice("{$tgt_user->getName()} -- role change " .
+                                  ($requests_approved
+                                      ? 'approved'
+                                      : 'denied') .
+                                  " -- {$prev_role->getName()} -> {$new_role->getName()}");
             $success[] = $role;
-            $this->log->addNotice("{$tgt_user->getName()} -- role changed -- {$prev_role->getName()} -> {$new_role->getName()}");
         }
 
         $this->users->saveArray($tgt_users);
@@ -104,7 +123,7 @@ class RoleApprovals extends Admin
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'The requested roles were approved successfully'
+            'The requested roles were processed successfully'
         );
 
         if (!$this->pending_roles->count()) {

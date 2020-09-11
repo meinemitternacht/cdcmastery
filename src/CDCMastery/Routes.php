@@ -571,21 +571,39 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_home',
     ]);
 
-    /**
-     * @uses \CDCMastery\Controllers\Profile::show_edit()
-     */
-    $r->addRoute('GET', '/profile/edit', [
-        Profile::class,
-        'show_edit',
-    ]);
+    $r->addGroup('/profile', function (RouteCollector $r) {
+        /**
+         * @uses \CDCMastery\Controllers\Profile::show_edit()
+         */
+        $r->addRoute('GET', '/edit', [
+            Profile::class,
+            'show_edit',
+        ]);
 
-    /**
-     * @uses \CDCMastery\Controllers\Profile::do_edit()
-     */
-    $r->addRoute('POST', '/profile/edit', [
-        Profile::class,
-        'do_edit',
-    ]);
+        /**
+         * @uses \CDCMastery\Controllers\Profile::do_edit()
+         */
+        $r->addRoute('POST', '/edit', [
+            Profile::class,
+            'do_edit',
+        ]);
+
+        /**
+         * @uses \CDCMastery\Controllers\Profile::show_role_request()
+         */
+        $r->addRoute('GET', '/role', [
+            Profile::class,
+            'show_role_request',
+        ]);
+
+        /**
+         * @uses \CDCMastery\Controllers\Profile::do_edit()
+         */
+        $r->addRoute('POST', '/role', [
+            Profile::class,
+            'do_role_request',
+        ]);
+    });
 
     /** @uses \CDCMastery\Controllers\Search::show_search_home() */
     $r->addRoute('GET', '/search', [

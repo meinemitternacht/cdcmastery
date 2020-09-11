@@ -20,7 +20,7 @@ class DateTimeHelpers
     public const DT_FMT_DB_DAY_START = 'Y-m-d 00:00:00';
     public const DT_FMT_DB_DAY_END = 'Y-m-d 23:59:59';
 
-    public const DT_FMT_LONG = 'l, F jS, Y g:i:s A';
+    public const DT_FMT_LONG = 'l, F jS, Y \a\t g:i:s A';
     public const DT_FMT_SHORT = 'd-M-y H:i:s';
 
     private static DateTimeZone $utc_tz;

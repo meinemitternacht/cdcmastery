@@ -1,0 +1,92 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "My Profile" %}
+{% set show_supervisor_block = false %}
+{% set show_tm_block = false %}
+
+{% if role_is_user(role) %}
+    {% set show_supervisor_block = true %}
+    {% set show_tm_block = true %}
+{% elseif role_is_supervisor(role) %}
+    {% set show_supervisor_block = false %}
+    {% set show_tm_block = true %}
+{% elseif role_is_training_manager(role) %}
+    {% set show_supervisor_block = false %}
+    {% set show_tm_block = false %}
+{% endif %}
+
+{% block main %}
+    {% include "blocks/profile/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            Change Role
+        </h3>
+    </div>
+    <div class="row">
+        {% if show_supervisor_block %}
+            <div class="col-xs-12 col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading text-center">
+                        <h5>Supervisor</h5>
+                    </div>
+                    <form action="/profile/role"
+                          method="POST">
+                        <input type="hidden" name="tgt_role" value="supervisor">
+                        <div class="panel-body text-center panel-min-200">
+                            <div class="help-block">
+                                Press "Request Upgrade" to change your account role to Supervisor. This will allow
+                                you to perform the following actions:
+                            </div>
+                            <div class="row">
+                                <ul class="col-md-6 col-md-offset-3 text-left">
+                                    <li>Add subordinate users</li>
+                                    <li>Track subordinate progress</li>
+                                    <li>Create and print offline tests</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-center">
+                            <button type="submit" class="btn btn-success">Request Upgrade</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        {% if show_tm_block %}
+            <div class="col-xs-12 col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading text-center">
+                        <h5>Training Manager</h5>
+                    </div>
+                    <form action="/profile/role"
+                          method="POST">
+                        <input type="hidden" name="tgt_role" value="training-manager">
+                        <div class="panel-body text-center panel-min-200">
+                            <div class="help-block">
+                                Press "Request Upgrade" to change your account role to Training Manager. This will
+                                allow you to perform the following actions:
+                            </div>
+                            <div class="row">
+                                <ul class="col-md-6 col-md-offset-3 text-left">
+                                    <li>Add subordinate users <strong>and supervisors</strong></li>
+                                    <li>Track subordinate progress</li>
+                                    <li>Create and print offline tests</li>
+                                    <li><em>More features coming soon...</em></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-center">
+                            <button type="submit" class="btn btn-success">Request Upgrade</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        {% if not show_supervisor_block and not show_tm_block %}
+            <div class="col-xs-12 col-md-12">
+                <div class="alert alert-danger">
+                    Your role type cannot be upgraded any further.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

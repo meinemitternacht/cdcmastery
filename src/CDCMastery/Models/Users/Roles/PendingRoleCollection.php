@@ -28,6 +28,10 @@ class PendingRoleCollection
     {
         $roles = [];
         foreach ($rows as $row) {
+            if (!$row[ 'userUUID' ]) {
+                continue;
+            }
+
             $roles[ $row[ 'userUUID' ] ] = new PendingRole($row[ 'userUUID' ],
                                                            $row[ 'roleUUID' ],
                                                            DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
@@ -81,6 +85,7 @@ SQL;
 
         $stmt->bind_result($_user_uuid, $role_uuid, $date_requested);
         $stmt->fetch();
+
         $row = [
             'userUUID' => $_user_uuid,
             'roleUUID' => $role_uuid,

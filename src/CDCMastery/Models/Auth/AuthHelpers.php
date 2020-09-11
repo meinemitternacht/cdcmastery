@@ -14,6 +14,7 @@ class AuthHelpers
 {
     private const KEY_AUTH = 'cdcmastery-auth';
     private const KEY_ROLE = 'user-role';
+    private const KEY_ROLE_UUID = 'user-role-uuid';
     private const KEY_REDIRECT = 'login-redirect';
     private const KEY_USER_NAME = 'name';
     private const KEY_USER_UUID = 'uuid';
@@ -36,12 +37,6 @@ class AuthHelpers
         $this->limiter = $limiter;
     }
 
-    /**
-     * @param $password
-     * @param $handle
-     * @param $email
-     * @return array
-     */
     public static function check_complexity(string $password, string $handle, string $email): array
     {
         $errors = [];
@@ -79,20 +74,11 @@ class AuthHelpers
         return $errors;
     }
 
-    /**
-     * @param string $password
-     * @param string $hash
-     * @return bool
-     */
     public static function compare(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
     }
 
-    /**
-     * @param string $password
-     * @return string
-     */
     public static function hash(string $password): string
     {
         return password_hash(
@@ -102,74 +88,46 @@ class AuthHelpers
         );
     }
 
-    /**
-     * @return bool
-     */
     public function assert_logged_in(): bool
     {
         return $this->session->get(self::KEY_AUTH, false);
     }
 
-    /**
-     * @param string $role
-     * @return bool
-     */
     private function assert_role(string $role): bool
     {
         return $this->session->get(self::KEY_ROLE) === $role;
     }
 
-    /**
-     * @return bool
-     */
     public function assert_admin(): bool
     {
         return $this->assert_role(Role::TYPE_ADMIN) || $this->assert_role(Role::TYPE_SUPER_ADMIN);
     }
 
-    /**
-     * @return bool
-     */
     public function assert_editor(): bool
     {
         return $this->assert_role(Role::TYPE_QUESTION_EDITOR);
     }
 
-    /**
-     * @return bool
-     */
     public function assert_supervisor(): bool
     {
         return $this->assert_role(Role::TYPE_SUPERVISOR);
     }
 
-    /**
-     * @return bool
-     */
     public function assert_training_manager(): bool
     {
         return $this->assert_role(Role::TYPE_TRAINING_MANAGER);
     }
 
-    /**
-     * @return bool
-     */
     public function assert_user(): bool
     {
         return $this->assert_role(Role::TYPE_USER);
     }
 
-    /**
-     * @return null|string
-     */
     public function get_user_name(): ?string
     {
         return $this->session->get(self::KEY_USER_NAME);
     }
 
-    /**
-     * @return null|string
-     */
     public function get_user_uuid(): ?string
     {
         return $this->session->get(self::KEY_USER_UUID);
@@ -180,15 +138,21 @@ class AuthHelpers
         return $this->session->get(self::KEY_REDIRECT);
     }
 
+    public function get_role_type(): ?string
+    {
+        return $this->session->get(self::KEY_ROLE);
+    }
+
+    public function get_role_uuid(): ?string
+    {
+        return $this->session->get(self::KEY_ROLE_UUID);
+    }
+
     public function set_redirect(string $path): void
     {
         $this->session->set(self::KEY_REDIRECT, $path);
     }
 
-    /**
-     * @param User $user
-     * @param Role|null $role
-     */
     public function login_hook(User $user, ?Role $role): void
     {
         $this->limiter->destroy();
@@ -203,6 +167,7 @@ class AuthHelpers
         }
 
         $this->session->set(self::KEY_ROLE, $role->getType());
+        $this->session->set(self::KEY_ROLE_UUID, $role->getUuid());
     }
 
     public function logout_hook(): void

@@ -15,6 +15,8 @@ use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
+use CDCMastery\Models\Users\Roles\PendingRole;
+use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
@@ -23,6 +25,7 @@ use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
+use DateTime;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -34,6 +37,7 @@ class Profile extends RootController
     private UserCollection $users;
     private BaseCollection $bases;
     private RoleCollection $roles;
+    private PendingRoleCollection $pending_roles;
     private OfficeSymbolCollection $symbols;
     private TestStats $test_stats;
     private TestCollection $tests;
@@ -50,6 +54,7 @@ class Profile extends RootController
         UserCollection $users,
         BaseCollection $bases,
         RoleCollection $roles,
+        PendingRoleCollection $pending_roles,
         OfficeSymbolCollection $symbols,
         TestStats $test_stats,
         TestCollection $tests,
@@ -64,6 +69,7 @@ class Profile extends RootController
         $this->users = $users;
         $this->bases = $bases;
         $this->roles = $roles;
+        $this->pending_roles = $pending_roles;
         $this->symbols = $symbols;
         $this->test_stats = $test_stats;
         $this->tests = $tests;
@@ -86,6 +92,58 @@ class Profile extends RootController
         }
 
         return $user;
+    }
+
+    public function do_role_request(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'tgt_role',
+        ];
+
+        $this->checkParameters($params);
+
+        $tgt_role = $this->filter_string_default('tgt_role');
+
+        $tgt_type = null;
+        switch ($tgt_role) {
+            case 'supervisor':
+                $tgt_type = Role::TYPE_SUPERVISOR;
+                break;
+            case 'training-manager':
+                $tgt_type = Role::TYPE_TRAINING_MANAGER;
+                break;
+            default:
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The specified role type is invalid'
+                );
+
+                return $this->redirect('/profile/role');
+        }
+
+        $role = $this->roles->fetchType($tgt_type);
+
+        if (!$role || $role->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified role type is invalid'
+            );
+
+            return $this->redirect('/profile/role');
+        }
+
+        $request = new PendingRole($user->getUuid(), $role->getUuid(), new DateTime());
+        $this->pending_roles->save($request);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'Your request has been received and must be approved by an administrator.  ' .
+            'Please wait up to 24 hours before contacting us regarding the request. '
+        );
+
+        return $this->redirect('/profile');
     }
 
     public function do_edit(): Response
@@ -351,6 +409,37 @@ class Profile extends RootController
 
         return $this->render(
             'profile/home.html.twig',
+            $data
+        );
+    }
+
+    public function show_role_request(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $role = $this->roles->fetch($user->getRole());
+
+        $pending_role_request = $this->pending_roles->fetch($user->getUuid());
+        if ($pending_role_request !== null) {
+            $pending_role = $this->roles->fetch($pending_role_request->getRoleUuid());
+
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                "Your account already has a role request pending for the '{$pending_role->getName()}' role. " .
+                'Please wait up to 24 hours before contacting us regarding the request. ' .
+                'The request was submitted on ' .
+                $pending_role_request->getDateRequested()->format(DateTimeHelpers::DT_FMT_LONG) . '.'
+            );
+
+            return $this->redirect('/profile');
+        }
+
+        $data = [
+            'user' => $user,
+            'role' => $role,
+        ];
+
+        return $this->render(
+            'profile/role.html.twig',
             $data
         );
     }
