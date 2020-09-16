@@ -118,16 +118,24 @@
                 {% if afscs.authorized or afscs.pending %}
                     {% for afsc in afscs.authorized %}
                         <div>
-                            <a href="/admin/cdc/afsc/{{ afsc.uuid }}">
+                            {% if restricted %}
                                 {{ afsc.name }}
-                            </a>
+                            {% else %}
+                                <a href="/admin/cdc/afsc/{{ afsc.uuid }}">
+                                    {{ afsc.name }}
+                                </a>
+                            {% endif %}
                         </div>
                     {% endfor %}
                     {% for afsc in afscs.pending %}
                         <div>
-                            <a href="/admin/cdc/afsc/{{ afsc.uuid }}">
+                            {% if restricted %}
                                 {{ afsc.name }}
-                            </a>
+                            {% else %}
+                                <a href="/admin/cdc/afsc/{{ afsc.uuid }}">
+                                    {{ afsc.name }}
+                                </a>
+                            {% endif %}
                             <span class="badge badge-warning badge-sm" title="PENDING">!</span>
                         </div>
                     {% endfor %}
@@ -148,7 +156,11 @@
                 {% if assocs.tm %}
                     {% for tm in assocs.tm %}
                         <div>
-                            {{ profile_link(tm)|raw }}
+                            {% if restricted %}
+                                {{ tm.name }}
+                            {% else %}
+                                {{ profile_link(tm)|raw }}
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -166,7 +178,11 @@
                 {% if assocs.su %}
                     {% for su in assocs.su %}
                         <div>
-                            {{ profile_link(su)|raw }}
+                            {% if restricted %}
+                                {{ su.name }}
+                            {% else %}
+                                {{ profile_link(su)|raw }}
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
@@ -185,7 +201,11 @@
                     {% if assocs.subordinates %}
                         {% for sub in assocs.subordinates %}
                             <div>
-                                {{ profile_link(sub)|raw }}
+                                {% if restricted %}
+                                    {{ sub.name }}
+                                {% else %}
+                                    {{ profile_link(sub)|raw }}
+                                {% endif %}
                             </div>
                         {% endfor %}
                     {% else %}
