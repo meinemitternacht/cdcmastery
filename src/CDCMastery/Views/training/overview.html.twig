@@ -1,0 +1,162 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Training Overview - #{user.name}" %}
+{% block main %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Training Overview</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            {% if graph.count and graph.avg %}
+                <div class="panel panel-primary">
+                    <div class="panel-body panel-min-250">
+                        <div id="overview-chart" style="height:330px">
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="help-block col-md-12">
+                        Note: click on a table row to view a user's profile
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="overview-detail-table" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Tests Taken</th>
+                                <th>Average Score</th>
+                                <th>Latest Score</th>
+                                <th>Last Login</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% set i = 1 %}
+                            {% for user_uuid, row in stats.count_avg %}
+                                <tr data-uuid="{{ user_uuid }}"
+                                    class="cursor-pointer">
+                                    <td>{{ row.name }}</td>
+                                    <td>{{ row.tCount }}</td>
+                                    <td class="{% if row.tAvg >= passing_score %} bg-success{% else %} bg-danger{% endif %}">{{ row.tAvg|number_format(2) }}
+                                        %
+                                    </td>
+                                    {% if stats.latest[user_uuid] %}
+                                        <td class="{% if stats.latest[user_uuid].score >= passing_score %} bg-success{% else %} bg-danger{% endif %}">
+                                            {{ stats.latest[user_uuid].score }}%
+                                        </td>
+                                    {% else %}
+                                        <td>&nbsp;</td>
+                                    {% endif %}
+                                    <td>{{ row.last_login }}</td>
+                                </tr>
+                                {% set i = i + 1 %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% set tableSelector = "#overview-detail-table" %}
+                        {% set redirectPath = "/training/users" %}
+                        {% include "utilities/table-row-link.html.twig" %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Your account does not have any subordinate information to view.
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="list-group">
+                        <a href="/training/subordinates" class="list-group-item">Manage Subordinates</a>
+                        <a href="/training/offline" class="list-group-item">Create Paper Tests</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-spacer">
+                <div class="col-md-12">
+                    <div class="panel panel-warning text-center">
+                        <div class="panel-heading">
+                            <h5>Stats</h5>
+                        </div>
+                        <div class="panel-body profile-group-container">
+                            <div class="profile-group col-xs-12">
+                                <label class="profile-label">Users</label>
+                                <div class="profile-data">{{ stats.n_users|number_format }}</div>
+                            </div>
+                            {% if role_is_training_manager(role) %}
+                                <div class="profile-group col-xs-12">
+                                    <label class="profile-label">Supervisors</label>
+                                    <div class="profile-data">{{ stats.n_supervisors|number_format }}</div>
+                                </div>
+                            {% endif %}
+                            <div class="profile-group col-xs-12">
+                                <label class="profile-label">Tests</label>
+                                <div class="profile-data">{{ stats.tests|number_format }}</div>
+                            </div>
+                            <div class="profile-group col-xs-12">
+                                <label class="profile-label">Average Score</label>
+                                <div class="profile-data">{{ stats.average }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            {% if graph.count and graph.avg %}
+            var overviewChart = new CanvasJS.Chart("overview-chart",
+                {
+                    zoomEnabled: false,
+                    animationEnabled: true,
+                    axisX: {
+                        valueFormatString: " ",
+                        tickLength: 0
+                    },
+                    axisY: {
+                        interlacedColor: "#F5F5F5",
+                        gridColor: "#D7D7D7",
+                        tickColor: "#D7D7D7",
+                        tickLength: 0
+                    },
+                    theme: "theme2",
+                    toolTip: {
+                        shared: true
+                    },
+                    data: [
+                        {
+                            type: "column",
+                            lineThickness: 1,
+                            name: "Tests Taken",
+                            axisYType: "primary",
+                            dataPoints: {{ graph.count|raw }}
+                        },
+                        {
+                            type: "line",
+                            lineThickness: 1,
+                            axisYType: "secondary",
+                            name: "Average Score",
+                            dataPoints: {{ graph.avg|raw }}
+                        }
+                    ],
+                    legend: {
+                        verticalAlign: "bottom",
+                        horizontalAlign: "center",
+                        fontSize: 15,
+                        fontFamily: "Lucida Sans Unicode",
+                        cursor: "pointer"
+                    }
+                });
+
+            overviewChart.render();
+            {% endif %}
+        }
+    </script>
+{% endblock %}

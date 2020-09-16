@@ -99,7 +99,7 @@ class Users extends Admin
         $this->activations = $activations;
     }
 
-    private function get_user(string $uuid): ?User
+    private function get_user(string $uuid): User
     {
         $user = $this->users->fetch($uuid);
 

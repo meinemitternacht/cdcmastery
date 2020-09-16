@@ -85,7 +85,8 @@
                             </ul>
                         </li>
                     {% elseif is_supervisor or is_training_manager %}
-                        <li><a href="/overview/training">Training Panel</a></li>
+                        <li{% if cur_url starts with "/training" %} class="active"{% endif %}><a href="/training">Training
+                                Panel</a></li>
                     {% endif %}
                     <li{% if cur_url starts with "/profile" %} class="active"{% endif %}><a href="/profile">My
                             Profile</a></li>

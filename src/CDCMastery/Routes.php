@@ -8,6 +8,7 @@ use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
 use CDCMastery\Controllers\Home;
+use CDCMastery\Controllers\Overviews\TrainingOverview;
 use CDCMastery\Controllers\Profile;
 use CDCMastery\Controllers\Search;
 use CDCMastery\Controllers\Stats;
@@ -834,6 +835,20 @@ return simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('POST', '/{testUuid}/delete', [
             \CDCMastery\Controllers\Tests::class,
             'do_delete_test',
+        ]);
+    });
+
+    /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_overview() */
+    $r->addRoute('GET', '/training', [
+        TrainingOverview::class,
+        'show_overview',
+    ]);
+
+    $r->addGroup('/training', function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_profile() */
+        $r->addRoute('GET', '/users/{uuid}', [
+            TrainingOverview::class,
+            'show_profile',
         ]);
     });
 });

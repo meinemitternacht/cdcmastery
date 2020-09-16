@@ -483,7 +483,7 @@ SQL;
                 continue;
             }
 
-            $counts[$row['tDate']] = (int)$row['tCount'] ?? 0;
+            $counts[ $row[ 'tDate' ] ] = (int)($row[ 'tCount' ] ?? 0);
         }
 
         $res->free();
