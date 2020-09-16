@@ -95,6 +95,12 @@
                     <li><a href="/auth/register">Register</a></li>
                 {% endif %}
             </ul>
+            {% if logged_in and not error %}
+                <p class="navbar-text navbar-right text-center">
+                    Signed in as
+                    <span class="text-white">{{ cur_user_name }}</span>
+                </p>
+            {% endif %}
         </div>
     </div>
 </nav>
