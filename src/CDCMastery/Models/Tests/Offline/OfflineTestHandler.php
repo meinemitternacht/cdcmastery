@@ -10,14 +10,17 @@ namespace CDCMastery\Models\Tests\Offline;
 
 
 use CDCMastery\Helpers\UUID;
+use CDCMastery\Models\CdcData\CdcData;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
+use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestOptions;
 use DateTime;
 use Exception;
 use Monolog\Logger;
 use mysqli;
+use RuntimeException;
 
 class OfflineTestHandler
 {
@@ -62,27 +65,24 @@ class OfflineTestHandler
         }
 
         /* Load AFSCs and generate an array of questions */
-        $cdcDataCollection = new CdcDataCollection(
-            $mysqli,
-            $logger
-        );
+        $cdcDataCollection = new CdcDataCollection($mysqli, $logger);
+        $questionsAnswersCollection = new QuestionAnswersCollection($mysqli, $logger);
 
         /** @var Question[] $questions */
         $questions = [];
-        foreach ($options->getAfscs() as $afsc) {
-            $questionData = $cdcDataCollection->fetch($afsc)->getQuestionAnswerData();
+        $afscs = $options->getAfscs();
+        $afsc = array_shift($afscs);
 
-            if (empty($questionData)) {
-                continue;
-            }
+        $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
 
+        if ($questionData) {
             foreach ($questionData as $questionAnswer) {
                 $questions[] = $questionAnswer->getQuestion();
             }
         }
 
-        if (empty($questions)) {
-            return new self($mysqli, $logger);
+        if (!$questions) {
+            throw new RuntimeException('No questions available to populate test');
         }
 
         /* Randomize questions and extract a slice of them */
@@ -107,10 +107,15 @@ class OfflineTestHandler
                                     0,
                                     $options->getNumQuestions());
 
+        $questionsAnswers = $questionsAnswersCollection->fetch($afsc, $questionList);
+
+        $cdcData = new CdcData();
+        $cdcData->setAfsc($afsc);
+        $cdcData->setQuestionAnswerData($questionsAnswers);
+
         $offlineTest = new OfflineTest();
         $offlineTest->setUuid(UUID::generate());
-        $offlineTest->setAfsc($options->getAfscs()[0]);
-        $offlineTest->setQuestions($questionList);
+        $offlineTest->setCdcData($cdcData);
         $offlineTest->setUserUuid($options->getUser()->getUuid());
         $offlineTest->setDateCreated(new DateTime());
 

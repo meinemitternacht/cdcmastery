@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page_title is defined %} {{ page_title }} | {% endif %} CDCMastery</title>
+    {% for cssPath in css_assets %}
+        <link href="{{ cssPath }}" rel="stylesheet" type="text/css">
+    {% endfor %}
+</head>
+<body onload="window.print()">
+<div style="max-width: 100%">
+    {% block main %}{% endblock %}
+</div>
+</body>
+</html>

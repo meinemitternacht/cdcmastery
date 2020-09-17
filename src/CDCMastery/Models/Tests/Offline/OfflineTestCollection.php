@@ -12,42 +12,79 @@ namespace CDCMastery\Models\Tests\Offline;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\CdcData\AnswerCollection;
+use CDCMastery\Models\CdcData\CdcData;
+use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\CdcData\QuestionAnswers;
+use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Users\User;
+use DateTime;
 use Monolog\Logger;
+use mysqli;
 
 class OfflineTestCollection
 {
-    /**
-     * @var \mysqli
-     */
-    protected $db;
+    protected mysqli $db;
+    protected Logger $log;
+    protected AfscCollection $afscs;
+    protected CdcDataCollection $cdc_data;
+    protected QuestionCollection $questions;
+    protected AnswerCollection $answers;
+    protected QuestionAnswersCollection $questions_answers;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var OfflineTest[]
-     */
-    private $tests = [];
-
-    /**
-     * OfflineTestCollection constructor.
-     * @param \mysqli $mysqli
-     * @param Logger $logger
-     */
-    public function __construct(\mysqli $mysqli, Logger $logger)
-    {
+    public function __construct(
+        mysqli $mysqli,
+        Logger $logger,
+        AfscCollection $afscs,
+        CdcDataCollection $cdc_data,
+        QuestionCollection $questions,
+        AnswerCollection $answers,
+        QuestionAnswersCollection $questions_answers
+    ) {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->afscs = $afscs;
+        $this->cdc_data = $cdc_data;
+        $this->questions = $questions;
+        $this->answers = $answers;
+        $this->questions_answers = $questions_answers;
     }
 
     /**
-     * @param string $uuid
+     * @param array $data
+     * @return OfflineTest[]
      */
+    private function create_objects(array $data): array
+    {
+        if (!$data) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($data as $tdata) {
+            if (!isset($tdata[ '_uuid' ])) {
+                continue;
+            }
+
+            $test = new OfflineTest();
+            $test->setUuid($tdata[ '_uuid' ]);
+            $test->setUserUuid($tdata[ 'userUuid' ]);
+            $test->setCdcData($tdata[ 'cdcData' ]);
+            $test->setDateCreated(
+                DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $tdata[ 'dateCreated' ]
+                )
+            );
+
+            $out[ $tdata[ '_uuid' ] ] = $test;
+        }
+
+        return $out;
+    }
+
     public function delete(string $uuid): void
     {
         if (empty($uuid)) {
@@ -65,17 +102,17 @@ SQL;
     }
 
     /**
-     * @param string[] $uuidList
+     * @param string[] $uuids
      */
-    public function deleteArray(array $uuidList): void
+    public function deleteArray(array $uuids): void
     {
-        if (empty($uuidList)) {
+        if (empty($uuids)) {
             return;
         }
 
         $uuidListFiltered = array_map(
             [$this->db, 'real_escape_string'],
-            $uuidList
+            $uuids
         );
 
         $uuidListString = implode("','", $uuidListFiltered);
@@ -88,9 +125,6 @@ SQL;
         $this->db->query($qry);
     }
 
-    /**
-     * @param User $user
-     */
     public function deleteAllByUser(User $user): void
     {
         if (empty($user->getUuid())) {
@@ -109,9 +143,6 @@ SQL;
         $this->db->query($qry);
     }
 
-    /**
-     * @param Afsc $afsc
-     */
     public function deleteAllByAfsc(Afsc $afsc): void
     {
         if (empty($afsc->getUuid())) {
@@ -130,14 +161,10 @@ SQL;
         $this->db->query($qry);
     }
 
-    /**
-     * @param string $uuid
-     * @return OfflineTest
-     */
-    public function fetch(string $uuid): OfflineTest
+    public function fetch(string $uuid): ?OfflineTest
     {
         if (empty($uuid)) {
-            return new OfflineTest();
+            return null;
         }
 
         $qry = <<<SQL
@@ -153,11 +180,15 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
             $stmt->close();
-            return new OfflineTest();
+            return null;
         }
 
         $stmt->bind_result(
@@ -172,21 +203,11 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || $_uuid === null) {
-            return new OfflineTest();
+        if (!isset($_uuid)) {
+            return null;
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $afsc = $afscCollection->fetch($afscUuid);
+        $afsc = $this->afscs->fetch($afscUuid);
 
         $questions = unserialize($questionList ?? '');
 
@@ -194,26 +215,26 @@ SQL;
             $questions = [];
         }
 
-        $questionArr = $questionCollection->fetchArray(
+        $questionArr = $this->questions->fetchArray(
             $afsc,
             $questions
         );
 
-        $offlineTest = new OfflineTest();
-        $offlineTest->setUuid($_uuid ?? '');
-        $offlineTest->setUserUuid($userUuid ?? '');
-        $offlineTest->setAfsc($afsc);
-        $offlineTest->setQuestions($questionArr);
-        $offlineTest->setDateCreated(
-            \DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $dateCreated ?? ''
-            )
-        );
+        $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
 
-        $this->tests[$uuid] = $offlineTest;
+        $cdcData = new CdcData();
+        $cdcData->setAfsc($afsc);
+        $cdcData->setQuestionAnswerData($questionAnswers);
 
-        return $offlineTest;
+        $data = [
+            '_uuid' => $_uuid,
+            'cdcData' => $cdcData,
+            'totalQuestions' => $totalQuestions,
+            'userUuid' => $userUuid,
+            'dateCreated' => $dateCreated,
+        ];
+
+        return $this->create_objects([$data])[ $_uuid ] ?? null;
     }
 
     /**
@@ -238,13 +259,17 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE afscUUID = ?
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
             $stmt->close();
             return [];
         }
@@ -260,7 +285,7 @@ SQL;
 
         $rows = [];
         while ($stmt->fetch()) {
-            if (!isset($uuid) || $uuid === null) {
+            if (!isset($uuid)) {
                 continue;
             }
 
@@ -270,59 +295,45 @@ SQL;
                 'questionList' => $questionList,
                 'totalQuestions' => $totalQuestions,
                 'userUuid' => $userUuid,
-                'dateCreated' => $dateCreated
+                'dateCreated' => $dateCreated,
             ];
         }
 
-        if (empty($rows)) {
+        $stmt->close();
+
+        if (!$rows) {
             return [];
         }
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $uuidList = [];
-        $c = count($rows);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || $rows[$i]['uuid'] === '') {
-                continue;
-            }
-
-            $questions = unserialize($rows[$i]['questionList'] ?? '');
+        $data = [];
+        foreach ($rows as $row) {
+            $questions = unserialize($row[ 'questionList' ] ?? '');
 
             if (!is_array($questions)) {
                 $questions = [];
             }
 
-            $questionArr = $questionCollection->fetchArray(
+            $questionArr = $this->questions->fetchArray(
                 $afsc,
                 $questions
             );
 
-            $offlineTest = new OfflineTest();
-            $offlineTest->setUuid($rows[$i]['uuid'] ?? '');
-            $offlineTest->setUserUuid($rows[$i]['userUuid'] ?? '');
-            $offlineTest->setAfsc($afsc);
-            $offlineTest->setQuestions($questionArr);
-            $offlineTest->setDateCreated(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $rows[$i]['dateCreated'] ?? ''
-                )
-            );
+            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
 
-            $this->tests[$rows[$i]['uuid']] = $offlineTest;
-            $uuidList[] = $rows[$i]['uuid'];
+            $cdcData = new CdcData();
+            $cdcData->setAfsc($afsc);
+            $cdcData->setQuestionAnswerData($questionAnswers);
+
+            $data[] = [
+                '_uuid' => $row[ 'uuid' ],
+                'cdcData' => $cdcData,
+                'totalQuestions' => $row[ 'totalQuestions' ],
+                'userUuid' => $row[ 'userUuid' ],
+                'dateCreated' => $row[ 'dateCreated' ],
+            ];
         }
 
-        $stmt->close();
-
-        return array_intersect_key(
-            $this->tests,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($data);
     }
 
     /**
@@ -347,13 +358,17 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE userUUID = ?
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
             $stmt->close();
             return [];
         }
@@ -369,7 +384,7 @@ SQL;
 
         $rows = [];
         while ($stmt->fetch()) {
-            if (!isset($uuid) || $uuid === null) {
+            if (!isset($uuid)) {
                 continue;
             }
 
@@ -379,66 +394,50 @@ SQL;
                 'questionList' => $questionList,
                 'totalQuestions' => $totalQuestions,
                 'userUuid' => $_userUuid,
-                'dateCreated' => $dateCreated
+                'dateCreated' => $dateCreated,
             ];
         }
 
-        if (empty($rows)) {
+        $stmt->close();
+
+        if (!$rows) {
             return [];
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
+        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $uuidList = [];
-        $c = count($rows);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($rows[$i])) {
-                continue;
-            }
-
-            $afsc = $afscCollection->fetch($rows[$i]['afscUuid'] ?? '');
-
-            $questions = unserialize($rows[$i]['questionList'] ?? '');
+        $data = [];
+        foreach ($rows as $row) {
+            $questions = unserialize($row[ 'questionList' ] ?? '');
 
             if (!is_array($questions)) {
                 $questions = [];
             }
 
-            $questionArr = $questionCollection->fetchArray(
-                $afsc,
-                $questions
-            );
+            $afsc = $afscs[ $row[ 'afscUuid' ] ];
 
-            $offlineTest = new OfflineTest();
-            $offlineTest->setUuid($rows[$i]['uuid'] ?? '');
-            $offlineTest->setUserUuid($rows[$i]['userUuid'] ?? '');
-            $offlineTest->setAfsc($afsc);
-            $offlineTest->setQuestions($questionArr);
-            $offlineTest->setDateCreated(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $rows[$i]['dateCreated'] ?? ''
-                )
-            );
+            if ($afsc === null) {
+                continue;
+            }
 
-            $this->tests[$uuid] = $offlineTest;
-            $uuidList[] = $uuid;
+            $questionArr = $this->questions->fetchArray($afsc, $questions);
+
+            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+
+            $cdcData = new CdcData();
+            $cdcData->setAfsc($afsc);
+            $cdcData->setQuestionAnswerData($questionAnswers);
+
+            $data[] = [
+                '_uuid' => $row[ 'uuid' ],
+                'cdcData' => $cdcData,
+                'totalQuestions' => $row[ 'totalQuestions' ],
+                'userUuid' => $row[ 'userUuid' ],
+                'dateCreated' => $row[ 'dateCreated' ],
+            ];
         }
 
-        $stmt->close();
-
-        return array_intersect_key(
-            $this->tests,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($data);
     }
 
     /**
@@ -468,14 +467,14 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid ASC
+ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -484,70 +483,44 @@ SQL;
 
         $res->free();
 
-        if (empty($data)) {
+        if (!$rows) {
             return [];
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
+        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $uuidList = [];
-        $c = count($rows);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($rows[$i]) || !isset($rows[$i]['uuid']) || $rows[$i]['uuid'] === '') {
-                continue;
-            }
-
-            $afsc = $afscCollection->fetch($rows[$i]['afscUuid'] ?? '');
-
-            $questions = unserialize($rows[$i]['questionList'] ?? '');
+        $data = [];
+        foreach ($rows as $row) {
+            $questions = unserialize($row[ 'questionList' ] ?? '');
 
             if (!is_array($questions)) {
                 $questions = [];
             }
 
-            $questionArr = $questionCollection->fetchArray(
-                $afsc,
-                $questions
-            );
+            $afsc = $afscs[ $row[ 'afscUuid' ] ];
 
-            $offlineTest = new OfflineTest();
-            $offlineTest->setUuid($rows[$i]['uuid'] ?? '');
-            $offlineTest->setUserUuid($rows[$i]['userUuid'] ?? '');
-            $offlineTest->setAfsc($afsc);
-            $offlineTest->setQuestions($questionArr);
-            $offlineTest->setDateCreated(
-                \DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $rows[$i]['dateCreated'] ?? ''
-                )
-            );
+            if ($afsc === null) {
+                continue;
+            }
 
-            $this->tests[$rows[$i]['uuid']] = $offlineTest;
-            $uuidList[] = $rows[$i]['uuid'];
+            $questionArr = $this->questions->fetchArray($afsc, $questions);
+
+            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+
+            $cdcData = new CdcData();
+            $cdcData->setAfsc($afsc);
+            $cdcData->setQuestionAnswerData($questionAnswers);
+
+            $data[] = [
+                '_uuid' => $row[ 'uuid' ],
+                'cdcData' => $cdcData,
+                'totalQuestions' => $row[ 'totalQuestions' ],
+                'userUuid' => $row[ 'userUuid' ],
+                'dateCreated' => $row[ 'dateCreated' ],
+            ];
         }
 
-        return array_intersect_key(
-            $this->tests,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @return OfflineTestCollection
-     */
-    public function reset(): self
-    {
-        $this->tests = [];
-
-        return $this;
+        return $this->create_objects($data);
     }
 
     /**
@@ -555,17 +528,17 @@ SQL;
      */
     public function save(OfflineTest $offlineTest): void
     {
-        if (empty($offlineTest->getUuid())) {
+        if (!$offlineTest->getUuid()) {
             return;
         }
 
         $uuid = $offlineTest->getUuid();
         $userUuid = $offlineTest->getUserUuid();
-        $afscUuid = $offlineTest->getAfsc()->getUuid();
+        $afscUuid = $offlineTest->getCdcData()->getAfsc()->getUuid();
         $questionList = serialize(
-            QuestionHelpers::listUuid(
-                $offlineTest->getQuestions()
-            )
+            array_map(static function (QuestionAnswers $v): string {
+                return $v->getQuestion()->getUuid();
+            }, $offlineTest->getCdcData()->getQuestionAnswerData())
         );
         $numQuestions = $offlineTest->getNumQuestions();
         $dateCreated = $offlineTest->getDateCreated()->format(
@@ -593,24 +566,24 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sssiss',
-            $uuid,
-            $afscUuid,
-            $questionList,
-            $numQuestions,
-            $userUuid,
-            $dateCreated
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return;
+        }
+
+        if (!$stmt->bind_param('sssiss',
+                               $uuid,
+                               $afscUuid,
+                               $questionList,
+                               $numQuestions,
+                               $userUuid,
+                               $dateCreated) ||
+            !$stmt->execute()) {
             $stmt->close();
             return;
         }
 
         $stmt->close();
-
-        $this->tests[$uuid] = $offlineTest;
     }
 
     /**

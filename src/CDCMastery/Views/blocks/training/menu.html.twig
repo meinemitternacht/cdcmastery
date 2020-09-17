@@ -22,7 +22,7 @@
                 <li{% if cur_url == "/training/subordinates" %} class="active"{% endif %}>
                     <a href="/training/subordinates">Manage Subordinates</a>
                 </li>
-                <li{% if cur_url == "/training/offline" %} class="active"{% endif %}>
+                <li{% if cur_url starts with "/training/offline" %} class="active"{% endif %}>
                     <a href="/training/offline">Offline Tests</a>
                 </li>
 

@@ -10,34 +10,16 @@ namespace CDCMastery\Models\Tests\Offline;
 
 
 use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\CdcData\CdcData;
 use CDCMastery\Models\CdcData\Question;
+use DateTime;
 
 class OfflineTest
 {
-    /**
-     * @var string
-     */
-    private $uuid;
-
-    /**
-     * @var string
-     */
-    private $userUuid;
-
-    /**
-     * @var Afsc
-     */
-    private $afsc;
-
-    /**
-     * @var Question[]
-     */
-    private $questions;
-
-    /**
-     * @var \DateTime
-     */
-    private $dateCreated;
+    private string $uuid;
+    private string $user_uuid;
+    private CdcData $cdc_data;
+    private DateTime $date_created;
 
     /**
      * @return string
@@ -50,7 +32,7 @@ class OfflineTest
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -60,47 +42,31 @@ class OfflineTest
      */
     public function getUserUuid(): string
     {
-        return $this->userUuid;
+        return $this->user_uuid;
     }
 
     /**
-     * @param string $userUuid
+     * @param string $user_uuid
      */
-    public function setUserUuid(string $userUuid)
+    public function setUserUuid(string $user_uuid): void
     {
-        $this->userUuid = $userUuid;
+        $this->user_uuid = $user_uuid;
     }
 
     /**
-     * @return Afsc
+     * @return CdcData
      */
-    public function getAfsc(): Afsc
+    public function getCdcData(): CdcData
     {
-        return $this->afsc;
+        return $this->cdc_data;
     }
 
     /**
-     * @param Afsc $afsc
+     * @param CdcData $cdc_data
      */
-    public function setAfsc(Afsc $afsc)
+    public function setCdcData(CdcData $cdc_data): void
     {
-        $this->afsc = $afsc;
-    }
-
-    /**
-     * @return Question[]
-     */
-    public function getQuestions(): array
-    {
-        return $this->questions;
-    }
-
-    /**
-     * @param Question[] $questions
-     */
-    public function setQuestions(array $questions)
-    {
-        $this->questions = $questions;
+        $this->cdc_data = $cdc_data;
     }
 
     /**
@@ -108,22 +74,26 @@ class OfflineTest
      */
     public function getNumQuestions(): int
     {
-        return count($this->questions ?? []);
+        if (!$this->cdc_data) {
+            return 0;
+        }
+
+        return count($this->cdc_data->getQuestionAnswerData());
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateCreated(): \DateTime
+    public function getDateCreated(): DateTime
     {
-        return $this->dateCreated;
+        return $this->date_created;
     }
 
     /**
-     * @param \DateTime $dateCreated
+     * @param DateTime $date_created
      */
-    public function setDateCreated(\DateTime $dateCreated)
+    public function setDateCreated(DateTime $date_created): void
     {
-        $this->dateCreated = $dateCreated;
+        $this->date_created = $date_created;
     }
 }

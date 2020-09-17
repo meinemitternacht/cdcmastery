@@ -1,0 +1,8 @@
+.offline-answer-list {
+    column-count: 6;
+}
+
+.offline-answer-item {
+    line-height: 1.9em;
+    font-size: 1.1em;
+}

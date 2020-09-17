@@ -1,0 +1,78 @@
+{% if not print %}
+<div class="row row-spacer">
+    <div class="well well-lg col-md-12">
+        {% endif %}
+        {% if test.cdcData.afsc.isFouo %}
+            <h3 class="text-center text-danger">FOR OFFICIAL USE ONLY</h3>
+        {% endif %}
+        <h2>{{ test.cdcData.afsc.name }} PRACTICE TEST</h2>
+        <h5>
+            <strong>Version</strong>: {% if test.cdcData.afsc.version %}{{ test.cdcData.afsc.version }}{% else %}N/A{% endif %}
+        </h5>
+        <h5><strong>Test ID</strong>: {{ test.uuid }} <strong>created
+                on</strong> {{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</h5>
+        {% set i = 1 %}
+        {% set answer_labels = [
+            'a',
+            'b',
+            'c',
+            'd',
+        ] %}
+        {% set correct_answers = [] %}
+        {% for question_answers in test.cdcData.questionAnswerData %}
+            {% if not print %}
+                <div class="row row-spacer">
+                <div class="col-md-12">
+            {% else %}
+                <div style="page-break-inside: avoid;">
+            {% endif %}
+            {{ i }}. <strong>{{ question_answers.question.text }}</strong><br>
+            {% set j = 0 %}
+            {% for answer in question_answers.answers %}
+                {{ answer_labels[j] }}. {{ answer.text }}<br>
+                {% if answer.isCorrect %}
+                    {% set correct_answers = correct_answers|merge({ (loop.index0): answer_labels[j]|upper}) %}
+                {% endif %}
+                {% set j = j + 1 %}
+            {% endfor %}
+            {% if not print %}
+                </div>
+                </div>
+            {% else %}
+                </div>
+                <div class="clearfix">&nbsp;</div>
+            {% endif %}
+            {% set i = i + 1 %}
+        {% endfor %}
+    </div>
+</div>
+{% if not print %}
+<div class="row row-spacer" id="answer-key">
+    <div class="well well-lg col-md-12">
+        {% else %}
+        <div style="page-break-before: always">
+            {% endif %}
+            {% if test.cdcData.afsc.isFouo %}
+                <h3 class="text-center text-danger">FOR OFFICIAL USE ONLY</h3>
+            {% endif %}
+            <h3>{{ test.cdcData.afsc.name }} ANSWER KEY</h3>
+            <h5>
+                <strong>Version</strong>: {% if test.cdcData.afsc.version %}{{ test.cdcData.afsc.version }}{% else %}N/A{% endif %}
+            </h5>
+            <h5><strong>Test ID</strong>: {{ test.uuid }} <strong>created
+                    on</strong> {{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</h5>
+            <div class="offline-answer-list">
+                {% set i = 1 %}
+                {% for correct_answer in correct_answers %}
+                    <div class="offline-answer-item">
+                        <strong>{{ i }}</strong>: {{ correct_answer }}
+                    </div>
+                    {% set i = i + 1 %}
+                {% endfor %}
+            </div>
+            {% if not print %}
+        </div>
+    </div>
+    {% else %}
+</div>
+{% endif %}

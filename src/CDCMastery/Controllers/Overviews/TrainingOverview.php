@@ -22,10 +22,13 @@ use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\Subordinates\SubordinateStats;
 use CDCMastery\Models\Statistics\TestStats;
+use CDCMastery\Models\Tests\Offline\OfflineTestCollection;
+use CDCMastery\Models\Tests\Offline\OfflineTestHandler;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
+use CDCMastery\Models\Tests\TestOptions;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
@@ -34,6 +37,8 @@ use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
+use mysqli;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
@@ -58,6 +63,8 @@ class TrainingOverview extends RootController
     private UserSupervisorAssociations $su_assocs;
     private PasswordResetCollection $pw_resets;
     private EmailCollection $emails;
+    private OfflineTestCollection $offline_tests;
+    private mysqli $db;
 
     public function __construct(
         Logger $logger,
@@ -77,7 +84,9 @@ class TrainingOverview extends RootController
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $su_assocs,
         PasswordResetCollection $pw_resets,
-        EmailCollection $emails
+        EmailCollection $emails,
+        OfflineTestCollection $offline_tests,
+        mysqli $db
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -96,6 +105,8 @@ class TrainingOverview extends RootController
         $this->su_assocs = $su_assocs;
         $this->pw_resets = $pw_resets;
         $this->emails = $emails;
+        $this->offline_tests = $offline_tests;
+        $this->db = $db;
     }
 
     private function get_user(string $uuid): User
@@ -276,6 +287,57 @@ class TrainingOverview extends RootController
                             'All incomplete tests for this user have been removed from the database');
 
         return $this->redirect("/training/users/{$user->getUuid()}");
+    }
+
+    public function do_generate_offline_test(): Response
+    {
+        $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'afsc',
+            'questions',
+        ];
+
+        $this->checkParameters($params);
+
+        $afsc_uuid = $this->filter_string_default('afsc');
+        $n_questions = $this->filter_int_default('questions');
+
+        $afsc = $this->afscs->fetch($afsc_uuid);
+
+        if (!$afsc || $afsc->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified AFSC was not found');
+
+            return $this->redirect("/training/offline");
+        }
+
+        if (!$this->afsc_assocs->assertAuthorized($cur_user, $afsc)) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your account is not associated with that AFSC');
+
+            return $this->redirect("/training/offline");
+        }
+
+        $opts = new TestOptions();
+        $opts->addAfsc($afsc);
+        $opts->setUser($cur_user);
+        $opts->setNumQuestions($n_questions);
+
+        try {
+            $test = OfflineTestHandler::factory($this->db, $this->log, $opts)->getTest();
+        } catch (RuntimeException $e) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                "The offline test could not be generated: {$e->getMessage()}");
+
+            return $this->redirect("/training/offline");
+        }
+
+        $this->offline_tests->save($test);
+        $this->flash()->add(MessageTypes::SUCCESS,
+                            'The offline test has been generated');
+
+        return $this->redirect("/training/offline/{$test->getUuid()}");
     }
 
     public function do_password_reset(string $uuid): Response
@@ -513,6 +575,67 @@ class TrainingOverview extends RootController
             'training/users/tests/delete-incomplete.html.twig',
             $data
         );
+    }
+
+    public function show_offline_tests(): Response
+    {
+        $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $cur_role = $this->roles->fetch($cur_user->getRole());
+
+        $cur_afscs = $this->afsc_assocs->fetchAllByUser($cur_user)->getAuthorized();
+
+        if ($cur_afscs) {
+            $afscs = $this->afscs->fetchArray($cur_afscs);
+        }
+
+        $tests = $this->offline_tests->fetchAllByUser($cur_user);
+
+        $data = [
+            'cur_user' => $cur_user,
+            'cur_role' => $cur_role,
+            'afscs' => $afscs ?? null,
+            'tests' => $tests,
+        ];
+
+        return $this->render(
+            'training/offline/list.html.twig',
+            $data
+        );
+    }
+
+    public function show_offline_test(string $uuid, bool $print = false): Response
+    {
+        $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $cur_role = $this->roles->fetch($cur_user->getRole());
+
+        $test = $this->offline_tests->fetch($uuid);
+
+        if ($test === null || $test->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                'The specified offline test could not be found'
+            );
+
+            return $this->redirect('/training/offline');
+        }
+
+        $data = [
+            'cur_user' => $cur_user,
+            'cur_role' => $cur_role,
+            'test' => $test,
+        ];
+
+        return $this->render(
+            $print
+                ? 'training/offline/print.html.twig'
+                : 'training/offline/view.html.twig',
+            $data
+        );
+    }
+
+    public function show_offline_test_print(string $uuid): Response
+    {
+        return $this->show_offline_test($uuid, true);
     }
 
     public function show_test(string $uuid, string $test_uuid): Response

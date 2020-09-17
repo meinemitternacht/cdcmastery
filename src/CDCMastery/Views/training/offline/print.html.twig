@@ -1,0 +1,5 @@
+{% extends "layout-print.html.twig" %}
+{% set page_title = "View Offline Test" %}
+{% block main %}
+    {% include "blocks/training/offline/test-shared.html.twig" with {'print': true } %}
+{% endblock %}

@@ -14,25 +14,12 @@ use mysqli;
 
 class AnswerCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var Answer[]
-     */
-    private $answers = [];
-
-    /**
-     * @var array
-     */
-    private $questionAnswerMap = [];
+    protected mysqli $db;
+    protected Logger $log;
+    /** @var Answer[] */
+    private array $answers = [];
+    private array $questionAnswerMap = [];
+    private array $correctAnswerMap = [];
 
     /**
      * AnswerCollection constructor.
@@ -330,8 +317,17 @@ SQL;
 
         return array_intersect_key(
             $this->answers,
-            array_flip($this->questionAnswerMap[$questionUuid] ?? [])
+            array_flip($this->questionAnswerMap[ $questionUuid ] ?? [])
         );
+    }
+
+    public function getCorrectAnswer(string $questionUuid): ?Answer
+    {
+        if (!$questionUuid || !$this->answers || !isset($this->correctAnswerMap[ $questionUuid ])) {
+            return null;
+        }
+
+        return $this->answers[ $this->correctAnswerMap[ $questionUuid ] ] ?? null;
     }
 
     /**
@@ -347,11 +343,17 @@ SQL;
             $this->questionAnswerMap = [];
         }
 
-        if (!isset($this->questionAnswerMap[$answer->getQuestionUuid()])) {
-            $this->questionAnswerMap[$answer->getQuestionUuid()] = [];
+        if (!isset($this->questionAnswerMap[ $answer->getQuestionUuid() ])) {
+            $this->questionAnswerMap[ $answer->getQuestionUuid() ] = [];
         }
 
-        $this->questionAnswerMap[$answer->getQuestionUuid()][] = $answer->getUuid();
+        $this->questionAnswerMap[ $answer->getQuestionUuid() ][] = $answer->getUuid();
+
+        if (!$answer->isCorrect()) {
+            return;
+        }
+
+        $this->correctAnswerMap[ $answer->getQuestionUuid() ] = $answer->getUuid();
     }
 
     /**

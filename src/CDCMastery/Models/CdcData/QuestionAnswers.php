@@ -22,6 +22,11 @@ class QuestionAnswers
     private $answers;
 
     /**
+     * @var Answer
+     */
+    private $correct;
+
+    /**
      * @return Question
      */
     public function getQuestion(): Question
@@ -51,5 +56,21 @@ class QuestionAnswers
     public function setAnswers(array $answers): void
     {
         $this->answers = $answers;
+    }
+
+    /**
+     * @return Answer
+     */
+    public function getCorrect(): Answer
+    {
+        return $this->correct;
+    }
+
+    /**
+     * @param Answer $correct
+     */
+    public function setCorrect(Answer $correct): void
+    {
+        $this->correct = $correct;
     }
 }

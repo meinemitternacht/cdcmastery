@@ -42,21 +42,23 @@ class QuestionAnswersCollection
 
     /**
      * @param Afsc $afsc
+     * @param Question[]|null $questions
      * @return array
      */
-    public function fetch(Afsc $afsc): array
+    public function fetch(Afsc $afsc, ?array $questions = null): array
     {
         $afscUuid = $afsc->getUuid();
 
-        if (empty($afscUuid)) {
+        if (!$afscUuid) {
             return [];
         }
 
-        $questionCollection = new QuestionCollection($this->db,
-                                                     $this->log);
+        if (!$questions) {
+            $questionCollection = new QuestionCollection($this->db,
+                                                         $this->log);
 
-        /** @var Question[] $questions */
-        $questions = $questionCollection->fetchAfsc($afsc);
+            $questions = $questionCollection->fetchAfsc($afsc);
+        }
 
         $questionUuidList = QuestionHelpers::listUuid($questions);
 
@@ -65,24 +67,23 @@ class QuestionAnswersCollection
 
         $answerCollection->preloadQuestionAnswers($afsc, $questionUuidList);
 
-        $questions = array_values($questions);
-        $c = count($questions);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($questions[$i])) {
+        foreach ($questions as $question) {
+            if (!$question instanceof Question) {
                 continue;
             }
 
-            if (!$questions[$i] instanceof Question) {
+            $correct = $answerCollection->getCorrectAnswer($question->getUuid());
+
+            if (!$correct) {
                 continue;
             }
 
             $questionAnswer = new QuestionAnswers();
-            $questionAnswer->setQuestion($questions[$i]);
+            $questionAnswer->setQuestion($question);
             $questionAnswer->setAnswers(
-                $answerCollection->getQuestionAnswers(
-                    $questions[$i]->getUuid()
-                )
+                $answerCollection->getQuestionAnswers($question->getUuid())
             );
+            $questionAnswer->setCorrect($correct);
 
             if (!isset($this->questionAnswers[$afsc->getUuid()])) {
                 $this->questionAnswers[$afscUuid] = [];

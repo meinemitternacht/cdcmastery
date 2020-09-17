@@ -1,0 +1,108 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Offline Tests" %}
+{% block main %}
+    {% include "blocks/training/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Manage Offline Tests</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {% if afscs %}
+                <div class="well well-sm">
+                    <form action="/training/offline/new"
+                          method="POST">
+                        <div class="help-block">
+                            After you choose an AFSC to generate a test for, enter the desired number of questions and
+                            click "Generate". If the AFSC does not have enough questions, it will output all questions
+                            available. Each test is randomly generated and will contain an answer key on the last page
+                            when printed.
+                            <br>
+                            <br>
+                            To generate tests for an AFSC that is not listed, visit your
+                            <a href="/profile">Profile</a> to manage your AFSC associations.
+                        </div>
+                        <fieldset>
+                            <div class="form-group col-xs-12 col-md-7">
+                                <label for="afsc-list">
+                                    AFSC
+                                </label>
+                                <select id="afsc-list"
+                                        class="form-control"
+                                        name="afsc">
+                                    {% for afsc in afscs %}
+                                        <option value="{{ afsc.uuid }}">{{ afsc.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-12 col-md-5">
+                                <label for="num-questions">
+                                    Questions
+                                </label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="num-questions"
+                                       name="questions"
+                                       min="0"
+                                       max="500"
+                                       value="100"
+                                       step="1">
+                            </div>
+                            <div class="form-group col-xs-12 text-center">
+                                <button type="submit"
+                                        class="btn btn-sm btn-success">
+                                    Generate
+                                </button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            {% else %}
+                <div class="help-block">
+                    Your account is not associated with any AFSCs. Go to your <a href="/profile">Profile</a> to manage
+                    your AFSC associations before generating a test.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>AFSC</th>
+                        <th>Questions</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for test in tests %}
+                        <tr>
+                            <td>
+                                {{ test.cdcData.afsc.name }}
+                                {% if test.cdcData.afsc.isFouo %}
+                                    <span class="label label-danger"
+                                          title="This AFSC is marked 'FOR OFFICIAL USE ONLY'">F</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ test.numQuestions|number_format }}</td>
+                            <td>{{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</td>
+                            <td>
+                                <a class="btn btn-xs btn-success"
+                                   href="/training/offline/{{ test.uuid }}">
+                                    View
+                                </a>
+                                <a class="btn btn-xs btn-info"
+                                   href="/training/offline/{{ test.uuid }}/print">
+                                    Print
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

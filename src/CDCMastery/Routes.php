@@ -921,6 +921,30 @@ return simpleDispatcher(function (RouteCollector $r) {
             });
         });
 
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_offline_tests() */
+        $r->addRoute('GET', '/offline', [
+            TrainingOverview::class,
+            'show_offline_tests',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_offline_test() */
+        $r->addRoute('GET', '/offline/{uuid}', [
+            TrainingOverview::class,
+            'show_offline_test',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_offline_test_print() */
+        $r->addRoute('GET', '/offline/{uuid}/print', [
+            TrainingOverview::class,
+            'show_offline_test_print',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_generate_offline_test() */
+        $r->addRoute('POST', '/offline/new', [
+            TrainingOverview::class,
+            'do_generate_offline_test',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_subordinates() */
         $r->addRoute('GET', '/subordinates', [
             TrainingOverview::class,

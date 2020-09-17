@@ -177,8 +177,7 @@ SQL;
                     $str = self::TABLE_NAME . '.' . $column;
                     break;
                 default:
-                    $str = '';
-                    continue;
+                    continue 2;
             }
 
             switch ($order) {
@@ -323,7 +322,7 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -382,21 +381,21 @@ SQL;
         $res = $this->db->query($qry);
 
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
             $afsc = new Afsc();
-            $afsc->setUuid($row['uuid'] ?? '');
-            $afsc->setName($row['name'] ?? '');
-            $afsc->setDescription($row['description'] ?? '');
+            $afsc->setUuid($row[ 'uuid' ] ?? '');
+            $afsc->setName($row[ 'name' ] ?? '');
+            $afsc->setDescription($row[ 'description' ] ?? '');
             $afsc->setVersion($row[ 'version' ] ?? '');
             $afsc->setEditCode($row[ 'editCode' ] ?? null);
-            $afsc->setFouo((bool)$row[ 'fouo' ] ?? false);
-            $afsc->setHidden((bool)$row['hidden'] ?? false);
-            $afsc->setObsolete((bool)($row['obsolete'] ?? false));
+            $afsc->setFouo((bool)($row[ 'fouo' ] ?? false));
+            $afsc->setHidden((bool)($row[ 'hidden' ] ?? false));
+            $afsc->setObsolete((bool)($row[ 'obsolete' ] ?? false));
 
-            $this->afscs[$row['uuid']] = $afsc;
+            $this->afscs[ $row[ 'uuid' ] ] = $afsc;
         }
 
         $res->free();

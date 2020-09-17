@@ -1,0 +1,23 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "View Offline Test" %}
+{% block main %}
+    {% include "blocks/training/menu.html.twig" %}
+    <div class="page-header">
+        <h3>View Offline Test</h3>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="btn-group btn-group-sm">
+                <a class="btn btn-sm btn-info"
+                   href="/training/offline/{{ test.uuid }}/print">
+                    Print Test
+                </a>
+                <a class="btn btn-sm btn-warning"
+                   href="#answer-key">
+                    View Answer Key
+                </a>
+            </div>
+        </div>
+        {% include "blocks/training/offline/test-shared.html.twig" with {'print': false} %}
+    </div>
+{% endblock %}
