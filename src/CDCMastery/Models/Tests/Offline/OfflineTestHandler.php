@@ -13,6 +13,7 @@ use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\CdcData;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
+use CDCMastery\Models\CdcData\QuestionAnswers;
 use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestOptions;
@@ -76,6 +77,10 @@ class OfflineTestHandler
         $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
 
         if ($questionData) {
+            $questionData = array_filter($questionData, static function (QuestionAnswers $v): bool {
+                return !$v->getQuestion()->isDisabled();
+            });
+
             foreach ($questionData as $questionAnswer) {
                 $questions[] = $questionAnswer->getQuestion();
             }

@@ -85,13 +85,13 @@ class QuestionAnswersCollection
             );
             $questionAnswer->setCorrect($correct);
 
-            if (!isset($this->questionAnswers[$afsc->getUuid()])) {
-                $this->questionAnswers[$afscUuid] = [];
+            if (!isset($this->questionAnswers[ $afsc->getUuid() ])) {
+                $this->questionAnswers[ $afscUuid ] = [];
             }
 
-            $this->questionAnswers[$afscUuid][] = $questionAnswer;
+            $this->questionAnswers[ $afscUuid ][] = $questionAnswer;
         }
 
-        return $this->questionAnswers[$afscUuid] ?? [];
+        return $this->questionAnswers[ $afscUuid ] ?? [];
     }
 }

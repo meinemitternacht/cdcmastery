@@ -15,6 +15,7 @@ use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\AnswerHelpers;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
+use CDCMastery\Models\CdcData\QuestionAnswers;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use DateTime;
 use Exception;
@@ -94,16 +95,20 @@ class TestHandler
         foreach ($options->getAfscs() as $afsc) {
             $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
 
-            if (count($questionData) === 0) {
+            if (!$questionData) {
                 continue;
             }
+
+            $questionData = array_filter($questionData, static function (QuestionAnswers $v): bool {
+                return !$v->getQuestion()->isDisabled();
+            });
 
             foreach ($questionData as $questionAnswer) {
                 $questions[] = $questionAnswer->getQuestion();
             }
         }
 
-        if (count($questions) === 0) {
+        if (!$questions) {
             return new self($mysqli, $logger, $test_data_helpers);
         }
 
