@@ -62,9 +62,13 @@
                 <div class="profile-group col-xs-12">
                     <label class="profile-label">Base</label>
                     <div class="profile-data">
-                        <a href="/admin/bases/{{ base.uuid }}">
+                        {% if restricted %}
                             {{ base.name }}
-                        </a>
+                        {% else %}
+                            <a href="/admin/bases/{{ base.uuid }}">
+                                {{ base.name }}
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="profile-group col-xs-12">

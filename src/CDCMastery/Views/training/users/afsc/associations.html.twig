@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage AFSC Associations - #{user.name}" %}
+{% block main %}
+    {% include "blocks/training/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            AFSC Associations for {{ user.name }}
+        </h3>
+    </div>
+    {% include "blocks/users/afsc-assocs-shared.html.twig" with {'form_action_prefix': '/training/users'} %}
+{% endblock %}

@@ -66,9 +66,9 @@
                             Testing <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/tests" %} class="active"{% endif %}>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests" %} class="active"{% endif %}>
                                 <a href="/admin/users/{{ user.uuid }}/tests">Completed Tests</a></li>
-                            <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/tests/incomplete" %} class="active"{% endif %}>
+                            <li{% if cur_url == "/admin/users/" ~ user.uuid ~ "/tests/incomplete" %} class="active"{% endif %}>
                                 <a href="/admin/users/{{ user.uuid }}/tests/incomplete">Incomplete Tests</a>
                             </li>
                             <li role="separator" class="divider"></li>

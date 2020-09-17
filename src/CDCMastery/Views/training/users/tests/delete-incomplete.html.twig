@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Delete Incomplete Tests" %}
+{% block main %}
+    {% include "blocks/training/menu.html.twig" %}
+    {% include "blocks/users/tests/delete-incomplete-shared.html.twig" with {'form_action_prefix': '/training/users'} %}
+{% endblock %}

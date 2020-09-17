@@ -2,6 +2,12 @@ div.main-container {
     margin-top: 5.25em;
 }
 
+.cur-assocs-list {
+    max-height: 48em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 .panel-min-150 {
     min-height: 150px;
 }
@@ -222,4 +228,22 @@ fieldset[disabled] .navbar-sub .btn-link:hover,
 .navbar-sub .btn-link[disabled]:focus,
 fieldset[disabled] .navbar-sub .btn-link:focus {
     color: #585858;
+}
+
+.navbar .divider-vertical {
+    height: 42px;
+    margin: 0 9px;
+    border-right: 1px solid #bbaaaa;
+    border-left: 1px solid #e2e2e2
+}
+
+.navbar-inverse .divider-vertical {
+    border-right-color: #222222;
+    border-left-color: #111111;
+}
+
+@media (max-width: 767px) {
+    .navbar-collapse .nav > .divider-vertical {
+        display: none;
+    }
 }

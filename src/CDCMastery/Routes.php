@@ -845,10 +845,98 @@ return simpleDispatcher(function (RouteCollector $r) {
     ]);
 
     $r->addGroup('/training', function (RouteCollector $r) {
-        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_profile() */
-        $r->addRoute('GET', '/users/{uuid}', [
+        $r->addGroup('/users', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_profile() */
+            $r->addRoute('GET', '/{uuid}', [
+                TrainingOverview::class,
+                'show_profile',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_afsc_associations() */
+            $r->addRoute('GET', '/{uuid}/afsc', [
+                TrainingOverview::class,
+                'show_afsc_associations',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_afsc_association_add() */
+            $r->addRoute('POST', '/{uuid}/afsc/add', [
+                TrainingOverview::class,
+                'do_afsc_association_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_afsc_association_approve() */
+            $r->addRoute('POST', '/{uuid}/afsc/approve', [
+                TrainingOverview::class,
+                'do_afsc_association_approve',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_afsc_association_remove() */
+            $r->addRoute('POST', '/{uuid}/afsc/remove', [
+                TrainingOverview::class,
+                'do_afsc_association_remove',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_password_reset() */
+            $r->addRoute('GET', '/{uuid}/reset-password', [
+                TrainingOverview::class,
+                'show_password_reset',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_password_reset() */
+            $r->addRoute('POST', '/{uuid}/reset-password', [
+                TrainingOverview::class,
+                'do_password_reset',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_test_history_complete() */
+            $r->addRoute('GET', '/{uuid}/tests', [
+                TrainingOverview::class,
+                'show_test_history_complete',
+            ]);
+
+            $r->addGroup('/{uuid}/tests', function (RouteCollector $r) {
+                /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_test_history_incomplete() */
+                $r->addRoute('GET', '/incomplete', [
+                    TrainingOverview::class,
+                    'show_test_history_incomplete',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_delete_incomplete_tests() */
+                $r->addRoute('GET', '/incomplete/delete', [
+                    TrainingOverview::class,
+                    'show_delete_incomplete_tests',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_delete_incomplete_tests() */
+                $r->addRoute('POST', '/incomplete/delete', [
+                    TrainingOverview::class,
+                    'do_delete_incomplete_tests',
+                ]);
+
+                /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_test() */
+                $r->addRoute('GET', '/{test_uuid}', [
+                    TrainingOverview::class,
+                    'show_test',
+                ]);
+            });
+        });
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_subordinates() */
+        $r->addRoute('GET', '/subordinates', [
             TrainingOverview::class,
-            'show_profile',
+            'show_subordinates',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_subordinates_add() */
+        $r->addRoute('POST', '/subordinates/add', [
+            TrainingOverview::class,
+            'do_subordinates_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::do_subordinates_remove() */
+        $r->addRoute('POST', '/subordinates/remove', [
+            TrainingOverview::class,
+            'do_subordinates_remove',
         ]);
     });
 });

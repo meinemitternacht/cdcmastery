@@ -9,6 +9,8 @@
 namespace CDCMastery\Models\Users;
 
 
+use CDCMastery\Models\Bases\Base;
+use CDCMastery\Models\Users\Roles\Role;
 use Monolog\Logger;
 use mysqli;
 
@@ -275,6 +277,58 @@ SQL;
         }
 
         if (!$stmt->bind_param('s', $su_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($user_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $user_uuid;
+        }
+
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * @param User $user
+     * @return string[]
+     *  A list of available user and supervisor UUIDs
+     */
+    public function fetchUnassociatedBySupervisor(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $su_uuid = $user->getUuid();
+        $base_uuid = $user->getBase();
+        $role_1 = Role::TYPE_USER;
+        $role_2 = Role::TYPE_SUPERVISOR;
+
+        $qry = <<<SQL
+SELECT t1.uuid
+FROM userData t1
+LEFT JOIN roleList t2 ON t1.userRole = t2.uuid
+WHERE t1.uuid NOT IN 
+      (
+          SELECT userUUID FROM userSupervisorAssociations
+          WHERE supervisorUUID = ?
+      )
+  AND t1.userBase = ?
+  AND t2.roleType IN (?, ?)
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('ssss', $su_uuid, $base_uuid, $role_1, $role_2) ||
             !$stmt->execute()) {
             $stmt->close();
             return [];

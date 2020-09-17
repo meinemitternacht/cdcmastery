@@ -1,6 +1,7 @@
 {% extends "layout.html.twig" %}
-{% set page_title = "Training Overview - #{user.name}" %}
+{% set page_title = "Training Overview" %}
 {% block main %}
+    {% include "blocks/training/menu.html.twig" %}
     <div class="page-header">
         <div class="row">
             <div class="col-md-12">

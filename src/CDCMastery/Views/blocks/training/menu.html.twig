@@ -1,0 +1,70 @@
+<nav class="navbar navbar-sub">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#trng-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <div class="navbar-brand hidden-md hidden-lg">
+                Training Menu
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="trng-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% if cur_url == "/training" %} class="active"{% endif %}>
+                    <a href="/training">Overview</a>
+                </li>
+                <li{% if cur_url == "/training/subordinates" %} class="active"{% endif %}>
+                    <a href="/training/subordinates">Manage Subordinates</a>
+                </li>
+                <li{% if cur_url == "/training/offline" %} class="active"{% endif %}>
+                    <a href="/training/offline">Offline Tests</a>
+                </li>
+
+                {% if user %}
+                    <li role="separator" class="divider-vertical"></li>
+                    <li{% if cur_url == "/training/users/" ~ user.uuid %} class="active"{% endif %}>
+                        <a href="/training/users/{{ user.uuid }}">Profile</a>
+                    </li>
+
+                    <li class="dropdown{% if cur_url starts with "/training/users/" ~ user.uuid ~ "/tests" %} active{% endif %}">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Testing <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/tests" %} class="active"{% endif %}>
+                                <a href="/training/users/{{ user.uuid }}/tests">Completed Tests</a></li>
+                            <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/tests/incomplete" %} class="active"{% endif %}>
+                                <a href="/training/users/{{ user.uuid }}/tests/incomplete">Incomplete Tests</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/tests/incomplete/delete" %} class="active"{% endif %}>
+                                <a href="/training/users/{{ user.uuid }}/tests/incomplete/delete">Delete Incomplete
+                                    Tests</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    {% if role_is_training_manager(cur_role) %}
+                        <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/afsc" %} class="active"{% endif %}>
+                            <a href="/training/users/{{ user.uuid }}/afsc">Manage AFSCs</a>
+                        </li>
+                    {% endif %}
+                    <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/reset-password" %} class="active"{% endif %}>
+                        <a href="/training/users/{{ user.uuid }}/reset-password">Reset Password</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

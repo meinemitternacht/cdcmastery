@@ -12,14 +12,16 @@
         </div>
         <div class="col-md-8">
             {% if (tests.complete|length + tests.incomplete|length) <= 0 %}
-            You have not started any tests yet, <a href="/tests/new">Start one now</a>!
+                You have not started any tests yet, <a href="/tests/new">Start one now</a>!
             {% else %}
                 <ul class="nav nav-tabs">
                     {% if tests.complete|length > 0 %}
-                    <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Last Five Tests</a></li>
+                        <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Last Five
+                                Tests</a></li>
                     {% endif %}
                     {% if tests.incomplete|length > 0 %}
-                    <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests ({{ tests.incomplete|length }})</a></li>
+                        <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests
+                                ({{ tests.incomplete|length }})</a></li>
                     {% endif %}
                 </ul>
                 <div id="testTypeTabs" class="tab-content">
@@ -41,7 +43,7 @@
                                         <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
                                             <td title="{{ test.afsc }}">
                                                 {% if test.afsc|length > 0 %}
-                                                    {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc  }}
+                                                    {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
                                                 {% else %}
                                                     No Data
                                                 {% endif %}
@@ -75,7 +77,7 @@
                                         <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
                                             <td title="{{ test.afsc }}">
                                                 {% if test.afsc|length > 0 %}
-                                                    {{ test.afsc|length > 30 ? test.afsc|slice(0, 30) ~ '...' : test.afsc  }}
+                                                    {{ test.afsc|length > 30 ? test.afsc|slice(0, 30) ~ '...' : test.afsc }}
                                                 {% else %}
                                                     No Data
                                                 {% endif %}
@@ -178,9 +180,15 @@
                     <h4>All-Time</h4>
                 </div>
                 <div class="panel-body panel-min-250">
-                    <div id="month-avg-count" style="height:218px">
-                        &nbsp;
-                    </div>
+                    {% if monthStats.avg|length > 0 %}
+                        <div id="month-avg-count" style="height:218px">
+                            &nbsp;
+                        </div>
+                    {% else %}
+                        <div class="text-center">
+                            <strong>No Test Data</strong>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -234,6 +242,7 @@
             lastSevenChart.render();
             {% endif %}
 
+            {% if monthStats.avg %}
             var monthChart = new CanvasJS.Chart("month-avg-count",
                 {
                     zoomEnabled: false,
@@ -278,6 +287,7 @@
                 });
 
             monthChart.render();
+            {% endif %}
         }
     </script>
 {% endblock %}

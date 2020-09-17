@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Test History - #{user.name}" %}
+{% block main %}
+    {% include "blocks/training/menu.html.twig" %}
+    {% include "blocks/users/tests/history-complete-shared.html.twig" with {'redirect_prefix': '/training/users'} %}
+{% endblock %}

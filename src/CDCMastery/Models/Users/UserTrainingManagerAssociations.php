@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Users;
 
 
+use CDCMastery\Models\Users\Roles\Role;
 use Monolog\Logger;
 use mysqli;
 
@@ -275,6 +276,59 @@ SQL;
         }
 
         if (!$stmt->bind_param('s', $tm_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($user_uuid);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            $data[] = $user_uuid;
+        }
+
+        $stmt->close();
+        return $data;
+    }
+
+    /**
+     * @param User $user
+     * @return string[]
+     *  A list of available user, supervisor, and training manager UUIDs
+     */
+    public function fetchUnassociatedByTrainingManager(User $user): array
+    {
+        if (empty($user->getUuid())) {
+            return [];
+        }
+
+        $tm_uuid = $user->getUuid();
+        $base_uuid = $user->getBase();
+        $role_1 = Role::TYPE_USER;
+        $role_2 = Role::TYPE_SUPERVISOR;
+        $role_3 = Role::TYPE_TRAINING_MANAGER;
+
+        $qry = <<<SQL
+SELECT t1.uuid
+FROM userData t1
+LEFT JOIN roleList t2 ON t1.userRole = t2.uuid
+WHERE t1.uuid NOT IN 
+      (
+          SELECT userUUID FROM userTrainingManagerAssociations
+          WHERE trainingManagerUUID = ?
+      )
+  AND t1.userBase = ?
+  AND t2.roleType IN (?, ?, ?)
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('sssss', $tm_uuid, $base_uuid, $role_1, $role_2, $role_3) ||
             !$stmt->execute()) {
             $stmt->close();
             return [];
