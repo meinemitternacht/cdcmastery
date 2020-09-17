@@ -126,6 +126,34 @@ class TrainingOverview extends RootController
         return $user;
     }
 
+    private function check_subordinate(User $cur_user, ?Role $cur_role, User $subordinate): void
+    {
+        if (!$cur_role) {
+            if ($this->tm_assocs->assertAssociated($subordinate, $cur_user) ||
+                $this->su_assocs->assertAssociated($subordinate, $cur_user)) {
+                return;
+            }
+        }
+
+        switch ($cur_role->getType()) {
+            case Role::TYPE_TRAINING_MANAGER:
+                if ($this->tm_assocs->assertAssociated($subordinate, $cur_user)) {
+                    return;
+                }
+                break;
+            case Role::TYPE_SUPERVISOR:
+                if ($this->su_assocs->assertAssociated($subordinate, $cur_user)) {
+                    return;
+                }
+                break;
+        }
+
+        $this->flash()->add(MessageTypes::ERROR,
+                            'That user is not associated with your account');
+        $this->redirect('/training')->send();
+        exit;
+    }
+
     public function do_afsc_association_add(string $uuid): Response
     {
         $user = $this->get_user($uuid);
@@ -499,6 +527,9 @@ class TrainingOverview extends RootController
         $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
         $cur_role = $this->roles->fetch($cur_user->getRole());
         $user = $this->get_user($uuid);
+
+        $this->check_subordinate($cur_user, $cur_role, $user);
+
         $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
         $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
 
@@ -537,11 +568,14 @@ class TrainingOverview extends RootController
         $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
         $cur_role = $this->roles->fetch($cur_user->getRole());
         $user = $this->get_user($uuid);
+
+        $this->check_subordinate($cur_user, $cur_role, $user);
+
         $tests = $this->tests->fetchAllByUser($user);
 
         $tests = array_filter(
             $tests,
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
             }
         );
@@ -557,7 +591,7 @@ class TrainingOverview extends RootController
 
         uasort(
             $tests,
-            function (Test $a, Test $b) {
+            static function (Test $a, Test $b) {
                 return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
             }
         );
@@ -668,6 +702,9 @@ class TrainingOverview extends RootController
     {
         $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
         $cur_role = $this->roles->fetch($cur_user->getRole());
+
+        $this->check_subordinate($cur_user, $cur_role, $user);
+
         $testData = $this->test_data_helpers->list($test);
 
         $data = [
@@ -698,6 +735,8 @@ class TrainingOverview extends RootController
     {
         $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
         $cur_role = $this->roles->fetch($cur_user->getRole());
+
+        $this->check_subordinate($cur_user, $cur_role, $user);
 
         switch ($type) {
             case self::TYPE_COMPLETE:
@@ -822,6 +861,8 @@ class TrainingOverview extends RootController
         $cur_role = $this->roles->fetch($cur_user->getRole());
         $user = $this->get_user($uuid);
 
+        $this->check_subordinate($cur_user, $cur_role, $user);
+
         if ($this->pw_resets->fetchByUser($user) !== null) {
             $this->flash()->add(MessageTypes::ERROR,
                                 'An active password reset request for this user already exists');
@@ -848,6 +889,9 @@ class TrainingOverview extends RootController
         $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
         $cur_role = $this->roles->fetch($cur_user->getRole());
         $user = $this->get_user($uuid);
+
+        $this->check_subordinate($cur_user, $cur_role, $user);
+
         $base = $this->bases->fetch($user->getBase());
         $role = $this->roles->fetch($user->getRole());
 
