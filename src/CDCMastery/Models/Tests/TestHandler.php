@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Tests;
 
 
+use CDCMastery\Helpers\ArrayHelpers;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\AnswerCollection;
@@ -25,41 +26,20 @@ use function count;
 
 class TestHandler
 {
-    const ACTION_NO_ACTION = -1;
-    const ACTION_SUBMIT_ANSWER = 0;
-    const ACTION_NAV_FIRST = 1;
-    const ACTION_NAV_PREV = 2;
-    const ACTION_NAV_NEXT = 3;
-    const ACTION_NAV_LAST = 4;
-    const ACTION_NAV_NUM = 5;
-    const ACTION_SCORE_TEST = 6;
+    public const ACTION_NO_ACTION = -1;
+    public const ACTION_SUBMIT_ANSWER = 0;
+    public const ACTION_NAV_FIRST = 1;
+    public const ACTION_NAV_PREV = 2;
+    public const ACTION_NAV_NEXT = 3;
+    public const ACTION_NAV_LAST = 4;
+    public const ACTION_NAV_NUM = 5;
+    public const ACTION_SCORE_TEST = 6;
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
+    protected mysqli $db;
+    protected Logger $log;
+    private TestDataHelpers $test_data_helpers;
+    private ?Test $test;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var TestDataHelpers
-     */
-    private $test_data_helpers;
-
-    /**
-     * @var Test
-     */
-    private $test;
-
-    /**
-     * TestHandler constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     * @param TestDataHelpers $test_data_helpers
-     */
     public function __construct(mysqli $mysqli, Logger $logger, TestDataHelpers $test_data_helpers)
     {
         $this->db = $mysqli;
@@ -113,7 +93,7 @@ class TestHandler
         }
 
         /* Randomize questions and extract a slice of them */
-        shuffle($questions);
+        ArrayHelpers::shuffle($questions);
 
         if ($options->getNumQuestions() <= 0) {
             return new self($mysqli, $logger, $test_data_helpers);
@@ -257,6 +237,7 @@ class TestHandler
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getDisplayData(): array
     {
@@ -285,7 +266,7 @@ class TestHandler
             $this->getQuestion()->getUuid()
         );
 
-        shuffle($answerList);
+        ArrayHelpers::shuffle($answerList);
 
         $answerData = [];
         foreach ($answerList as $answer) {
@@ -302,6 +283,9 @@ class TestHandler
 
         $numAnswered = $this->test_data_helpers->count($this->test);
 
+        $test = $this->getTest();
+        $question = $this->getQuestion();
+
         return [
             'uuid' => $this->getTest()->getUuid(),
             'afscs' => [
@@ -309,8 +293,8 @@ class TestHandler
                 'list' => AfscHelpers::listUuid($this->getTest()->getAfscs()),
             ],
             'questions' => [
-                'idx' => $this->getTest()->getCurrentQuestion(),
-                'total' => $this->getTest()->getNumQuestions(),
+                'idx' => $test->getCurrentQuestion(),
+                'total' => $test->getNumQuestions(),
                 'numAnswered' => $numAnswered,
                 'unanswered' => $this->test_data_helpers->getUnanswered(
                     $this->getTest()
@@ -318,8 +302,8 @@ class TestHandler
             ],
             'display' => [
                 'question' => [
-                    'uuid' => $this->getQuestion()->getUuid(),
-                    'text' => $this->getQuestion()->getText(),
+                    'uuid' => $question->getUuid(),
+                    'text' => $question->getText(),
                 ],
                 'answers' => $answerData,
                 'selection' => $storedAnswer->getUuid(),

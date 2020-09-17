@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Tests\Offline;
 
 
+use CDCMastery\Helpers\ArrayHelpers;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\CdcData;
 use CDCMastery\Models\CdcData\CdcDataCollection;
@@ -91,7 +92,7 @@ class OfflineTestHandler
         }
 
         /* Randomize questions and extract a slice of them */
-        shuffle($questions);
+        ArrayHelpers::shuffle($questions);
 
         if ($options->getNumQuestions() <= 0) {
             return new self($mysqli, $logger);

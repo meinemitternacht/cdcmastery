@@ -47,6 +47,7 @@ class QuestionAnswersCollection
      */
     public function fetch(Afsc $afsc, ?array $questions = null): array
     {
+        $this->questionAnswers = [];
         $afscUuid = $afsc->getUuid();
 
         if (!$afscUuid) {

@@ -212,7 +212,7 @@ SQL;
         $questions = unserialize($questionList ?? '');
 
         if (!is_array($questions)) {
-            $questions = [];
+            return null;
         }
 
         $questionArr = $this->questions->fetchArray(
@@ -220,7 +220,10 @@ SQL;
             $questions
         );
 
-        $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+        $reordered = array_merge(array_flip($questions),
+                                 $questionArr);
+
+        $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
         $cdcData = new CdcData();
         $cdcData->setAfsc($afsc);
@@ -259,7 +262,7 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE afscUUID = ?
-ORDER BY uuid
+ORDER BY dateCreated DESC
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -310,7 +313,7 @@ SQL;
             $questions = unserialize($row[ 'questionList' ] ?? '');
 
             if (!is_array($questions)) {
-                $questions = [];
+                continue;
             }
 
             $questionArr = $this->questions->fetchArray(
@@ -318,7 +321,10 @@ SQL;
                 $questions
             );
 
-            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+            $reordered = array_merge(array_flip($questions),
+                                     $questionArr);
+
+            $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
             $cdcData = new CdcData();
             $cdcData->setAfsc($afsc);
@@ -358,7 +364,7 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE userUUID = ?
-ORDER BY uuid
+ORDER BY dateCreated DESC
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -410,19 +416,22 @@ SQL;
         foreach ($rows as $row) {
             $questions = unserialize($row[ 'questionList' ] ?? '');
 
-            if (!is_array($questions)) {
-                $questions = [];
-            }
-
             $afsc = $afscs[ $row[ 'afscUuid' ] ];
 
-            if ($afsc === null) {
+            if ($afsc === null ||
+                !is_array($questions)) {
                 continue;
             }
 
-            $questionArr = $this->questions->fetchArray($afsc, $questions);
+            $questionArr = $this->questions->fetchArray(
+                $afsc,
+                $questions
+            );
 
-            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+            $reordered = array_merge(array_flip($questions),
+                                     $questionArr);
+
+            $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
             $cdcData = new CdcData();
             $cdcData->setAfsc($afsc);
@@ -467,7 +476,7 @@ SELECT
   dateCreated
 FROM testGeneratorData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid
+ORDER BY dateCreated DESC
 SQL;
 
         $res = $this->db->query($qry);
@@ -493,19 +502,22 @@ SQL;
         foreach ($rows as $row) {
             $questions = unserialize($row[ 'questionList' ] ?? '');
 
-            if (!is_array($questions)) {
-                $questions = [];
-            }
-
             $afsc = $afscs[ $row[ 'afscUuid' ] ];
 
-            if ($afsc === null) {
+            if ($afsc === null ||
+                !is_array($questions)) {
                 continue;
             }
 
-            $questionArr = $this->questions->fetchArray($afsc, $questions);
+            $questionArr = $this->questions->fetchArray(
+                $afsc,
+                $questions
+            );
 
-            $questionAnswers = $this->questions_answers->fetch($afsc, $questionArr);
+            $reordered = array_merge(array_flip($questions),
+                                     $questionArr);
+
+            $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
             $cdcData = new CdcData();
             $cdcData->setAfsc($afsc);
