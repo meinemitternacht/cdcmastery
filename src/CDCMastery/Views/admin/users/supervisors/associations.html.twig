@@ -4,7 +4,7 @@
     {% include "blocks/admin/users/menu.html.twig" %}
     <div class="page-header">
         <h3>
-            Supervisor Associations for {{ user.name }}
+            <span class="text-muted">Supervisor Associations</span> - {{ user.name }}
             {% if user.isDisabled %}
                 <span class="badge badge-danger" title="This user is currently disabled">DISABLED</span>
             {% endif %}
