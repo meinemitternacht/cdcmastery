@@ -183,6 +183,8 @@ alter table queueRoleAuthorization
 	add constraint queueRoleAuthorization_pk
 		primary key (userUUID);
 alter table queueRoleAuthorization drop key userUUID_2;
+-- SPLIT ;;
+alter table flashCardCategories drop column categoryPrivate;
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

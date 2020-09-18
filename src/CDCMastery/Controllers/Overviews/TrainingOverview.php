@@ -162,7 +162,9 @@ class TrainingOverview extends RootController
             'new_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        }
 
         $new_afsc = $this->get('new_afsc');
 
@@ -204,7 +206,9 @@ class TrainingOverview extends RootController
             'approve_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        }
 
         $approve_afsc = $this->get('approve_afsc');
 
@@ -248,7 +252,9 @@ class TrainingOverview extends RootController
             'del_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        }
 
         $del_afsc = $this->get('del_afsc');
 
@@ -326,7 +332,9 @@ class TrainingOverview extends RootController
             'questions',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/offline");
+        }
 
         $afsc_uuid = $this->filter_string_default('afsc');
         $n_questions = $this->filter_int_default('questions');
@@ -405,7 +413,9 @@ class TrainingOverview extends RootController
             'new_users',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/subordinates");
+        }
 
         $new_users = $this->get('new_users');
 
@@ -468,7 +478,9 @@ class TrainingOverview extends RootController
             'del_users',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/training/subordinates");
+        }
 
         $del_users = $this->get('del_users');
 

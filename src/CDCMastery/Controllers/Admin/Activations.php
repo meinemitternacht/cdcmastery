@@ -40,7 +40,9 @@ class Activations extends Admin
             'codes',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect('/admin/activations');
+        }
 
         $codes = $this->get('codes');
 

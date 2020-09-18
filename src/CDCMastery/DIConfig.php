@@ -11,6 +11,7 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Twig\CreateSortLink;
 use CDCMastery\Models\Twig\RoleTypes;
+use CDCMastery\Models\Twig\StringFunctions;
 use CDCMastery\Models\Twig\UserProfileLink;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -59,6 +60,7 @@ return [
         $twig->addExtension(new CreateSortLink());
         $twig->addExtension(new UserProfileLink());
         $twig->addExtension(new RoleTypes());
+        $twig->addExtension(new StringFunctions());
 
         return $twig;
     },

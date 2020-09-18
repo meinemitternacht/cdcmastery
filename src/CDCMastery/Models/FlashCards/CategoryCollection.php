@@ -9,40 +9,72 @@
 namespace CDCMastery\Models\FlashCards;
 
 
+use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\Sorting\Cards\CardCategorySortOption;
+use CDCMastery\Models\Sorting\ISortOption;
 use Monolog\Logger;
 use mysqli;
 
 class CategoryCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
+    protected mysqli $db;
+    protected Logger $log;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var Category[]
-     */
-    private $categories = [];
-
-    /**
-     * CategoryCollection constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     */
     public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
     }
 
+    public function count(): int
+    {
+        $qry = <<<SQL
+SELECT COUNT(*) AS count FROM flashCardCategories
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)($row[ 'count' ] ?? 0);
+    }
+
     /**
-     * @param string $uuid
+     * @param array $rows
+     * @return Category[]
      */
+    private function create_objects(array $rows): array
+    {
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $cat = new Category();
+            $cat->setUuid($row[ 'uuid' ]);
+            $cat->setName($row[ 'categoryName' ]);
+            $cat->setEncrypted($row[ 'categoryEncrypted' ]);
+            $cat->setType($row[ 'categoryType' ]);
+            $cat->setBinding($row[ 'categoryBinding' ]);
+            $cat->setCreatedBy($row[ 'categoryCreatedBy' ]);
+            $cat->setComments($row[ 'categoryComments' ]);
+
+            $out[ $row[ 'uuid' ] ] = $cat;
+        }
+
+        return $out;
+    }
+
     public function delete(string $uuid): void
     {
         if (empty($uuid)) {
@@ -57,27 +89,12 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
-
-        if (isset($this->categories[$uuid])) {
-            array_splice(
-                $this->categories,
-                array_search(
-                    $uuid,
-                    $this->categories
-                ),
-                1
-            );
-        }
     }
 
-    /**
-     * @param string $uuid
-     * @return Category
-     */
-    public function fetch(string $uuid): Category
+    public function fetch(string $uuid): ?Category
     {
-        if (empty($uuid)) {
-            return new Category();
+        if (!$uuid) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -87,7 +104,6 @@ SELECT
   categoryEncrypted,
   categoryType,
   categoryBinding,
-  categoryPrivate,
   categoryCreatedBy,
   categoryComments
 FROM flashCardCategories
@@ -99,7 +115,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Category();
+            return null;
         }
 
         $stmt->bind_result(
@@ -108,7 +124,6 @@ SQL;
             $encrypted,
             $type,
             $binding,
-            $private,
             $createdBy,
             $comments
         );
@@ -116,26 +131,28 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $category = new Category();
-        $category->setUuid($_uuid);
-        $category->setName($name);
-        $category->setEncrypted($encrypted);
-        $category->setType($type);
-        $category->setBinding($binding);
-        $category->setPrivate((bool)$private);
-        $category->setCreatedBy($createdBy);
-        $category->setComments($comments);
+        $row = [
+            'uuid' => $_uuid,
+            'categoryName' => $name,
+            'categoryEncrypted' => $encrypted,
+            'categoryType' => $type,
+            'categoryBinding' => $binding,
+            'categoryCreatedBy' => $createdBy,
+            'categoryComments' => $comments,
+        ];
 
-        $this->categories[$uuid] = $category;
-
-        return $category;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
-    /**
-     * @return Category[]
-     */
-    public function fetchAll(): array
+    public function fetchAfsc(Afsc $afsc): ?Category
     {
+        $afsc_uuid = $afsc->getUuid();
+
+        if (!$afsc_uuid) {
+            return null;
+        }
+
+        $type_afsc = Category::TYPE_AFSC;
         $qry = <<<SQL
 SELECT 
   uuid,
@@ -143,45 +160,134 @@ SELECT
   categoryEncrypted,
   categoryType,
   categoryBinding,
-  categoryPrivate,
   categoryCreatedBy,
   categoryComments
 FROM flashCardCategories
-ORDER BY uuid
+WHERE categoryType = '{$type_afsc}'
+    AND categoryBinding = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+        $stmt->bind_param('s', $afsc_uuid);
+
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return null;
+        }
+
+        $stmt->bind_result(
+            $_uuid,
+            $name,
+            $encrypted,
+            $type,
+            $binding,
+            $createdBy,
+            $comments
+        );
+
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!$_uuid) {
+            return null;
+        }
+
+        $row = [
+            'uuid' => $_uuid,
+            'categoryName' => $name,
+            'categoryEncrypted' => $encrypted,
+            'categoryType' => $type,
+            'categoryBinding' => $binding,
+            'categoryCreatedBy' => $createdBy,
+            'categoryComments' => $comments,
+        ];
+
+        return $this->create_objects([$row])[ $_uuid ] ?? null;
+    }
+
+    /**
+     * @param array|null $sort_options
+     * @param int|null $start
+     * @param int|null $limit
+     * @param string|null $tgt_type
+     * @return Category[]
+     */
+    public function fetchAll(
+        ?array $sort_options = null,
+        ?int $start = null,
+        ?int $limit = null,
+        ?string $tgt_type = null
+    ): array {
+        if (!$sort_options) {
+            $sort_options = [new CardCategorySortOption(CardCategorySortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`flashCardCategories`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
+
+        $where_str = null;
+        if ($tgt_type) {
+            $where_str = "WHERE categoryType = '{$this->db->real_escape_string($tgt_type)}'";
+        }
+
+        $qry = <<<SQL
+# noinspection SqlResolve
+
+SELECT 
+  flashCardCategories.uuid,
+  categoryName,
+  categoryEncrypted,
+  categoryType,
+  categoryBinding,
+  categoryCreatedBy,
+  categoryComments
+FROM flashCardCategories
+{$join_str}
+{$where_str}
+{$sort_str}
+{$limit_str}
 SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
-                continue;
-            }
-
-            $category = new Category();
-            $category->setUuid($row['uuid'] ?? '');
-            $category->setName($row['categoryName'] ?? '');
-            $category->setEncrypted((bool)($row['categoryEncrypted'] ?? false));
-            $category->setType($row['categoryType'] ?? '');
-            $category->setBinding($row['categoryBinding'] ?? '');
-            $category->setPrivate((bool)($row['categoryPrivate'] ?? ''));
-            $category->setCreatedBy($row['categoryCreatedBy'] ?? '');
-            $category->setComments($row['categoryComments'] ?? '');
-
-            $this->categories[$row['uuid']] = $category;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return $this->categories;
+        return $this->create_objects($rows);
     }
 
     /**
      * @param string[] $uuidList
+     * @param ISortOption[]|null $sort_options
      * @return Category[]
      */
-    public function fetchArray(array $uuidList): array
+    public function fetchArray(array $uuidList, ?array $sort_options = null): array
     {
-        if (empty($uuidList)) {
+        if (!$uuidList) {
             return [];
         }
 
@@ -192,54 +298,70 @@ SQL;
 
         $uuidListString = implode("','", $uuidListFiltered);
 
+        if (!$sort_options) {
+            $sort_options = [new CardCategorySortOption(CardCategorySortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`flashCardCategories`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
         $qry = <<<SQL
+# noinspection SqlResolve
+
 SELECT 
   uuid,
   categoryName,
   categoryEncrypted,
   categoryType,
   categoryBinding,
-  categoryPrivate,
   categoryCreatedBy,
   categoryComments
 FROM flashCardCategories
+{$join_str}
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid
+{$sort_str}
 SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
-                continue;
-            }
-
-            $category = new Category();
-            $category->setUuid($row['uuid'] ?? '');
-            $category->setName($row['categoryName'] ?? '');
-            $category->setEncrypted((bool)($row['categoryEncrypted'] ?? false));
-            $category->setType($row['categoryType'] ?? '');
-            $category->setBinding($row['categoryBinding'] ?? '');
-            $category->setPrivate((bool)($row['categoryPrivate'] ?? ''));
-            $category->setCreatedBy($row['categoryCreatedBy'] ?? '');
-            $category->setComments($row['categoryComments'] ?? '');
-
-            $this->categories[$row['uuid']] = $category;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return $this->categories;
+        return $this->create_objects($rows);
     }
 
-    /**
-     * @return CategoryCollection
-     */
-    public function reset(): self
+    public function filterAfsc(?array $sort_options = null, ?int $start = null, ?int $limit = null): array
     {
-        $this->categories = [];
+        return $this->fetchAll($sort_options, $start, $limit, Category::TYPE_AFSC);
+    }
 
-        return $this;
+    public function filterGlobal(?array $sort_options = null, ?int $start = null, ?int $limit = null): array
+    {
+        return $this->fetchAll($sort_options, $start, $limit, Category::TYPE_GLOBAL);
+    }
+
+    public function filterPrivate(?array $sort_options = null, ?int $start = null, ?int $limit = null): array
+    {
+        return $this->fetchAll($sort_options, $start, $limit, Category::TYPE_PRIVATE);
     }
 
     /**
@@ -247,7 +369,7 @@ SQL;
      */
     public function save(Category $category): void
     {
-        if (empty($category->getUuid())) {
+        if (!$category->getUuid()) {
             return;
         }
 
@@ -256,46 +378,43 @@ SQL;
         $encrypted = $category->isEncrypted();
         $type = $category->getType();
         $binding = $category->getBinding();
-        $private = $category->isPrivate();
         $createdBy = $category->getCreatedBy();
         $comments = $category->getComments();
 
         $qry = <<<SQL
 INSERT INTO flashCardCategories
-  (uuid, categoryName, categoryEncrypted, categoryType, categoryBinding, categoryPrivate, categoryCreatedBy, categoryComments)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  (uuid, categoryName, categoryEncrypted, categoryType, categoryBinding, categoryCreatedBy, categoryComments)
+VALUES (?, ?, ?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE 
   uuid=VALUES(uuid),
   categoryName=VALUES(categoryName),
   categoryEncrypted=VALUES(categoryEncrypted),
   categoryType=VALUES(categoryType),
   categoryBinding=VALUES(categoryBinding),
-  categoryPrivate=VALUES(categoryPrivate),
   categoryCreatedBy=VALUES(categoryCreatedBy),
   categoryComments=VALUES(categoryComments)
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssississ',
-            $uuid,
-            $name,
-            $encrypted,
-            $type,
-            $binding,
-            $private,
-            $createdBy,
-            $comments
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return;
+        }
+
+        if (!$stmt->bind_param('ssissss',
+                               $uuid,
+                               $name,
+                               $encrypted,
+                               $type,
+                               $binding,
+                               $createdBy,
+                               $comments) ||
+            !$stmt->execute()) {
             $stmt->close();
             return;
         }
 
         $stmt->close();
-
-        $this->categories[$uuid] = $category;
     }
 
     /**

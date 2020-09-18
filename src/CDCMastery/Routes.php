@@ -4,6 +4,7 @@ use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\Activations;
 use CDCMastery\Controllers\Admin\AfscApprovals;
 use CDCMastery\Controllers\Admin\CdcData;
+use CDCMastery\Controllers\Admin\FlashCards;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
@@ -74,6 +75,110 @@ return simpleDispatcher(function (RouteCollector $r) {
             $r->addRoute('GET', '/{uuid}', [
                 Admin\Bases::class,
                 'show_overview',
+            ]);
+        });
+
+        /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_home() */
+        $r->addRoute('GET', '/cards', [
+            FlashCards::class,
+            'show_home',
+        ]);
+
+        $r->addGroup('/cards', function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category_add() */
+            $r->addRoute('GET', '/add', [
+                FlashCards::class,
+                'show_category_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_category_add() */
+            $r->addRoute('POST', '/add', [
+                FlashCards::class,
+                'do_category_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category_add_afsc() */
+            $r->addRoute('GET', '/add-afsc', [
+                FlashCards::class,
+                'show_category_add_afsc',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_category_add_afsc() */
+            $r->addRoute('POST', '/add-afsc', [
+                FlashCards::class,
+                'do_category_add_afsc',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category() */
+            $r->addRoute('GET', '/{uuid}', [
+                FlashCards::class,
+                'show_category',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category_delete() */
+            $r->addRoute('GET', '/{uuid}/delete', [
+                FlashCards::class,
+                'show_category_delete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_category_delete() */
+            $r->addRoute('POST', '/{uuid}/delete', [
+                FlashCards::class,
+                'do_category_delete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category_edit() */
+            $r->addRoute('GET', '/{uuid}/edit', [
+                FlashCards::class,
+                'show_category_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_category_edit() */
+            $r->addRoute('POST', '/{uuid}/edit', [
+                FlashCards::class,
+                'do_category_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_card_add() */
+            $r->addRoute('GET', '/{uuid}/data/add', [
+                FlashCards::class,
+                'show_card_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_card_add() */
+            $r->addRoute('POST', '/{uuid}/data/add', [
+                FlashCards::class,
+                'do_card_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_card() */
+            $r->addRoute('GET', '/{uuid}/data/{card_uuid}', [
+                FlashCards::class,
+                'show_card',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_card_edit() */
+            $r->addRoute('GET', '/{uuid}/data/{card_uuid}/edit', [
+                FlashCards::class,
+                'show_card_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_card_edit() */
+            $r->addRoute('POST', '/{uuid}/data/{card_uuid}/edit', [
+                FlashCards::class,
+                'do_card_edit',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_card_delete() */
+            $r->addRoute('GET', '/{uuid}/data/{card_uuid}/delete', [
+                FlashCards::class,
+                'show_card_delete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\FlashCards::do_card_delete() */
+            $r->addRoute('POST', '/{uuid}/data/{card_uuid}/delete', [
+                FlashCards::class,
+                'do_card_delete',
             ]);
         });
 

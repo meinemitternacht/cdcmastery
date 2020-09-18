@@ -1,0 +1,57 @@
+<nav class="navbar navbar-sub">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#card-cats-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <div class="navbar-brand hidden-md hidden-lg">
+                Flash Cards Menu
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="card-cats-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% if cur_url == "/admin/cards" %} class="active"{% endif %}>
+                    <a href="/admin/cards">Category List</a>
+                </li>
+                <li{% if cur_url == "/admin/cards/add" %} class="active"{% endif %}>
+                    <a href="/admin/cards/add">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Add Category
+                    </a>
+                </li>
+                <li{% if cur_url == "/admin/cards/add-afsc" %} class="active"{% endif %}>
+                    <a href="/admin/cards/add-afsc">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Add From AFSC
+                    </a>
+                </li>
+
+                {% if cat %}
+                    <li{% if cur_url == "/admin/cards/" ~ cat.uuid %} class="active"{% endif %}>
+                        <a href="/admin/cards/{{ cat.uuid }}">View Cards</a>
+                    </li>
+                    <li{% if cur_url == "/admin/cards/" ~ cat.uuid ~ "/edit" %} class="active"{% endif %}>
+                        <a href="/admin/cards/{{ cat.uuid }}/edit"
+                           class="bg-warning">
+                            Edit Category
+                        </a>
+                    </li>
+                    {% if cdc_debug %}
+                        <li{% if cur_url == "/admin/cards/" ~ cat.uuid ~ "/delete" %} class="active"{% endif %}>
+                            <a href="/admin/cards/{{ cat.uuid }}/delete"
+                               class="bg-danger">
+                                Delete Category
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

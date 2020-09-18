@@ -1,0 +1,129 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Flash Card Category - #{cat.name}" %}
+{% set num_cards = cards|length %}
+{% block main %}
+    {% include "blocks/admin/cards/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            <span class="text-muted">Manage</span> {{ cat.name }}
+            {% include "blocks/admin/cards/category-type-icon.html.twig" %}
+        </h3>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                {% if cat.type != "afsc" %}
+                    <div class="col-md-3 text-center">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Cards</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ num_cards|number_format }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-md-3 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Encrypted</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{{ cat.isEncrypted ? 'Yes' : 'No' }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5>Created By</h5>
+                        </div>
+                        <div class="panel-body">
+                            <strong>{% if user %}{{ user.name }}{% else %}UNKNOWN{% endif %}</strong>
+                        </div>
+                    </div>
+                </div>
+                {% if cat.type == "afsc" or afsc %}
+                    <div class="col-md-3 text-center">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Associated AFSC</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{% if afsc %}{{ afsc.name }}{% else %}UNKNOWN{% endif %}</strong>
+                                {% if afsc and afsc.isFouo %}
+                                    <span class="label label-danger"
+                                          title="This AFSC is marked as 'FOR OFFICIAL USE ONLY'">F</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if cat.comments %}
+                    <div class="col-md-6 text-center">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5>Comments</h5>
+                            </div>
+                            <div class="panel-body">
+                                <strong>{{ cat.comments }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="help-block">
+                {% if num_cards > 0 and cat.type != "afsc" %}
+                    Click on a table row to manage the flash card data.
+                {% elseif cat.type == "afsc" %}
+                    This flash card category pulls data from the AFSC it is associated with. No user management is
+                    required.
+                {% else %}
+                    There are no flash cards in the database for this category.
+                {% endif %}
+            </div>
+        </div>
+        {% if cat.type != "afsc" %}
+            <div class="col-md-3 text-right">
+                <a class="btn btn-sm btn-success"
+                   href="/admin/cards/{{ cat.uuid }}/data/add">
+                    <span class="glyphicon glyphicon-plus"></span> Add Card
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% if num_cards > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="cards-table">
+                        <tbody>
+                        {% set i = 1 %}
+                        {% for card in cards %}
+                            <tr data-uuid="{{ card.uuid }}"
+                                {% if cat.type != "afsc" %}class="cursor-pointer"{% endif %}>
+                                <td class="text-muted">{{ i }}</td>
+                                <td>
+                                    {{ card.front|strtr(100) }}<br>
+                                    <span class="text-muted" style="margin-left: 1em;">{{ card.back|strtr(100) }}</span>
+                                </td>
+                            </tr>
+                            {% set i = i + 1 %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if cat.type != "afsc" %}
+                        {% set tableSelector = "#cards-table" %}
+                        {% set redirectPath = "/admin/cards/" ~ cat.uuid ~ "/data" %}
+                        {% include "utilities/table-row-link.html.twig" %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

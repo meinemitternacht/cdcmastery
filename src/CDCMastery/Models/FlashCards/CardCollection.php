@@ -25,11 +25,6 @@ class CardCollection
     protected $log;
 
     /**
-     * @var Card[]
-     */
-    private $cards = [];
-
-    /**
      * CardCollection constructor.
      * @param mysqli $mysqli
      * @param Logger $logger
@@ -41,14 +36,59 @@ class CardCollection
     }
 
     /**
-     * @param Category $category
-     * @param string $uuid
-     * @return Card
+     * @param array $rows
+     * @return Card[]
      */
-    public function fetch(Category $category, string $uuid): Card
+    private function create_objects(array $rows): array
     {
-        if (empty($category->getUuid()) || empty($uuid)) {
-            return new Card();
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $card = new Card();
+            $card->setUuid($row[ 'uuid' ]);
+            $card->setFront($row[ 'frontText' ]);
+            $card->setBack($row[ 'backText' ]);
+            $card->setCategory($row[ 'cardCategory' ]);
+
+            $out[ $row[ 'uuid' ] ] = $card;
+        }
+
+        return $out;
+    }
+
+    public function delete(Card $card): void
+    {
+        $card_uuid = $card->getUuid();
+        $qry = <<<SQL
+DELETE FROM flashCardData WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $card_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        $stmt->close();
+    }
+
+    public function fetch(Category $category, string $uuid): ?Card
+    {
+        if (!$uuid || !$category->getUuid()) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -84,7 +124,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Card();
+            return null;
         }
 
         $stmt->bind_result(
@@ -97,15 +137,14 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $card = new Card();
-        $card->setUuid($_uuid);
-        $card->setFront($front);
-        $card->setBack($back);
-        $card->setCategory($_category);
+        $row = [
+            'uuid' => $_uuid,
+            'frontText' => $front,
+            'backText' => $back,
+            'cardCategory' => $_category,
+        ];
 
-        $this->cards[$uuid] = $card;
-
-        return $card;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
     /**
@@ -126,6 +165,7 @@ SELECT
   cardCategory
 FROM flashCardData
 WHERE cardCategory = ?
+ORDER BY frontText
 SQL;
 
         if ($category->isEncrypted()) {
@@ -136,7 +176,8 @@ SELECT
   AES_DECRYPT(backText, '%s') as backText,
   cardCategory
 FROM flashCardData
-WHERE uuid = ?
+WHERE cardCategory = ?
+ORDER BY frontText
 SQL;
 
             $qry = sprintf(
@@ -163,28 +204,22 @@ SQL;
             $_category
         );
 
-        $uuidList = [];
+        $rows = [];
         while ($stmt->fetch()) {
             if ($_uuid === null) {
                 continue;
             }
 
-            $card = new Card();
-            $card->setUuid($_uuid);
-            $card->setFront($front);
-            $card->setBack($back);
-            $card->setCategory($_category);
-
-            $this->cards[$uuid] = $card;
-            $uuidList[] = $_uuid;
+            $rows[] = [
+                'uuid' => $_uuid,
+                'frontText' => $front,
+                'backText' => $back,
+                'cardCategory' => $_category,
+            ];
         }
 
         $stmt->close();
-
-        return array_intersect_key(
-            $this->cards,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($rows);
     }
 
     /**
@@ -213,7 +248,7 @@ SELECT
   cardCategory
 FROM flashCardData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid
+ORDER BY frontText
 SQL;
 
         if ($category->isEncrypted()) {
@@ -225,7 +260,7 @@ SELECT
   cardCategory
 FROM flashCardData
 WHERE uuid IN ('{$uuidListString}')
-ORDER BY uuid
+ORDER BY frontText
 SQL;
 
             $qry = sprintf(
@@ -237,36 +272,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $card = new Card();
-            $card->setUuid($row['uuid'] ?? '');
-            $card->setFront($row['frontText'] ?? '');
-            $card->setBack($row['backText'] ?? '');
-            $card->setCategory($row['cardCategory'] ?? '');
-
-            $this->cards[$row['uuid']] = $card;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return array_intersect_key(
-            $this->cards,
-            array_flip($uuidList)
-        );
-    }
-
-    /**
-     * @return CardCollection
-     */
-    public function reset(): self
-    {
-        $this->cards = [];
-
-        return $this;
+        return $this->create_objects($rows);
     }
 
     /**
@@ -275,7 +291,7 @@ SQL;
      */
     public function save(Category $category, Card $card): void
     {
-        if (empty($category->getUuid()) || empty($card->getUuid())) {
+        if (!$category->getUuid() || !$card->getUuid()) {
             return;
         }
 
@@ -316,7 +332,7 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
-            'sss',
+            'ssss',
             $uuid,
             $front,
             $back,
@@ -329,8 +345,6 @@ SQL;
         }
 
         $stmt->close();
-
-        $this->cards[$uuid] = $card;
     }
 
     /**
@@ -339,7 +353,7 @@ SQL;
      */
     public function saveArray(Category $category, array $cards): void
     {
-        if (empty($category->getUuid()) || empty($cards)) {
+        if (!$cards || !$category->getUuid()) {
             return;
         }
 

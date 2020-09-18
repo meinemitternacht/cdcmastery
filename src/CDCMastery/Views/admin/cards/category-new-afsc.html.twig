@@ -1,0 +1,56 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Add Flash Card Category - #{cat.name}" %}
+{% block main %}
+    {% include "blocks/admin/cards/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Add Category Using AFSC</h3>
+    </div>
+    <div class="row">
+        <div class="help-block col-md-12">
+            Add a flash card category based on existing CDC data by choosing an AFSC from the list below. To create a
+            new global category instead, please click "Add Category" in the menu above.
+        </div>
+    </div>
+    <div class="row">
+        <div class="well well-sm col-md-8 col-md-offset-2">
+            <form action="/admin/cards/add-afsc"
+                  method="POST">
+                <fieldset>
+                    <legend>Category Details</legend>
+                    <div class="form-group">
+                        <label for="tgt_afsc">Source AFSC</label>
+                        <select class="form-control"
+                                name="tgt_afsc"
+                                id="tgt_afsc">
+                            <option value="">Select an AFSC...</option>
+                            {% for afsc in afscs %}
+                                <option value="{{ afsc.uuid }}">
+                                    {{ afsc.name }}{% if afsc.editCode %} [EC{{ afsc.editCode }}]{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="help-block">
+                            Choose the AFSC that will be used as the source material to create flash cards from.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comments">Comments</label>
+                        <textarea class="form-control"
+                                  name="comments"
+                                  id="comments"></textarea>
+                        <div class="help-block">
+                            Optional administrative comments for this category. You may want to include the CDC version
+                            here as a reference.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit"
+                                class="btn btn-success">
+                            Add Category
+                        </button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}

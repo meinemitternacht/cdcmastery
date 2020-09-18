@@ -45,7 +45,9 @@ class RoleApprovals extends Admin
             'determination',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect('/admin/pending-roles');
+        }
 
         $user_uuids = $this->get('user_uuids');
         $determination = $this->filter_string_default('determination');

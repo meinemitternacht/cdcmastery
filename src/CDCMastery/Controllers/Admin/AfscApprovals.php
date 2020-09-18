@@ -44,7 +44,9 @@ class AfscApprovals extends Admin
             'user_afscs',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/pending-afscs");
+        }
 
         $user_afscs = $this->get('user_afscs');
 

@@ -21,6 +21,7 @@ use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
+use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
@@ -114,13 +115,13 @@ class Users extends Admin
         return $user;
     }
 
-    private function validate_sort(string $column, string $direction): ?UserSortOption
+    private function validate_sort(string $column, string $direction): ?ISortOption
     {
         try {
             return new UserSortOption($column,
                                       strtolower($direction ?? 'asc') === 'asc'
-                                          ? UserSortOption::SORT_ASC
-                                          : UserSortOption::SORT_DESC);
+                                          ? ISortOption::SORT_ASC
+                                          : ISortOption::SORT_DESC);
         } catch (Throwable $e) {
             unset($e);
             return null;
@@ -141,7 +142,9 @@ class Users extends Admin
             'time_zone',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/edit");
+        }
 
         $handle = $this->filter_string_default('handle');
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
@@ -325,7 +328,9 @@ class Users extends Admin
             'new_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
 
         $new_afsc = $this->get('new_afsc');
 
@@ -335,7 +340,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         $tgt_afscs = $this->afscs->fetchArray($new_afsc);
@@ -346,7 +351,7 @@ class Users extends Admin
                 'The selected AFSCs were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
@@ -367,7 +372,9 @@ class Users extends Admin
             'approve_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
 
         $approve_afsc = $this->get('approve_afsc');
 
@@ -377,7 +384,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         $tgt_afscs = $this->afscs->fetchArray($approve_afsc);
@@ -388,7 +395,7 @@ class Users extends Admin
                 'The selected AFSCs were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         foreach ($tgt_afscs as $tgt_afsc) {
@@ -411,7 +418,9 @@ class Users extends Admin
             'del_afsc',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        }
 
         $del_afsc = $this->get('del_afsc');
 
@@ -421,7 +430,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         $tgt_afscs = $this->afscs->fetchArray($del_afsc);
@@ -432,7 +441,7 @@ class Users extends Admin
                 'The selected AFSCs were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
         foreach ($tgt_afscs as $tgt_afsc) {
@@ -455,7 +464,9 @@ class Users extends Admin
             'new_super',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+        }
 
         $new_super = $this->get('new_super');
 
@@ -465,7 +476,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
         $tgt_supers = $this->users->fetchArray($new_super);
@@ -476,7 +487,7 @@ class Users extends Admin
                 'The selected users were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
         $this->su_assocs->batchAddSupervisorsForUser($tgt_supers, $user);
@@ -497,7 +508,9 @@ class Users extends Admin
             'del_super',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+        }
 
         $del_super = $this->get('del_super');
 
@@ -507,7 +520,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
         $tgt_supers = $this->users->fetchArray($del_super);
@@ -518,7 +531,7 @@ class Users extends Admin
                 'The selected users were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
+            return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
         foreach ($tgt_supers as $tgt_super) {
@@ -541,7 +554,9 @@ class Users extends Admin
             'new_tm',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+        }
 
         $new_tm = $this->get('new_tm');
 
@@ -551,7 +566,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
         $tgt_tms = $this->users->fetchArray($new_tm);
@@ -562,7 +577,7 @@ class Users extends Admin
                 'The selected users were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
         $this->tm_assocs->batchAddTrainingManagersForUser($tgt_tms, $user);
@@ -583,7 +598,9 @@ class Users extends Admin
             'del_tm',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+        }
 
         $del_tm = $this->get('del_tm');
 
@@ -593,7 +610,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
         $tgt_tms = $this->users->fetchArray($del_tm);
@@ -604,7 +621,7 @@ class Users extends Admin
                 'The selected users were not valid'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
+            return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
         foreach ($tgt_tms as $tgt_tm) {
@@ -719,7 +736,7 @@ class Users extends Admin
         $numRecords = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         $sort = $sortCol
-            ? [self::validate_sort($sortCol, $sortDir)]
+            ? [$this->validate_sort($sortCol, $sortDir)]
             : [
                 new UserSortOption(UserSortOption::COL_NAME_LAST),
                 new UserSortOption(UserSortOption::COL_NAME_FIRST),
@@ -731,15 +748,19 @@ class Users extends Admin
 
         $n_users = $this->users->count();
         $users = $this->users->fetchAll($sort, $curPage * $numRecords, $numRecords);
-        $bases = $this->bases->fetchArray(array_map(static function (User $v): string {
-            return $v->getBase();
-        }, $users));
-        $roles = $this->roles->fetchArray(array_map(static function (User $v): string {
-            return $v->getRole();
-        }, $users));
-        $symbols = $this->symbols->fetchArray(array_map(static function (User $v): ?string {
-            return $v->getOfficeSymbol();
-        }, $users));
+
+        $base_uuids = [];
+        $role_uuids = [];
+        $office_symbol_uuids = [];
+        foreach ($users as $user) {
+            $base_uuids[ $user->getBase() ] = true;
+            $role_uuids[ $user->getRole() ] = true;
+            $office_symbol_uuids[ $user->getOfficeSymbol() ] = true;
+        }
+
+        $bases = $this->bases->fetchArray(array_keys($base_uuids));
+        $roles = $this->roles->fetchArray(array_keys($role_uuids));
+        $symbols = $this->symbols->fetchArray(array_keys($office_symbol_uuids));
 
         $pagination = ArrayPaginator::buildLinks(
             '/admin/users',

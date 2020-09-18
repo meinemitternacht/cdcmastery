@@ -1,0 +1,12 @@
+{% if cat.type == "private" %}
+    <span class="label label-danger" title="Private Collection">P</span>
+{% elseif cat.type == "global" %}
+    <span class="label label-success" title="Public Collection">G</span>
+{% elseif cat.type == "afsc" %}
+    <span class="label label-info" title="Generated from AFSC data">A</span>
+{% else %}
+    {{ cat.type }}
+{% endif %}
+{% if cat.isEncrypted %}
+    <span class="label label-danger" title="This category is encrypted">E</span>
+{% endif %}

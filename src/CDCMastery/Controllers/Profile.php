@@ -79,7 +79,7 @@ class Profile extends RootController
         $this->su_assocs = $su_assocs;
     }
 
-    private function get_user(string $uuid): ?User
+    private function get_user(string $uuid): User
     {
         $user = $this->users->fetch($uuid);
 
@@ -102,7 +102,9 @@ class Profile extends RootController
             'tgt_role',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            return $this->redirect('/profile/role');
+        }
 
         $tgt_role = $this->filter_string_default('tgt_role');
 
@@ -160,7 +162,9 @@ class Profile extends RootController
             'time_zone',
         ];
 
-        $this->checkParameters($params);
+        if (!$this->checkParameters($params)) {
+            goto out_return;
+        }
 
         $handle = $this->filter_string_default('handle');
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);

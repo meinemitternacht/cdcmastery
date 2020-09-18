@@ -4,12 +4,13 @@
 namespace CDCMastery\Models\Sorting\Users;
 
 
+use CDCMastery\Models\Sorting\ISortOption;
+use CDCMastery\Models\Sorting\TSortOption;
 use RuntimeException;
 
-class UserSortOption
+class UserSortOption implements ISortOption
 {
-    public const SORT_ASC = 0;
-    public const SORT_DESC = 1;
+    use TSortOption;
 
     public const COL_UUID = 'uuid';
     public const COL_NAME_FIRST = 'userFirstName';
@@ -47,10 +48,7 @@ class UserSortOption
         self::COL_ROLE => '`roleList`.`roleName`',
     ];
 
-    private string $column;
-    private int $direction;
-
-    public function __construct(string $column, int $direction = self::SORT_ASC)
+    public function __construct(string $column, int $direction = ISortOption::SORT_ASC)
     {
         switch ($column) {
             case self::COL_UUID:
@@ -77,33 +75,5 @@ class UserSortOption
 
         $this->column = $column;
         $this->direction = $direction;
-    }
-
-    public function getColumn(): string
-    {
-        return $this->column;
-    }
-
-    public function getDirection(): string
-    {
-        return $this->direction === self::SORT_ASC
-            ? 'ASC'
-            : 'DESC';
-    }
-
-    public function getJoinClause(): ?string
-    {
-        if (!isset(self::JOIN_TABLE[ $this->column ], self::JOIN_COLUMNS[ $this->column ])) {
-            return null;
-        }
-
-        $table = self::JOIN_TABLE[ $this->column ];
-        $on = self::JOIN_COLUMNS[ $this->column ];
-        return "LEFT JOIN {$table} ON {$on}";
-    }
-
-    public function getJoinTgtSortColumn(): ?string
-    {
-        return self::JOIN_TGT_SORT_COLUMN[ $this->column ] ?? null;
     }
 }

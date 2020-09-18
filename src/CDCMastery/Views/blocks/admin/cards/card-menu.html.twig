@@ -1,0 +1,12 @@
+<div class="list-group">
+    <a href="/admin/cards/{{ cat.uuid }}/data/{{ card.uuid }}/edit"
+       class="list-group-item">
+        Edit Card
+    </a>
+    {% if cdc_debug %}
+        <a href="/admin/cards/{{ cat.uuid }}/data/{{ card.uuid }}/delete"
+           class="list-group-item list-group-item-danger">
+            Delete Card
+        </a>
+    {% endif %}
+</div>

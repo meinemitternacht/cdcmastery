@@ -14,8 +14,8 @@ use Twig\TwigFunction;
 
 class CreateSortLink extends AbstractExtension
 {
-    const DIR_ASC = "ASC";
-    const DIR_DESC = "DESC";
+    private const DIR_ASC = "ASC";
+    private const DIR_DESC = "DESC";
 
     /**
      * @return array

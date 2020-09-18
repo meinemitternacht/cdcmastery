@@ -11,6 +11,7 @@ namespace CDCMastery\Models\Users;
 
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Bases\Base;
+use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use DateTime;
 use Monolog\Logger;
@@ -229,7 +230,7 @@ SQL;
     }
 
     /**
-     * @param UserSortOption[]|null $sort_options
+     * @param ISortOption[]|null $sort_options
      * @param int|null $start
      * @param int|null $limit
      * @return User[]
@@ -295,7 +296,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -309,7 +310,7 @@ SQL;
 
     /**
      * @param string[] $uuidList
-     * @param array|null $sort_options
+     * @param ISortOption[]|null $sort_options
      * @return User[]
      */
     public function fetchArray(array $uuidList, ?array $sort_options = null): array
@@ -379,7 +380,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
