@@ -7,10 +7,12 @@ namespace CDCMastery\Controllers;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\FlashCards\Card;
 use CDCMastery\Models\FlashCards\CardCollection;
+use CDCMastery\Models\FlashCards\CardHandler;
 use CDCMastery\Models\FlashCards\CardHelpers;
 use CDCMastery\Models\FlashCards\Category;
 use CDCMastery\Models\FlashCards\CategoryCollection;
@@ -21,6 +23,9 @@ use CDCMastery\Models\Users\User;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use Monolog\Logger;
+use mysqli;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Throwable;
@@ -28,6 +33,8 @@ use Twig\Environment;
 
 class Cards extends RootController
 {
+    private mysqli $db;
+    private CacheHandler $cache;
     private AuthHelpers $auth_helpers;
     private CategoryCollection $categories;
     private CardCollection $cards;
@@ -40,6 +47,8 @@ class Cards extends RootController
         Logger $logger,
         Environment $twig,
         Session $session,
+        mysqli $db,
+        CacheHandler $cache,
         AuthHelpers $auth_helpers,
         CategoryCollection $categories,
         CardCollection $cards,
@@ -50,6 +59,8 @@ class Cards extends RootController
     ) {
         parent::__construct($logger, $twig, $session);
 
+        $this->db = $db;
+        $this->cache = $cache;
         $this->auth_helpers = $auth_helpers;
         $this->categories = $categories;
         $this->cards = $cards;
@@ -266,6 +277,58 @@ class Cards extends RootController
                             'The flash card was saved successfully');
 
         return $this->redirect("/cards/{$cat->getUuid()}");
+    }
+
+    public function do_card_handler(string $uuid): Response
+    {
+        $cat = $this->categories->fetch($uuid);
+
+        if (!$cat || $cat->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified flash card category could not be found');
+
+            return $this->redirect('/cards');
+        }
+
+        $payload = json_decode($this->getRequest()->getContent() ?? null);
+
+        if (!$payload || !isset($payload->action)) {
+            throw new RuntimeException('Malformed request');
+        }
+
+        $handler = CardHandler::factory($this->session,
+                                        $this->db,
+                                        $this->log,
+                                        $this->cache,
+                                        $this->afscs,
+                                        $this->cdc_data,
+                                        $this->cards,
+                                        $cat);
+
+        switch ($payload->action) {
+            case CardHandler::ACTION_NO_ACTION:
+                break;
+            case CardHandler::ACTION_SHUFFLE:
+                $handler->shuffle();
+                break;
+            case CardHandler::ACTION_NAV_FIRST:
+                $handler->first();
+                break;
+            case CardHandler::ACTION_NAV_PREV:
+                $handler->previous();
+                break;
+            case CardHandler::ACTION_NAV_NEXT:
+                $handler->next();
+                break;
+            case CardHandler::ACTION_NAV_LAST:
+                $handler->last();
+                break;
+            case CardHandler::ACTION_FLIP_CARD:
+                $handler->flip();
+                break;
+        }
+
+        return new JsonResponse($handler->display());
     }
 
     public function do_category_add(?Category $cat = null): Response
@@ -610,6 +673,29 @@ class Cards extends RootController
 
         return $this->render(
             'cards/category-delete.html.twig',
+            $data
+        );
+    }
+
+    public function show_study(string $uuid): Response
+    {
+        $cat = $this->categories->fetch($uuid);
+
+        if (!$cat || $cat->getUuid() === '') {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The specified flash card category could not be found');
+
+            return $this->redirect('/cards');
+        }
+
+        $this->check_access($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+
+        $data = [
+            'cat' => $cat,
+        ];
+
+        return $this->render(
+            'cards/study.html.twig',
             $data
         );
     }

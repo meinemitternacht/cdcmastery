@@ -26,11 +26,12 @@ class CardHelpers
 
         $cards = [];
         foreach ($qas as $qa) {
+            $uuid = $qa->getQuestion()->getUuid();
             $card = new Card();
-            $card->setUuid(UUID::NIL);
+            $card->setUuid($uuid);
             $card->setFront($qa->getQuestion()->getText());
             $card->setBack($qa->getCorrect()->getText());
-            $cards[] = $card;
+            $cards[ $uuid ] = $card;
         }
 
         return $cards;

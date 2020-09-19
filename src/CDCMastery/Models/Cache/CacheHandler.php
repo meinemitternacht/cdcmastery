@@ -9,6 +9,8 @@
 namespace CDCMastery\Models\Cache;
 
 
+use Memcached;
+
 class CacheHandler
 {
     public const TTL_TINY = 5;
@@ -19,15 +21,15 @@ class CacheHandler
     public const TTL_MAX = 604800;
 
     /**
-     * @var \Memcached
+     * @var Memcached
      */
     protected $memcached;
 
     /**
      * CacheHandler constructor.
-     * @param \Memcached $memcached
+     * @param Memcached $memcached
      */
-    public function __construct(\Memcached $memcached)
+    public function __construct(Memcached $memcached)
     {
         $this->memcached = $memcached;
     }

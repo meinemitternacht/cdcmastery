@@ -3,3 +3,32 @@
     justify-content: space-evenly;
     align-items: center;
 }
+
+#card-area {
+    background: #fff url(/images/index-card.png) repeat-x top;
+    background-size: auto 100%;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+    border: 1px solid navy;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.1em;
+    min-height: 12em;
+}
+
+#card-front,
+#card-back {
+    padding-top: 0.6em;
+    line-height: 1.3em;
+}
+
+#card-loading img {
+    position: fixed;
+    top: 21%;
+    left: 50%;
+    margin-left: -33px;
+    margin-top: -33px;
+    z-index: 1;
+    width: 66px;
+}

@@ -719,6 +719,18 @@ return simpleDispatcher(function (RouteCollector $r) {
             'do_category_edit',
         ]);
 
+        /** @uses \CDCMastery\Controllers\Tests::show_test() */
+        $r->addRoute('GET', '/{uuid}/study', [
+            Cards::class,
+            'show_study',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_card_handler() */
+        $r->addRoute('POST', '/{uuid}/study', [
+            Cards::class,
+            'do_card_handler',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Cards::show_card_add() */
         $r->addRoute('GET', '/{uuid}/data/add', [
             Cards::class,

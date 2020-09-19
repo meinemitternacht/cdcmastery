@@ -1,0 +1,226 @@
+{% extends "layout.html.twig" %}
+{% block main %}
+    <script>
+
+        $(document).ready(function () {
+            const ACTION_NO_ACTION = -1;
+            const ACTION_SHUFFLE = 0;
+            const ACTION_NAV_FIRST = 1;
+            const ACTION_NAV_PREV = 2;
+            const ACTION_NAV_NEXT = 3;
+            const ACTION_NAV_LAST = 4;
+            const ACTION_FLIP_CARD = 5;
+
+            let $loading = $('#card-loading');
+            let $front = $('#card-front');
+            let $back = $('#card-back');
+            let $cardsProgress = $('#cards-progress');
+            let $cardIdx = $('#card-idx');
+            let $numCards = $('#num-cards');
+
+            let $div_cardArea = $('#card-area');
+            let $div_flip = $('#flip');
+            let $div_shuffle = $('#shuffle');
+            let $div_navFirst = $('#nav-first');
+            let $div_navPrev = $('#nav-prev');
+            let $div_navNext = $('#nav-next');
+            let $div_navLast = $('#nav-last');
+
+            $div_cardArea.swipe({
+                tap: function () {
+                    performAction(ACTION_FLIP_CARD);
+                },
+                doubleTap: function () {
+                    performAction(ACTION_FLIP_CARD);
+                },
+                swipeLeft: function () {
+                    performAction(ACTION_NAV_NEXT);
+                },
+                swipeRight: function () {
+                    performAction(ACTION_NAV_PREV);
+                },
+                threshold: 50
+            });
+
+            $div_flip.click(function () {
+                performAction(ACTION_FLIP_CARD);
+            });
+
+            $div_shuffle.click(function () {
+                performAction(ACTION_SHUFFLE);
+            });
+
+            $div_navFirst.click(function () {
+                performAction(ACTION_NAV_FIRST);
+            });
+
+            $div_navPrev.click(function () {
+                performAction(ACTION_NAV_PREV);
+            });
+
+            $div_navNext.click(function () {
+                performAction(ACTION_NAV_NEXT);
+            });
+
+            $div_navLast.click(function () {
+                performAction(ACTION_NAV_LAST);
+            });
+
+            $(window).keydown(function (e) {
+                switch (e.keyCode) {
+                    case 32: /* Flip Card */
+                        performAction()
+                        return;
+                    case 35: /* End */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_LAST, null);
+                        return;
+                    case 36: /* Home */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_FIRST, null);
+                        return;
+                    case 37: /* Left arrow */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_PREV, null);
+                        return;
+                    case 39: /* Right arrow */
+                        e.preventDefault();
+                        performAction(ACTION_NAV_NEXT, null);
+                        return;
+                    case 49: /* 1 */
+                    case 65: /* A */
+                    case 97: /* Numpad 1 */
+                        performAction(ACTION_SUBMIT_ANSWER, $answer_1);
+                        return;
+                }
+            });
+
+            function doAction(action) {
+                switch (action) {
+                    case ACTION_NO_ACTION:
+                    case ACTION_SHUFFLE:
+                    case ACTION_NAV_FIRST:
+                    case ACTION_NAV_PREV:
+                    case ACTION_NAV_NEXT:
+                    case ACTION_NAV_LAST:
+                    case ACTION_FLIP_CARD:
+                        let jsonData = {
+                            'action': action
+                        };
+
+                        $.ajax('/cards/{{ cat.uuid }}/study', {
+                            'data': JSON.stringify(jsonData),
+                            'type': 'POST',
+                            'processData': false,
+                            'contentType': 'application/json',
+                            'success': function (data) {
+                                if (typeof (data.redirect) !== "undefined") {
+                                    window.location.href = data.redirect;
+                                }
+
+                                populateCardData(action, data);
+                                updateProgress(data);
+                            },
+                            'error': function (data, status, error) {
+                                console.error(data, status, error);
+                            }
+                        });
+                        break;
+                }
+            }
+
+            function performAction(action) {
+                $loading.show();
+                setTimeout(function () {
+                    doAction(action);
+                    $loading.hide();
+                }, 200);
+            }
+
+            function populateCardData(action, payload) {
+                if (typeof (payload.display) === "undefined") {
+                    return;
+                }
+
+                $front.html(payload.display.front);
+                $back.html(payload.display.back);
+
+                if (payload.display.state === "front") {
+                    $front.slideDown();
+                    $back.slideUp();
+                    return;
+                }
+
+                $front.slideUp();
+                $back.slideDown();
+            }
+
+            function updateProgress(payload) {
+                if (typeof (payload.cards) === "undefined") {
+                    return;
+                }
+
+                var pctDone;
+
+                if (payload.cards.total === 0) {
+                    return;
+                }
+
+                pctDone = (payload.cards.idx / payload.cards.total) * 100;
+
+                $cardsProgress.css('width', pctDone + '%');
+                $cardIdx.html(payload.cards.idx + 1);
+                $numCards.html(payload.cards.total);
+            }
+
+            performAction(ACTION_NO_ACTION);
+        });
+
+    </script>
+    <div id="card-loading"><img src="/images/loader.gif" alt="Loading..."></div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="progress progress-striped">
+                <div id="cards-progress" class="progress-bar progress-bar-info" style="width: 0;"></div>
+            </div>
+            <div id="card-area" class="noselect">
+                <div id="card-front"></div>
+                <div id="card-back" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-spacer">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="text-center">
+                <strong>
+                    <span id="card-idx">0</span>
+                </strong>
+                /
+                <strong>
+                    <span id="num-cards">0</span>
+                </strong>
+            </div>
+            <div class="text-center">
+                <a class="btn btn-info btn-xs"
+                   href="#"
+                   id="shuffle">
+                    Shuffle Cards
+                </a>
+            </div>
+            <ul class="pager">
+                <li>
+                    <a id="nav-first" title="First Card" href="#">First</a>
+                </li>
+                <li>
+                    <a id="nav-prev" title="Previous Card" href="#">Previous</a>
+                </li>
+                <li>
+                    <a id="nav-next" title="Next Card" href="#">Next</a>
+                </li>
+                <li>
+                    <a id="nav-last" title="Last Card" href="#">Last</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

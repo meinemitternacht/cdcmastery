@@ -220,7 +220,7 @@ class Tests extends RootController
             $afscs
         );
 
-        if ($this->test_helpers->countIncomplete($user) > $this->config->get(['testing', 'maxIncomplete']) ?? 0) {
+        if ($this->test_helpers->countIncomplete($user) > ($this->config->get(['testing', 'maxIncomplete']) ?? 0)) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'You have too many incomplete tests.  Please finish your current tests before beginning a new one.'
@@ -554,7 +554,7 @@ class Tests extends RootController
         $data = [
             'afscList' => $userAfscs,
             'tests' => $tests,
-            'disableNewTest' => count($tests) >= $this->config->get(['testing', 'maxIncomplete']) ?? 0,
+            'disableNewTest' => count($tests) >= ($this->config->get(['testing', 'maxIncomplete']) ?? 0),
         ];
 
         return $this->render(
