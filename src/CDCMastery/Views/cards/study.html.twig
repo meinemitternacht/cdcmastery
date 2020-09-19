@@ -146,13 +146,16 @@
                 $back.html(payload.display.back);
 
                 if (payload.display.state === "front") {
-                    $front.slideDown();
-                    $back.slideUp();
+                    $back.fadeOut(400, function () {
+                        $front.fadeIn();
+                    });
                     return;
                 }
 
-                $front.slideUp();
-                $back.slideDown();
+                $front.fadeOut(400, function () {
+                        $back.fadeIn();
+                    }
+                );
             }
 
             function updateProgress(payload) {
@@ -160,13 +163,11 @@
                     return;
                 }
 
-                var pctDone;
-
                 if (payload.cards.total === 0) {
                     return;
                 }
 
-                pctDone = (payload.cards.idx / payload.cards.total) * 100;
+                let pctDone = (payload.cards.idx / payload.cards.total) * 100;
 
                 $cardsProgress.css('width', pctDone + '%');
                 $cardIdx.html(payload.cards.idx + 1);
@@ -198,15 +199,12 @@
                 <strong><span id="card-idx">0</span></strong>/<strong><span id="num-cards">0</span></strong>
             </div>
             <div class="text-center">
-                <a class="btn btn-info btn-xs"
-                   href="#"
-                   id="shuffle">
-                    Shuffle Cards
-                </a>
+
             </div>
             <ul class="pager">
                 <li><a id="nav-first" title="First Card" href="#">First</a></li>
                 <li><a id="nav-prev" title="Previous Card" href="#">Previous</a></li>
+                <li><a id="shuffle" title="Shuffle Cards" href="#"><strong>Shuffle</strong></a></li>
                 <li><a id="nav-next" title="Next Card" href="#">Next</a></li>
                 <li><a id="nav-last" title="Last Card" href="#">Last</a></li>
             </ul>

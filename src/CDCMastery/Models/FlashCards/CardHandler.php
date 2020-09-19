@@ -208,8 +208,8 @@ class CardHandler
                 'total' => $this->card_session->countTgtUuids(),
             ],
             'display' => [
-                'front' => "<strong>Question:</strong><br>" . $tgt_card->getFront(),
-                'back' => "<strong>Answer:</strong><br>" . $tgt_card->getBack(),
+                'front' => "<strong>Question:</strong><br>" . nl2br($tgt_card->getFront()),
+                'back' => "<strong>Answer:</strong><br>" . nl2br($tgt_card->getBack()),
                 'state' => CardSession::STATE_STRINGS[ $this->card_session->getCurState() ] ?? null,
             ],
         ];
