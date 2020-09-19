@@ -220,17 +220,20 @@ SQL;
 
     /**
      * @param User $user
-     * @param Afsc $afsc
+     * @param Afsc|null $afsc
+     * @param string|null $afsc_uuid
      * @return bool
      */
-    public function assertAuthorized(User $user, Afsc $afsc): bool
+    public function assertAuthorized(User $user, ?Afsc $afsc, ?string $afsc_uuid = null): bool
     {
-        if (empty($user->getUuid()) || empty($afsc->getUuid())) {
+        if ((!$afsc && !$afsc_uuid) || !$user->getUuid()) {
             return false;
         }
 
-        $userUuid = $user->getUuid();
-        $afscUuid = $afsc->getUuid();
+        $user_uuid = $user->getUuid();
+        $afsc_uuid = $afsc
+            ? $afsc->getUuid()
+            : $afsc_uuid;
 
         $qry = <<<SQL
 SELECT 
@@ -244,8 +247,8 @@ SQL;
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
             'ss',
-            $userUuid,
-            $afscUuid
+            $user_uuid,
+            $afsc_uuid
         );
 
         if (!$stmt->execute()) {

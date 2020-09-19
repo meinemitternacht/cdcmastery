@@ -163,7 +163,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -181,7 +181,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -225,7 +225,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -487,7 +487,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -511,7 +511,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -534,7 +534,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -595,7 +595,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -730,7 +730,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -775,7 +775,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -822,7 +822,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -843,7 +843,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
@@ -911,7 +911,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -962,7 +962,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -1013,7 +1013,7 @@ class CdcData extends Admin
 
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -1079,7 +1079,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -1110,7 +1110,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'
@@ -1157,7 +1157,7 @@ class CdcData extends Admin
     {
         $afsc = $this->afscs->fetch($uuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified AFSC does not exist'

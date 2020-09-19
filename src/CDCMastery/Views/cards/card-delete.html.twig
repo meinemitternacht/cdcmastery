@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Delete Flash Card - #{cat.name}" %}
+{% block main %}
+    {% include "blocks/cards/menu.html.twig" %}
+    {% include "blocks/cards/card-delete-shared.html.twig" with {'url_prefix': ''} %}
+{% endblock %}

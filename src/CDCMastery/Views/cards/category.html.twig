@@ -2,6 +2,6 @@
 {% set page_title = "Manage Flash Card Category - #{cat.name}" %}
 {% set num_cards = cards|length %}
 {% block main %}
-    {% include "blocks/admin/cards/menu.html.twig" %}
-    {% include "blocks/cards/category-shared.html.twig" with {'url_prefix': '/admin', 'restricted': false} %}
+    {% include "blocks/cards/menu.html.twig" %}
+    {% include "blocks/cards/category-shared.html.twig" with {'url_prefix': '', 'restricted': true} %}
 {% endblock %}

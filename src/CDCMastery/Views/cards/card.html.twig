@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Flash Cards - #{cat.name}" %}
+{% block main %}
+    {% include "blocks/cards/menu.html.twig" %}
+    {% include "blocks/cards/card-shared.html.twig" with {'url_prefix': ''} %}
+{% endblock %}

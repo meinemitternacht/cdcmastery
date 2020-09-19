@@ -64,6 +64,34 @@ class AfscCollection
         $this->log = $logger;
     }
 
+    private function create_objects(array $rows): array
+    {
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $afsc = new Afsc();
+            $afsc->setUuid($row[ 'uuid' ]);
+            $afsc->setName($row[ 'name' ]);
+            $afsc->setDescription($row[ 'description' ]);
+            $afsc->setVersion($row[ 'version' ]);
+            $afsc->setEditCode($row[ 'editCode' ]);
+            $afsc->setFouo((bool)$row[ 'fouo' ]);
+            $afsc->setHidden((bool)$row[ 'hidden' ]);
+            $afsc->setObsolete((bool)$row[ 'obsolete' ]);
+
+            $out[ $row[ 'uuid' ] ] = $afsc;
+        }
+
+        return $out;
+    }
+
     public function delete(Afsc $afsc): void
     {
         if (!CDC_DEBUG) {
@@ -106,8 +134,14 @@ SQL;
 
     public function exists(Afsc $afsc): bool
     {
-        if (($afsc->getUuid() ?? '') !== '') {
-            return ($this->fetch($afsc->getUuid())->getUuid() ?? '') !== '';
+        if ($afsc->getUuid() !== '') {
+            $afsc = $this->fetch($afsc->getUuid());
+
+            if (!$afsc) {
+                return false;
+            }
+
+            return $afsc->getUuid() !== '';
         }
 
         if ($afsc->getName() === '') {
@@ -151,7 +185,7 @@ SQL;
 
         $stmt->close();
 
-        return !!$res;
+        return (bool)$res;
     }
 
     /**
@@ -235,14 +269,10 @@ SQL;
         return $qry ?? '';
     }
 
-    /**
-     * @param string $uuid
-     * @return Afsc
-     */
-    public function fetch(string $uuid): Afsc
+    public function fetch(string $uuid): ?Afsc
     {
-        if (empty($uuid)) {
-            return new Afsc();
+        if (!$uuid) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -260,19 +290,23 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
             $stmt->close();
-            return new Afsc();
+            return null;
         }
 
         $stmt->bind_result(
-            $_uuid,
+            $uuid2,
             $name,
             $description,
             $version,
-            $edit_code,
+            $editCode,
             $fouo,
             $hidden,
             $obsolete
@@ -281,19 +315,22 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $afsc = new Afsc();
-        $afsc->setUuid($_uuid);
-        $afsc->setName($name);
-        $afsc->setDescription($description);
-        $afsc->setVersion($version);
-        $afsc->setEditCode($edit_code);
-        $afsc->setFouo((bool)$fouo);
-        $afsc->setHidden((bool)$hidden);
-        $afsc->setObsolete((bool)$obsolete);
+        if (!$uuid2) {
+            return null;
+        }
 
-        $this->afscs[$uuid] = $afsc;
+        $row = [
+            'uuid' => $uuid2,
+            'name' => $name,
+            'description' => $description,
+            'version' => $version,
+            'editCode' => $editCode,
+            'fouo' => $fouo,
+            'hidden' => $hidden,
+            'obsolete' => $obsolete,
+        ];
 
-        return $afsc;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
     /**
@@ -321,27 +358,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $afsc = new Afsc();
-            $afsc->setUuid($row['uuid'] ?? '');
-            $afsc->setName($row['name'] ?? '');
-            $afsc->setDescription($row['description'] ?? '');
-            $afsc->setVersion($row[ 'version' ] ?? '');
-            $afsc->setEditCode($row[ 'editCode' ] ?? null);
-            $afsc->setFouo((bool)($row[ 'fouo' ] ?? false));
-            $afsc->setHidden((bool)($row['hidden'] ?? false));
-            $afsc->setObsolete((bool)($row['obsolete'] ?? false));
-
-            $this->afscs[$row['uuid']] = $afsc;
+            $rows[] = $row;
         }
 
         $res->free();
-
-        return $this->afscs;
+        return $this->create_objects($rows);
     }
 
     /**
@@ -380,30 +407,18 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $afsc = new Afsc();
-            $afsc->setUuid($row[ 'uuid' ] ?? '');
-            $afsc->setName($row[ 'name' ] ?? '');
-            $afsc->setDescription($row[ 'description' ] ?? '');
-            $afsc->setVersion($row[ 'version' ] ?? '');
-            $afsc->setEditCode($row[ 'editCode' ] ?? null);
-            $afsc->setFouo((bool)($row[ 'fouo' ] ?? false));
-            $afsc->setHidden((bool)($row[ 'hidden' ] ?? false));
-            $afsc->setObsolete((bool)($row[ 'obsolete' ] ?? false));
-
-            $this->afscs[ $row[ 'uuid' ] ] = $afsc;
+            $rows[] = $row;
         }
 
         $res->free();
 
-        return array_intersect_key(
-            $this->afscs,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($rows);
     }
 
     /**

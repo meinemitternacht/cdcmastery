@@ -209,6 +209,10 @@ SQL;
 
         $afsc = $this->afscs->fetch($afscUuid);
 
+        if (!$afsc) {
+            return null;
+        }
+
         $questions = unserialize($questionList ?? '');
 
         if (!is_array($questions)) {
@@ -246,7 +250,7 @@ SQL;
      */
     public function fetchAllByAfsc(Afsc $afsc): array
     {
-        if (empty($afsc->getUuid())) {
+        if (!$afsc->getUuid()) {
             return [];
         }
 

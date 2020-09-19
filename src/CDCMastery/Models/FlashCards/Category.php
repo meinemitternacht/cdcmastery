@@ -19,9 +19,9 @@ class Category
     private string $name;
     private bool $encrypted;
     private string $type;
-    private ?string $binding;
+    private ?string $binding = null;
     private string $createdBy;
-    private ?string $comments;
+    private ?string $comments = null;
 
     public function getUuid(): string
     {

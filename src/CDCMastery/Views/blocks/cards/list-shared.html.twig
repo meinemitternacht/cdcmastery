@@ -1,0 +1,108 @@
+<div class="page-header">
+    <h3>
+        Flash Cards
+        {% if not restricted %}
+            <span class="text-muted small pull-right">
+                Viewing {{ n_cats|number_format }} flash card categories.
+            </span>
+        {% endif %}
+    </h3>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-10">
+                {% if cats %}
+                    {% if pagination %}
+                        <div class="text-center">
+                            {{ pagination|raw }}
+                        </div>
+                    {% endif %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="card-cats-table">
+                            <thead>
+                            <tr>
+                                <th class="col-md-1">{{ sortlink('categoryType','Type',sort)|raw }}</th>
+                                {% if restricted %}
+                                    <th class="col-md-3">{{ sortlink('categoryName','Category Name',sort)|raw }}</th>
+                                    <th class="col-md-3">{{ sortlink('categoryComments','Comments',sort)|raw }}</th>
+                                    <th class="col-md-3">Personal</th>
+                                    <th class="col-md-2">&nbsp;</th>
+                                {% else %}
+                                    <th class="col-md-3">{{ sortlink('categoryName','Category Name',sort)|raw }}</th>
+                                    <th class="col-md-4">{{ sortlink('categoryCreatedBy','Created By',sort)|raw }}</th>
+                                    <th class="col-md-4">{{ sortlink('categoryComments','Comments',sort)|raw }}</th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for cat in cats %}
+                                <tr {% if not restricted %}data-uuid="{{ cat.uuid }}" class="cursor-pointer"{% endif %}>
+                                    <td>
+                                        {% include "blocks/cards/category-type-icon.html.twig" %}
+                                    </td>
+                                    <td title="{{ cat.name }}">
+                                        {% if restricted %}
+                                            {{ cat.name|strtr(30) }}
+                                        {% else %}
+                                            {{ cat.name|strtr(30) }}
+                                        {% endif %}
+                                    </td>
+                                    {% if restricted %}
+                                        <td title="{{ cat.comments }}">{{ cat.comments|strtr(20) }}</td>
+                                        <td>{% if cat.type == "private" and cat.createdBy == cur_user_uuid %}Yes{% else %}No{% endif %}</td>
+                                        <td>
+                                            {% if (cat.type == "private" and cat.createdBy == cur_user_uuid) %}
+                                                <a title="Manage Category"
+                                                   class="btn btn-xs btn-warning"
+                                                   href="{{ url_prefix }}/cards/{{ cat.uuid }}">
+                                                    <span class="glyphicon glyphicon-cog"></span> Manage
+                                                </a>
+                                            {% else %}
+                                                <a title="Manage Category"
+                                                   class="btn btn-xs btn-warning disabled-grayscale disabled"
+                                                   href="#">
+                                                    <span class="glyphicon glyphicon-cog"></span> Manage
+                                                </a>
+                                            {% endif %}
+                                            <a href="{{ url_prefix }}/cards/{{ cat.uuid }}/study"
+                                               class="btn btn-xs btn-success"
+                                               title="Study Flash Cards">
+                                                <span class="glyphicon glyphicon-search"></span> Study
+                                            </a>
+                                        </td>
+                                    {% else %}
+                                        <td>{% if users[cat.createdBy] %}{{ users[cat.createdBy].name }}{% else %}UNKNOWN{% endif %}</td>
+                                        <td title="{{ cat.comments }}">{{ cat.comments|strtr(20) }}</td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if not restricted %}
+                            {% set tableSelector = "#card-cats-table" %}
+                            {% set redirectPath = url_prefix ~ "/cards" %}
+                            {% include "utilities/table-row-link.html.twig" %}
+                        {% endif %}
+                    </div>
+                    {% if pagination %}
+                        <div class="text-center">
+                            {{ pagination|raw }}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="help-block">
+                        There are no flash card categories in the database which are visible to your account. Add one
+                        using the "Add Category" link above.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-2">
+                <div><span class="label label-danger" title="Private Collection">P</span> Private</div>
+                <div><span class="label label-success" title="Public Collection">G</span> Global</div>
+                <div><span class="label label-info" title="Generated from AFSC data">A</span> AFSC Data</div>
+                <div><span class="label label-danger" title="This category is encrypted">E</span> Encrypted</div>
+            </div>
+        </div>
+    </div>
+</div>

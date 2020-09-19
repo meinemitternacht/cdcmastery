@@ -1,0 +1,80 @@
+<div class="page-header">
+    <h3><span class="text-muted">Edit Category</span> - {{ cat.name }}</h3>
+</div>
+<div class="row">
+    <div class="well well-sm col-md-8 col-md-offset-2">
+        <form action="{{ url_prefix }}/cards/{{ cat.uuid }}/edit"
+              method="POST">
+            <fieldset>
+                <legend>Category Details</legend>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text"
+                           class="form-control"
+                           name="name"
+                           id="name"
+                           value="{{ cat.name }}">
+                    <div class="help-block">
+                        Enter a name for the Flash Card Category. This should be a unique identifier that clearly
+                        conveys the content within the category. e.g. <em>2W151A Self Test Questions</em>
+                    </div>
+                </div>
+                {% if not restricted %}
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label class="control-label">
+                                <input type="checkbox"
+                                       name="encrypted"
+                                       id="encrypted"
+                                       value="1"{% if cat.isEncrypted %} CHECKED{% endif %}>
+                                Encrypt Data
+                            </label>
+                            <div class="help-block">
+                                If set to "Yes", the data for this category will be encrypted in the database. Use this
+                                for FOUO CDC data. Categories created using AFSC data will automatically be encrypted
+                                if the AFSC is marked as FOUO.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="binding">Restrict to AFSC</label>
+                        <select class="form-control"
+                                name="binding"
+                                id="binding">
+                            <option value="">Select an AFSC...</option>
+                            {% for afsc in afscs %}
+                                <option value="{{ afsc.uuid }}"{% if cat.type == "afsc" and cat.binding == afsc.uuid %} SELECTED{% endif %}>
+                                    {{ afsc.name }}{% if afsc.editCode %} [EC{{ afsc.editCode }}]{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="help-block">
+                            Use this option to optionally restrict this card category to users that are associated with
+                            the chosen AFSC.<br>
+                            <span class="text-danger">
+                                Note: If an AFSC is not chosen, FOUO card categories may be accessible to unauthorized
+                                users.
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="comments">Comments</label>
+                    <textarea class="form-control"
+                              name="comments"
+                              id="comments">{{ cat.comments }}</textarea>
+                    <div class="help-block">
+                        Optional administrative comments for this category. You may want to include the CDC version
+                        here as a reference.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit"
+                            class="btn btn-success">
+                        Save Changes
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="page-header">
+    <h3><span class="text-muted">Add Card</span> - {{ cat.name }}</h3>
+</div>
+<div class="row">
+    <div class="well well-sm col-md-8 col-md-offset-2">
+        <form action="{{ url_prefix }}/cards/{{ cat.uuid }}/data/add"
+              method="POST">
+            <fieldset>
+                <legend>Card Data</legend>
+                <div class="form-group">
+                    <label for="card-front">Card Front</label>
+                    <textarea class="form-control"
+                              name="card_front"
+                              id="card-front"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="card-back">Card Back</label>
+                    <textarea class="form-control"
+                              name="card_back"
+                              id="card-back"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit"
+                            class="btn btn-success">
+                        Add Card
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

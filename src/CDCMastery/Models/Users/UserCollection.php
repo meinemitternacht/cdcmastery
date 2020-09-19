@@ -244,6 +244,10 @@ SQL;
         $join_strs = [];
         $sort_strs = [];
         foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
             $join_str_tmp = $sort_option->getJoinClause();
 
             if ($join_str_tmp) {
@@ -333,6 +337,10 @@ SQL;
         $join_strs = [];
         $sort_strs = [];
         foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
             $join_str_tmp = $sort_option->getJoinClause();
 
             if ($join_str_tmp) {
@@ -410,6 +418,10 @@ SQL;
         $join_strs = [];
         $sort_strs = [];
         foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
             $join_str_tmp = $sort_option->getJoinClause();
 
             if ($join_str_tmp) {

@@ -185,6 +185,8 @@ alter table queueRoleAuthorization
 alter table queueRoleAuthorization drop key userUUID_2;
 -- SPLIT ;;
 alter table flashCardCategories drop column categoryPrivate;
+-- SPLIT ;;
+drop table flashCardSessions;
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

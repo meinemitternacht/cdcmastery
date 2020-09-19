@@ -8,6 +8,7 @@ use CDCMastery\Controllers\Admin\FlashCards;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
+use CDCMastery\Controllers\Cards;
 use CDCMastery\Controllers\Home;
 use CDCMastery\Controllers\Overviews\TrainingOverview;
 use CDCMastery\Controllers\Profile;
@@ -666,6 +667,98 @@ return simpleDispatcher(function (RouteCollector $r) {
         $r->addRoute('POST', '/reset', [
             Auth::class,
             'do_reset',
+        ]);
+    });
+
+    /** @uses \CDCMastery\Controllers\Cards::show_home() */
+    $r->addRoute('GET', '/cards', [
+        Cards::class,
+        'show_home',
+    ]);
+
+    $r->addGroup('/cards', function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\Cards::show_category_add() */
+        $r->addRoute('GET', '/add', [
+            Cards::class,
+            'show_category_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_category_add() */
+        $r->addRoute('POST', '/add', [
+            Cards::class,
+            'do_category_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_category() */
+        $r->addRoute('GET', '/{uuid}', [
+            Cards::class,
+            'show_category',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_category_delete() */
+        $r->addRoute('GET', '/{uuid}/delete', [
+            Cards::class,
+            'show_category_delete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_category_delete() */
+        $r->addRoute('POST', '/{uuid}/delete', [
+            Cards::class,
+            'do_category_delete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_category_edit() */
+        $r->addRoute('GET', '/{uuid}/edit', [
+            Cards::class,
+            'show_category_edit',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_category_edit() */
+        $r->addRoute('POST', '/{uuid}/edit', [
+            Cards::class,
+            'do_category_edit',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_card_add() */
+        $r->addRoute('GET', '/{uuid}/data/add', [
+            Cards::class,
+            'show_card_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_card_add() */
+        $r->addRoute('POST', '/{uuid}/data/add', [
+            Cards::class,
+            'do_card_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_card() */
+        $r->addRoute('GET', '/{uuid}/data/{card_uuid}', [
+            Cards::class,
+            'show_card',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_card_edit() */
+        $r->addRoute('GET', '/{uuid}/data/{card_uuid}/edit', [
+            Cards::class,
+            'show_card_edit',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_card_edit() */
+        $r->addRoute('POST', '/{uuid}/data/{card_uuid}/edit', [
+            Cards::class,
+            'do_card_edit',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::show_card_delete() */
+        $r->addRoute('GET', '/{uuid}/data/{card_uuid}/delete', [
+            Cards::class,
+            'show_card_delete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Cards::do_card_delete() */
+        $r->addRoute('POST', '/{uuid}/data/{card_uuid}/delete', [
+            Cards::class,
+            'do_card_delete',
         ]);
     });
 

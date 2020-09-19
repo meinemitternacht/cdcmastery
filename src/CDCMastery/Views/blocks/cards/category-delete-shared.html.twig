@@ -1,0 +1,97 @@
+<div class="page-header">
+    <h3><span class="text-muted">Delete Category</span> - {{ cat.name }}</h3>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            Are you sure you want to delete this flash card category? Flash card sessions in progress may encounter
+            issues when attempting to display cards in this category.<br>
+            <strong>THIS ACTION CANNOT BE UNDONE.</strong>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% if cat.type != "afsc" %}
+        <div class="col-md-3 text-center">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Cards</h5>
+                </div>
+                <div class="panel-body">
+                    <strong>{{ num_cards|number_format }}</strong>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="col-md-3 text-center">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5>Encrypted</h5>
+            </div>
+            <div class="panel-body">
+                <strong>{{ cat.isEncrypted ? 'Yes' : 'No' }}</strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 text-center">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h5>Created By</h5>
+            </div>
+            <div class="panel-body">
+                <strong>{% if user %}{{ user.name }}{% else %}UNKNOWN{% endif %}</strong>
+            </div>
+        </div>
+    </div>
+    {% if cat.type == "afsc" or afsc %}
+        <div class="col-md-3 text-center">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h5>Associated AFSC</h5>
+                </div>
+                <div class="panel-body">
+                    <strong>{% if afsc %}{{ afsc.name }}{% else %}UNKNOWN{% endif %}</strong>
+                    {% if afsc and afsc.isFouo %}
+                        <span class="label label-danger"
+                              title="This AFSC is marked as 'FOR OFFICIAL USE ONLY'">F</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if cat.comments %}
+        <div class="col-md-6 text-center">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5>Comments</h5>
+                </div>
+                <div class="panel-body">
+                    <strong>{{ cat.comments }}</strong>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <form action="{{ url_prefix }}/cards/{{ cat.uuid }}/delete"
+                      method="POST">
+                    <div class="form-group">
+                        <button class="btn btn-danger"
+                                type="submit"
+                                title="Delete Category">
+                            Delete
+                        </button>
+                        <a href="{{ url_prefix }}/cards/{{ cat.uuid }}"
+                           class="btn btn-success"
+                           title="Return to Category Management">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

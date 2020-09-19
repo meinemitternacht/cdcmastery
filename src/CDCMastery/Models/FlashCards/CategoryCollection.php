@@ -12,6 +12,7 @@ namespace CDCMastery\Models\FlashCards;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\Sorting\Cards\CardCategorySortOption;
 use CDCMastery\Models\Sorting\ISortOption;
+use CDCMastery\Models\Users\User;
 use Monolog\Logger;
 use mysqli;
 
@@ -42,6 +43,47 @@ SQL;
         $res->free();
 
         return (int)($row[ 'count' ] ?? 0);
+    }
+
+    public function countUser(User $user): int
+    {
+        $user_uuid = $user->getUuid();
+
+        $qry = <<<SQL
+# noinspection SqlResolve
+
+SELECT 
+  COUNT(*) AS count
+FROM flashCardCategories
+WHERE (categoryType = 'private' AND categoryCreatedBy = ?)
+  OR categoryType = 'global'
+  OR (
+      categoryType = 'afsc'
+      AND
+      categoryBinding IN (
+          SELECT afscUUID FROM userAFSCAssociations
+          WHERE userAFSCAssociations.userUUID = ?
+      )
+  )
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return 0;
+        }
+
+        if (!$stmt->bind_param('ss', $user_uuid, $user_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return 0;
+        }
+
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
+
+        return (int)($count ?? 0);
     }
 
     /**
@@ -225,6 +267,10 @@ SQL;
         $join_strs = [];
         $sort_strs = [];
         foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
             $join_str_tmp = $sort_option->getJoinClause();
 
             if ($join_str_tmp) {
@@ -281,6 +327,118 @@ SQL;
     }
 
     /**
+     * @param User $user
+     * @param array|null $sort_options
+     * @param int|null $start
+     * @param int|null $limit
+     * @return Category[]
+     */
+    public function fetchAllByUser(
+        User $user,
+        ?array $sort_options = null,
+        ?int $start = null,
+        ?int $limit = null
+    ): array {
+        if (!$sort_options) {
+            $sort_options = [new CardCategorySortOption(CardCategorySortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`flashCardCategories`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
+
+        $qry = <<<SQL
+# noinspection SqlResolve
+
+SELECT 
+  flashCardCategories.uuid,
+  categoryName,
+  categoryEncrypted,
+  categoryType,
+  categoryBinding,
+  categoryCreatedBy,
+  categoryComments
+FROM flashCardCategories
+{$join_str}
+WHERE (categoryType = 'private' AND categoryCreatedBy = ?)
+      OR categoryType = 'global'
+      OR (
+          categoryType = 'afsc'
+          AND
+          categoryBinding IN (
+              SELECT afscUUID FROM userAFSCAssociations
+              WHERE userAFSCAssociations.userUUID = ?
+          )
+      )
+{$sort_str}
+{$limit_str}
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return [];
+        }
+
+        $user_uuid = $user->getUuid();
+        if (!$stmt->bind_param('ss', $user_uuid, $user_uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result(
+            $_uuid,
+            $name,
+            $encrypted,
+            $type,
+            $binding,
+            $createdBy,
+            $comments
+        );
+
+        $rows = [];
+        while ($stmt->fetch()) {
+            $rows[] = [
+                'uuid' => $_uuid,
+                'categoryName' => $name,
+                'categoryEncrypted' => $encrypted,
+                'categoryType' => $type,
+                'categoryBinding' => $binding,
+                'categoryCreatedBy' => $createdBy,
+                'categoryComments' => $comments,
+            ];
+        }
+
+        $stmt->close();
+        return $this->create_objects($rows);
+    }
+
+    /**
      * @param string[] $uuidList
      * @param ISortOption[]|null $sort_options
      * @return Category[]
@@ -305,6 +463,10 @@ SQL;
         $join_strs = [];
         $sort_strs = [];
         foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
             $join_str_tmp = $sort_option->getJoinClause();
 
             if ($join_str_tmp) {

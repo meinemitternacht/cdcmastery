@@ -45,6 +45,10 @@ div.main-container {
     margin-top: 2rem;
 }
 
+.disabled-grayscale {
+    filter: grayscale(1);
+}
+
 .badge-sm {
     font-size: 72%;
 }

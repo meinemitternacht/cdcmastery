@@ -82,7 +82,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($uuid) || $uuid === null || $uuid === '') {
+        if (!isset($uuid) || $uuid === '') {
             return new Afsc();
         }
 
@@ -91,6 +91,7 @@ SQL;
             $this->log
         );
 
+        /* @fixme this can return null */
         return $afscCollection->fetch($uuid);
     }
 

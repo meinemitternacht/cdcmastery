@@ -50,7 +50,7 @@ class CdcDataCollection
 
         $afsc = $afscs->fetch($afscUuid);
 
-        if (empty($afsc->getUuid())) {
+        if (!$afsc || !$afsc->getUuid()) {
             return new CdcData();
         }
 

@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Edit Flash Card Category - #{cat.name}" %}
+{% block main %}
+    {% include "blocks/admin/cards/menu.html.twig" %}
+    {% include "blocks/cards/category-edit-shared.html.twig" with {'url_prefix': '/admin', restricted: false} %}
+{% endblock %}

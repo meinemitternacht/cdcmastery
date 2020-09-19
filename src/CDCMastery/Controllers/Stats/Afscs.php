@@ -78,7 +78,7 @@ class Afscs extends Stats
 
         $afsc = $this->afscs->fetch($afscUuid);
 
-        if ($afsc->getUuid() === '') {
+        if (!$afsc || $afsc->getUuid() === '') {
             $this->flash()->add(MessageTypes::INFO,
                                 'The specified AFSC does not exist');
 
