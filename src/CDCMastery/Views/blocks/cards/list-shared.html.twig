@@ -43,7 +43,12 @@
                                     </td>
                                     <td title="{{ cat.name }}">
                                         {% if restricted %}
-                                            {{ cat.name|strtr(30) }}
+                                            <a href="{{ url_prefix }}/cards/{{ cat.uuid }}/study"
+                                               class="text-primary"
+                                               style="text-decoration: underline"
+                                               title="Study Flash Cards">
+                                                {{ cat.name|strtr(30) }}
+                                            </a>
                                         {% else %}
                                             {{ cat.name|strtr(30) }}
                                         {% endif %}
