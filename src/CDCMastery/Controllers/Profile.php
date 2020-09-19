@@ -7,6 +7,7 @@ namespace CDCMastery\Controllers;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
+use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
@@ -92,6 +93,109 @@ class Profile extends RootController
         }
 
         return $user;
+    }
+
+    public function do_afsc_association_add(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'new_afsc',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/afsc");
+        }
+
+        $new_afsc = $this->get('new_afsc');
+
+        if (!is_array($new_afsc)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            return $this->redirect("/profile/afsc");
+        }
+
+        $tgt_afscs = $this->afscs->fetchArray($new_afsc);
+        $tgt_afscs_fouo = array_filter($tgt_afscs, static function (Afsc $v): bool {
+            return $v->isFouo();
+        });
+        $tgt_afscs_non_fouo = array_filter($tgt_afscs, static function (Afsc $v): bool {
+            return !$v->isFouo();
+        });
+
+        if (!$tgt_afscs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected AFSCs were not valid'
+            );
+
+            return $this->redirect("/profile/afsc");
+        }
+
+        if ($tgt_afscs_fouo) {
+            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, false);
+        }
+
+        if ($tgt_afscs_non_fouo) {
+            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_non_fouo, true);
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected AFSC associations were successfully added. ' .
+            'FOUO AFSC associations may take up to 24 hours to be approved.'
+        );
+
+        return $this->redirect("/profile/afsc");
+    }
+
+    public function do_afsc_association_remove(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'del_afsc',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/afsc");
+        }
+
+        $del_afsc = $this->get('del_afsc');
+
+        if (!is_array($del_afsc)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            return $this->redirect("/profile/afsc");
+        }
+
+        $tgt_afscs = $this->afscs->fetchArray($del_afsc);
+
+        if (!$tgt_afscs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected AFSCs were not valid'
+            );
+
+            return $this->redirect("/profile/afsc");
+        }
+
+        foreach ($tgt_afscs as $tgt_afsc) {
+            $this->afsc_assocs->remove($user, $tgt_afsc);
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected AFSC associations were successfully removed'
+        );
+
+        return $this->redirect("/profile/afsc");
     }
 
     public function do_role_request(): Response
@@ -269,8 +373,9 @@ class Profile extends RootController
             $complexity_check = AuthHelpers::check_complexity($new_password, $handle, $email);
 
             if ($complexity_check) {
+                $flash = $this->flash();
                 foreach ($complexity_check as $complexity_error) {
-                    $this->flash()->add(
+                    $flash->add(
                         MessageTypes::ERROR,
                         $complexity_error
                     );
@@ -306,6 +411,41 @@ class Profile extends RootController
 
         out_return:
         return $this->redirect("/profile/edit");
+    }
+
+    public function show_afsc_associations(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
+        $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
+
+        $cmp = static function (Afsc $a, Afsc $b): int {
+            return $a->getName() . $a->getEditCode() <=> $b->getName() . $b->getEditCode();
+        };
+
+        uasort($afscs, $cmp);
+
+        $available = array_filter(
+            $afscs,
+            static function (Afsc $v): bool {
+                return !$v->isHidden() && !$v->isObsolete();
+            }
+        );
+
+        $data = [
+            'user' => $user,
+            'afscs' => [
+                'authorized' => array_intersect_key($afscs, array_flip($afsc_assocs->getAuthorized())),
+                'pending' => array_intersect_key($afscs, array_flip($afsc_assocs->getPending())),
+                'available' => array_diff_key($available, array_flip($afsc_assocs->getAfscs())),
+            ],
+        ];
+
+        return $this->render(
+            'profile/afsc.html.twig',
+            $data
+        );
     }
 
     public function show_edit(): Response
@@ -349,6 +489,15 @@ class Profile extends RootController
         $base = $this->bases->fetch($user->getBase());
         $role = $this->roles->fetch($user->getRole());
 
+        if (!$role) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'There was a problem accessing your account information'
+            );
+
+            return $this->redirect('/');
+        }
+
         $u_symbol = $user->getOfficeSymbol();
         if ($u_symbol) {
             $symbol = $this->symbols->fetch($u_symbol);
@@ -356,7 +505,7 @@ class Profile extends RootController
 
         $incomplete_tests = array_filter(
             $this->tests->fetchAllByUser($user),
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() < 1 && $v->getTimeCompleted() === null;
             }
         );
@@ -426,9 +575,14 @@ class Profile extends RootController
         if ($pending_role_request !== null) {
             $pending_role = $this->roles->fetch($pending_role_request->getRoleUuid());
 
+            $pending_role_name = 'UNKNOWN';
+            if ($pending_role) {
+                $pending_role_name = $pending_role->getName();
+            }
+
             $this->flash()->add(
                 MessageTypes::WARNING,
-                "Your account already has a role request pending for the '{$pending_role->getName()}' role. " .
+                "Your account already has a role request pending for the '{$pending_role_name}' role. " .
                 'Please wait up to 24 hours before contacting us regarding the request. ' .
                 'The request was submitted on ' .
                 $pending_role_request->getDateRequested()->format(DateTimeHelpers::DT_FMT_LONG) . '.'

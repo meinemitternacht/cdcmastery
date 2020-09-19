@@ -150,8 +150,8 @@ class Tests extends RootController
     {
         $test = $this->tests->fetch($testUuid);
 
-        if (($error = $this->validate_test($test)) instanceof Response) {
-            return $error;
+        if (!$this->validate_test($test, false)) {
+            return $this->redirect('/');
         }
 
         if ($test->getScore() !== 0.00 || $test->getTimeCompleted() !== null) {
@@ -333,15 +333,12 @@ class Tests extends RootController
     {
         $test = $this->tests->fetch($testUuid);
 
-        if (($error = $this->validate_test($test)) instanceof Response) {
-            /** @todo send message that test does not exist */
-            /** @todo send message that test does not belong to this user */
-            exit;
+        if (!$this->validate_test($test)) {
+            goto out_redirect_home;
         }
 
         if ($test->isComplete()) {
-            /** @todo send message that test is already complete */
-            exit;
+            goto out_redirect_score;
         }
 
         $test_data_helpers = new TestDataHelpers($this->db,
@@ -412,19 +409,19 @@ class Tests extends RootController
                     );
                 }
 
-                return new Response(
-                    json_encode([
-                                    'redirect' => '/tests/' . $testUuid . '?score',
-                                ]),
-                    200,
-                    ['Content-Type', 'application/json']
-                );
+                goto out_redirect_score;
             default:
                 /** @todo handle bad action */
                 break;
         }
 
         return new JsonResponse($testHandler->getDisplayData());
+
+        out_redirect_score:
+        return new JsonResponse(['redirect' => '/tests/' . $testUuid . '?score',]);
+
+        out_redirect_home:
+        return new JsonResponse(['redirect' => '/',]);
     }
 
     /**
@@ -478,8 +475,8 @@ class Tests extends RootController
     {
         $test = $this->tests->fetch($testUuid);
 
-        if (($error = $this->validate_test($test)) instanceof Response) {
-            return $error;
+        if (!$this->validate_test($test, false)) {
+            return $this->redirect('/');
         }
 
         if ($test->getScore() > 0 || $test->getTimeCompleted() !== null) {
@@ -517,18 +514,17 @@ class Tests extends RootController
             return $this->redirect('/auth/logout');
         }
 
-        $userAfscCollection = $this->user_afscs->fetchAllByUser($user);
-
-        if (empty($userAfscCollection->getAfscs())) {
+        $authorized_afscs = $this->user_afscs->fetchAllByUser($user)->getAuthorized();
+        if (!$authorized_afscs) {
             $this->flash()->add(
                 MessageTypes::WARNING,
-                'You are not associated with any AFSCs'
+                'You are not associated with any AFSCs, or all of your AFSC associations are pending approval'
             );
 
             return $this->redirect('/');
         }
 
-        $userAfscs = $this->afscs->fetchArray($userAfscCollection->getAfscs());
+        $userAfscs = $this->afscs->fetchArray($authorized_afscs);
         $tests = $this->tests->fetchAllByUser($user);
 
         $tests = array_filter(
@@ -807,7 +803,7 @@ class Tests extends RootController
         return [$column, $direction];
     }
 
-    private function validate_test(Test $test): ?Response
+    private function validate_test(Test $test, bool $validate_afscs = true): bool
     {
         if (($test->getUuid() ?? '') === '') {
             $this->flash()->add(
@@ -815,7 +811,7 @@ class Tests extends RootController
                 'The provided Test ID does not exist'
             );
 
-            return $this->redirect('/tests/new');
+            return false;
         }
 
         if ($test->getUserUuid() !== $this->auth_helpers->get_user_uuid()) {
@@ -824,9 +820,31 @@ class Tests extends RootController
                 'The selected test does not belong to your user account'
             );
 
-            return $this->redirect('/');
+            return false;
         }
 
-        return null;
+        if (!$validate_afscs) {
+            return true;
+        }
+
+        $authorized_afscs =
+            $this->user_afscs->fetchAllByUser(
+                $this->users->fetch(
+                    $this->auth_helpers->get_user_uuid()))->getAuthorized();
+
+        $userAfscs = $this->afscs->fetchArray($authorized_afscs);
+
+        foreach ($test->getAfscs() as $tgt_afsc) {
+            if (!isset($userAfscs[ $tgt_afsc->getUuid() ])) {
+                $this->flash()->add(
+                    MessageTypes::WARNING,
+                    "This test includes information for an AFSC you are no longer associated with: {$tgt_afsc->getName()}"
+                );
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }

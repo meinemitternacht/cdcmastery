@@ -1,0 +1,9 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage AFSC Associations" %}
+{% block main %}
+    {% include "blocks/profile/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Manage AFSC Associations</h3>
+    </div>
+    {% include "blocks/users/afsc-assocs-shared.html.twig" with {'url_prefix': '/profile', 'restricted': true} %}
+{% endblock %}

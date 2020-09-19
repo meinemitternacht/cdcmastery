@@ -36,7 +36,17 @@
                         <h5>Created By</h5>
                     </div>
                     <div class="panel-body">
-                        <strong>{% if user %}{{ user.name }}{% else %}UNKNOWN{% endif %}</strong>
+                        <strong>
+                            {% if user %}
+                                {% if not restricted %}
+                                    <a href="/admin/users/{{ user.uuid }}">{{ user.name }}</a>
+                                {% else %}
+                                    {{ user.name }}
+                                {% endif %}
+                            {% else %}
+                                UNKNOWN
+                            {% endif %}
+                        </strong>
                     </div>
                 </div>
             </div>
@@ -47,7 +57,17 @@
                             <h5>Associated AFSC</h5>
                         </div>
                         <div class="panel-body">
-                            <strong>{% if afsc %}{{ afsc.name }}{% else %}UNKNOWN{% endif %}</strong>
+                            <strong>
+                                {% if afsc %}
+                                    {% if not restricted %}
+                                        <a href="/admin/cdc/afsc/{{ afsc.uuid }}">{{ afsc.name }}</a>
+                                    {% else %}
+                                        {{ afsc.name }}
+                                    {% endif %}
+                                {% else %}
+                                    UNKNOWN
+                                {% endif %}
+                            </strong>
                             {% if afsc and afsc.isFouo %}
                                 <span class="label label-danger"
                                       title="This AFSC is marked as 'FOR OFFICIAL USE ONLY'">F</span>

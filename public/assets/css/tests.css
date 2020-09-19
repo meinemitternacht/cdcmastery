@@ -1,3 +1,9 @@
+#newTestAfscList {
+    max-height: 16em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 label.new-test-afsc {
     width: 100%;
     padding: 7px 0 7px 0;

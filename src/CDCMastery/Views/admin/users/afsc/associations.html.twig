@@ -10,5 +10,5 @@
             {% endif %}
         </h3>
     </div>
-    {% include "blocks/users/afsc-assocs-shared.html.twig" with {'form_action_prefix': '/admin/users'} %}
+    {% include "blocks/users/afsc-assocs-shared.html.twig" with {'url_prefix': '/admin/users/' ~ user.uuid, 'restricted': false} %}
 {% endblock %}

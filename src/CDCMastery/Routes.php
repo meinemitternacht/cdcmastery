@@ -774,42 +774,50 @@ return simpleDispatcher(function (RouteCollector $r) {
         ]);
     });
 
-    /**
-     * @uses \CDCMastery\Controllers\Profile::show_home()
-     */
+    /** @uses \CDCMastery\Controllers\Profile::show_home() */
     $r->addRoute('GET', '/profile', [
         Profile::class,
         'show_home',
     ]);
 
     $r->addGroup('/profile', function (RouteCollector $r) {
-        /**
-         * @uses \CDCMastery\Controllers\Profile::show_edit()
-         */
+        /** @uses \CDCMastery\Controllers\Profile::show_afsc_associations() */
+        $r->addRoute('GET', '/afsc', [
+            Profile::class,
+            'show_afsc_associations',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Profile::do_afsc_association_add() */
+        $r->addRoute('POST', '/afsc/add', [
+            Profile::class,
+            'do_afsc_association_add',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Profile::do_afsc_association_remove() */
+        $r->addRoute('POST', '/afsc/remove', [
+            Profile::class,
+            'do_afsc_association_remove',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Profile::show_edit() */
         $r->addRoute('GET', '/edit', [
             Profile::class,
             'show_edit',
         ]);
 
-        /**
-         * @uses \CDCMastery\Controllers\Profile::do_edit()
-         */
+        /** @uses \CDCMastery\Controllers\Profile::do_edit() */
         $r->addRoute('POST', '/edit', [
             Profile::class,
             'do_edit',
         ]);
 
-        /**
-         * @uses \CDCMastery\Controllers\Profile::show_role_request()
-         */
+        /** @uses \CDCMastery\Controllers\Profile::show_role_request() */
         $r->addRoute('GET', '/role', [
             Profile::class,
             'show_role_request',
         ]);
 
-        /**
-         * @uses \CDCMastery\Controllers\Profile::do_edit()
-         */
+        /** @uses \CDCMastery\Controllers\Profile::do_edit() */
         $r->addRoute('POST', '/role', [
             Profile::class,
             'do_role_request',
