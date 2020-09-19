@@ -177,6 +177,9 @@
         });
 
     </script>
+    <div class="page-header">
+        <h4>{{ cat.name }}</h4>
+    </div>
     <div id="card-loading"><img src="/images/loader.gif" alt="Loading..."></div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
@@ -207,6 +210,13 @@
                 <li><a id="nav-next" title="Next Card" href="#">Next</a></li>
                 <li><a id="nav-last" title="Last Card" href="#">Last</a></li>
             </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-6 col-md-offset-3 well well-sm help-block text-center">
+            Swipe actions are supported.<br>
+            <strong>Left</strong> and <strong>Right</strong> arrow keys navigate through the flash cards.<br>
+            <strong>Home</strong> and <strong>End</strong> will take you to the first and last cards.
         </div>
     </div>
 {% endblock %}
