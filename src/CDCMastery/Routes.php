@@ -849,39 +849,39 @@ return simpleDispatcher(function (RouteCollector $r) {
     ]);
 
     $r->addGroup('/stats', function (RouteCollector $r) {
-        /** @uses \CDCMastery\Controllers\Stats::show_stats_afsc_home() */
+        /** @uses \CDCMastery\Controllers\Stats\Afscs::show_stats_afsc_home() */
         $r->addRoute('GET', '/afscs', [
             Afscs::class,
             'show_stats_afsc_home',
         ]);
 
         $r->addGroup('/afscs', function (RouteCollector $r) {
-            /** @uses \CDCMastery\Controllers\Stats::show_stats_afsc_tests() */
+            /** @uses \CDCMastery\Controllers\Stats\Afscs::show_stats_afsc_tests() */
             $r->addRoute('GET', '/{afscUuid}/tests', [
                 Afscs::class,
                 'show_stats_afsc_tests',
             ]);
 
             $r->addGroup('/{afscUuid}/tests', function (RouteCollector $r) {
-                /** @uses \CDCMastery\Controllers\Stats::show_afsc_stats_tests_last_seven() */
+                /** @uses \CDCMastery\Controllers\Stats\Afscs::show_afsc_stats_tests_last_seven() */
                 $r->addRoute('GET', '/last-seven', [
                     Afscs::class,
                     'show_afsc_stats_tests_last_seven',
                 ]);
 
-                /** @uses \CDCMastery\Controllers\Stats::show_afsc_stats_tests_month() */
+                /** @uses \CDCMastery\Controllers\Stats\Afscs::show_afsc_stats_tests_month() */
                 $r->addRoute('GET', '/month', [
                     Afscs::class,
                     'show_afsc_stats_tests_month',
                 ]);
 
-                /** @uses \CDCMastery\Controllers\Stats::show_afsc_stats_tests_week() */
+                /** @uses \CDCMastery\Controllers\Stats\Afscs::show_afsc_stats_tests_week() */
                 $r->addRoute('GET', '/week', [
                     Afscs::class,
                     'show_afsc_stats_tests_week',
                 ]);
 
-                /** @uses \CDCMastery\Controllers\Stats::show_afsc_stats_tests_year() */
+                /** @uses \CDCMastery\Controllers\Stats\Afscs::show_afsc_stats_tests_year() */
                 $r->addRoute('GET', '/year', [
                     Afscs::class,
                     'show_afsc_stats_tests_year',

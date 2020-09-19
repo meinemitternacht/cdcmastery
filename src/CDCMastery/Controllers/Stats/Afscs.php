@@ -44,14 +44,12 @@ class Afscs extends Stats
      */
     public function show_stats_afsc_home(): Response
     {
-        $afscList = AfscHelpers::listNames($this->afscs->fetchAll(
-            AfscCollection::SHOW_FOUO | AfscCollection::SHOW_OBSOLETE
-        ));
+        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_FOUO | AfscCollection::SHOW_OBSOLETE);
 
         return $this->render(
             'public/stats/afscs/home.html.twig',
             [
-                'afscList' => $afscList,
+                'afscs' => $afscs,
             ]
         );
     }
@@ -72,10 +70,6 @@ class Afscs extends Stats
      */
     private function show_stats_afsc_tests_timespan(string $afscUuid, int $type): Response
     {
-        $afsc_names = AfscHelpers::listNames($this->afscs->fetchAll(
-            AfscCollection::SHOW_FOUO | AfscCollection::SHOW_HIDDEN | AfscCollection::SHOW_OBSOLETE
-        ));
-
         $afsc = $this->afscs->fetch($afscUuid);
 
         if (!$afsc || $afsc->getUuid() === '') {
@@ -88,7 +82,7 @@ class Afscs extends Stats
         $data = [
             'uuid' => $afsc->getUuid(),
             'title' => $afsc->getName(),
-            'afscList' => $afsc_names,
+            'afscs' => $this->afscs->fetchAll(AfscCollection::SHOW_ALL),
         ];
 
         switch ($type) {
