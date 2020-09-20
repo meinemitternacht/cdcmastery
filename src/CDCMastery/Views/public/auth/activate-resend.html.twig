@@ -1,0 +1,33 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Resend Activation Code" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Resend Activation Code</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="/auth/activate/resend"
+                  method="POST">
+                <div class="well well-lg">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="email">E-mail Address</label>
+                            <input class="form-control"
+                                   name="email"
+                                   id="email">
+                            <div class="help-block">
+                                Enter the e-mail address used during registration.
+                            </div>
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-success">Resend</button>
+                        </div>
+                        <div class="help-block text-center">
+                            <a href="/auth/activate">I already have my activation code</a>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

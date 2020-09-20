@@ -13,7 +13,6 @@ use CDCMastery\Controllers\Cards;
 use CDCMastery\Controllers\Home;
 use CDCMastery\Controllers\Overviews\TrainingOverview;
 use CDCMastery\Controllers\Profile;
-use CDCMastery\Controllers\Search;
 use CDCMastery\Controllers\Stats;
 use CDCMastery\Controllers\Stats\Afscs;
 use CDCMastery\Controllers\Stats\Bases;
@@ -844,24 +843,6 @@ return simpleDispatcher(function (RouteCollector $r) {
             'do_role_request',
         ]);
     });
-
-    /** @uses \CDCMastery\Controllers\Search::show_search_home() */
-    $r->addRoute('GET', '/search', [
-        Search::class,
-        'show_search_home',
-    ]);
-
-    /** @uses \CDCMastery\Controllers\Search::do_search() */
-    $r->addRoute('POST', '/search', [
-        Search::class,
-        'do_search',
-    ]);
-
-    /** @uses \CDCMastery\Controllers\Search::show_search_results() */
-    $r->addRoute('GET', '/search/results', [
-        Search::class,
-        'show_search_results',
-    ]);
 
     /** @uses \CDCMastery\Controllers\Stats::show_stats_home() */
     $r->addRoute('GET', '/stats', [

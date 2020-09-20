@@ -23,6 +23,7 @@ use CDCMastery\Models\Users\User;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use DateTime;
+use Exception;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -81,6 +82,91 @@ class Auth extends RootController
         $this->pending_roles = $pending_roles;
         $this->activations = $activations;
         $this->emails = $emails;
+    }
+
+    public function do_activation(?string $code = null): Response
+    {
+        if (!$code) {
+            $code = $this->filter_string_default('code');
+        }
+
+        if (!$code) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'No activation code was provided'
+            );
+
+            return $this->redirect('/auth/activate');
+        }
+
+        $activation = $this->activations->fetch($code);
+
+        if (!$activation) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided activation code was not valid'
+            );
+
+            return $this->redirect('/auth/activate');
+        }
+
+        $this->activations->remove($activation);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'Your account has been activated successfully'
+        );
+
+        $this->auth_helpers->set_redirect('/profile/afsc');
+        return $this->redirect('/auth/login');
+    }
+
+    /**
+     * @return Response
+     * @throws Exception
+     */
+    public function do_activation_resend(): Response
+    {
+        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
+
+        if (!$email) {
+            goto out_return;
+        }
+
+        $user_uuid = $this->user_helpers->findByEmail($email);
+
+        if (!$user_uuid) {
+            goto out_return;
+        }
+
+        $user = $this->users->fetch($user_uuid);
+
+        if (!$user) {
+            goto out_return;
+        }
+
+        $activation = $this->activations->fetchByUser($user);
+
+        if (!$activation) {
+            goto out_return;
+        }
+
+        $this->activations->remove($activation);
+        $activation = Activation::factory($user);
+        $this->activations->save($activation);
+        $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
+                                                    $user,
+                                                    $activation));
+
+        out_return:
+        usleep(random_int(200000, 500000));
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'If the e-mail address entered matches an account on file, a new activation e-mail will been sent in a few moments.'
+        );
+
+        return $this->redirect('/auth/activate');
     }
 
     public function do_registration(string $type): Response
@@ -470,6 +556,16 @@ class Auth extends RootController
         $this->auth_helpers->logout_hook();
 
         return $this->redirect('/');
+    }
+
+    public function show_activation(): Response
+    {
+        return $this->render('public/auth/activate.html.twig');
+    }
+
+    public function show_activation_resend(): Response
+    {
+        return $this->render('public/auth/activate-resend.html.twig');
     }
 
     public function show_login(): Response
