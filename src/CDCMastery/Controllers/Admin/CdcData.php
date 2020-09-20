@@ -116,6 +116,7 @@ class CdcData extends Admin
         $description = $this->filter_string_default('description');
         $fouo = $this->filter_bool_default('fouo', false);
         $hidden = $this->filter_bool_default('hidden', false);
+        $obsolete = $this->filter_bool_default('obsolete', false);
 
         if (!$edit) {
             $afsc = new Afsc();
@@ -127,9 +128,9 @@ class CdcData extends Admin
         $afsc->setEditCode($edit_code);
         $afsc->setFouo($fouo);
         $afsc->setHidden($hidden);
+        $afsc->setObsolete($obsolete);
 
-        $db_afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
-        foreach ($db_afscs as $db_afsc) {
+        foreach ($this->afscs->fetchAll(AfscCollection::SHOW_ALL) as $db_afsc) {
             if ($edit && $db_afsc->getUuid() === $afsc->getUuid()) {
                 continue;
             }
@@ -331,9 +332,7 @@ class CdcData extends Admin
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
         }
 
-        $db_questions = $this->questions->fetchAfsc($afsc);
-
-        foreach ($db_questions as $db_question) {
+        foreach ($this->questions->fetchAfsc($afsc) as $db_question) {
             if ($db_question->getText() === $qtext) {
                 $this->flash()->add(
                     MessageTypes::ERROR,
@@ -743,7 +742,7 @@ class CdcData extends Admin
         $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
 
         $n_afsc_questions = 0;
-        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
+        if (is_array($afsc_questions) && $afsc_questions) {
             $n_afsc_questions = (int)array_shift($afsc_questions);
         }
 
@@ -793,7 +792,7 @@ class CdcData extends Admin
         $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
 
         $n_afsc_questions = 0;
-        if (is_array($afsc_questions) && count($afsc_questions) > 0) {
+        if (is_array($afsc_questions) && $afsc_questions) {
             $n_afsc_questions = (int)array_shift($afsc_questions);
         }
 
