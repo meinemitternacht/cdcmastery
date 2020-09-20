@@ -237,6 +237,7 @@ class Auth extends RootController
         $user->setPassword(AuthHelpers::hash($password));
         $this->users->save($user);
         $this->resets->remove($reset);
+        $this->limiter->destroy();
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -540,11 +541,11 @@ class Auth extends RootController
         }
 
         if ($this->limiter->assert_limited()) {
-            $req_str = json_encode($this->request->request->all());
-            $this->log->addWarning("rate-limited login attempt :: {$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->addWarning("rate-limited login attempt :: username '{$this->get('username')}' :: ip {$_SERVER['REMOTE_ADDR']}");
+            $expires = $this->limiter->get_limit_expires_seconds();
 
             $this->flash()->add(MessageTypes::WARNING,
-                                'You have made too many login attempts, please try again at a later time');
+                                "You have made too many login attempts, please try again in {$expires} seconds");
 
             return $this->show_login();
         }
@@ -609,6 +610,17 @@ class Auth extends RootController
             return $this->show_login();
         }
 
+        if (!AuthHelpers::compare($password, $user->getPassword())) {
+            $this->limiter->increment();
+            $this->log->addWarning('failed login attempt :: password mismatch :: ' .
+                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your username or password is incorrect, please try again');
+
+            return $this->show_login();
+        }
+
         if ($user->isDisabled()) {
             $this->limiter->increment();
             $this->log->addWarning('failed login attempt :: account disabled :: ' .
@@ -630,17 +642,6 @@ class Auth extends RootController
             return $this->show_login();
         }
 
-        if (!AuthHelpers::compare($password, $user->getPassword())) {
-            $this->limiter->increment();
-            $this->log->addWarning('failed login attempt :: password mismatch :: ' .
-                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
-
-            $this->flash()->add(MessageTypes::WARNING,
-                                'Your username or password is incorrect, please try again');
-
-            return $this->show_login();
-        }
-
         $role = $this->roles->fetch($user->getRole());
 
         if (!$role) {
@@ -653,6 +654,7 @@ class Auth extends RootController
             return $this->show_login();
         }
 
+        $this->limiter->destroy();
         $this->auth_helpers->login_hook($user, $role);
 
         $now = new DateTime();
@@ -677,6 +679,7 @@ class Auth extends RootController
         $this->flash()->add(MessageTypes::SUCCESS,
                             'You have been successfully logged out');
 
+        $this->limiter->destroy();
         $this->auth_helpers->logout_hook();
 
         return $this->redirect('/');
@@ -722,6 +725,15 @@ class Auth extends RootController
 
     public function show_registration(?string $type = null): Response
     {
+        if ($this->auth_helpers->assert_logged_in()) {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                'You cannot register for a new account while logged in as another user'
+            );
+
+            return $this->redirect('/');
+        }
+
         if (!$type) {
             return $this->render('public/auth/register-choose-type.html.twig');
         }

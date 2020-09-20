@@ -11,19 +11,13 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class LoginRateLimiter
 {
     private const RATE_LIMIT_DURATION = 300;
-    private const RATE_LIMIT_THRESHOLD = 10;
+    private const RATE_LIMIT_THRESHOLD = 5;
 
     private const KEY_ATTEMPTS = 'rate-limit-attempts';
     private const KEY_INIT_TIME = 'rate-limit-init-time';
 
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var resource
-     */
+    private Session $session;
+    /** @var resource */
     private $lock;
 
     public function __construct(Session $session)
@@ -47,6 +41,12 @@ class LoginRateLimiter
     {
         try {
             $this->lock();
+
+            if ($this->session->has(self::KEY_INIT_TIME) &&
+                $this->session->has(self::KEY_ATTEMPTS)) {
+                return;
+            }
+
             $this->session->set(self::KEY_INIT_TIME, time());
             $this->session->set(self::KEY_ATTEMPTS, 0);
         } finally {
@@ -54,9 +54,6 @@ class LoginRateLimiter
         }
     }
 
-    /**
-     * @return bool
-     */
     public function assert_limited(): bool
     {
         try {
@@ -66,10 +63,12 @@ class LoginRateLimiter
             $count = $this->session->get(self::KEY_ATTEMPTS);
 
             if ($start_time === null || $count === null) {
+                $this->destroy_locked();
                 return false;
             }
 
             if ($start_time + self::RATE_LIMIT_DURATION < time()) {
+                $this->destroy_locked();
                 return false;
             }
 
@@ -78,6 +77,22 @@ class LoginRateLimiter
             }
 
             return true;
+        } finally {
+            $this->unlock();
+        }
+    }
+
+    public function get_limit_expires_seconds(): int
+    {
+        try {
+            $this->lock();
+            $start_time = $this->session->get(self::KEY_INIT_TIME);
+
+            if (!$start_time) {
+                return 0;
+            }
+
+            return ($start_time + self::RATE_LIMIT_DURATION) - time();
         } finally {
             $this->unlock();
         }
@@ -94,12 +109,17 @@ class LoginRateLimiter
         }
     }
 
+    private function destroy_locked(): void
+    {
+        $this->session->remove(self::KEY_ATTEMPTS);
+        $this->session->remove(self::KEY_INIT_TIME);
+    }
+
     public function destroy(): void
     {
         try {
             $this->lock();
-            $this->session->remove(self::KEY_ATTEMPTS);
-            $this->session->remove(self::KEY_INIT_TIME);
+            $this->destroy_locked();
         } finally {
             $this->unlock();
         }
