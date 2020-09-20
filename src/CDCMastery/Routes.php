@@ -1,5 +1,6 @@
 <?php
 
+use CDCMastery\Controllers\About;
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\Activations;
 use CDCMastery\Controllers\Admin\AfscApprovals;
@@ -27,6 +28,26 @@ return simpleDispatcher(function (RouteCollector $r) {
         Home::class,
         'show_home',
     ]);
+
+    $r->addGroup('/about', function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\About::show_disclaimer() */
+        $r->addRoute('GET', '/disclaimer', [
+            About::class,
+            'show_disclaimer',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\About::show_privacy_policy() */
+        $r->addRoute('GET', '/privacy', [
+            About::class,
+            'show_privacy_policy',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\About::show_terms_of_use() */
+        $r->addRoute('GET', '/terms', [
+            About::class,
+            'show_terms_of_use',
+        ]);
+    });
 
     /** @uses \CDCMastery\Controllers\Admin::show_admin_home() */
     $r->addRoute('GET', '/admin', [

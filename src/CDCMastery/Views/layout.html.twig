@@ -46,7 +46,6 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
-                <li{% if cur_url starts with "/about" %} class="active"{% endif %}><a href="/about">About</a></li>
                 <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a></li>
                 {% if logged_in and not error %}
                     {% if is_admin %}
@@ -114,8 +113,15 @@
     <div class="container text-center">
         <p class="text-muted">
             &copy; 2020 Bing Technology Services, LLC<br>
-            <em>This application is not endorsed by, affiliated with, or an official product of the United States
-                Air Force.</em><br>
+            <em>
+                This application is not endorsed by, affiliated with, or an official product of the
+                United States Air Force.
+            </em>
+        </p>
+        <p>
+            <a href="/about/disclaimer">Disclaimer</a> |
+            <a href="/about/privacy">Privacy Policy</a> |
+            <a href="/about/terms">Terms of Use</a>
         </p>
     </div>
 </footer>
