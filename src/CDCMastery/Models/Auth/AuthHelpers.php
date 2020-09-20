@@ -50,11 +50,11 @@ class AuthHelpers
             $errors[] = "Password must include at least one symbol.";
         }
 
-        if (!preg_match("#[A-Z]+#", $password) && !$noLetters) {
+        if (!$noLetters && !preg_match("#[A-Z]+#", $password)) {
             $errors[] = "Password must include at least one uppercase letter.";
         }
 
-        if (!preg_match("#[a-z]+#", $password) && !$noLetters) {
+        if (!$noLetters && !preg_match("#[a-z]+#", $password)) {
             $errors[] = "Password must include at least one lowercase letter.";
         }
 
