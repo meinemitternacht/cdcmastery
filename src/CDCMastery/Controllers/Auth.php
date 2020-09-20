@@ -9,10 +9,13 @@ use CDCMastery\Models\Auth\Activation\Activation;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
+use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
+use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Email\EmailCollection;
 use CDCMastery\Models\Email\Templates\ActivateAccount;
+use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Users\Roles\PendingRole;
@@ -52,6 +55,7 @@ class Auth extends RootController
     private PendingRoleCollection $pending_roles;
     private ActivationCollection $activations;
     private EmailCollection $emails;
+    private PasswordResetCollection $resets;
 
     public function __construct(
         Logger $logger,
@@ -67,7 +71,8 @@ class Auth extends RootController
         OfficeSymbolCollection $symbols,
         PendingRoleCollection $pending_roles,
         ActivationCollection $activations,
-        EmailCollection $emails
+        EmailCollection $emails,
+        PasswordResetCollection $resets
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -82,6 +87,7 @@ class Auth extends RootController
         $this->pending_roles = $pending_roles;
         $this->activations = $activations;
         $this->emails = $emails;
+        $this->resets = $resets;
     }
 
     public function do_activation(?string $code = null): Response
@@ -167,6 +173,124 @@ class Auth extends RootController
         );
 
         return $this->redirect('/auth/activate');
+    }
+
+    /**
+     * @param string|null $code
+     * @return Response
+     * @throws Exception
+     */
+    public function do_password_reset(string $code): Response
+    {
+        $reset = $this->resets->fetch($code);
+
+        if (!$reset) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The provided password reset link was invalid, or it has expired'
+            );
+
+            return $this->redirect('/auth/reset');
+        }
+
+        $user = $this->users->fetch($reset->getUserUuid());
+
+        if (!$user) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The user associated with the password reset link does not exist'
+            );
+
+            return $this->redirect('/auth/reset');
+        }
+
+        if (!$this->checkParameters(['password', 'password_confirm'])) {
+            return $this->redirect("/auth/reset/{$code}");
+        }
+
+        $password = $this->get('password');
+        $password_confirm = $this->get('password_confirm');
+
+        if ($password !== $password_confirm) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The entered passwords do not match'
+            );
+
+            return $this->redirect("/auth/reset/{$code}");
+        }
+
+        $complexity_check = AuthHelpers::check_complexity($password, $user->getHandle(), $user->getEmail());
+
+        if ($complexity_check) {
+            $flash = $this->flash();
+            foreach ($complexity_check as $complexity_error) {
+                $flash->add(
+                    MessageTypes::ERROR,
+                    $complexity_error
+                );
+            }
+
+            return $this->redirect("/auth/reset/{$code}");
+        }
+
+        $user->setPassword(AuthHelpers::hash($password));
+        $this->users->save($user);
+        $this->resets->remove($reset);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'Your password has been changed successfully. Please sign in to continue.'
+        );
+
+        return $this->redirect('/auth/login');
+    }
+
+    /**
+     * @return Response
+     * @throws Exception
+     */
+    public function do_password_reset_send(): Response
+    {
+        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
+
+        if (!$email) {
+            goto out_return;
+        }
+
+        $user_uuid = $this->user_helpers->findByEmail($email);
+
+        if (!$user_uuid) {
+            goto out_return;
+        }
+
+        $user = $this->users->fetch($user_uuid);
+
+        if (!$user) {
+            goto out_return;
+        }
+
+        $reset = $this->resets->fetchByUser($user);
+
+        if ($reset) {
+            $this->resets->remove($reset);
+        }
+
+        $reset = PasswordReset::factory($user);
+        $this->resets->save($reset);
+        $this->emails->queue(ResetPassword::email($this->users->fetch(SYSTEM_UUID),
+                                                  $user,
+                                                  $reset));
+
+        out_return:
+        usleep(random_int(200000, 500000));
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'If the e-mail address entered matches an account on file, a one-time password reset link will been sent in a few moments.'
+        );
+
+        return $this->redirect('/auth/login');
     }
 
     public function do_registration(string $type): Response
@@ -584,6 +708,16 @@ class Auth extends RootController
         }
 
         return $this->render('public/auth/login.html.twig');
+    }
+
+    public function show_password_reset(): Response
+    {
+        return $this->render('public/auth/password-reset.html.twig');
+    }
+
+    public function show_password_reset_change(string $code): Response
+    {
+        return $this->render('public/auth/password-reset-change.html.twig', ['code' => $code]);
     }
 
     public function show_registration(?string $type = null): Response

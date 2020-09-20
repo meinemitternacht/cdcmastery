@@ -189,6 +189,32 @@ SQL;
         return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
+    public function remove(PasswordReset $reset): void
+    {
+        if (!$reset->getUuid()) {
+            return;
+        }
+
+        $qry = <<<SQL
+DELETE FROM userPasswordResets WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            return;
+        }
+
+        $uuid = $reset->getUuid();
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            $stmt->close();
+            return;
+        }
+
+        $stmt->close();
+    }
+
     public function save(PasswordReset $reset): void
     {
         if (!$reset->getUuid()) {

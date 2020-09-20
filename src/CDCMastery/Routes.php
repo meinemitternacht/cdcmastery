@@ -647,6 +647,12 @@ return simpleDispatcher(function (RouteCollector $r) {
             'do_activation_resend',
         ]);
 
+        /** @uses \CDCMastery\Controllers\Auth::do_activation() */
+        $r->addRoute('GET', '/activate/{code}', [
+            Auth::class,
+            'do_activation',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Auth::show_login() */
         $r->addRoute('GET', '/login', [
             Auth::class,
@@ -677,16 +683,28 @@ return simpleDispatcher(function (RouteCollector $r) {
             'do_registration',
         ]);
 
-        /** @uses \CDCMastery\Controllers\Auth::show_reset() */
+        /** @uses \CDCMastery\Controllers\Auth::show_password_reset() */
         $r->addRoute('GET', '/reset', [
             Auth::class,
-            'show_reset',
+            'show_password_reset',
         ]);
 
-        /** @uses \CDCMastery\Controllers\Auth::do_reset() */
+        /** @uses \CDCMastery\Controllers\Auth::do_password_reset_send() */
         $r->addRoute('POST', '/reset', [
             Auth::class,
-            'do_reset',
+            'do_password_reset_send',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Auth::show_password_reset_change() */
+        $r->addRoute('GET', '/reset/{code}', [
+            Auth::class,
+            'show_password_reset_change',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Auth::do_password_reset() */
+        $r->addRoute('POST', '/reset/{code}', [
+            Auth::class,
+            'do_password_reset',
         ]);
     });
 
