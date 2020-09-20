@@ -30,7 +30,7 @@
                                     <select id="new_super" name="new_super[]" class="form-control" size="8" multiple>
                                         {% for super in assocs.available %}
                                             <option value="{{ super.uuid }}">
-                                                {{ super.name }}
+                                                {{ super.lastName }}, {{ super.firstName }} {{ super.rank }}
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -67,7 +67,7 @@
                                             </div>
                                             <div class="col-md-11">
                                                 <label for="del-super-{{ super.uuid }}">
-                                                    {{ super.name }}
+                                                    {{ super.lastName }}, {{ super.firstName }} {{ super.rank }}
                                                 </label>
                                             </div>
                                         </div>

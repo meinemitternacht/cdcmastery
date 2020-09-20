@@ -30,7 +30,7 @@
                                     <select id="new_tm" name="new_tm[]" class="form-control" size="8" multiple>
                                         {% for tm in assocs.available %}
                                             <option value="{{ tm.uuid }}">
-                                                {{ tm.name }}
+                                                {{ tm.lastName }}, {{ tm.firstName }} {{ tm.rank }}
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -67,7 +67,7 @@
                                             </div>
                                             <div class="col-md-11">
                                                 <label for="del-tm-{{ tm.uuid }}">
-                                                    {{ tm.name }}
+                                                    {{ tm.lastName }}, {{ tm.firstName }} {{ tm.rank }}
                                                 </label>
                                             </div>
                                         </div>
