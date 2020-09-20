@@ -565,7 +565,10 @@ ON DUPLICATE KEY UPDATE
     editCode=VALUES(editCode),
     fouo=VALUES(fouo),
     hidden=VALUES(hidden),
-    obsolete=VALUES(obsolete)
+    obsolete=VALUES(obsolete);
+-- SPLIT ;;
+CREATE UNIQUE INDEX afscName
+    ON afscList (name, editCode);
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);
