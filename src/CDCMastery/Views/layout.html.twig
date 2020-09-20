@@ -47,8 +47,8 @@
             <ul class="nav navbar-nav">
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
                 <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a></li>
-                {% if logged_in and not error %}
-                    {% if is_admin %}
+                {% if logged_in %}
+                    {% if is_admin and not error %}
                         <li class="dropdown{% if cur_url starts with "/admin" %} active{% endif %}">
                             <a href="#"
                                class="dropdown-toggle"
@@ -83,19 +83,19 @@
                                 </li>
                             </ul>
                         </li>
-                    {% elseif is_supervisor or is_training_manager %}
+                    {% elseif (is_supervisor or is_training_manager) and not error %}
                         <li{% if cur_url starts with "/training" %} class="active"{% endif %}><a href="/training">Training
                                 Panel</a></li>
                     {% endif %}
                     <li{% if cur_url starts with "/profile" %} class="active"{% endif %}><a href="/profile">My
                             Profile</a></li>
                     <li><a href="/auth/logout">Sign Out</a></li>
-                {% elseif not error %}
+                {% else %}
                     <li><a href="/auth/login">Sign In</a></li>
                     <li><a href="/auth/register">Register</a></li>
                 {% endif %}
             </ul>
-            {% if logged_in and not error %}
+            {% if logged_in %}
                 <p class="navbar-text navbar-right text-center hidden-xs hidden-sm">
                     Signed in as
                     <span class="text-white">{{ cur_user_name }}</span>

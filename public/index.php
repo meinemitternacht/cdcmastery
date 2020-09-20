@@ -1,7 +1,9 @@
 <?php
 /** @noinspection PhpRedundantCatchClauseInspection */
 
+use CDCMastery\Controllers\Errors;
 use CDCMastery\Controllers\RootController;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -12,6 +14,7 @@ use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Twig\Environment;
 
 try {
     /** @var ContainerInterface $container */
@@ -28,7 +31,8 @@ try {
     }
     $msg = 'Unable to initialize application: ' . $e;
     $response = new Response($msg, 500);
-    goto out_respond;
+    $response->send();
+    exit;
 }
 
 define('CDC_DEBUG', !!$config->get(['system', 'debug']));
@@ -92,12 +96,12 @@ switch ($route[ 0 ]) {
         $msg = '404: ' . $_SERVER[ 'REQUEST_URI' ] . ' could not be found';
         $response = new Response($msg, 404);
         $log->error($msg);
-        break;
+        goto out_error_404;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $msg = '405: ' . $_SERVER[ 'REQUEST_URI' ] . ' method not allowed';
         $response = new Response($msg, 405);
         $log->error($msg);
-        break;
+        goto out_error_405;
     case FastRoute\Dispatcher::FOUND:
         try {
             [, $controller, $parameters] = $route;
@@ -106,21 +110,31 @@ switch ($route[ 0 ]) {
             $msg = '400: ' . $_SERVER['REQUEST_URI'] . ' bad request :: ' . $e;
             $response = new Response($msg, 400);
             $log->error($msg);
+            goto out_error_400;
         } catch (NotCallableException $e) {
             $msg = '500: Not Callable :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER['REQUEST_URI']);
+            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
+            goto out_error_500;
         } catch (Error $e) {
             $msg = '500: TypeError :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER['REQUEST_URI']);
+            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
+            goto out_error_500;
+        } catch (AccessDeniedException $e) {
+            $msg = '403: Access Denied :: ' . $e;
+            $response = new Response($msg, 403);
+            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
+            $log->error($msg);
+            goto out_error_403;
         } catch (Exception $e) {
             $msg = '500: Exception :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER['REQUEST_URI']);
+            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
+            goto out_error_500;
         } finally {
             if (!isset($response)) {
                 $response = '';
@@ -142,3 +156,23 @@ if ($response instanceof Response) {
 }
 
 echo $response;
+
+out_error_400:
+(new Errors($log, $container->get(Environment::class), $session))->show_400()->send();
+exit;
+
+out_error_403:
+(new Errors($log, $container->get(Environment::class), $session))->show_403()->send();
+exit;
+
+out_error_404:
+(new Errors($log, $container->get(Environment::class), $session))->show_404()->send();
+exit;
+
+out_error_405:
+(new Errors($log, $container->get(Environment::class), $session))->show_405()->send();
+exit;
+
+out_error_500:
+(new Errors($log, $container->get(Environment::class), $session))->show_500()->send();
+exit;

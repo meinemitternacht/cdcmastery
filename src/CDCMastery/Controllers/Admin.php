@@ -9,18 +9,15 @@
 namespace CDCMastery\Controllers;
 
 
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
 use Monolog\Logger;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
 class Admin extends RootController
 {
-    /**
-     * @var AuthHelpers
-     */
-    protected $auth_helpers;
+    protected AuthHelpers $auth_helpers;
 
     public function __construct(Logger $logger, Environment $twig, Session $session, AuthHelpers $auth_helpers)
     {
@@ -29,7 +26,7 @@ class Admin extends RootController
         $this->auth_helpers = $auth_helpers;
 
         if (!$this->auth_helpers->assert_admin()) {
-            throw new RuntimeException('Access Denied');
+            throw new AccessDeniedException('Access Denied');
         }
     }
 }
