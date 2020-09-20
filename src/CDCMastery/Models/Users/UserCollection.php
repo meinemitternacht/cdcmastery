@@ -534,6 +534,10 @@ SQL;
             return;
         }
 
+        $date_registered = $user->getDateRegistered() ?? new DateTime();
+        $date_last_login = $user->getLastLogin();
+        $date_last_active = $user->getLastActive();
+
         $uuid = $user->getUuid();
         $firstName = $user->getFirstName();
         $lastName = $user->getLastName();
@@ -542,15 +546,15 @@ SQL;
         $legacyPassword = $user->getLegacyPassword();
         $email = $user->getEmail();
         $rank = $user->getRank();
-        $dateRegistered = $user->getDateRegistered()->format(
+        $dateRegistered = $date_registered->format(
             DateTimeHelpers::DT_FMT_DB
         );
-        $lastLogin = $user->getLastLogin()->format(
-            DateTimeHelpers::DT_FMT_DB
-        );
-        $lastActive = $user->getLastActive()->format(
-            DateTimeHelpers::DT_FMT_DB
-        );
+        $lastLogin = $date_last_login instanceof DateTime
+            ? $date_last_login->format(DateTimeHelpers::DT_FMT_DB)
+            : null;
+        $lastActive = $date_last_active instanceof DateTime
+            ? $date_last_active->format(DateTimeHelpers::DT_FMT_DB)
+            : null;
         $timeZone = $user->getTimeZone();
         $role = $user->getRole();
         $officeSymbol = $user->getOfficeSymbol();

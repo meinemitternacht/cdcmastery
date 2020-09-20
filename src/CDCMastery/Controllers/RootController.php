@@ -117,7 +117,7 @@ class RootController
     {
         $missing = [];
         foreach ($parameters as $parameter) {
-            if (!$this->has($parameter)) {
+            if (!$this->has($parameter) || $this->get($parameter) === '') {
                 $missing[] = $parameter;
             }
         }

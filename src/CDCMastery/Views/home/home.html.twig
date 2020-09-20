@@ -12,16 +12,22 @@
         </div>
         <div class="col-md-8">
             {% if (tests.complete|length + tests.incomplete|length) <= 0 %}
-                You have not started any tests yet, <a href="/tests/new">Start one now</a>!
+                <div class="alert alert-info">
+                    You have not started any tests yet, <a href="/tests/new">click here to start one now</a>!
+                </div>
             {% else %}
                 <ul class="nav nav-tabs">
                     {% if tests.complete|length > 0 %}
-                        <li class="active"><a href="#completed" data-toggle="tab" aria-expanded="true">Last Five
-                                Tests</a></li>
+                        <li class="active">
+                            <a href="#completed" data-toggle="tab" aria-expanded="true">Last Five Tests</a>
+                        </li>
                     {% endif %}
                     {% if tests.incomplete|length > 0 %}
-                        <li class=""><a href="#incomplete" data-toggle="tab" aria-expanded="false">Incomplete Tests
-                                ({{ tests.incomplete|length }})</a></li>
+                        <li>
+                            <a href="#incomplete" data-toggle="tab" aria-expanded="false">
+                                Incomplete Tests ({{ tests.incomplete|length }})
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
                 <div id="testTypeTabs" class="tab-content">
@@ -60,7 +66,7 @@
                         </div>
                     {% endif %}
                     {% if tests.incomplete|length > 0 %}
-                        <div class="tab-pane fade" id="incomplete">
+                        <div class="tab-pane fade{% if not tests.complete %} active in{% endif %}" id="incomplete">
                             <div class="table-responsive">
                                 <table id="incomplete-tests-table" class="table table-striped table-hover">
                                     <thead>

@@ -55,6 +55,10 @@ class AuthHelpers
             $noLetters = true;
         }
 
+        if (!preg_match("/[!@#$%^&*()_+`~\-=,.\/<>?;':\"\[\]{}|]+/", $password)) {
+            $errors[] = "Password must include at least one symbol.";
+        }
+
         if (!preg_match("#[A-Z]+#", $password) && !$noLetters) {
             $errors[] = "Password must include at least one uppercase letter.";
         }
@@ -72,6 +76,11 @@ class AuthHelpers
         }
 
         return $errors;
+    }
+
+    public static function check_email(string $email): bool
+    {
+        return (bool)preg_match('/\.mil$/', $email);
     }
 
     public static function compare(string $password, string $hash): bool
@@ -153,7 +162,7 @@ class AuthHelpers
         $this->session->set(self::KEY_REDIRECT, $path);
     }
 
-    public function login_hook(User $user, ?Role $role): void
+    public function login_hook(User $user, Role $role): void
     {
         $this->limiter->destroy();
         $this->session->migrate();
@@ -161,10 +170,6 @@ class AuthHelpers
         $this->session->set(self::KEY_AUTH, true);
         $this->session->set(self::KEY_USER_NAME, $user->getName());
         $this->session->set(self::KEY_USER_UUID, $user->getUuid());
-
-        if ($role->getUuid() === null || $role->getUuid() === '') {
-            return;
-        }
 
         $this->session->set(self::KEY_ROLE, $role->getType());
         $this->session->set(self::KEY_ROLE_UUID, $role->getUuid());

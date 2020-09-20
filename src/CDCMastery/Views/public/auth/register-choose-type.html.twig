@@ -1,0 +1,102 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Create Account" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Choose Account Type</h3>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center">
+                    <h5>User</h5>
+                </div>
+                <div class="panel-body text-center panel-min-200">
+                    <div class="help-block">
+                        Choose this account if you are not a supervisor or training manager.
+                    </div>
+                    <div class="row">
+                        <ul class="list-unstyled col-md-12">
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Take tests
+                            </li>
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Study flash cards
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel-footer text-center">
+                    <a href="/auth/register/user" class="btn btn-success">Select</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center">
+                    <h5>Supervisor</h5>
+                </div>
+                <div class="panel-body text-center panel-min-200">
+                    <div class="alert alert-info">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        Requires administrator approval
+                    </div>
+                    <div class="help-block">
+                        Select if you require a training overview.
+                    </div>
+                    <div class="row">
+                        <ul class="list-unstyled col-md-12">
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Add subordinate users
+                            </li>
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Track subordinate progress
+                            </li>
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Create and print offline tests
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel-footer text-center">
+                    <a href="/auth/register/supervisor" class="btn btn-success">Select</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center">
+                    <h5>Training Manager</h5>
+                </div>
+                <div class="panel-body text-center panel-min-200">
+                    <div class="alert alert-info">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                        Requires administrator approval
+                    </div>
+                    <div class="help-block">
+                        This account includes supervisor abilities, in addition to the following:
+                    </div>
+                    <div class="row">
+                        <ul class="list-unstyled col-md-12">
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Add subordinate users <strong>and supervisors</strong>
+                            </li>
+                            <li>
+                                <span class="glyphicon glyphicon-triangle-right small"></span>
+                                Manage AFSC associations
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel-footer text-center">
+                    <a href="/auth/register/training-manager" class="btn btn-success">Select</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

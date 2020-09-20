@@ -646,13 +646,13 @@ return simpleDispatcher(function (RouteCollector $r) {
         ]);
 
         /** @uses \CDCMastery\Controllers\Auth::show_registration() */
-        $r->addRoute('GET', '/register', [
+        $r->addRoute('GET', '/register[/{type}]', [
             Auth::class,
             'show_registration',
         ]);
 
         /** @uses \CDCMastery\Controllers\Auth::do_registration() */
-        $r->addRoute('POST', '/register', [
+        $r->addRoute('POST', '/register/{type}', [
             Auth::class,
             'do_registration',
         ]);

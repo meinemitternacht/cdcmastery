@@ -42,6 +42,10 @@
                     <div class="well well-sm">
                         <fieldset>
                             <legend>Pending Associations</legend>
+                            <div class="help-block">
+                                Pending AFSCs must be approved by a site administrator or training manager who
+                                is associated with your account. This may take up to 24 hours.
+                            </div>
                             <div class="form-group">
                                 <fieldset>
                                     {% for afsc in afscs.pending %}
@@ -173,7 +177,12 @@
                         </div>
                     {% else %}
                         <div class="help-block">
-                            There are no AFSC associations in the database for this user.
+                            There are no AFSC associations in the database for
+                            {% if restricted %}
+                                your account.
+                            {% else %}
+                                this user.
+                            {% endif %}
                         </div>
                     {% endif %}
                 </fieldset>

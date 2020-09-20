@@ -385,13 +385,23 @@ SELECT
 FROM flashCardCategories
 {$join_str}
 WHERE (categoryType = 'private' AND categoryCreatedBy = ?)
-      OR categoryType = 'global'
+      OR (categoryType = 'global' AND CategoryBinding IS NULL)
+      OR (
+          categoryType = 'global'
+          AND
+          categoryBinding IN (
+              SELECT afscUUID FROM userAFSCAssociations
+              WHERE userAFSCAssociations.userUUID = ?
+                AND userAFSCAssociations.userAuthorized = 1
+          )
+      )
       OR (
           categoryType = 'afsc'
           AND
           categoryBinding IN (
               SELECT afscUUID FROM userAFSCAssociations
               WHERE userAFSCAssociations.userUUID = ?
+                AND userAFSCAssociations.userAuthorized = 1
           )
       )
 {$sort_str}
@@ -405,7 +415,7 @@ SQL;
         }
 
         $user_uuid = $user->getUuid();
-        if (!$stmt->bind_param('ss', $user_uuid, $user_uuid) ||
+        if (!$stmt->bind_param('sss', $user_uuid, $user_uuid, $user_uuid) ||
             !$stmt->execute()) {
             $stmt->close();
             return [];

@@ -168,21 +168,21 @@ SQL;
             return null;
         }
 
-        $stmt->bind_result($uuid, $_user_uuid, $time_requested, $time_expires);
+        $stmt->bind_result($code, $_user_uuid, $time_expires);
         $stmt->fetch();
         $stmt->close();
 
-        if ($uuid === null) {
+        if ($code === null) {
             return null;
         }
 
         $row = [
-            'activationCode' => $uuid,
+            'activationCode' => $code,
             'userUUID' => $_user_uuid,
             'timeExpires' => $time_expires,
         ];
 
-        return $this->create_objects([$row])[ $uuid ] ?? null;
+        return $this->create_objects([$row])[ $code ] ?? null;
     }
 
     public function remove(Activation $activation): void
