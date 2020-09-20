@@ -187,6 +187,11 @@ alter table queueRoleAuthorization drop key userUUID_2;
 alter table flashCardCategories drop column categoryPrivate;
 -- SPLIT ;;
 drop table flashCardSessions;
+-- SPLIT ;;
+INSERT INTO cdcmastery_main.userData
+    (uuid, userFirstName, userLastName, userHandle, userPassword, userLegacyPassword, userEmail, userRank, userDateRegistered, userLastLogin, userLastActive, userTimeZone, userRole, userOfficeSymbol, userBase, userDisabled, reminderSent) 
+VALUES
+    (0x39613037376235332D653433302D346334342D383362612D613636653365636361313137, 'System', 'User', 'system.user', null, null, 'root@localhost', 'SYS', '2012-02-14 00:00:01', '2012-02-14 00:00:01', '2012-02-14 00:00:01', 'America/New_York', 0x36336234343335362D373937662D343736652D393737372D303763613564343166356534, null, 0x34623734383362312D306334382D343930322D613335362D656136646164383563356261, 0, null);
 SQL;
 
 $queries = explode('-- SPLIT ;;', $queries);

@@ -36,6 +36,7 @@ try {
 }
 
 define('CDC_DEBUG', !!$config->get(['system', 'debug']));
+define('SYSTEM_UUID', $config->get(['system', 'uuid']));
 define('SUPPORT_EMAIL', $config->get(['email', 'username']));
 define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
 define('SUPPORT_FACEBOOK_DISPLAY', $config->get(['support', 'facebook', 'display']));

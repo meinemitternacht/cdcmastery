@@ -11,6 +11,8 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\Email\EmailCollection;
+use CDCMastery\Models\Email\Templates\ActivateAccount;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Users\Roles\PendingRole;
@@ -48,6 +50,7 @@ class Auth extends RootController
     private OfficeSymbolCollection $symbols;
     private PendingRoleCollection $pending_roles;
     private ActivationCollection $activations;
+    private EmailCollection $emails;
 
     public function __construct(
         Logger $logger,
@@ -62,7 +65,8 @@ class Auth extends RootController
         AfscCollection $afscs,
         OfficeSymbolCollection $symbols,
         PendingRoleCollection $pending_roles,
-        ActivationCollection $activations
+        ActivationCollection $activations,
+        EmailCollection $emails
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -76,6 +80,7 @@ class Auth extends RootController
         $this->symbols = $symbols;
         $this->pending_roles = $pending_roles;
         $this->activations = $activations;
+        $this->emails = $emails;
     }
 
     public function do_registration(string $type): Response
@@ -271,7 +276,11 @@ class Auth extends RootController
         }
 
         $this->users->save($user);
-        $this->activations->save(Activation::factory($user));
+        $activation = Activation::factory($user);
+        $this->activations->save($activation);
+        $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
+                                                    $user,
+                                                    $activation));
 
         $pending_role = null;
         switch ($type) {
@@ -299,10 +308,9 @@ class Auth extends RootController
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'Your account was created successfully.  Please log in to finish setting up your new account.'
+            'Your account was created successfully.  An activation link has been sent to the e-mail address provided during registration.'
         );
 
-        $this->auth_helpers->set_redirect('/profile/afsc');
         return $this->redirect("/auth/login");
 
         out_error:
