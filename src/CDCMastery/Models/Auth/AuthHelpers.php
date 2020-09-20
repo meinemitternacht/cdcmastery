@@ -21,20 +21,11 @@ class AuthHelpers
 
     private const PASSWORD_HASH_ROUNDS = 13;
 
-    /**
-     * @var Session
-     */
-    private $session;
+    private Session $session;
 
-    /**
-     * @var LoginRateLimiter
-     */
-    private $limiter;
-
-    public function __construct(Session $session, LoginRateLimiter $limiter)
+    public function __construct(Session $session)
     {
         $this->session = $session;
-        $this->limiter = $limiter;
     }
 
     public static function check_complexity(string $password, string $handle, string $email): array
@@ -164,7 +155,6 @@ class AuthHelpers
 
     public function login_hook(User $user, Role $role): void
     {
-        $this->limiter->destroy();
         $this->session->migrate();
 
         $this->session->set(self::KEY_AUTH, true);
@@ -177,7 +167,6 @@ class AuthHelpers
 
     public function logout_hook(): void
     {
-        $this->limiter->destroy();
         $this->session->invalidate();
     }
 }
