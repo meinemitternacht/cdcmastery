@@ -1075,6 +1075,7 @@ class TrainingOverview extends RootController
             $stats[ $user_uuid ][ 'name' ] = $name;
             $stats[ $user_uuid ][ 'name_last' ] = $users[ $user_uuid ]->getLastName();
             $stats[ $user_uuid ][ 'name_first' ] = $users[ $user_uuid ]->getFirstName();
+            $stats[ $user_uuid ][ 'rank' ] = $users[ $user_uuid ]->getRank();
             $stats[ $user_uuid ][ 'last_login' ] = $ll
                 ? $ll->format(DateTimeHelpers::DT_FMT_SHORT)
                 : 'Never';

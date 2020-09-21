@@ -41,7 +41,7 @@
                             {% for user_uuid, row in stats.count_avg %}
                                 <tr data-uuid="{{ user_uuid }}"
                                     class="cursor-pointer">
-                                    <td>{{ row.name }}</td>
+                                    <td>{{ row.name_last }}, {{ row.name_first }} {{ row.rank }}</td>
                                     <td>{{ row.tCount }}</td>
                                     <td class="{% if row.tAvg >= passing_score %} bg-success{% else %} bg-danger{% endif %}">{{ row.tAvg|number_format(2) }}
                                         %
