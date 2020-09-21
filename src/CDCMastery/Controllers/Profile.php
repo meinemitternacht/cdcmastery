@@ -98,6 +98,7 @@ class Profile extends RootController
     public function do_afsc_association_add(): Response
     {
         $user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $role = $this->roles->fetch($user->getRole());
 
         $params = [
             'new_afsc',
@@ -135,8 +136,20 @@ class Profile extends RootController
             return $this->redirect("/profile/afsc");
         }
 
+        $override = false;
+        if ($role) {
+            switch ($role->getType()) {
+                case Role::TYPE_TRAINING_MANAGER:
+                case Role::TYPE_ADMIN:
+                case Role::TYPE_SUPER_ADMIN:
+                case Role::TYPE_QUESTION_EDITOR:
+                    $override = true;
+                    break;
+            }
+        }
+
         if ($tgt_afscs_fouo) {
-            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, false);
+            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, $override);
         }
 
         if ($tgt_afscs_non_fouo) {
