@@ -113,12 +113,13 @@
             </div>
         </div>
     </div>
-    <div class="col-xs-12 col-sm-6 col-md-8 col-lg-8">
+    {% set total_afscs = afscs.authorized|length + afscs.pending|length %}
+    <div class="col-xs-12 col-sm-6 {% if total_afscs > 10 %}col-md-8 col-lg-8{% else %}col-md-4 col-lg-4{% endif %}">
         <div class="panel panel-danger text-center">
             <div class="panel-heading">
                 <h5>AFSC Associations</h5>
             </div>
-            <div class="panel-body profile-four-col-container">
+            <div class="panel-body profile-{% if total_afscs > 10 %}four{% else %}two{% endif %}-col-container">
                 {% if afscs.authorized or afscs.pending %}
                     {% for afsc in afscs.authorized %}
                         <div>
