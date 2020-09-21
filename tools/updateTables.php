@@ -97,7 +97,7 @@ ALTER TABLE testData
         FOREIGN KEY (testUUID) REFERENCES testCollection (uuid) ON DELETE CASCADE ON UPDATE CASCADE;
 -- SPLIT ;;
 ALTER TABLE questionData
-	ADD disabled TINYINT DEFAULT 0 NOT NULL;
+	ADD disabled TINYINT(1) DEFAULT 0 NOT NULL;
 -- SPLIT ;;
 CREATE INDEX questionData_disabled_index
 	ON questionData (disabled);
@@ -576,7 +576,35 @@ UPDATE afscList SET afscList.hidden = 1 WHERE uuid IN (
         LEFT JOIN questionData on t1.uuid = questionData.afscUUID
     GROUP BY t1.uuid
     HAVING COUNT(questionData.uuid) < 10
-)
+);
+-- SPLIT ;;
+DROP INDEX setUUID ON questionData;
+-- SPLIT ;;
+DROP INDEX volumeUUID ON questionData;
+-- SPLIT ;;
+ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_1;
+-- SPLIT ;;
+ALTER TABLE questionData DROP COLUMN volumeUUID;
+-- SPLIT ;;
+ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_2;
+-- SPLIT ;;
+ALTER TABLE questionData DROP COLUMN setUUID;
+-- SPLIT ;;
+DROP TABLE volumeList;
+-- SPLIT ;;
+DROP TABLE setList;
+-- SPLIT ;;
+DROP TABLE systemLogData;
+-- SPLIT ;;
+DROP TABLE systemLog;
+-- SPLIT ;;
+DROP TABLE sessionData;
+-- SPLIT ;;
+DROP TABLE permissionData;
+-- SPLIT ;;
+DROP TABLE answerDataArchived;
+-- SPLIT ;;
+DROP TABLE questionDataArchived;
 -- SPLIT ;;
 SQL;
 
