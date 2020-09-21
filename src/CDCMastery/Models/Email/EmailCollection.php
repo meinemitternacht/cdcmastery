@@ -38,12 +38,11 @@ class EmailCollection
         $this->log = $logger;
     }
 
-    /**
-     * @param string $uuid
-     */
-    public function delete(string $uuid): void
+    public function delete(Email $email): void
     {
-        if ($uuid === '') {
+        $uuid = $email->getUuid();
+
+        if (!$uuid) {
             return;
         }
 
@@ -58,24 +57,13 @@ SQL;
     }
 
     /**
-     * @param array $uuids
+     * @param Email[] $emails
      */
-    public function deleteAll(array $uuids): void
+    public function deleteArray(array $emails): void
     {
-        if (count($uuids) === 0) {
-            return;
+        foreach ($emails as $email) {
+            $this->delete($email);
         }
-
-        $uuids_str = implode("','",
-                             array_map([$this->db, 'real_escape_string'],
-                                       $uuids));
-
-        $qry = <<<SQL
-DELETE FROM emailQueue
-WHERE uuid IN ('{$uuids_str}')
-SQL;
-
-        $this->db->query($qry);
     }
 
     /**
@@ -100,7 +88,7 @@ SQL;
 
         $emails = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 

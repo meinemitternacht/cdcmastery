@@ -168,4 +168,17 @@ return [
 
         return $session;
     },
+    Swift_Mailer::class => function (ContainerInterface $c) {
+        $config = $c->get(Config::class);
+        $settings = [
+            'host' => $config->get(['email', 'host']),
+            'port' => $config->get(['email', 'port']),
+            'username' => $config->get(['email', 'username']),
+            'password' => $config->get(['email', 'password']),
+        ];
+
+        return (new Swift_SmtpTransport($settings[ 'host' ], $settings[ 'port' ]))
+            ->setUsername($settings[ 'username' ])
+            ->setPassword($settings[ 'password' ]);
+    },
 ];
