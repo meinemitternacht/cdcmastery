@@ -7,12 +7,15 @@
  */
 
 use CDCMastery\Exceptions\Database\DatabaseConnectionFailedException;
+use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Twig\CreateSortLink;
 use CDCMastery\Models\Twig\RoleTypes;
 use CDCMastery\Models\Twig\StringFunctions;
 use CDCMastery\Models\Twig\UserProfileLink;
+use CDCMastery\Models\Users\Roles\PendingRoleCollection;
+use CDCMastery\Models\Users\UserAfscAssociations;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogHandler;
@@ -51,6 +54,12 @@ return [
             $twig->addGlobal('is_admin', $auth_helpers->assert_admin());
             $twig->addGlobal('is_supervisor', $auth_helpers->assert_supervisor());
             $twig->addGlobal('is_training_manager', $auth_helpers->assert_training_manager());
+        }
+
+        if ($auth_helpers->assert_admin()) {
+            $twig->addGlobal('pending_roles', $c->get(PendingRoleCollection::class)->count());
+            $twig->addGlobal('pending_activations', $c->get(ActivationCollection::class)->count());
+            $twig->addGlobal('pending_assocs', $c->get(UserAfscAssociations::class)->countPending());
         }
 
         if ($debug) {

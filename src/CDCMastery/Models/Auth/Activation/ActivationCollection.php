@@ -39,6 +39,24 @@ class ActivationCollection
         return $activations;
     }
 
+    public function count(): int
+    {
+        $qry = <<<SQL
+SELECT COUNT(*) AS count FROM queueUnactivatedUsers
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)($row[ 'count' ] ?? 0);
+    }
+
     public function fetch(string $code): ?Activation
     {
         if (!$code) {
