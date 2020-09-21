@@ -88,6 +88,7 @@ class Home extends RootController
      */
     private function show_home_anonymous(): Response
     {
+        $n_users = $this->users->count();
         $data = [
             'lastSevenStats' => [
                 'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->averageLastSevenDays()),
@@ -97,6 +98,7 @@ class Home extends RootController
                 'avg' => StatisticsHelpers::formatGraphDataTests($this->test_stats->averageByYear()),
                 'count' => StatisticsHelpers::formatGraphDataTests($this->test_stats->countByYear()),
             ],
+            'num_users' => $n_users - ($n_users % 1000),
         ];
 
         return $this->render('public/home/home.html.twig',
