@@ -117,16 +117,13 @@ SQL;
         return (int)$row[ 'count' ];
     }
 
-    /**
-     * @param string $uuid
-     */
-    public function delete(string $uuid): void
+    public function delete(User $user): void
     {
-        if (empty($uuid)) {
+        $uuid = $user->getUuid();
+
+        if (!$uuid) {
             return;
         }
-
-        $uuid = $this->db->real_escape_string($uuid);
 
         $qry = <<<SQL
 DELETE FROM userData
@@ -134,6 +131,16 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
+    }
+
+    /**
+     * @param User[] $users
+     */
+    public function deleteArray(array $users): void
+    {
+        foreach ($users as $user) {
+            $this->delete($user);
+        }
     }
 
     /**

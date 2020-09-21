@@ -42,6 +42,7 @@ class AfscApprovals extends Admin
     {
         $params = [
             'user_afscs',
+            'determination',
         ];
 
         if (!$this->checkParameters($params)) {
@@ -49,6 +50,7 @@ class AfscApprovals extends Admin
         }
 
         $user_afscs = $this->get('user_afscs');
+        $determination = $this->filter_string_default('determination');
 
         if (!is_array($user_afscs)) {
             $this->flash()->add(
@@ -59,10 +61,20 @@ class AfscApprovals extends Admin
             return $this->redirect("/admin/pending-afscs");
         }
 
+        switch ($determination) {
+            case 'approve':
+                $requests_approved = true;
+                break;
+            case 'reject':
+            default:
+                $requests_approved = false;
+                break;
+        }
+
         $tgt_user_afscs = [];
         $tgt_afscs = [];
         foreach ($user_afscs as $user_afsc) {
-            if (!strpos($user_afsc, '_')) {
+            if (strpos($user_afsc, '_') === false) {
                 continue;
             }
 
@@ -94,18 +106,20 @@ class AfscApprovals extends Admin
                 'The selected AFSCs were not valid'
             );
 
-            $this->redirect("/admin/pending-afscs");
+            return $this->redirect("/admin/pending-afscs");
         }
 
         foreach ($tgt_user_afscs as $user_uuid => $user_afscs) {
             foreach ($user_afscs as $user_afsc) {
-                $this->assocs->authorize($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ]);
+                $requests_approved
+                    ? $this->assocs->authorize($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ])
+                    : $this->assocs->remove($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ]);
             }
         }
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully approved'
+            'The selected AFSC associations were successfully processed'
         );
 
         if (!$this->assocs->countPending()) {
@@ -122,7 +136,7 @@ class AfscApprovals extends Admin
         if (!$pending) {
             $this->flash()->add(
                 MessageTypes::INFO,
-                'There are no pending AFSC requests to approve'
+                'There are no pending AFSC requests to process'
             );
 
             return $this->redirect('/admin/users');

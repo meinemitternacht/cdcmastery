@@ -14,13 +14,19 @@
                     <table class="table table-condensed table-striped table-hover">
                         <thead>
                         <tr>
-                            <th class="col-xs-1">&nbsp;</th>
+                            <th class="col-xs-1">
+                                <label class="sr-only" for="pending-afsc-checkall">Select All</label>
+                                <input type="checkbox"
+                                       id="pending-afsc-checkall"
+                                       value="1"
+                                       onclick="check_all(this.id, 'pending-afscs')">
+                            </th>
                             <th>Name</th>
                             <th>AFSC</th>
                             <th>Date Registered</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="pending-afscs">
                         {% for pending_assoc in pending %}
                             {% for pending_afsc in pending_assoc.pending %}
                                 <tr>
@@ -55,6 +61,22 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                    <div class="form-group text-center">
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   id="determination-approve"
+                                   name="determination"
+                                   value="approve" CHECKED>
+                            Approve
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   id="determination-reject"
+                                   name="determination"
+                                   value="reject">
+                            Reject
+                        </label>
+                    </div>
                     <div class="form-group text-center">
                         <button type="submit" class="btn btn-success">Approve AFSCs</button>
                     </div>

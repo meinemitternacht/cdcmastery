@@ -121,7 +121,7 @@
                                     <input type="checkbox"
                                            id="current-afscs-checkall"
                                            value="1"
-                                           onclick="checkCheckboxes(this.id, 'current-afscs')">
+                                           onclick="check_all(this.id, 'current-afscs')">
                                 </div>
                                 <div class="col-md-11">
                                     <label for="current-afscs-checkall">Select All</label>
@@ -190,10 +190,3 @@
         </div>
     </div>
 </div>
-<script>
-    function checkCheckboxes(id, pID) {
-        $('#' + pID).find(':checkbox').each(function () {
-            jQuery(this).attr('checked', $('#' + id).is(':checked'));
-        });
-    }
-</script>

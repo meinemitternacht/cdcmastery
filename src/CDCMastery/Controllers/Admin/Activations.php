@@ -38,6 +38,7 @@ class Activations extends Admin
     {
         $params = [
             'codes',
+            'determination',
         ];
 
         if (!$this->checkParameters($params)) {
@@ -56,6 +57,7 @@ class Activations extends Admin
         }
 
         $tgt_activations = $this->activations->fetchArray($codes);
+        $determination = $this->filter_string_default('determination');
 
         if (!$tgt_activations) {
             $this->flash()->add(
@@ -66,11 +68,22 @@ class Activations extends Admin
             return $this->redirect('/admin/activations');
         }
 
-        $this->activations->removeArray($tgt_activations);
+        switch ($determination) {
+            case 'approve':
+                $this->activations->removeArray($tgt_activations);
+                break;
+            case 'reject':
+            default:
+                $users = $this->users->fetchArray(array_map(static function (Activation $v): string {
+                    return $v->getUserUuid();
+                }, $tgt_activations));
+                $this->users->deleteArray($users);
+                break;
+        }
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'The selected users were activated successfully'
+            'The selected users were processed successfully'
         );
 
         return $this->redirect('/admin/activations');

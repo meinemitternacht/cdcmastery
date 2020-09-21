@@ -14,13 +14,19 @@
                     <table class="table table-condensed table-striped table-hover">
                         <thead>
                         <tr>
-                            <th class="col-xs-1">&nbsp;</th>
+                            <th class="col-xs-1">
+                                <label class="sr-only" for="activation-checkall">Select All</label>
+                                <input type="checkbox"
+                                       id="activation-checkall"
+                                       value="1"
+                                       onclick="check_all(this.id, 'activations')">
+                            </th>
                             <th>Name</th>
                             <th>Date Registered</th>
                             <th>Code Expires</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="activations">
                         {% for activation in activations %}
                             <tr>
                                 <td>
@@ -43,6 +49,22 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                    <div class="form-group text-center">
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   id="determination-approve"
+                                   name="determination"
+                                   value="approve" CHECKED>
+                            Approve
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   id="determination-reject"
+                                   name="determination"
+                                   value="reject">
+                            Reject
+                        </label>
+                    </div>
                     <div class="form-group text-center">
                         <button type="submit" class="btn btn-success">Activate Users</button>
                     </div>

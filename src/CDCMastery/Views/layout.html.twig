@@ -17,6 +17,14 @@
     {% for jsPath in js_assets %}
         <script src="{{ jsPath }}"></script>
     {% endfor %}
+
+    <script>
+        function check_all(id, pID) {
+            $('#' + pID).find(':checkbox').each(function () {
+                jQuery(this).attr('checked', $('#' + id).is(':checked'));
+            });
+        }
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
