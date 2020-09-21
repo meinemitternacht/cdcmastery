@@ -1,15 +1,2 @@
 User-agent: *
 Crawl-delay: 5
-# Directories
-Disallow: /admin/
-Disallow: /ajax/
-Disallow: /app/
-Disallow: /dev/
-Disallow: /includes/
-Disallow: /migration/
-Disallow: /supervisor/
-Disallow: /theme/
-Disallow: /tools/
-Disallow: /training/
-Disallow: /uploads/
-Disallow: /user/
