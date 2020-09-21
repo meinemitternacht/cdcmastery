@@ -14,6 +14,12 @@
                                           name="questionText"
                                           id="questionText"
                                           {% if new_question %}placeholder="Enter question text here..."{% endif %}>{% if new_question and new_question_tmp.qtext is defined %}{{ new_question_tmp.qtext }}{% else %}{{ question.text }}{% endif %}</textarea>
+                                {% if new_question %}
+                                    <div class="help-block">
+                                        Enter only the question text into the field above. Individual answers should be
+                                        entered below.
+                                    </div>
+                                {% endif %}
                             </div>
                         </fieldset>
                         <fieldset class="row-spacer">
