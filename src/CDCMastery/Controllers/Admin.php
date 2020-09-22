@@ -34,6 +34,7 @@ class Admin extends RootController
         $this->auth_helpers = $auth_helpers;
 
         if (!$this->auth_helpers->assert_admin()) {
+            $this->trigger_request_debug(__METHOD__);
             throw new AccessDeniedException('Access Denied');
         }
     }

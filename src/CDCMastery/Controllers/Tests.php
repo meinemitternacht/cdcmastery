@@ -105,9 +105,15 @@ class Tests extends RootController
             return $this->redirect('/');
         }
 
-        $this->tests->deleteArray(
-            TestHelpers::listUuid($tests)
-        );
+        $this->tests->deleteArray(TestHelpers::listUuid($tests));
+
+        $tests_str = implode(', ', array_map(static function (Test $v): string {
+            if (!$v->getTimeStarted()) {
+                return $v->getUuid();
+            }
+            return "{$v->getUuid()} [{$v->getTimeStarted()->format(DateTimeHelpers::DT_FMT_DB)}]";
+        }, $tests));
+        $this->log->info("delete incomplete tests :: {$user->getName()} [{$user->getUuid()}] :: {$tests_str}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'All incomplete tests have been removed from the database');
@@ -121,6 +127,17 @@ class Tests extends RootController
      */
     public function do_delete_test(string $testUuid): Response
     {
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'You do not exist'
+            );
+
+            return $this->redirect('/');
+        }
+
         $test = $this->tests->fetch($testUuid);
 
         if (!$test) {
@@ -146,6 +163,8 @@ class Tests extends RootController
         }
 
         $this->tests->delete($test->getUuid());
+
+        $this->log->info("delete test :: {$user->getName()} [{$user->getUuid()}] :: {$test->getUuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The specified test has been removed from the database');
@@ -211,12 +230,12 @@ class Tests extends RootController
             return $this->redirect('/tests/new');
         }
 
-        if (count($validAfscs) === 0) {
-            $this->log->addWarning(
+        if (!$validAfscs) {
+            $this->log->warning(
                 'create test failed :: afsc not associated :: user ' .
-                $user->getUuid() .
-                ' [' .
                 $user->getName() .
+                ' [' .
+                $user->getUuid() .
                 '] :: AFSC list ' .
                 implode(',', $afscs)
             );
@@ -226,18 +245,20 @@ class Tests extends RootController
                 'None of the provided AFSCs are associated with your account'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/tests/new');
         }
 
         /** @var Afsc[] $validAfscs */
         $validAfscs = $this->afscs->fetchArray($validAfscs);
 
-        if (count($validAfscs) === 0) {
+        if (!$validAfscs) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'None of the provided AFSCs are valid'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/tests/new');
         }
 
@@ -248,7 +269,7 @@ class Tests extends RootController
             );
 
             if (!$isAuthorized) {
-                $this->log->addWarning(
+                $this->log->warning(
                     'create test failed :: afsc not authorized :: user ' .
                     $user->getUuid() .
                     ' [' .
@@ -285,7 +306,7 @@ class Tests extends RootController
                                         $testOptions);
 
         if (($newTest->getTest()->getUuid() ?? '') === '') {
-            $this->log->addWarning(
+            $this->log->warning(
                 'create test failed :: user ' .
                 $user->getUuid() .
                 ' [' .
@@ -304,6 +325,7 @@ class Tests extends RootController
             return $this->redirect('/tests/new');
         }
 
+        $this->log->info("new test :: {$newTest->getTest()->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
         return $this->redirect('/tests/' . $newTest->getTest()->getUuid());
     }
 
@@ -322,10 +344,12 @@ class Tests extends RootController
                 'The specified test does not exist'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             goto out_redirect_home;
         }
 
         if (!$this->validate_test($test)) {
+            $this->trigger_request_debug(__METHOD__);
             goto out_redirect_home;
         }
 
@@ -344,8 +368,13 @@ class Tests extends RootController
         $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if ($payload === null || !isset($payload->action)) {
-            /** @todo send message that request was malformed */
-            exit;
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The system encountered an error while processing your request, please contact the site administrator if the issue persists'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            goto out_redirect_home;
         }
 
         switch ($payload->action) {
@@ -403,15 +432,25 @@ class Tests extends RootController
 
                 goto out_redirect_score;
             default:
-                /** @todo handle bad action */
-                break;
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The system encountered an error while processing your request, please contact the site administrator if the issue persists'
+                );
+
+                $this->trigger_request_debug(__METHOD__);
+                goto out_redirect_home;
         }
 
         try {
             return new JsonResponse($testHandler->getDisplayData());
         } catch (Throwable $e) {
-            $this->log->debug($e);
-            return new JsonResponse($e->getMessage(), 500);
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The system encountered an error while processing your request, please contact the site administrator if the issue persists'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            goto out_redirect_home;
         }
 
         out_redirect_score:

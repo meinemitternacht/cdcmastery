@@ -92,6 +92,7 @@ class Cards extends RootController
         }
 
         out_access_denied:
+        $this->trigger_request_debug(__METHOD__);
         $this->flash()->add(
             MessageTypes::ERROR,
             'That flash card category is not visible to your account'
@@ -117,6 +118,7 @@ class Cards extends RootController
                 break;
         }
 
+        $this->trigger_request_debug(__METHOD__);
         $this->flash()->add(
             MessageTypes::ERROR,
             'That flash card category is not visible to your account'
@@ -185,6 +187,9 @@ class Cards extends RootController
         $card->setCategory($cat->getUuid());
 
         $this->cards->save($cat, $card);
+
+        $this->log->info("add flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was saved successfully');
 
@@ -222,6 +227,9 @@ class Cards extends RootController
         }
 
         $this->cards->delete($card);
+
+        $this->log->info("delete flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was removed successfully');
 
@@ -274,6 +282,9 @@ class Cards extends RootController
         $card->setBack($back);
 
         $this->cards->save($cat, $card);
+
+        $this->log->info("edit flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was saved successfully');
 
@@ -299,42 +310,55 @@ class Cards extends RootController
         $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if (!$payload || !isset($payload->action)) {
+            $this->trigger_request_debug(__METHOD__);
             throw new RuntimeException('Malformed request');
         }
 
-        $handler = CardHandler::factory($this->session,
-                                        $this->db,
-                                        $this->log,
-                                        $this->cache,
-                                        $this->afscs,
-                                        $this->cdc_data,
-                                        $this->cards,
-                                        $cat);
+        try {
+            $handler = CardHandler::factory($this->session,
+                                            $this->db,
+                                            $this->log,
+                                            $this->cache,
+                                            $this->afscs,
+                                            $this->cdc_data,
+                                            $this->cards,
+                                            $cat);
 
-        switch ($payload->action) {
-            case CardHandler::ACTION_NO_ACTION:
-                break;
-            case CardHandler::ACTION_SHUFFLE:
-                $handler->shuffle();
-                break;
-            case CardHandler::ACTION_NAV_FIRST:
-                $handler->first();
-                break;
-            case CardHandler::ACTION_NAV_PREV:
-                $handler->previous();
-                break;
-            case CardHandler::ACTION_NAV_NEXT:
-                $handler->next();
-                break;
-            case CardHandler::ACTION_NAV_LAST:
-                $handler->last();
-                break;
-            case CardHandler::ACTION_FLIP_CARD:
-                $handler->flip();
-                break;
+            switch ($payload->action) {
+                case CardHandler::ACTION_NO_ACTION:
+                    break;
+                case CardHandler::ACTION_SHUFFLE:
+                    $handler->shuffle();
+                    break;
+                case CardHandler::ACTION_NAV_FIRST:
+                    $handler->first();
+                    break;
+                case CardHandler::ACTION_NAV_PREV:
+                    $handler->previous();
+                    break;
+                case CardHandler::ACTION_NAV_NEXT:
+                    $handler->next();
+                    break;
+                case CardHandler::ACTION_NAV_LAST:
+                    $handler->last();
+                    break;
+                case CardHandler::ACTION_FLIP_CARD:
+                    $handler->flip();
+                    break;
+            }
+
+            return new JsonResponse($handler->display());
+        } catch (Throwable $e) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->debug($e);
         }
 
-        return new JsonResponse($handler->display());
+        $this->flash()->add(
+            MessageTypes::ERROR,
+            'The system encountered an issue while processing your request, please contact the site administrator if the issue persists'
+        );
+
+        return $this->redirect('/');
     }
 
     public function do_category_add(?Category $cat = null): Response
@@ -364,6 +388,10 @@ class Cards extends RootController
         $cat->setComments($comments);
 
         $this->categories->save($cat);
+        $this->log->info(($edit
+                             ? 'edit'
+                             : 'add') . " flash card category :: {$cat->getName()} [{$cat->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
+
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -404,6 +432,8 @@ class Cards extends RootController
         $this->check_access_edit($user, $cat);
 
         $this->categories->delete($uuid);
+
+        $this->log->info("delete flash card category :: {$cat->getName()} [{$cat->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,

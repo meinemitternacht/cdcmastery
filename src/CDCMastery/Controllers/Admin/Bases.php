@@ -52,7 +52,7 @@ class Bases extends Admin
         $this->stats = $base_stats;
     }
 
-    private function get_base(string $uuid): ?Base
+    private function get_base(string $uuid): Base
     {
         $base = $this->bases->fetch($uuid);
 
@@ -60,6 +60,7 @@ class Bases extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified Base does not exist');
 
+            $this->trigger_request_debug(__METHOD__);
             $this->redirect('/admin/bases')->send();
             exit;
         }
@@ -81,6 +82,9 @@ class Bases extends Admin
 
         $name = $this->filter_string_default('name');
 
+        $old_name = $edit
+            ? $base->getName()
+            : null;
         if (!$edit) {
             $base = new Base();
             $base->setUuid(UUID::generate());
@@ -101,6 +105,9 @@ class Bases extends Admin
         }
 
         $this->bases->save($base);
+        $edit
+            ? $this->log->addInfo("admin edit base :: {$old_name} -> {$base->getName()} :: {$base->getUuid()}")
+            : $this->log->addInfo("admin add base :: {$base->getName()} :: {$base->getUuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             $edit
@@ -223,15 +230,6 @@ LBL,
     public function show_overview(string $uuid): Response
     {
         $base = $this->get_base($uuid);
-
-        if (!$base) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The specified base could not be found'
-            );
-
-            return $this->redirect('/admin/bases');
-        }
 
         $limit = 100;
         $base_users_avg_count = $this->stats->averageCountOverallByUser($base,

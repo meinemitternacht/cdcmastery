@@ -47,6 +47,7 @@ class OfficeSymbols extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified Office Symbol does not exist');
 
+            $this->trigger_request_debug(__METHOD__);
             $this->redirect('/admin/office-symbols')->send();
             exit;
         }
@@ -89,6 +90,10 @@ class OfficeSymbols extends Admin
 
         $this->office_symbols->save($osymbol);
 
+        $this->log->info(($edit
+                             ? 'edit'
+                             : 'add') . " office symbol :: {$osymbol->getSymbol()} [{$osymbol->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             $edit
                                 ? "The specified Office Symbol '{$osymbol->getSymbol()}' was modified successfully"
@@ -103,6 +108,8 @@ class OfficeSymbols extends Admin
         $osymbol = $this->get_osymbol($uuid);
 
         $this->office_symbols->delete($osymbol);
+
+        $this->log->info("delete office symbol :: {$osymbol->getSymbol()} [{$osymbol->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,

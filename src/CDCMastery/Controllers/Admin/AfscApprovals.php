@@ -70,6 +70,7 @@ class AfscApprovals extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/pending-afscs");
         }
 
@@ -106,6 +107,7 @@ class AfscApprovals extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/pending-afscs");
         }
 
@@ -118,14 +120,20 @@ class AfscApprovals extends Admin
                 'The selected AFSCs were not valid'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/pending-afscs");
         }
 
         foreach ($tgt_user_afscs as $user_uuid => $user_afscs) {
             foreach ($user_afscs as $user_afsc) {
-                $requests_approved
-                    ? $this->assocs->authorize($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ])
-                    : $this->assocs->remove($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ]);
+                if ($requests_approved) {
+                    $this->log->notice("admin approve afsc :: {$tgt_users[$user_uuid]->getName()} :: {$tgt_afscs[$user_afsc]->getName()}");
+                    $this->assocs->authorize($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ]);
+                    continue;
+                }
+
+                $this->log->notice("admin deny afsc :: {$tgt_users[$user_uuid]->getName()} :: {$tgt_afscs[$user_afsc]->getName()}");
+                $this->assocs->remove($tgt_users[ $user_uuid ], $tgt_afscs[ $user_afsc ]);
             }
         }
 

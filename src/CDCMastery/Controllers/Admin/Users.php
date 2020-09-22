@@ -132,6 +132,7 @@ class Users extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified User does not exist');
 
+            $this->trigger_request_debug(__METHOD__);
             $this->redirect('/admin/users')->send();
             exit;
         }
@@ -147,6 +148,7 @@ class Users extends Admin
                                           ? ISortOption::SORT_ASC
                                           : ISortOption::SORT_DESC);
         } catch (Throwable $e) {
+            $this->log->debug($e);
             unset($e);
             return null;
         }
@@ -267,6 +269,7 @@ class Users extends Admin
                 'Your account type cannot change the role for this user'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             goto out_return;
         }
 
@@ -334,6 +337,8 @@ class Users extends Admin
 
         $this->users->save($user);
 
+        $this->log->info("edit user :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(
             MessageTypes::SUCCESS,
             'The information for that user was successfully saved'
@@ -365,6 +370,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
@@ -378,6 +384,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
 
@@ -409,6 +420,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
@@ -422,6 +434,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("approve afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_afscs as $tgt_afsc) {
             $this->afsc_assocs->authorize($user, $tgt_afsc);
@@ -455,6 +472,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
@@ -468,6 +486,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_afscs as $tgt_afsc) {
             $this->afsc_assocs->remove($user, $tgt_afsc);
@@ -501,6 +524,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
@@ -514,6 +538,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
+
+        $super_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_supers));
+        $this->log->info("add supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->su_assocs->batchAddSupervisorsForUser($tgt_supers, $user);
 
@@ -545,6 +574,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
 
@@ -558,6 +588,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/supervisors");
         }
+
+        $super_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_supers));
+        $this->log->info("delete supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_supers as $tgt_super) {
             $this->su_assocs->remove($user, $tgt_super);
@@ -591,6 +626,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
@@ -604,6 +640,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
+
+        $tm_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_tms));
+        $this->log->info("add training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->tm_assocs->batchAddTrainingManagersForUser($tgt_tms, $user);
 
@@ -635,6 +676,7 @@ class Users extends Admin
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
 
@@ -648,6 +690,11 @@ class Users extends Admin
 
             return $this->redirect("/admin/users/{$user->getUuid()}/training-managers");
         }
+
+        $tm_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_tms));
+        $this->log->info("delete training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_tms as $tgt_tm) {
             $this->tm_assocs->remove($user, $tgt_tm);
@@ -677,16 +724,22 @@ class Users extends Admin
             }
         );
 
-        if (!is_array($tests) || count($tests) === 0) {
+        if (!is_array($tests) || !$tests) {
             $this->flash()->add(MessageTypes::INFO,
                                 'There are no tests to delete for this user');
 
             return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
-        $this->tests->deleteArray(
-            TestHelpers::listUuid($tests)
-        );
+        $tests_str = implode(', ', array_map(static function (Test $v): string {
+            if (!$v->getTimeStarted()) {
+                return $v->getUuid();
+            }
+            return "{$v->getUuid()} [{$v->getTimeStarted()->format(DateTimeHelpers::DT_FMT_DB)}]";
+        }, $tests));
+        $this->log->info("delete incomplete tests :: {$user->getName()} [{$user->getUuid()}] :: {$tests_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
+        $this->tests->deleteArray(TestHelpers::listUuid($tests));
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'All incomplete tests for this user have been removed from the database');
@@ -712,6 +765,7 @@ class Users extends Admin
         try {
             $this->emails->queue($email);
         } catch (Throwable $e) {
+            $this->log->debug($e);
             $this->flash()->add(MessageTypes::ERROR,
                                 'The system encountered an error while attempting to send the password reset e-mail');
 
@@ -719,6 +773,7 @@ class Users extends Admin
         }
 
         $this->pw_resets->save($pw_reset);
+        $this->log->info("reset user password :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'A password reset request for this user was successfully initiated');
@@ -737,6 +792,7 @@ class Users extends Admin
         try {
             $this->emails->queue($email);
         } catch (Throwable $e) {
+            $this->log->debug($e);
             $this->flash()->add(MessageTypes::ERROR,
                                 'The system encountered an error while attempting to resend the activation e-mail');
 
@@ -744,6 +800,7 @@ class Users extends Admin
         }
 
         $this->activations->save($activation);
+        $this->log->info("resend user activation :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'An activation request for this user was successfully initiated');
@@ -765,6 +822,10 @@ class Users extends Admin
                 ? 'reactivated'
                 : 'disabled')
         );
+
+        $this->log->info(($was_disabled
+                             ? 'reactivate'
+                             : 'disable') . " user :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         return $this->redirect("/admin/users/{$user->getUuid()}");
     }

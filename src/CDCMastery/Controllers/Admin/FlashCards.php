@@ -90,6 +90,7 @@ class FlashCards extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified flash card category could not be found');
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/cards');
         }
 
@@ -119,6 +120,9 @@ class FlashCards extends Admin
         $card->setCategory($cat->getUuid());
 
         $this->cards->save($cat, $card);
+
+        $this->log->info("add flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was saved successfully');
 
@@ -153,6 +157,9 @@ class FlashCards extends Admin
         }
 
         $this->cards->delete($card);
+
+        $this->log->info("delete flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was removed successfully');
 
@@ -202,6 +209,9 @@ class FlashCards extends Admin
         $card->setBack($back);
 
         $this->cards->save($cat, $card);
+
+        $this->log->info("edit flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The flash card was saved successfully');
 
@@ -225,6 +235,9 @@ class FlashCards extends Admin
 
             $cat->setComments($this->get('comments') ?? $afsc->getVersion());
 
+            $msg = ($edit
+                    ? 'edit'
+                    : 'add') . " afsc flash card category :: {$cat->getName()} [{$cat->getUuid()}] :: afsc {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}";
             goto out_save;
         }
 
@@ -270,8 +283,13 @@ class FlashCards extends Admin
         $cat->setBinding($binding);
         $cat->setComments($comments);
 
+        $msg = ($edit
+                ? 'edit'
+                : 'add') . " flash card category :: {$cat->getName()} [{$cat->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}";
+
         out_save:
         $this->categories->save($cat);
+        $this->log->info($msg);
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -363,6 +381,8 @@ class FlashCards extends Admin
         }
 
         $this->categories->delete($uuid);
+
+        $this->log->info("delete flash card category :: {$cat->getName()} [{$cat->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,

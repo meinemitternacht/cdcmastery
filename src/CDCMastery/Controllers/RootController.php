@@ -79,14 +79,6 @@ class RootController
     }
 
     /**
-     * @return Session
-     */
-    public function getSession(): Session
-    {
-        return $this->session;
-    }
-
-    /**
      * @return FlashBagInterface
      */
     public function flash(): FlashBagInterface
@@ -117,6 +109,7 @@ class RootController
             implode(', ', $missing)
         );
 
+        $this->trigger_request_debug(__METHOD__);
         return false;
     }
 
@@ -227,5 +220,17 @@ class RootController
 
             return (new Errors($this->log, $this->twig, $this->session, $this->request))->show_500();
         }
+    }
+
+    /** @noinspection JsonEncodingApiUsageInspection */
+    public function trigger_request_debug(string $method): void
+    {
+        $this->log->debug(str_repeat('-', 40));
+        $this->log->debug("{$method} :: request debug");
+        $this->log->debug(json_encode($this->request->server->all()));
+        $this->log->debug(json_encode($this->request->request->all()));
+        $this->log->debug(json_encode($this->request->query->all()));
+        $this->log->debug(json_encode($this->session->all()));
+        $this->log->debug(str_repeat('-', 40));
     }
 }

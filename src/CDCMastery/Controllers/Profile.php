@@ -116,6 +116,7 @@ class Profile extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/profile/afsc");
         }
 
@@ -149,10 +150,23 @@ class Profile extends RootController
         }
 
         if ($tgt_afscs_fouo) {
+            $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+                return "{$v->getName()} [{$v->getUuid()}]";
+            }, $tgt_afscs_fouo));
+            $pending_str = !$override
+                ? ' pending'
+                : null;
+            $this->log->info("add{$pending_str} afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
             $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, $override);
         }
 
         if ($tgt_afscs_non_fouo) {
+            $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+                return "{$v->getName()} [{$v->getUuid()}]";
+            }, $tgt_afscs_non_fouo));
+            $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
             $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_non_fouo, true);
         }
 
@@ -199,6 +213,11 @@ class Profile extends RootController
             return $this->redirect("/profile/afsc");
         }
 
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
         foreach ($tgt_afscs as $tgt_afsc) {
             $this->afsc_assocs->remove($user, $tgt_afsc);
         }
@@ -239,6 +258,7 @@ class Profile extends RootController
                     'The specified role type is invalid'
                 );
 
+                $this->trigger_request_debug(__METHOD__);
                 return $this->redirect('/profile/role');
         }
 
@@ -255,6 +275,7 @@ class Profile extends RootController
 
         $request = new PendingRole($user->getUuid(), $role->getUuid(), new DateTime());
         $this->pending_roles->save($request);
+        $this->log->info("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$role->getType()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -411,9 +432,12 @@ class Profile extends RootController
 
         if ($new_password) {
             $user->setPassword(AuthHelpers::hash($new_password));
+            $user->setLegacyPassword(null);
         }
 
         $this->users->save($user);
+
+        $this->log->info("edit profile :: {$user->getName()} [{$user->getUuid()}]");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,

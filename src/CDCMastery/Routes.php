@@ -855,7 +855,7 @@ return simpleDispatcher(static function (RouteCollector $r) {
             'show_role_request',
         ]);
 
-        /** @uses \CDCMastery\Controllers\Profile::do_edit() */
+        /** @uses \CDCMastery\Controllers\Profile::do_role_request() */
         $r->addRoute('POST', '/role', [
             Profile::class,
             'do_role_request',

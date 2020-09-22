@@ -129,17 +129,21 @@ class CdcData extends Admin
                 continue;
             }
 
-            /** @noinspection DisconnectedForeachInstructionInspection */
             $this->flash()->add(MessageTypes::ERROR,
-                                "The specified AFSC '{$afsc->getName()}' already exists in the database");
+                                "The specified AFSC '{$db_afsc->getName()}' already exists in the database");
             goto out_return;
         }
 
         if (!$this->afscs->save($afsc)) {
+            $this->trigger_request_debug(__METHOD__);
             $this->flash()->add(MessageTypes::ERROR,
                                 "The specified AFSC '{$afsc->getName()}' could not be added to the database");
             goto out_return;
         }
+
+        $edit
+            ? $this->log->info("edit afsc :: {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}")
+            : $this->log->info("add afsc :: {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             $edit
@@ -158,6 +162,7 @@ class CdcData extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified AFSC does not exist');
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/cdc/afsc');
         }
 
@@ -192,9 +197,11 @@ class CdcData extends Admin
             $this->flash()->add(MessageTypes::WARNING,
                                 "AFSC '{$afsc->getName()}' could not be {$disable_restore_str}d due to a database error");
 
+            $this->log->alert("{$disable_restore_str} afsc failed :: {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
         }
 
+        $this->log->notice("{$disable_restore_str} afsc :: {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
         return $this->redirect('/admin/cdc/afsc');
     }
 
@@ -211,6 +218,7 @@ class CdcData extends Admin
     public function do_afsc_delete(string $uuid): Response
     {
         if (!CDC_DEBUG) {
+            $this->trigger_request_debug(__METHOD__);
             throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
         }
 
@@ -224,6 +232,8 @@ class CdcData extends Admin
         }
 
         $this->afscs->delete($afsc);
+
+        $this->log->alert("delete afsc :: {$afsc->getName()} [{$afsc->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The specified AFSC was removed successfully');
 
@@ -235,9 +245,12 @@ class CdcData extends Admin
         Question $question,
         array $answers,
         bool $legacy
-    ): Response {
+    ): Response
+    {
         $this->questions->save($afsc, $question);
         $this->answers->saveArray($afsc, $answers);
+
+        $this->log->alert("add question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$question->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -272,6 +285,7 @@ class CdcData extends Admin
                 'The provided answer data was incorrectly formatted'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
         }
 
@@ -319,6 +333,7 @@ class CdcData extends Admin
                 'The answer marked as "correct" was not one of the provided answers'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add/legacy");
         }
 
@@ -421,6 +436,17 @@ class CdcData extends Admin
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
         }
 
+        foreach ($this->questions->fetchAfsc($afsc) as $db_question) {
+            if ($db_question->getText() === $qtext) {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The provided question already exists in the database -- edit or delete this question instead'
+                );
+
+                return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$db_question->getUuid()}");
+            }
+        }
+
         foreach ($answers as $answer) {
             if (trim($answer) === '') {
                 $this->flash()->add(
@@ -439,6 +465,7 @@ class CdcData extends Admin
                 'The answer marked as "correct" was not one of the provided answers'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/add");
         }
 
@@ -495,6 +522,7 @@ class CdcData extends Admin
     public function do_afsc_question_delete(string $uuid, string $quuid): Response
     {
         if (!CDC_DEBUG) {
+            $this->trigger_request_debug(__METHOD__);
             throw new RuntimeException('This endpoint cannot be accessed when debug mode is disabled');
         }
 
@@ -506,11 +534,13 @@ class CdcData extends Admin
                 'The specified AFSC does not exist'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/cdc/afsc');
         }
 
         $this->questions->delete($quuid);
 
+        $this->log->warning("delete question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
         $this->flash()->add(
             MessageTypes::SUCCESS,
             'The question was successfully deleted'
@@ -529,6 +559,7 @@ class CdcData extends Admin
                 'The specified AFSC does not exist'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/cdc/afsc');
         }
 
@@ -540,6 +571,7 @@ class CdcData extends Admin
                 'The specified question does not exist or does not belong to this AFSC'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
         }
 
@@ -554,6 +586,11 @@ class CdcData extends Admin
 
         $question->setDisabled($disable);
         $this->questions->save($afsc, $question);
+
+        $this->log->addInfo(($disable
+                                ? 'disable'
+                                : 'restore') .
+                            " question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -590,6 +627,7 @@ class CdcData extends Admin
                 'The specified AFSC does not exist'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/cdc/afsc');
         }
 
@@ -605,6 +643,7 @@ class CdcData extends Admin
                 'The specified question does not exist or does not belong to this AFSC'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}");
         }
 
@@ -630,6 +669,7 @@ class CdcData extends Admin
                 'There must be exactly four answers provided in the request'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
         }
 
@@ -648,6 +688,7 @@ class CdcData extends Admin
                 'The answer marked as "correct" was not one of the provided answers'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
         }
 
@@ -670,6 +711,7 @@ class CdcData extends Admin
                 'Some of the provided answers are not associated with the question; please contact the site administrator'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions/{$question->getUuid()}/edit");
         }
 
@@ -701,6 +743,7 @@ class CdcData extends Admin
         if ($changed) {
             $this->answers->saveArray($afsc, $db_answers);
             $this->questions->save($afsc, $question);
+            $this->log->addInfo("edit question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
         }
 
         $this->flash()->add(

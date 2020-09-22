@@ -121,6 +121,7 @@ class TrainingOverview extends RootController
                                     ? 'You do not exist'
                                     : 'The specified user was not found');
 
+            $this->trigger_request_debug(__METHOD__);
             $this->redirect('/')->send();
             exit;
         }
@@ -150,6 +151,7 @@ class TrainingOverview extends RootController
                 break;
         }
 
+        $this->trigger_request_debug(__METHOD__);
         $this->flash()->add(MessageTypes::ERROR,
                             'That user is not associated with your account');
         $this->redirect('/training')->send();
@@ -176,6 +178,7 @@ class TrainingOverview extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
@@ -189,6 +192,11 @@ class TrainingOverview extends RootController
 
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
 
@@ -220,6 +228,7 @@ class TrainingOverview extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
@@ -233,6 +242,11 @@ class TrainingOverview extends RootController
 
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("approve afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_afscs as $tgt_afsc) {
             $this->afsc_assocs->authorize($user, $tgt_afsc);
@@ -266,6 +280,7 @@ class TrainingOverview extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
@@ -279,6 +294,11 @@ class TrainingOverview extends RootController
 
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
+
+        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_afscs));
+        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
 
         foreach ($tgt_afscs as $tgt_afsc) {
             $this->afsc_assocs->remove($user, $tgt_afsc);
@@ -308,16 +328,22 @@ class TrainingOverview extends RootController
             }
         );
 
-        if (!is_array($tests) || count($tests) === 0) {
+        if (!is_array($tests) || !$tests) {
             $this->flash()->add(MessageTypes::INFO,
                                 'There are no tests to delete for this user');
 
             return $this->redirect("/training/users/{$user->getUuid()}");
         }
 
-        $this->tests->deleteArray(
-            TestHelpers::listUuid($tests)
-        );
+        $tests_str = implode(', ', array_map(static function (Test $v): string {
+            if (!$v->getTimeStarted()) {
+                return $v->getUuid();
+            }
+            return "{$v->getUuid()} [{$v->getTimeStarted()->format(DateTimeHelpers::DT_FMT_DB)}]";
+        }, $tests));
+        $this->log->info("delete incomplete tests :: {$user->getName()} [{$user->getUuid()}] :: {$tests_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
+        $this->tests->deleteArray(TestHelpers::listUuid($tests));
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'All incomplete tests for this user have been removed from the database');
@@ -354,6 +380,7 @@ class TrainingOverview extends RootController
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your account is not associated with that AFSC');
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/offline");
         }
 
@@ -401,6 +428,7 @@ class TrainingOverview extends RootController
         try {
             $this->emails->queue($email);
         } catch (Throwable $e) {
+            $this->log->debug($e);
             $this->flash()->add(MessageTypes::ERROR,
                                 'The system encountered an error while attempting to send the password reset e-mail');
 
@@ -408,6 +436,7 @@ class TrainingOverview extends RootController
         }
 
         $this->pw_resets->save($pw_reset);
+        $this->log->info("reset user password :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'A password reset request for this user was successfully initiated');
@@ -440,6 +469,7 @@ class TrainingOverview extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/subordinates");
         }
 
@@ -454,12 +484,17 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/subordinates");
         }
 
+        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_subs));
         switch ($role->getType()) {
             case Role::TYPE_TRAINING_MANAGER:
                 $this->tm_assocs->batchAddUsersForTrainingManager($tgt_subs, $user);
+                $this->log->info("add training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
                 break;
             case Role::TYPE_SUPERVISOR:
                 $this->su_assocs->batchAddUsersForSupervisor($tgt_subs, $user);
+                $this->log->info("add supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
                 break;
             default:
                 goto out_bad_role;
@@ -473,6 +508,7 @@ class TrainingOverview extends RootController
         return $this->redirect("/training/subordinates");
 
         out_bad_role:
+        $this->trigger_request_debug(__METHOD__);
         $this->flash()->add(MessageTypes::WARNING,
                             'We could not properly determine the state of your account. ' .
                             'Please contact the site administrator.');
@@ -505,6 +541,7 @@ class TrainingOverview extends RootController
                 'The submitted data was malformed'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect("/training/subordinates");
         }
 
@@ -519,16 +556,21 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/subordinates");
         }
 
+        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_subs));
         switch ($role->getType()) {
             case Role::TYPE_TRAINING_MANAGER:
                 foreach ($tgt_subs as $del_user) {
                     $this->tm_assocs->remove($del_user, $user);
                 }
+                $this->log->info("remove training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
                 break;
             case Role::TYPE_SUPERVISOR:
                 foreach ($tgt_subs as $del_user) {
                     $this->su_assocs->remove($del_user, $user);
                 }
+                $this->log->info("remove supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
                 break;
             default:
                 goto out_bad_role;
@@ -542,6 +584,7 @@ class TrainingOverview extends RootController
         return $this->redirect("/training/subordinates");
 
         out_bad_role:
+        $this->trigger_request_debug(__METHOD__);
         $this->flash()->add(MessageTypes::WARNING,
                             'We could not properly determine the state of your account. ' .
                             'Please contact the site administrator.');

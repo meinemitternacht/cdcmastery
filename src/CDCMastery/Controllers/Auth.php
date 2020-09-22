@@ -31,6 +31,7 @@ use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 
 class Auth extends RootController
@@ -114,10 +115,17 @@ class Auth extends RootController
                 'The provided activation code was not valid'
             );
 
+            $this->log->error("activate user failed :: invalid code {$code}");
             return $this->redirect('/auth/activate');
         }
 
         $this->activations->remove($activation);
+        $user = $this->users->fetch($activation->getUserUuid());
+        $user_str = $user
+            ? "{$user->getName()} [{$user->getUuid()}]"
+            : "UNKNOWN USER [{$activation->getUserUuid()}]";
+
+        $this->log->info("activate user :: {$user_str}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -137,24 +145,32 @@ class Auth extends RootController
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("resend activation failed :: email invalid");
             goto out_return;
         }
 
         $user_uuid = $this->user_helpers->findByEmail($email);
 
         if (!$user_uuid) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("resend activation failed :: user not found :: {$email}");
             goto out_return;
         }
 
         $user = $this->users->fetch($user_uuid);
 
         if (!$user) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("resend activation failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
 
         $activation = $this->activations->fetchByUser($user);
 
         if (!$activation) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("resend activation failed :: user already activated :: {$user->getName()} [{$user->getUuid()}");
             goto out_return;
         }
 
@@ -164,6 +180,8 @@ class Auth extends RootController
         $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
                                                     $user,
                                                     $activation));
+
+        $this->log->info("resend activation :: {$user->getName()} [{$user->getUuid()}");
 
         out_return:
         usleep(random_int(200000, 500000));
@@ -191,6 +209,7 @@ class Auth extends RootController
                 'The provided password reset link was invalid, or it has expired'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/auth/reset');
         }
 
@@ -202,6 +221,7 @@ class Auth extends RootController
                 'The user associated with the password reset link does not exist'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/auth/reset');
         }
 
@@ -236,9 +256,12 @@ class Auth extends RootController
         }
 
         $user->setPassword(AuthHelpers::hash($password));
+        $user->setLegacyPassword(null);
         $this->users->save($user);
         $this->resets->remove($reset);
         $this->limiter->destroy();
+
+        $this->log->info("user password changed :: {$user->getName()} [{$user->getUuid()}]");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -257,32 +280,46 @@ class Auth extends RootController
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("queue password reset failed :: email invalid");
             goto out_return;
         }
 
         $user_uuid = $this->user_helpers->findByEmail($email);
 
         if (!$user_uuid) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("queue password reset failed :: user not found :: {$email}");
             goto out_return;
         }
 
         $user = $this->users->fetch($user_uuid);
 
         if (!$user) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("queue password reset failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
 
         $reset = $this->resets->fetchByUser($user);
 
         if ($reset) {
+            $this->log->info("remove previous password reset :: {$reset->getUuid()} :: user {$user->getName()} [{$user->getUuid()}]");
             $this->resets->remove($reset);
         }
 
         $reset = PasswordReset::factory($user);
         $this->resets->save($reset);
-        $this->emails->queue(ResetPassword::email($this->users->fetch(SYSTEM_UUID),
-                                                  $user,
-                                                  $reset));
+        try {
+            $this->emails->queue(ResetPassword::email($this->users->fetch(SYSTEM_UUID),
+                                                      $user,
+                                                      $reset));
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            unset($e);
+        }
+
+        $this->log->info("queue password reset :: {$user->getName()} [{$user->getUuid()}]");
 
         out_return:
         usleep(random_int(200000, 500000));
@@ -517,6 +554,7 @@ class Auth extends RootController
         }
 
         if ($type !== self::TYPE_USER && !$pending_role) {
+            $this->trigger_request_debug(__METHOD__);
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The system encountered a problem while adding your account, please contact the site administrator'
@@ -526,9 +564,11 @@ class Auth extends RootController
         }
 
         if ($pending_role) {
-            $this->pending_roles->save(
-                new PendingRole($user->getUuid(), $pending_role->getUuid(), new DateTime()));
+            $this->pending_roles->save(new PendingRole($user->getUuid(), $pending_role->getUuid(), new DateTime()));
+            $this->log->info("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$pending_role->getType()}");
         }
+
+        $this->log->info("register user :: {$user->getName()} [{$user->getUuid()}] :: email {$user->getEmail()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -626,6 +666,8 @@ class Auth extends RootController
 
             return $this->show_login();
         }
+
+        /* @todo compare to legacy password */
 
         if (!AuthHelpers::compare($password, $user->getPassword())) {
             $this->limiter->increment();

@@ -64,6 +64,7 @@ class Activations extends Admin
                 'The submitted activation codes were improperly formatted'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/activations');
         }
 
@@ -76,20 +77,30 @@ class Activations extends Admin
                 'The system could not locate any of the submitted activation codes'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/activations');
         }
 
         switch ($determination) {
             case 'approve':
                 $this->activations->removeArray($tgt_activations);
+                foreach ($tgt_activations as $tgt_activation) {
+                    $this->log->notice("manually activate user :: {$tgt_activation->getUserUuid()}");
+                }
                 break;
             case 'reject':
             default:
-                $users = $this->users->fetchArray(array_map(static function (Activation $v): string {
-                    return $v->getUserUuid();
-                }, $tgt_activations));
-                $this->users->deleteArray($users);
-                break;
+            $users = $this->users->fetchArray(array_map(static function (Activation $v): string {
+                return $v->getUserUuid();
+            }, $tgt_activations));
+
+            foreach ($users as $user) {
+                $user->setDisabled(true);
+                $this->log->alert("admin disable user :: {$user->getName()} :: {$user->getUuid()}");
+            }
+
+            $this->users->saveArray($users);
+            break;
         }
 
         $this->flash()->add(

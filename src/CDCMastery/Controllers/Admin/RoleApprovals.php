@@ -70,6 +70,7 @@ class RoleApprovals extends Admin
                 'The provided list of role approvals was improperly formatted'
             );
 
+            $this->trigger_request_debug(__METHOD__);
             return $this->redirect('/admin/pending-roles');
         }
 
@@ -124,11 +125,11 @@ class RoleApprovals extends Admin
                 $tgt_user->setRole($role->getRoleUuid());
             }
 
-            $this->log->addNotice("{$tgt_user->getName()} -- role change " .
+            $this->log->addNotice("{$tgt_user->getName()} :: role change " .
                                   ($requests_approved
                                       ? 'approved'
                                       : 'denied') .
-                                  " -- {$prev_role->getName()} -> {$new_role->getName()}");
+                                  " :: {$prev_role->getName()} -> {$new_role->getName()}");
             $success[] = $role;
         }
 
