@@ -9,35 +9,19 @@
 namespace CDCMastery\Models\CdcData;
 
 
-use Monolog\Logger;
-use mysqli;
+use RuntimeException;
 
 class QuestionAnswersCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
+    private QuestionCollection $questions;
+    private AnswerCollection $answers;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var QuestionAnswers[]
-     */
-    private $questionAnswers = [];
-
-    /**
-     * QuestionAnswersCollection constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     */
-    public function __construct(mysqli $mysqli, Logger $logger)
-    {
-        $this->db = $mysqli;
-        $this->log = $logger;
+    public function __construct(
+        QuestionCollection $questions,
+        AnswerCollection $answers
+    ) {
+        $this->questions = $questions;
+        $this->answers = $answers;
     }
 
     /**
@@ -47,52 +31,56 @@ class QuestionAnswersCollection
      */
     public function fetch(Afsc $afsc, ?array $questions = null): array
     {
-        $this->questionAnswers = [];
-        $afscUuid = $afsc->getUuid();
+        $afsc_uuid = $afsc->getUuid();
 
-        if (!$afscUuid) {
+        if (!$afsc_uuid) {
             return [];
         }
 
         if (!$questions) {
-            $questionCollection = new QuestionCollection($this->db,
-                                                         $this->log);
-
-            $questions = $questionCollection->fetchAfsc($afsc);
+            $questions = $this->questions->fetchAfsc($afsc);
         }
 
-        $questionUuidList = QuestionHelpers::listUuid($questions);
+        $answers = $this->answers->fetchByQuestions($afsc, $questions);
 
-        $answerCollection = new AnswerCollection($this->db,
-                                                 $this->log);
+        $answers_by_quuid = [];
+        $answers_by_quuid_correct = [];
+        foreach ($answers as $answer) {
+            $quuid = $answer->getQuestionUuid();
+            if (!isset($answers_by_quuid[ $quuid ])) {
+                $answers_by_quuid[ $quuid ] = [];
+            }
 
-        $answerCollection->preloadQuestionAnswers($afsc, $questionUuidList);
+            $answers_by_quuid[ $quuid ][] = $answer;
 
-        foreach ($questions as $question) {
+            if ($answer->isCorrect()) {
+                $answers_by_quuid_correct[ $quuid ] = $answer;
+            }
+        }
+
+        $qas = [];
+        foreach ($questions as $quuid => $question) {
             if (!$question instanceof Question) {
                 continue;
             }
 
-            $correct = $answerCollection->getCorrectAnswer($question->getUuid());
+            if (!isset($answers_by_quuid[ $quuid ])) {
+                throw new RuntimeException("question has no answers :: quuid {$quuid} :: afsc {$afsc_uuid}");
+            }
+
+            $correct = $answers_by_quuid_correct[ $quuid ] ?? null;
 
             if (!$correct) {
-                continue;
+                throw new RuntimeException("question has no correct answer :: quuid {$quuid} :: afsc {$afsc_uuid}");
             }
 
-            $questionAnswer = new QuestionAnswers();
-            $questionAnswer->setQuestion($question);
-            $questionAnswer->setAnswers(
-                $answerCollection->getQuestionAnswers($question->getUuid())
-            );
-            $questionAnswer->setCorrect($correct);
-
-            if (!isset($this->questionAnswers[ $afsc->getUuid() ])) {
-                $this->questionAnswers[ $afscUuid ] = [];
-            }
-
-            $this->questionAnswers[ $afscUuid ][] = $questionAnswer;
+            $qa = new QuestionAnswers();
+            $qa->setQuestion($question);
+            $qa->setAnswers($answers_by_quuid[ $quuid ]);
+            $qa->setCorrect($correct);
+            $qas[] = $qa;
         }
 
-        return $this->questionAnswers[ $afscUuid ] ?? [];
+        return $qas;
     }
 }

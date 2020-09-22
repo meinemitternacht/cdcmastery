@@ -11,20 +11,10 @@ namespace CDCMastery\Models\CdcData;
 
 class QuestionAnswers
 {
-    /**
-     * @var Question
-     */
-    private $question;
-
-    /**
-     * @var Answer[]
-     */
-    private $answers;
-
-    /**
-     * @var Answer
-     */
-    private $correct;
+    private Question $question;
+    /** @var Answer[] */
+    private array $answers;
+    private Answer $correct;
 
     /**
      * @return Question

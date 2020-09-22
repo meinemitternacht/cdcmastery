@@ -15,6 +15,7 @@ use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\Email\EmailCollection;
 use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -37,7 +38,6 @@ use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
-use mysqli;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -64,7 +64,7 @@ class TrainingOverview extends RootController
     private PasswordResetCollection $pw_resets;
     private EmailCollection $emails;
     private OfflineTestCollection $offline_tests;
-    private mysqli $db;
+    private QuestionAnswersCollection $qas;
 
     public function __construct(
         Logger $logger,
@@ -86,7 +86,7 @@ class TrainingOverview extends RootController
         PasswordResetCollection $pw_resets,
         EmailCollection $emails,
         OfflineTestCollection $offline_tests,
-        mysqli $db
+        QuestionAnswersCollection $qas
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -106,7 +106,7 @@ class TrainingOverview extends RootController
         $this->pw_resets = $pw_resets;
         $this->emails = $emails;
         $this->offline_tests = $offline_tests;
-        $this->db = $db;
+        $this->qas = $qas;
     }
 
     private function get_user(string $uuid): User
@@ -361,8 +361,13 @@ class TrainingOverview extends RootController
         $opts->setNumQuestions($n_questions);
 
         try {
-            $test = OfflineTestHandler::factory($this->db, $this->log, $opts)->getTest();
+            $test = OfflineTestHandler::factory($this->qas, $opts);
+
+            if (!$test) {
+                throw new RuntimeException('test cannot be null');
+            }
         } catch (RuntimeException $e) {
+            $this->log->debug(__FUNCTION__ . " :: {$e}");
             $this->flash()->add(MessageTypes::ERROR,
                                 "The offline test could not be generated: {$e->getMessage()}");
 
@@ -604,7 +609,7 @@ class TrainingOverview extends RootController
         uasort(
             $tests,
             static function (Test $a, Test $b) {
-                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+                return $b->getTimeStarted() <=> $a->getTimeStarted();
             }
         );
 
@@ -689,7 +694,7 @@ class TrainingOverview extends RootController
         $user = $this->get_user($uuid);
         $test = $this->tests->fetch($test_uuid);
 
-        if (!$test->getUuid()) {
+        if (!$test || !$test->getUuid()) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The specified test could not be found'
@@ -719,16 +724,22 @@ class TrainingOverview extends RootController
 
         $testData = $this->test_data_helpers->list($test);
 
+        $time_started = $test->getTimeStarted();
+        if ($time_started) {
+            $time_started = $time_started->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
+        $time_completed = $test->getTimeCompleted();
+        if ($time_completed) {
+            $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $data = [
             'cur_user' => $cur_user,
             'cur_role' => $cur_role,
             'user' => $user,
-            'timeStarted' => $test->getTimeStarted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
-            'timeCompleted' => $test->getTimeCompleted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
+            'timeStarted' => $time_started,
+            'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $test->getNumQuestions(),
             'numMissed' => $test->getNumMissed(),

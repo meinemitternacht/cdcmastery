@@ -37,6 +37,7 @@ use CDCMastery\Models\Users\UserHelpers;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Throwable;
@@ -276,8 +277,9 @@ class Users extends Admin
             $complexity_check = AuthHelpers::check_complexity($new_password, $handle, $email);
 
             if ($complexity_check) {
+                $flash = $this->flash();
                 foreach ($complexity_check as $complexity_error) {
-                    $this->flash()->add(
+                    $flash->add(
                         MessageTypes::ERROR,
                         $complexity_error
                     );
@@ -867,6 +869,10 @@ class Users extends Admin
         $base = $this->bases->fetch($user->getBase());
         $role = $this->roles->fetchType(Role::TYPE_SUPERVISOR);
 
+        if (!$base) {
+            throw new RuntimeException("invalid base :: {$user->getBase()}");
+        }
+
         $user_sort = [
             new UserSortOption(UserSortOption::COL_NAME_LAST),
             new UserSortOption(UserSortOption::COL_NAME_FIRST),
@@ -914,6 +920,10 @@ class Users extends Admin
         $user = $this->get_user($uuid);
         $base = $this->bases->fetch($user->getBase());
         $role = $this->roles->fetchType(Role::TYPE_TRAINING_MANAGER);
+
+        if (!$base) {
+            throw new RuntimeException("invalid base :: {$user->getBase()}");
+        }
 
         $user_sort = [
             new UserSortOption(UserSortOption::COL_NAME_LAST),
@@ -967,7 +977,7 @@ class Users extends Admin
                 'That user is already disabled'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}");
+            return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
         $data = [
@@ -992,7 +1002,7 @@ class Users extends Admin
                 'That user is not currently disabled'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}");
+            return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
         $data = [
@@ -1052,6 +1062,10 @@ class Users extends Admin
         $base = $this->bases->fetch($user->getBase());
         $role = $this->roles->fetch($user->getRole());
 
+        if (!$role) {
+            throw new RuntimeException("invalid role :: {$user->getRole()}");
+        }
+
         $u_symbol = $user->getOfficeSymbol();
         if ($u_symbol) {
             $symbol = $this->symbols->fetch($u_symbol);
@@ -1059,7 +1073,7 @@ class Users extends Admin
 
         $incomplete_tests = array_filter(
             $this->tests->fetchAllByUser($user),
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() < 1 && $v->getTimeCompleted() === null;
             }
         );
@@ -1127,7 +1141,7 @@ class Users extends Admin
 
         $tests = array_filter(
             $tests,
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
             }
         );
@@ -1143,8 +1157,8 @@ class Users extends Admin
 
         uasort(
             $tests,
-            function (Test $a, Test $b) {
-                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+            static function (Test $a, Test $b) {
+                return $b->getTimeStarted() <=> $a->getTimeStarted();
             }
         );
 
@@ -1166,13 +1180,13 @@ class Users extends Admin
         $user = $this->get_user($uuid);
         $test = $this->tests->fetch($test_uuid);
 
-        if (!$test->getUuid()) {
+        if (!$test || !$test->getUuid()) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The specified test could not be found'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}");
+            return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
         if (!$test->isComplete()) {
@@ -1181,7 +1195,7 @@ class Users extends Admin
                 'Tests that are still in-progress cannot be viewed'
             );
 
-            $this->redirect("/admin/users/{$user->getUuid()}");
+            return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
         return $this->show_test_complete($user, $test);
@@ -1191,14 +1205,20 @@ class Users extends Admin
     {
         $testData = $this->test_data_helpers->list($test);
 
+        $time_started = $test->getTimeStarted();
+        if ($time_started) {
+            $time_started = $time_started->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
+        $time_completed = $test->getTimeCompleted();
+        if ($time_completed) {
+            $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $data = [
             'user' => $user,
-            'timeStarted' => $test->getTimeStarted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
-            'timeCompleted' => $test->getTimeCompleted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
+            'timeStarted' => $time_started,
+            'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $test->getNumQuestions(),
             'numMissed' => $test->getNumMissed(),

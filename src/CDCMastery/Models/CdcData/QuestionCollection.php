@@ -25,11 +25,6 @@ class QuestionCollection
     protected $log;
 
     /**
-     * @var Question[]
-     */
-    private $questions = [];
-
-    /**
      * QuestionCollection constructor.
      * @param mysqli $mysqli
      * @param Logger $logger
@@ -40,9 +35,33 @@ class QuestionCollection
         $this->log = $logger;
     }
 
+    /**
+     * @param array $rows
+     * @return Question[]
+     */
+    private function create_objects(array $rows): array
+    {
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $question = new Question();
+            $question->setUuid($row[ 'uuid' ]);
+            $question->setAfscUuid($row[ 'afscUUID' ]);
+            $question->setText($row[ 'questionText' ]);
+            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
+
+            $out[ $row[ 'uuid' ] ] = $question;
+        }
+
+        return $out;
+    }
+
     public function delete(string $uuid): void
     {
-        if (empty($uuid)) {
+        if (!$uuid) {
             return;
         }
 
@@ -72,7 +91,7 @@ SQL;
             return;
         }
 
-        unset($this->questions[ $uuid ]);
+        $stmt->close();
     }
 
     public function deleteArray(array $uuids): void
@@ -82,19 +101,10 @@ SQL;
         }
     }
 
-    /**
-     * @param Afsc $afsc
-     * @param string $uuid
-     * @return Question
-     */
-    public function fetch(Afsc $afsc, string $uuid): Question
+    public function fetch(Afsc $afsc, string $uuid): ?Question
     {
-        if (empty($uuid) || empty($afsc->getUuid())) {
-            return new Question();
-        }
-
-        if (isset($this->questions[ $uuid ])) {
-            return $this->questions[ $uuid ];
+        if (!$uuid || !$afsc->getUuid()) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -128,11 +138,15 @@ SQL;
 
         $afsc_uuid = $afsc->getUuid();
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('ss', $uuid, $afsc_uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return null;
+        }
+
+        if (!$stmt->bind_param('ss', $uuid, $afsc_uuid) ||
+            !$stmt->execute()) {
             $stmt->close();
-            return new Question();
+            return null;
         }
 
         $stmt->bind_result(
@@ -145,15 +159,14 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $question = new Question();
-        $question->setUuid($_uuid);
-        $question->setAfscUuid($afscUuid);
-        $question->setText($text);
-        $question->setDisabled((bool)($disabled ?? false));
+        $row = [
+            'uuid' => $uuid,
+            'afscUUID' => $afscUuid,
+            'questionText' => $text,
+            'disabled' => $disabled,
+        ];
 
-        $this->questions[ $uuid ] = $question;
-
-        return $question;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
     /**
@@ -162,7 +175,7 @@ SQL;
      */
     public function fetchAfsc(Afsc $afsc): array
     {
-        if (empty($afsc->getUuid())) {
+        if (!$afsc->getUuid()) {
             return [];
         }
 
@@ -182,11 +195,11 @@ SQL;
 SELECT
   uuid,
   afscUUID,
-  AES_DECRYPT(questionText, '%s') as qtext,
+  AES_DECRYPT(questionText, '%s') AS questionText,
   disabled
 FROM questionData
 WHERE afscUUID = ?
-ORDER BY qtext
+ORDER BY questionText
 SQL;
 
             $qry = sprintf(
@@ -198,9 +211,13 @@ SQL;
         $uuid = $afsc->getUuid();
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
             $stmt->close();
             return [];
         }
@@ -212,47 +229,42 @@ SQL;
             $disabled
         );
 
-        $uuidList = [];
+        $rows = [];
         while ($stmt->fetch()) {
             if ($_uuid === null) {
                 continue;
             }
 
-            $question = new Question();
-            $question->setUuid($_uuid);
-            $question->setAfscUuid($afscUuid);
-            $question->setText($text);
-            $question->setDisabled((bool)($disabled ?? false));
-
-            $this->questions[ $_uuid ] = $question;
-            $uuidList[] = $_uuid;
+            $rows[] = [
+                'uuid' => $_uuid,
+                'afscUUID' => $afscUuid,
+                'questionText' => $text,
+                'disabled' => $disabled,
+            ];
         }
 
         $stmt->close();
 
-        return array_intersect_key(
-            $this->questions,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($rows);
     }
 
     /**
      * @param Afsc $afsc
-     * @param string[] $uuidList
+     * @param string[] $uuids
      * @return Question[]
      */
-    public function fetchArray(Afsc $afsc, array $uuidList): array
+    public function fetchArray(Afsc $afsc, array $uuids): array
     {
-        if (empty($uuidList)) {
+        if (!$uuids) {
             return [];
         }
 
-        $uuidListFiltered = array_map(
+        $uuids = array_map(
             [$this->db, 'real_escape_string'],
-            $uuidList
+            $uuids
         );
 
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','", $uuids);
 
         $qry = <<<SQL
 SELECT
@@ -261,7 +273,7 @@ SELECT
   questionText,
   disabled
 FROM questionData
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 ORDER BY uuid
 SQL;
 
@@ -273,7 +285,7 @@ SELECT
   AES_DECRYPT(questionText, '%s') as questionText,
   disabled
 FROM questionData
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 ORDER BY uuid
 SQL;
 
@@ -285,31 +297,27 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $question = new Question();
-            $question->setUuid($row[ 'uuid' ] ?? '');
-            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
-            $question->setText($row[ 'questionText' ] ?? '');
-            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
-
-            $this->questions[ $row[ 'uuid' ] ] = $question;
+            $rows[] = $row;
         }
 
         $res->free();
 
-        return array_intersect_key(
-            $this->questions,
-            array_flip($uuidList)
-        );
+        return $this->create_objects($rows);
     }
 
-    private function _orderFouo(string $uuidListString): array
+    private function _orderFouo(string $uuids_str): array
     {
-        if (empty($uuidListString)) {
+        if (!$uuids_str) {
             return [];
         }
 
@@ -319,15 +327,19 @@ SELECT
   afscList.fouo AS fouo
 FROM questionData
 LEFT JOIN afscList ON afscList.uuid = questionData.afscUUID
-WHERE questionData.uuid IN ('{$uuidListString}')
+WHERE questionData.uuid IN ('{$uuids_str}')
 ORDER BY afscList.fouo
 SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
         $uuidFouo = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || !isset($row[ 'fouo' ])) {
+            if (!isset($row[ 'uuid' ], $row[ 'fouo' ])) {
                 continue;
             }
 
@@ -339,18 +351,18 @@ SQL;
         return $uuidFouo;
     }
 
-    private function _fetchMixedEncrypted(array $uuidList): void
+    private function _fetchMixedEncrypted(array $uuids): array
     {
-        if (empty($uuidList)) {
-            return;
+        if (!$uuids) {
+            return [];
         }
 
-        $uuidListFiltered = array_map(
+        $uuids = array_map(
             [$this->db, 'real_escape_string'],
-            $uuidList
+            $uuids
         );
 
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','", $uuids);
 
         $qry = <<<SQL
 SELECT
@@ -359,7 +371,7 @@ SELECT
   AES_DECRYPT(questionText, '%s') as questionText,
   disabled
 FROM questionData
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 ORDER BY uuid
 SQL;
 
@@ -370,35 +382,35 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $question = new Question();
-            $question->setUuid($row[ 'uuid' ] ?? '');
-            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
-            $question->setText($row[ 'questionText' ] ?? '');
-            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
-
-            $this->questions[ $row[ 'uuid' ] ] = $question;
+            $rows[] = $row;
         }
 
         $res->free();
+        return $this->create_objects($rows);
     }
 
-    private function _fetchMixedUnencrypted(array $uuidList): void
+    private function _fetchMixedUnencrypted(array $uuids): array
     {
-        if (empty($uuidList)) {
-            return;
+        if (!$uuids) {
+            return [];
         }
 
-        $uuidListFiltered = array_map(
+        $uuids = array_map(
             [$this->db, 'real_escape_string'],
-            $uuidList
+            $uuids
         );
 
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','", $uuids);
 
         $qry = <<<SQL
 SELECT
@@ -407,27 +419,27 @@ SELECT
   questionText,
   disabled
 FROM questionData
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 ORDER BY uuid
 SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
-            $question = new Question();
-            $question->setUuid($row[ 'uuid' ] ?? '');
-            $question->setAfscUuid($row[ 'afscUUID' ] ?? '');
-            $question->setText($row[ 'questionText' ] ?? '');
-            $question->setDisabled((bool)($row[ 'disabled' ] ?? false));
-
-            $this->questions[ $row[ 'uuid' ] ] = $question;
+            $rows[] = $row;
         }
 
         $res->free();
+        return $this->create_objects($rows);
     }
 
     public function fetchArrayMixed(array $uuidList): array
@@ -457,25 +469,14 @@ SQL;
             $uuidUnencrypted[] = $uuid;
         }
 
-        $this->_fetchMixedEncrypted($uuidEncrypted);
-        $this->_fetchMixedUnencrypted($uuidUnencrypted);
+        $out = [
+            $this->_fetchMixedEncrypted($uuidEncrypted),
+            $this->_fetchMixedUnencrypted($uuidUnencrypted),
+        ];
 
-        return array_intersect_key(
-            $this->questions,
-            array_flip(
-                $uuidList
-            )
-        );
-    }
-
-    /**
-     * @return QuestionCollection
-     */
-    public function refresh(): self
-    {
-        $this->questions = [];
-
-        return $this;
+        return $out
+            ? array_merge(...$out)
+            : [];
     }
 
     /**
@@ -484,7 +485,7 @@ SQL;
      */
     public function save(Afsc $afsc, Question $question): void
     {
-        if (empty($afsc->getUuid()) || empty($question->getUuid())) {
+        if (!$afsc->getUuid() || !$question->getUuid()) {
             return;
         }
 
@@ -545,7 +546,7 @@ SQL;
      */
     public function saveArray(Afsc $afsc, array $questions): void
     {
-        if (empty($afsc->getUuid()) || empty($questions)) {
+        if (!$questions || !$afsc->getUuid()) {
             return;
         }
 

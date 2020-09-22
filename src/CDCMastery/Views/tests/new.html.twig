@@ -23,6 +23,14 @@
                                     AFSC(s)
                                 </label>
                                 <div class="col-md-10" id="newTestAfscList">
+                                    <div class="checkbox new-test-afsc">
+                                        <label for="afscs-checkall" class="control-label new-test-afsc">
+                                            <input type="checkbox"
+                                                   id="afscs-checkall"
+                                                   onclick="check_all(this.id, 'newTestAfscList');">
+                                            <strong>Select All</strong>
+                                        </label>
+                                    </div>
                                     {% for afsc in afscList %}
                                         <div class="checkbox new-test-afsc">
                                             <label for="afsc-{{ afsc.uuid }}"
@@ -53,7 +61,7 @@
                                     <input class="form-control"
                                            type="number"
                                            min="0"
-                                           max="300"
+                                           max="500"
                                            name="numQuestions"
                                            id="numQuestions"
                                            value="100">

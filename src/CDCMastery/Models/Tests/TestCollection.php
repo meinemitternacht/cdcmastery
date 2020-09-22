@@ -21,48 +21,39 @@ use mysqli;
 
 class TestCollection
 {
-    const TABLE_NAME = 'testCollection';
+    public const TABLE_NAME = 'testCollection';
 
-    const COL_AFSC_LIST = 'afscList';
-    const COL_TIME_STARTED = 'timeStarted';
-    const COL_TIME_COMPLETED = 'timeCompleted';
-    const COL_CUR_QUESTION = 'curQuestion';
-    const COL_NUM_ANSWERED = 'numAnswered';
-    const COL_NUM_MISSED = 'numMissed';
-    const COL_SCORE = 'score';
-    const COL_IS_COMBINED = 'combined';
-    const COL_IS_ARCHIVED = 'archived';
+    public const COL_AFSC_LIST = 'afscList';
+    public const COL_TIME_STARTED = 'timeStarted';
+    public const COL_TIME_COMPLETED = 'timeCompleted';
+    public const COL_CUR_QUESTION = 'curQuestion';
+    public const COL_NUM_ANSWERED = 'numAnswered';
+    public const COL_NUM_MISSED = 'numMissed';
+    public const COL_SCORE = 'score';
+    public const COL_IS_COMBINED = 'combined';
+    public const COL_IS_ARCHIVED = 'archived';
 
-    const ORDER_ASC = 'ASC';
-    const ORDER_DESC = 'DESC';
+    public const ORDER_ASC = 'ASC';
+    public const ORDER_DESC = 'DESC';
 
-    const DEFAULT_COL = self::COL_TIME_STARTED;
-    const DEFAULT_ORDER = self::ORDER_DESC;
+    public const DEFAULT_COL = self::COL_TIME_STARTED;
+    public const DEFAULT_ORDER = self::ORDER_DESC;
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
+    private mysqli $db;
+    private Logger $log;
+    private AfscCollection $afscs;
+    private QuestionCollection $questions;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var Test[]
-     */
-    private $tests = [];
-
-    /**
-     * TestCollection constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     */
-    public function __construct(mysqli $mysqli, Logger $logger)
-    {
+    public function __construct(
+        mysqli $mysqli,
+        Logger $logger,
+        AfscCollection $afscs,
+        QuestionCollection $questions
+    ) {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->afscs = $afscs;
+        $this->questions = $questions;
     }
 
     /**
@@ -71,7 +62,7 @@ class TestCollection
      */
     private static function generateOrderSuffix(array $columnOrders): string
     {
-        if (empty($columnOrders)) {
+        if (!$columnOrders) {
             return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
         }
 
@@ -110,8 +101,66 @@ class TestCollection
     }
 
     /**
-     * @param string $uuid
+     * @param array $rows
+     * @return Test[]
      */
+    private function create_objects(array $rows): array
+    {
+        if (!$rows) {
+            return [];
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            $afscs = unserialize($row[ 'afscList' ] ?? '');
+
+            if (!is_array($afscs)) {
+                $afscs = [];
+            }
+
+            $questions = unserialize($row[ 'questionList' ] ?? '');
+
+            if (!is_array($questions)) {
+                $questions = [];
+            }
+
+            $afscs = $this->afscs->fetchArray($afscs);
+            $questions = $this->questions->fetchArrayMixed($questions);
+
+            if ($row[ 'timeStarted' ] !== null) {
+                $timeStarted = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'timeStarted' ] ?? ''
+                );
+            }
+
+            if ($row[ 'timeCompleted' ] !== null) {
+                $timeCompleted = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'timeCompleted' ] ?? ''
+                );
+            }
+
+            $test = new Test();
+            $test->setUuid($row[ 'uuid' ]);
+            $test->setUserUuid($row[ 'userUuid' ]);
+            $test->setAfscs($afscs);
+            $test->setTimeStarted($timeStarted ?? null);
+            $test->setTimeCompleted($timeCompleted ?? null);
+            $test->setQuestions($questions);
+            $test->setCurrentQuestion($row[ 'curQuestion' ] ?? 0);
+            $test->setNumAnswered($row[ 'numAnswered' ] ?? 0);
+            $test->setNumMissed($row[ 'numMissed' ] ?? 0);
+            $test->setScore((float)($row[ 'score' ] ?? 0.00));
+            $test->setCombined((bool)($row[ 'combined' ] ?? false));
+            $test->setArchived((bool)($row[ 'archived' ] ?? false));
+            $out[ $row[ 'uuid' ] ] = $test;
+        }
+
+        return $out;
+    }
+
+    /** @noinspection UnusedFunctionResultInspection */
     public function delete(string $uuid): void
     {
         if (empty($uuid)) {
@@ -129,32 +178,29 @@ SQL;
     }
 
     /**
-     * @param string[] $uuidList
+     * @param string[] $uuids
+     * @noinspection UnusedFunctionResultInspection
      */
-    public function deleteArray(array $uuidList): void
+    public function deleteArray(array $uuids): void
     {
-        if (empty($uuidList)) {
+        if (!$uuids) {
             return;
         }
 
-        $uuidListFiltered = array_map(
-            [$this->db, 'real_escape_string'],
-            $uuidList
-        );
+        $uuids = array_map([$this->db, 'real_escape_string'],
+                           $uuids);
 
-        $uuidListString = implode("','", $uuidListFiltered);
+        $uuids_str = implode("','", $uuids);
 
         $qry = <<<SQL
 DELETE FROM testCollection
-WHERE uuid IN ('{$uuidListString}')
+WHERE uuid IN ('{$uuids_str}')
 SQL;
 
         $this->db->query($qry);
     }
 
-    /**
-     * @param User $user
-     */
+    /** @noinspection UnusedFunctionResultInspection */
     public function deleteAllByUser(User $user): void
     {
         if (empty($user->getUuid())) {
@@ -172,14 +218,10 @@ SQL;
         $this->db->query($qry);
     }
 
-    /**
-     * @param string $uuid
-     * @return Test
-     */
-    public function fetch(string $uuid): Test
+    public function fetch(string $uuid): ?Test
     {
-        if (empty($uuid)) {
-            return new Test();
+        if (!$uuid) {
+            return null;
         }
 
         $qry = <<<SQL
@@ -205,7 +247,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Test();
+            return null;
         }
 
         $stmt->bind_result(
@@ -226,66 +268,26 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || $_uuid === null) {
-            return new Test();
+        if (!isset($_uuid)) {
+            return null;
         }
 
-        $afscs = unserialize($afscList ?? '');
+        $row = [
+            'uuid' => $_uuid,
+            'userUuid' => $userUuid,
+            'afscList' => $afscList,
+            'timeStarted' => $timeStarted,
+            'timeCompleted' => $timeCompleted,
+            'questionList' => $questionList,
+            'curQuestion' => $curQuestion,
+            'numAnswered' => $numAnswered,
+            'numMissed' => $numMissed,
+            'score' => $score,
+            'combined' => $combined,
+            'archived' => $archived,
+        ];
 
-        if (!is_array($afscs)) {
-            $afscs = [];
-        }
-
-        $questions = unserialize($questionList ?? '');
-
-        if (!is_array($questions)) {
-            $questions = [];
-        }
-
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $afscArr = $afscCollection->fetchArray($afscs);
-        $questionArr = $questionCollection->fetchArrayMixed($questions);
-
-        if ($timeStarted !== null) {
-            $timeStarted = DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $timeStarted ?? ''
-            );
-        }
-
-        if ($timeCompleted !== null) {
-            $timeCompleted = DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $timeCompleted ?? ''
-            );
-        }
-
-        $test = new Test();
-        $test->setUuid($_uuid ?? '');
-        $test->setUserUuid($userUuid ?? '');
-        $test->setAfscs($afscArr);
-        $test->setTimeStarted($timeStarted);
-        $test->setTimeCompleted($timeCompleted);
-        $test->setQuestions($questionArr);
-        $test->setCurrentQuestion($curQuestion ?? 0);
-        $test->setNumAnswered($numAnswered ?? 0);
-        $test->setNumMissed($numMissed ?? 0);
-        $test->setScore((float)$score ?? 0.00);
-        $test->setCombined((bool)($combined ?? false));
-        $test->setArchived((bool)($archived ?? false));
-
-        $this->tests[$_uuid] = $test;
-
-        return $test;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
     /**
@@ -358,82 +360,17 @@ SQL;
                 'numMissed' => $numMissed,
                 'score' => $score,
                 'combined' => $combined,
-                'archived' => $archived
+                'archived' => $archived,
             ];
         }
 
         $stmt->close();
 
-        if (empty($data)) {
+        if (!$data) {
             return [];
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $userTestList = [];
-        foreach ($data as $datum) {
-            $afscs = unserialize($datum['afscList'] ?? '');
-
-            if (!is_array($afscs)) {
-                $afscs = [];
-            }
-
-            $questions = unserialize($datum['questionList'] ?? '');
-
-            if (!is_array($questions)) {
-                $questions = [];
-            }
-
-            $afscArr = $afscCollection->fetchArray($afscs);
-            $questionArr = $questionCollection->fetchArrayMixed($questions);
-
-            $tTimeStarted = DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $datum['timeStarted'] ?? null
-            );
-
-            $tTimeCompleted = DateTime::createFromFormat(
-                DateTimeHelpers::DT_FMT_DB,
-                $datum['timeCompleted'] ?? null
-            );
-
-            $test = new Test();
-            $test->setUuid($datum['uuid'] ?? '');
-            $test->setUserUuid($datum['userUuid'] ?? '');
-            $test->setAfscs($afscArr);
-            $test->setTimeStarted(
-                $tTimeStarted
-                    ? $tTimeStarted
-                    : null
-            );
-            $test->setTimeCompleted(
-                $tTimeCompleted
-                    ? $tTimeCompleted
-                    : null
-            );
-            $test->setQuestions($questionArr);
-            $test->setCurrentQuestion($datum['curQuestion'] ?? 0);
-            $test->setNumAnswered($datum['numAnswered'] ?? 0);
-            $test->setScore((float)$datum['score'] ?? 0.00);
-            $test->setCombined((bool)($datum['combined'] ?? false));
-            $test->setArchived((bool)($datum['archived'] ?? false));
-
-            $this->tests[$datum['uuid']] = $test;
-            $userTestList[] = $datum['uuid'];
-        }
-
-        return array_intersect_key(
-            $this->tests,
-            array_flip($userTestList)
-        );
+        return $this->create_objects($data);
     }
 
     /**
@@ -478,7 +415,7 @@ SQL;
 
         $data = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -487,85 +424,7 @@ SQL;
 
         $res->free();
 
-        if (empty($data)) {
-            return [];
-        }
-
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
-
-        $testList = [];
-        foreach ($data as $datum) {
-            $afscs = unserialize($datum['afscList'] ?? '');
-
-            if (!is_array($afscs)) {
-                $afscs = [];
-            }
-
-            $questions = unserialize($datum['questionList'] ?? '');
-
-            if (!is_array($questions)) {
-                $questions = [];
-            }
-
-            $afscArr = $afscCollection->fetchArray($afscs);
-            $questionArr = $questionCollection->fetchArrayMixed($questions);
-
-            $test = new Test();
-            $test->setUuid($datum['uuid'] ?? '');
-            $test->setUserUuid($datum['userUuid'] ?? '');
-            $test->setAfscs($afscArr);
-
-            if ($datum['timeStarted'] !== null) {
-                $test->setTimeStarted(
-                    DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $datum['timeStarted'] ?? ''
-                    )
-                );
-            }
-
-            if ($datum['timeCompleted'] !== null) {
-                $test->setTimeCompleted(
-                    DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $datum['timeCompleted'] ?? ''
-                    )
-                );
-            }
-
-            $test->setQuestions($questionArr);
-            $test->setCurrentQuestion($datum['curQuestion'] ?? 0);
-            $test->setNumAnswered($datum['numAnswered'] ?? 0);
-            $test->setScore((float)$datum['score'] ?? 0.00);
-            $test->setCombined((bool)($datum['combined'] ?? false));
-            $test->setArchived((bool)($datum['archived'] ?? false));
-
-            $this->tests[$datum['uuid']] = $test;
-            $testList[] = $datum['uuid'];
-        }
-
-        return array_intersect_key(
-            $this->tests,
-            array_flip($testList)
-        );
-    }
-
-    /**
-     * @return TestCollection
-     */
-    public function reset(): self
-    {
-        $this->tests = [];
-
-        return $this;
+        return $this->create_objects($data);
     }
 
     /**
@@ -573,7 +432,7 @@ SQL;
      */
     public function save(Test $test): void
     {
-        if (empty($test->getUuid())) {
+        if (!$test->getUuid()) {
             return;
         }
 
@@ -656,8 +515,6 @@ SQL;
         }
 
         $stmt->close();
-
-        $this->tests[$uuid] = $test;
     }
 
     /**

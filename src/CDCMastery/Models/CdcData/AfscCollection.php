@@ -13,7 +13,6 @@ use CDCMastery\Helpers\UUID;
 use Monolog\Logger;
 use mysqli;
 use RuntimeException;
-use function count;
 
 class AfscCollection
 {
@@ -38,20 +37,8 @@ class AfscCollection
     private const DEFAULT_COL = self::COL_NAME;
     private const DEFAULT_ORDER = self::ORDER_ASC;
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var Afsc[]
-     */
-    private $afscs = [];
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * AfscCollection constructor.
@@ -163,28 +150,15 @@ SQL;
         $name = $afsc->getName();
         $editcode = $afsc->getEditCode();
 
-        if (!$stmt->bind_param('ss', $name, $editcode)) {
-            $stmt->close();
-            return false;
-        }
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return false;
-        }
-
-        if (!$stmt->bind_result($res)) {
-            $stmt->close();
-            return false;
-        }
-
-        if (!$stmt->fetch()) {
+        if (!$stmt->bind_param('ss', $name, $editcode) ||
+            !$stmt->execute() ||
+            !$stmt->bind_result($res) ||
+            !$stmt->fetch()) {
             $stmt->close();
             return false;
         }
 
         $stmt->close();
-
         return (bool)$res;
     }
 
@@ -194,7 +168,7 @@ SQL;
      */
     private static function generateOrderSuffix(array $columnOrders): string
     {
-        if (count($columnOrders) === 0) {
+        if (!$columnOrders) {
             return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
         }
 
@@ -378,7 +352,7 @@ SQL;
      */
     public function fetchArray(array $uuidList, array $columnOrders = []): array
     {
-        if (empty($uuidList)) {
+        if (!$uuidList) {
             return [];
         }
 
@@ -427,7 +401,7 @@ SQL;
      */
     public function save(Afsc $afsc): bool
     {
-        if (empty($afsc->getUuid())) {
+        if (!$afsc->getUuid()) {
             $afsc->setUuid(UUID::generate());
         }
 
@@ -497,7 +471,7 @@ SQL;
      */
     public function saveArray(array $afscs): void
     {
-        if (empty($afscs)) {
+        if (!$afscs) {
             return;
         }
 

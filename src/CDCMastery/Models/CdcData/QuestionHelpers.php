@@ -35,64 +35,45 @@ class QuestionHelpers
      */
     public static function listUuid(array $questions): array
     {
-        return array_map(static function (Question $v) {
+        return array_map(static function (Question $v): string {
             return $v->getUuid();
         }, $questions);
     }
 
-    /**
-     * @param $questionOrUuid
-     * @return Afsc
-     */
-    public function getQuestionAfsc($questionOrUuid): Afsc
+    public function getQuestionsAfscUuids(array $question_uuids): array
     {
-        if ($questionOrUuid instanceof Question) {
-            $questionOrUuid = $questionOrUuid->getUuid();
+        if (!$question_uuids) {
+            return [];
         }
 
-        if (!is_string($questionOrUuid)) {
-            return new Afsc();
-        }
-
-        if (empty($questionOrUuid)) {
-            return new Afsc();
-        }
-
-        $questionUuid = $questionOrUuid;
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $question_uuids));
 
         $qry = <<<SQL
-SELECT
-  afscUUID
+SELECT questionData.uuid AS quuid, aL.uuid AS auuid
 FROM questionData
-WHERE uuid = ?
+LEFT JOIN afscList aL on questionData.afscUUID = aL.uuid
+WHERE questionData.uuid IN ('{$uuids_str}')
 SQL;
 
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $questionUuid);
+        $res = $this->db->query($qry);
 
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return new Afsc();
+        if ($res === false) {
+            return [];
         }
 
-        $stmt->bind_result(
-            $uuid
-        );
+        $out = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($out[ $row[ 'auuid' ] ])) {
+                $out[ $row[ 'auuid' ] ] = [];
+            }
 
-        $stmt->fetch();
-        $stmt->close();
-
-        if (!isset($uuid) || $uuid === '') {
-            return new Afsc();
+            $out[ $row[ 'auuid' ] ][] = $row[ 'quuid' ];
         }
 
-        $afscCollection = new AfscCollection(
-            $this->db,
-            $this->log
-        );
-
-        /* @fixme this can return null */
-        return $afscCollection->fetch($uuid);
+        $res->free();
+        return $out;
     }
 
     /**
@@ -126,15 +107,11 @@ SQL;
 
         $data = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['count']) || $row['count'] === null) {
+            if (!isset($row[ 'count' ], $row[ 'afscUUID' ])) {
                 continue;
             }
 
-            if (!isset($row['afscUUID']) || $row['afscUUID'] === null) {
-                continue;
-            }
-
-            $data[$row['afscUUID']] = (int)$row['count'];
+            $data[ $row[ 'afscUUID' ] ] = (int)$row[ 'count' ];
         }
 
         $res->free();

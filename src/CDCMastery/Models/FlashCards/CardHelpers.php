@@ -4,7 +4,6 @@
 namespace CDCMastery\Models\FlashCards;
 
 
-use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 
@@ -17,7 +16,7 @@ class CardHelpers
      */
     public static function create_afsc_cards(CdcDataCollection $cdc_data, Afsc $afsc): array
     {
-        $qas = $cdc_data->fetch($afsc->getUuid())
+        $qas = $cdc_data->fetch($afsc)
                         ->getQuestionAnswerData();
 
         if (!$qas) {

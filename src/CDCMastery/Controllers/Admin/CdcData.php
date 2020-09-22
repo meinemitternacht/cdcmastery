@@ -544,7 +544,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -609,7 +609,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -921,7 +921,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -972,7 +972,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -1023,7 +1023,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -1120,7 +1120,7 @@ class CdcData extends Admin
 
         $question = $this->questions->fetch($afsc, $quuid);
 
-        if ($question->getUuid() === '') {
+        if (!$question) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The specified question does not exist or does not belong to this AFSC'
@@ -1165,7 +1165,7 @@ class CdcData extends Admin
             return $this->redirect('/admin/cdc/afsc');
         }
 
-        $cdc_data = $this->cdc_datas->fetch($afsc->getUuid());
+        $cdc_data = $this->cdc_datas->fetch($afsc);
 
         $data = [
             'afsc' => $afsc,

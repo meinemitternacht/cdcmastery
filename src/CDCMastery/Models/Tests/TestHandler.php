@@ -11,17 +11,19 @@ namespace CDCMastery\Models\Tests;
 
 use CDCMastery\Helpers\ArrayHelpers;
 use CDCMastery\Helpers\UUID;
+use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\AnswerCollection;
-use CDCMastery\Models\CdcData\AnswerHelpers;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionAnswers;
+use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use DateTime;
 use Exception;
 use Monolog\Logger;
 use mysqli;
+use RuntimeException;
 use function count;
 
 class TestHandler
@@ -37,19 +39,42 @@ class TestHandler
 
     protected mysqli $db;
     protected Logger $log;
+    private AfscCollection $afscs;
+    private TestCollection $tests;
     private TestDataHelpers $test_data_helpers;
+    private QuestionCollection $questions;
+    private QuestionHelpers $question_helpers;
+    private AnswerCollection $answers;
     private ?Test $test;
 
-    public function __construct(mysqli $mysqli, Logger $logger, TestDataHelpers $test_data_helpers)
-    {
+    public function __construct(
+        mysqli $mysqli,
+        Logger $logger,
+        AfscCollection $afscs,
+        TestCollection $tests,
+        TestDataHelpers $test_data_helpers,
+        QuestionCollection $questions,
+        QuestionHelpers $question_helpers,
+        AnswerCollection $answers
+    ) {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->afscs = $afscs;
+        $this->tests = $tests;
         $this->test_data_helpers = $test_data_helpers;
+        $this->questions = $questions;
+        $this->question_helpers = $question_helpers;
+        $this->answers = $answers;
     }
 
     /**
      * @param mysqli $mysqli
      * @param Logger $logger
+     * @param AfscCollection $afscs
+     * @param CdcDataCollection $cdc_data
+     * @param QuestionCollection $questions
+     * @param QuestionHelpers $question_helpers
+     * @param AnswerCollection $answers
      * @param TestDataHelpers $test_data_helpers
      * @param TestOptions $options
      * @return TestHandler
@@ -58,58 +83,59 @@ class TestHandler
     public static function factory(
         mysqli $mysqli,
         Logger $logger,
+        AfscCollection $afscs,
+        TestCollection $tests,
+        CdcDataCollection $cdc_data,
+        QuestionCollection $questions,
+        QuestionHelpers $question_helpers,
+        AnswerCollection $answers,
         TestDataHelpers $test_data_helpers,
         TestOptions $options
     ): self {
-        if (count($options->getAfscs()) === 0) {
-            return new self($mysqli, $logger, $test_data_helpers);
-        }
-
-        /* Load AFSCs and generate an array of questions */
-        $cdcDataCollection = new CdcDataCollection(
-            $mysqli,
-            $logger
-        );
-
-        $questions = [];
-        foreach ($options->getAfscs() as $afsc) {
-            $questionData = $cdcDataCollection->fetch($afsc->getUuid())->getQuestionAnswerData();
-
-            if (!$questionData) {
-                continue;
-            }
-
-            $questionData = array_filter($questionData, static function (QuestionAnswers $v): bool {
-                return !$v->getQuestion()->isDisabled();
-            });
-
-            foreach ($questionData as $questionAnswer) {
-                $questions[] = $questionAnswer->getQuestion();
-            }
-        }
-
-        if (!$questions) {
-            return new self($mysqli, $logger, $test_data_helpers);
-        }
-
-        /* Randomize questions and extract a slice of them */
-        ArrayHelpers::shuffle($questions);
-
         if ($options->getNumQuestions() <= 0) {
-            return new self($mysqli, $logger, $test_data_helpers);
+            throw new RuntimeException('The test parameters asked for 0 questions to be presented');
         }
 
         if ($options->getNumQuestions() > Test::MAX_QUESTIONS) {
             $options->setNumQuestions(Test::MAX_QUESTIONS);
         }
 
-        $n_questions = count($questions);
+        if (!$options->getAfscs()) {
+            throw new RuntimeException('One or more AFSC selections must be provided');
+        }
+
+        /* Load AFSCs and generate an array of questions */
+        $tgt_questions = [];
+        foreach ($options->getAfscs() as $afsc) {
+            $qdata = $cdc_data->fetch($afsc)->getQuestionAnswerData();
+
+            if (!$qdata) {
+                continue;
+            }
+
+            $qdata = array_filter($qdata, static function (QuestionAnswers $v): bool {
+                return !$v->getQuestion()->isDisabled();
+            });
+
+            foreach ($qdata as $questionAnswer) {
+                $tgt_questions[] = $questionAnswer->getQuestion();
+            }
+        }
+
+        if (!$tgt_questions) {
+            throw new RuntimeException('There are no questions in the database for the AFSC(s) selected');
+        }
+
+        /* Randomize questions and extract a slice of them */
+        ArrayHelpers::shuffle($tgt_questions);
+
+        $n_questions = count($tgt_questions);
 
         if ($options->getNumQuestions() > $n_questions) {
             $options->setNumQuestions($n_questions);
         }
 
-        $questionList = array_slice($questions,
+        $questionList = array_slice($tgt_questions,
                                     0,
                                     $options->getNumQuestions());
 
@@ -121,7 +147,14 @@ class TestHandler
         $test->setTimeStarted(new DateTime());
         $test->setUserUuid($options->getUser()->getUuid());
 
-        $handler = new self($mysqli, $logger, $test_data_helpers);
+        $handler = new self($mysqli,
+                            $logger,
+                            $afscs,
+                            $tests,
+                            $test_data_helpers,
+                            $questions,
+                            $question_helpers,
+                            $answers);
         $handler->setTest($test);
 
         /* Navigate to the first question, which automatically saves the new test */
@@ -133,13 +166,33 @@ class TestHandler
     /**
      * @param mysqli $mysqli
      * @param Logger $logger
+     * @param AfscCollection $afscs
+     * @param QuestionCollection $questions
+     * @param QuestionHelpers $question_helpers
+     * @param AnswerCollection $answers
      * @param TestDataHelpers $test_data_helpers
      * @param Test $test
      * @return TestHandler
      */
-    public static function resume(mysqli $mysqli, Logger $logger, TestDataHelpers $test_data_helpers, Test $test): self
-    {
-        $handler = new self($mysqli, $logger, $test_data_helpers);
+    public static function resume(
+        mysqli $mysqli,
+        Logger $logger,
+        AfscCollection $afscs,
+        TestCollection $tests,
+        QuestionCollection $questions,
+        QuestionHelpers $question_helpers,
+        AnswerCollection $answers,
+        TestDataHelpers $test_data_helpers,
+        Test $test
+    ): self {
+        $handler = new self($mysqli,
+                            $logger,
+                            $afscs,
+                            $tests,
+                            $test_data_helpers,
+                            $questions,
+                            $question_helpers,
+                            $answers);
         $handler->setTest($test);
 
         return $handler;
@@ -227,7 +280,7 @@ class TestHandler
             return;
         }
 
-        if (!isset($this->test->getQuestions()[$idx])) {
+        if (!isset($this->test->getQuestions()[ $idx ])) {
             return;
         }
 
@@ -245,26 +298,14 @@ class TestHandler
             return [];
         }
 
-        $questionHelpers = new QuestionHelpers(
-            $this->db,
-            $this->log
-        );
+        $question = $this->getQuestion();
+        $afsc = $this->afscs->fetch($question->getAfscUuid());
 
-        $answerCollection = new AnswerCollection(
-            $this->db,
-            $this->log
-        );
+        if (!$afsc) {
+            throw new RuntimeException('The AFSC for that question no longer exists');
+        }
 
-        $answerCollection->preloadQuestionAnswers(
-            $questionHelpers->getQuestionAfsc(
-                $this->getQuestion()
-            ),
-            [$this->getQuestion()->getUuid()]
-        );
-
-        $answerList = $answerCollection->getQuestionAnswers(
-            $this->getQuestion()->getUuid()
-        );
+        $answerList = $this->answers->fetchByQuestion($afsc, $question);
 
         ArrayHelpers::shuffle($answerList);
 
@@ -306,7 +347,9 @@ class TestHandler
                     'text' => $question->getText(),
                 ],
                 'answers' => $answerData,
-                'selection' => $storedAnswer->getUuid(),
+                'selection' => $storedAnswer
+                    ? $storedAnswer->getUuid()
+                    : null,
             ],
         ];
     }
@@ -330,7 +373,7 @@ class TestHandler
             $idx = $this->test->getCurrentQuestion();
         }
 
-        return $this->test->getQuestions()[$idx] ?? new Question();
+        return $this->test->getQuestions()[ $idx ] ?? new Question();
     }
 
     private function save(): void
@@ -339,10 +382,7 @@ class TestHandler
             return;
         }
 
-        $testCollection = new TestCollection($this->db,
-                                             $this->log);
-
-        $testCollection->save($this->test);
+        $this->tests->save($this->test);
     }
 
     /**
@@ -372,27 +412,12 @@ class TestHandler
      */
     public function score(): void
     {
-        $answerHelpers = new AnswerHelpers($this->db,
-                                           $this->log);
-
-        $testCollection = new TestCollection($this->db,
-                                             $this->log);
-
-        $selectedAnswers = $this->test_data_helpers->list($this->getTest());
-
-        $answerUuids = [];
-        foreach ($selectedAnswers as $answer) {
-            $answerUuids[] = $answer->getAnswer()->getUuid();
-        }
-
-        $answersCorrect = $answerHelpers->fetchCorrectArray(
-            $answerUuids
-        );
+        $test_qa_pairs = $this->test_data_helpers->list($this->getTest());
 
         $nCorrect = 0;
         $nMissed = 0;
-        foreach ($answersCorrect as $answerUuid => $answerCorrect) {
-            if ($answerCorrect) {
+        foreach ($test_qa_pairs as $test_qa_pair) {
+            if ($test_qa_pair->getAnswer()->isCorrect()) {
                 $nCorrect++;
                 continue;
             }
@@ -405,9 +430,9 @@ class TestHandler
         $test->setTimeCompleted(new DateTime());
         $test->setScore($this->calculateScore($test->getNumQuestions(),
                                               $nCorrect));
-        $test->setNumAnswered(count($selectedAnswers));
+        $test->setNumAnswered(count($test_qa_pairs));
         $test->setNumMissed($nMissed);
-        $testCollection->save($test);
+        $this->tests->save($test);
     }
 
     /**

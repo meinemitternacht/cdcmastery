@@ -8,6 +8,10 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\AnswerCollection;
+use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\CdcData\QuestionCollection;
+use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Tests\QuestionResponse;
@@ -25,6 +29,7 @@ use mysqli;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 use function count;
 
@@ -33,51 +38,19 @@ class Tests extends RootController
     private const TYPE_ALL = 0;
     private const TYPE_COMPLETE = 1;
     private const TYPE_INCOMPLETE = 2;
-
-    /**
-     * @var AuthHelpers
-     */
-    private $auth_helpers;
-
-    /**
-     * @var UserCollection
-     */
-    private $users;
-
-    /**
-     * @var TestCollection
-     */
-    private $tests;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var TestHelpers
-     */
-    private $test_helpers;
-
-    /**
-     * @var UserAfscAssociations
-     */
-    private $user_afscs;
-
-    /**
-     * @var AfscCollection
-     */
-    private $afscs;
-
-    /**
-     * @var mysqli
-     */
-    private $db;
-
-    /**
-     * @var TestDataHelpers
-     */
-    private $test_data_helpers;
+    private AuthHelpers $auth_helpers;
+    private UserCollection $users;
+    private TestCollection $tests;
+    private Config $config;
+    private TestHelpers $test_helpers;
+    private UserAfscAssociations $user_afscs;
+    private AfscCollection $afscs;
+    private mysqli $db;
+    private QuestionCollection $questions;
+    private QuestionHelpers $question_helpers;
+    private AnswerCollection $answers;
+    private TestDataHelpers $test_data_helpers;
+    private CdcDataCollection $cdc_data;
 
     public function __construct(
         Logger $logger,
@@ -91,7 +64,11 @@ class Tests extends RootController
         UserAfscAssociations $user_afscs,
         AfscCollection $afscs,
         mysqli $mysqli,
-        TestDataHelpers $test_data_helpers
+        TestDataHelpers $test_data_helpers,
+        CdcDataCollection $cdc_data,
+        QuestionCollection $questions,
+        QuestionHelpers $question_helpers,
+        AnswerCollection $answers
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -104,6 +81,10 @@ class Tests extends RootController
         $this->afscs = $afscs;
         $this->db = $mysqli;
         $this->test_data_helpers = $test_data_helpers;
+        $this->cdc_data = $cdc_data;
+        $this->questions = $questions;
+        $this->question_helpers = $question_helpers;
+        $this->answers = $answers;
     }
 
     /**
@@ -149,6 +130,15 @@ class Tests extends RootController
     public function do_delete_test(string $testUuid): Response
     {
         $test = $this->tests->fetch($testUuid);
+
+        if (!$test) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test does not exist'
+            );
+
+            return $this->redirect('/');
+        }
 
         if (!$this->validate_test($test, false)) {
             return $this->redirect('/');
@@ -288,17 +278,20 @@ class Tests extends RootController
             }
         }
 
-        $test_data_helpers = new TestDataHelpers($this->db,
-                                                 $this->log);
-
         $testOptions = new TestOptions();
-        $testOptions->setNumQuestions($numQuestions);
+        $testOptions->setNumQuestions(min($numQuestions, $this->config->get(['testing', 'maxQuestions'])));
         $testOptions->setUser($user);
         $testOptions->setAfscs($validAfscs);
 
         $newTest = TestHandler::factory($this->db,
                                         $this->log,
-                                        $test_data_helpers,
+                                        $this->afscs,
+                                        $this->tests,
+                                        $this->cdc_data,
+                                        $this->questions,
+                                        $this->question_helpers,
+                                        $this->answers,
+                                        $this->test_data_helpers,
                                         $testOptions);
 
         if (($newTest->getTest()->getUuid() ?? '') === '') {
@@ -333,6 +326,15 @@ class Tests extends RootController
     {
         $test = $this->tests->fetch($testUuid);
 
+        if (!$test) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test does not exist'
+            );
+
+            goto out_redirect_home;
+        }
+
         if (!$this->validate_test($test)) {
             goto out_redirect_home;
         }
@@ -341,12 +343,14 @@ class Tests extends RootController
             goto out_redirect_score;
         }
 
-        $test_data_helpers = new TestDataHelpers($this->db,
-                                                 $this->log);
-
         $testHandler = TestHandler::resume($this->db,
                                            $this->log,
-                                           $test_data_helpers,
+                                           $this->afscs,
+                                           $this->tests,
+                                           $this->questions,
+                                           $this->question_helpers,
+                                           $this->answers,
+                                           $this->test_data_helpers,
                                            $test);
 
         $payload = json_decode($this->getRequest()->getContent() ?? null);
@@ -360,7 +364,7 @@ class Tests extends RootController
             case TestHandler::ACTION_NO_ACTION:
                 break;
             case TestHandler::ACTION_SUBMIT_ANSWER:
-                if (!isset($payload->question) || !isset($payload->answer)) {
+                if (!isset($payload->question, $payload->answer)) {
                     break;
                 }
 
@@ -415,13 +419,28 @@ class Tests extends RootController
                 break;
         }
 
-        return new JsonResponse($testHandler->getDisplayData());
+        try {
+            return new JsonResponse($testHandler->getDisplayData());
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return new JsonResponse($e->getMessage(), 500);
+        }
 
         out_redirect_score:
-        return new JsonResponse(['redirect' => '/tests/' . $testUuid . '?score',]);
+        try {
+            return new JsonResponse(['redirect' => '/tests/' . $testUuid . '?score',]);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return new JsonResponse($e->getMessage(), 500);
+        }
 
         out_redirect_home:
-        return new JsonResponse(['redirect' => '/',]);
+        try {
+            return new JsonResponse(['redirect' => '/',]);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return new JsonResponse($e->getMessage(), 500);
+        }
     }
 
     /**
@@ -434,7 +453,7 @@ class Tests extends RootController
 
         $tests = array_filter(
             $tests,
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
             }
         );
@@ -450,8 +469,8 @@ class Tests extends RootController
 
         uasort(
             $tests,
-            function (Test $a, Test $b) {
-                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+            static function (Test $a, Test $b) {
+                return $b->getTimeStarted() <=> $a->getTimeStarted();
             }
         );
 
@@ -474,6 +493,15 @@ class Tests extends RootController
     public function show_delete_test(string $testUuid): Response
     {
         $test = $this->tests->fetch($testUuid);
+
+        if (!$test) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test does not exist'
+            );
+
+            return $this->redirect('/');
+        }
 
         if (!$this->validate_test($test, false)) {
             return $this->redirect('/');
@@ -622,7 +650,7 @@ class Tests extends RootController
 
         $userTests = array_filter(
             $userTests,
-            function (Test $v) use ($type) {
+            static function (Test $v) use ($type) {
                 switch ($type) {
                     case Tests::TYPE_ALL:
                         return true;
@@ -712,6 +740,15 @@ class Tests extends RootController
     {
         $test = $this->tests->fetch($testUuid);
 
+        if (!$test) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'That test does not exist'
+            );
+
+            return $this->redirect('/');
+        }
+
         if ($test->isComplete()) {
             return $this->show_test_complete($test);
         }
@@ -727,14 +764,20 @@ class Tests extends RootController
     {
         $testData = $this->test_data_helpers->list($test);
 
+        $time_started = $test->getTimeStarted();
+        if ($time_started) {
+            $time_started = $time_started->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
+        $time_completed = $test->getTimeCompleted();
+        if ($time_completed) {
+            $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $data = [
             'showUser' => false,
-            'timeStarted' => $test->getTimeStarted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
-            'timeCompleted' => $test->getTimeCompleted()->format(
-                DateTimeHelpers::DT_FMT_LONG
-            ),
+            'timeStarted' => $time_started,
+            'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $test->getNumQuestions(),
             'numMissed' => $test->getNumMissed(),
@@ -803,9 +846,9 @@ class Tests extends RootController
         return [$column, $direction];
     }
 
-    private function validate_test(Test $test, bool $validate_afscs = true): bool
+    private function validate_test(?Test $test, bool $validate_afscs = true): bool
     {
-        if (($test->getUuid() ?? '') === '') {
+        if (!$test || ($test->getUuid() ?? '') === '') {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The provided Test ID does not exist'

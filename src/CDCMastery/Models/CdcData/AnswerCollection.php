@@ -16,32 +16,11 @@ class AnswerCollection
 {
     protected mysqli $db;
     protected Logger $log;
-    /** @var Answer[] */
-    private array $answers = [];
-    private array $questionAnswerMap = [];
-    private array $correctAnswerMap = [];
 
-    /**
-     * AnswerCollection constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     */
     public function __construct(mysqli $mysqli, Logger $logger)
     {
         $this->db = $mysqli;
         $this->log = $logger;
-    }
-
-    private function create_object(array $row): Answer
-    {
-        $answer = new Answer();
-        $answer->setUuid($row[ 'uuid' ]);
-        $answer->setQuestionUuid($row[ 'questionUUID' ]);
-        $answer->setText($row[ 'answerText' ]);
-        $answer->setCorrect((bool)$row[ 'answerCorrect' ]);
-
-        $this->mapQuestionAnswer($answer);
-        return $answer;
     }
 
     /**
@@ -52,11 +31,14 @@ class AnswerCollection
     {
         $answers = [];
         foreach ($data as $row) {
-            $answers[ $row[ 'uuid' ] ] = $this->create_object($row);
-        }
+            $answer = new Answer();
+            $answer->setUuid($row[ 'uuid' ]);
+            $answer->setQuestionUuid($row[ 'questionUUID' ]);
+            $answer->setText($row[ 'answerText' ]);
+            $answer->setCorrect((bool)$row[ 'answerCorrect' ]);
 
-        $this->answers = array_merge($this->answers,
-                                     $answers);
+            $answers[ $row[ 'uuid' ] ] = $answer;
+        }
 
         return $answers;
     }
@@ -79,8 +61,6 @@ SQL;
             $stmt->close();
             return;
         }
-
-        unset($this->answers[ $uuid ]);
     }
 
     public function deleteArray(array $uuids): void
@@ -90,19 +70,10 @@ SQL;
         }
     }
 
-    /**
-     * @param Afsc $afsc
-     * @param string $uuid
-     * @return Answer
-     */
-    public function fetch(Afsc $afsc, string $uuid): Answer
+    public function fetch(Afsc $afsc, string $uuid): ?Answer
     {
         if (empty($uuid) || empty($afsc->getUuid())) {
-            return new Answer();
-        }
-
-        if (isset($this->answers[$uuid])) {
-            return $this->answers[$uuid];
+            return null;
         }
 
         $qry = <<<SQL
@@ -125,8 +96,7 @@ FROM answerData
 WHERE uuid = ?
 SQL;
 
-            $qry = sprintf($qry,
-                           ENCRYPTION_KEY);
+            $qry = sprintf($qry, ENCRYPTION_KEY);
         }
 
         $stmt = $this->db->prepare($qry);
@@ -134,7 +104,7 @@ SQL;
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Answer();
+            return null;
         }
 
         $stmt->bind_result(
@@ -147,16 +117,14 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        $answer = $this->create_object(
-            [
-                'uuid' => $uuid,
-                'questionUUID' => $questionUuid,
-                'answerText' => $text,
-                'answerCorrect' => $correct,
-            ]
-        );
+        $row = [
+            'uuid' => $uuid,
+            'questionUUID' => $questionUuid,
+            'answerText' => $text,
+            'answerCorrect' => $correct,
+        ];
 
-        return $answer;
+        return $this->create_objects([$row])[ $uuid ] ?? null;
     }
 
     /**
@@ -166,7 +134,7 @@ SQL;
      */
     public function fetchArray(Afsc $afsc, array $uuids): array
     {
-        if (count($uuids) === 0) {
+        if (!$uuids) {
             return [];
         }
 
@@ -193,7 +161,7 @@ SELECT
   AES_DECRYPT(answerText, '%s') as answerText,
   answerCorrect
 FROM answerData
-WHERE uuid IN ('{$uuids}')
+WHERE uuid IN ('{$uuids_str}')
 ORDER BY uuid
 SQL;
 
@@ -207,7 +175,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -215,13 +183,7 @@ SQL;
         }
 
         $res->free();
-
-        $this->create_objects($rows);
-
-        return array_intersect_key(
-            $this->answers,
-            array_flip($uuids)
-        );
+        return $this->create_objects($rows);
     }
 
     /**
@@ -306,64 +268,18 @@ SQL;
     }
 
     /**
-     * @param string $questionUuid
+     * @param Afsc $afsc
+     * @param Question[] $questions
      * @return Answer[]
      */
-    public function getQuestionAnswers(string $questionUuid): array
+    public function fetchByQuestions(Afsc $afsc, array $questions): array
     {
-        if (empty($questionUuid) || empty($this->answers)) {
+        $uuids = array_map(static function (Question $v): string {
+            return $v->getUuid();
+        }, $questions);
+
+        if (!$uuids) {
             return [];
-        }
-
-        return array_intersect_key(
-            $this->answers,
-            array_flip($this->questionAnswerMap[ $questionUuid ] ?? [])
-        );
-    }
-
-    public function getCorrectAnswer(string $questionUuid): ?Answer
-    {
-        if (!$questionUuid || !$this->answers || !isset($this->correctAnswerMap[ $questionUuid ])) {
-            return null;
-        }
-
-        return $this->answers[ $this->correctAnswerMap[ $questionUuid ] ] ?? null;
-    }
-
-    /**
-     * @param Answer $answer
-     */
-    private function mapQuestionAnswer(Answer $answer): void
-    {
-        if (empty($answer->getUuid()) || empty($answer->getQuestionUuid())) {
-            return;
-        }
-
-        if (!is_array($this->questionAnswerMap)) {
-            $this->questionAnswerMap = [];
-        }
-
-        if (!isset($this->questionAnswerMap[ $answer->getQuestionUuid() ])) {
-            $this->questionAnswerMap[ $answer->getQuestionUuid() ] = [];
-        }
-
-        $this->questionAnswerMap[ $answer->getQuestionUuid() ][] = $answer->getUuid();
-
-        if (!$answer->isCorrect()) {
-            return;
-        }
-
-        $this->correctAnswerMap[ $answer->getQuestionUuid() ] = $answer->getUuid();
-    }
-
-    /**
-     * @param Afsc $afsc
-     * @param string[] $uuids
-     */
-    public function preloadQuestionAnswers(Afsc $afsc, array $uuids): void
-    {
-        if (count($uuids) === 0) {
-            return;
         }
 
         $uuids_str = implode("','",
@@ -378,7 +294,7 @@ SELECT
   answerCorrect
 FROM answerData
 WHERE questionUUID IN ('{$uuids_str}')
-ORDER BY uuid
+ORDER BY answerText
 SQL;
 
         if ($afsc->isFouo()) {
@@ -390,7 +306,7 @@ SELECT
   answerCorrect
 FROM answerData
 WHERE questionUUID IN ('{$uuids_str}')
-ORDER BY uuid
+ORDER BY answerText
 SQL;
 
             $qry = sprintf(
@@ -401,22 +317,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            return [];
+        }
+
+        $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
-                continue;
-            }
-
-            $answer = new Answer();
-            $answer->setUuid($row['uuid'] ?? '');
-            $answer->setQuestionUuid($row['questionUUID'] ?? '');
-            $answer->setText($row['answerText'] ?? '');
-            $answer->setCorrect($row['answerCorrect'] ?? false);
-
-            $this->answers[$row['uuid']] = $answer;
-            $this->mapQuestionAnswer($answer);
+            $rows[] = $row;
         }
 
         $res->free();
+        return $this->create_objects($rows);
     }
 
     /**
@@ -428,9 +339,6 @@ SQL;
         if (empty($afsc->getUuid()) || empty($answer->getUuid())) {
             return;
         }
-
-        $this->answers[$answer->getUuid()] = $answer;
-        $this->mapQuestionAnswer($answer);
 
         $uuid = $answer->getUuid();
         $questionUuid = $answer->getQuestionUuid();
@@ -489,7 +397,7 @@ SQL;
      */
     public function saveArray(Afsc $afsc, array $answers): void
     {
-        if (empty($afsc->getUuid()) || empty($answers)) {
+        if (!$answers || empty($afsc->getUuid())) {
             return;
         }
 
@@ -540,9 +448,6 @@ SQL;
             if (!$answer instanceof Answer) {
                 continue;
             }
-
-            $this->answers[ $answer->getUuid() ] = $answer;
-            $this->mapQuestionAnswer($answer);
 
             $uuid = $answer->getUuid();
             $questionUuid = $answer->getQuestionUuid();

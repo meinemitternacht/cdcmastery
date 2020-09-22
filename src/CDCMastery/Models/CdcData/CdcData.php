@@ -11,15 +11,9 @@ namespace CDCMastery\Models\CdcData;
 
 class CdcData
 {
-    /**
-     * @var Afsc
-     */
-    private $afsc;
-
-    /**
-     * @var QuestionAnswers[]
-     */
-    private $questionAnswerData;
+    private Afsc $afsc;
+    /** @var QuestionAnswers[] */
+    private array $questionAnswerData;
 
     /**
      * @return Afsc

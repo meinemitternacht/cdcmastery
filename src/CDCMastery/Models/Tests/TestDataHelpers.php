@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Tests;
 
 
+use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\Answer;
 use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\Question;
@@ -20,25 +21,27 @@ use mysqli;
 
 class TestDataHelpers
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
+    private mysqli $db;
+    private Logger $log;
+    private AfscCollection $afscs;
+    private QuestionHelpers $question_helpers;
+    private QuestionCollection $questions;
+    private AnswerCollection $answers;
 
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * TestDataHelpers constructor.
-     * @param mysqli $mysqli
-     * @param Logger $logger
-     */
-    public function __construct(mysqli $mysqli, Logger $logger)
-    {
+    public function __construct(
+        mysqli $mysqli,
+        Logger $logger,
+        AfscCollection $afscs,
+        QuestionHelpers $question_helpers,
+        QuestionCollection $questions,
+        AnswerCollection $answers
+    ) {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->afscs = $afscs;
+        $this->question_helpers = $question_helpers;
+        $this->questions = $questions;
+        $this->answers = $answers;
     }
 
     /**
@@ -47,7 +50,7 @@ class TestDataHelpers
      */
     public function count(Test $test): int
     {
-        if (empty($test->getUuid())) {
+        if (!$test->getUuid()) {
             return 0;
         }
 
@@ -75,26 +78,21 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($responseCount) || $responseCount === null) {
+        if (!isset($responseCount)) {
             return 0;
         }
 
         return $responseCount;
     }
 
-    /**
-     * @param Test $test
-     * @param Question $question
-     * @return Answer
-     */
-    public function fetch(Test $test, Question $question): Answer
+    public function fetch(Test $test, Question $question): ?Answer
     {
         if (empty($test->getUuid()) || empty($question->getUuid())) {
-            return new Answer();
+            return null;
         }
 
-        $testUuid = $test->getUuid();
-        $questionUuid = $question->getUuid();
+        $test_uuid = $test->getUuid();
+        $q_uuid = $question->getUuid();
 
         $qry = <<<SQL
 SELECT
@@ -107,42 +105,34 @@ SQL;
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
             'ss',
-            $testUuid,
-            $questionUuid
+            $test_uuid,
+            $q_uuid
         );
 
         if (!$stmt->execute()) {
             $stmt->close();
-            return new Answer();
+            return null;
         }
 
         $stmt->bind_result(
-            $answerUuid
+            $auuid
         );
 
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
-            return new Answer();
+        if (!isset($auuid) || $auuid === '') {
+            return null;
         }
 
-        $questionHelpers = new QuestionHelpers(
-            $this->db,
-            $this->log
-        );
+        $afsc = $this->afscs->fetch($question->getAfscUuid());
 
-        $afsc = $questionHelpers->getQuestionAfsc($question);
+        if (!$afsc) {
+            return null;
+        }
 
-        $answerCollection = new AnswerCollection(
-            $this->db,
-            $this->log
-        );
-
-        return $answerCollection->fetch(
-            $afsc,
-            $answerUuid
-        );
+        return $this->answers->fetch($afsc,
+                                     $auuid);
     }
 
     public function getUnanswered(Test $test): array
@@ -175,17 +165,17 @@ SQL;
             $answerUuid
         );
 
-        $questionUuidList = QuestionHelpers::listUuid(
+        $quuids = QuestionHelpers::listUuid(
             $test->getQuestions()
         );
 
         $answered = [];
         while ($stmt->fetch()) {
-            if (!isset($questionUuid) || $questionUuid === null || $questionUuid === '') {
+            if (!isset($questionUuid) || $questionUuid === '') {
                 continue;
             }
 
-            if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
+            if (!isset($answerUuid) || $answerUuid === '') {
                 continue;
             }
 
@@ -201,17 +191,16 @@ SQL;
         $answered = array_flip($answered);
 
         $unanswered = [];
-        $c = count($questionUuidList);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($questionUuidList[$i])) {
+        foreach ($quuids as $idx => $quuid) {
+            if (!isset($quuids[ $idx ])) {
                 continue;
             }
 
-            if (isset($answered[$questionUuidList[$i]])) {
+            if (isset($answered[ $quuid ])) {
                 continue;
             }
 
-            $unanswered[] = $i;
+            $unanswered[] = $idx;
         }
 
         return $unanswered;
@@ -223,7 +212,7 @@ SQL;
      */
     public function list(Test $test): array
     {
-        if (empty($test->getUuid())) {
+        if (!$test->getUuid()) {
             return [];
         }
 
@@ -247,65 +236,65 @@ SQL;
         }
 
         $stmt->bind_result(
-            $questionUuid,
-            $answerUuid
+            $q_uuid,
+            $a_uuid
         );
 
-        $qaUuid = [];
+        $question_answer_uuids = [];
         while ($stmt->fetch()) {
-            if (!isset($questionUuid) || $questionUuid === null || $questionUuid === '') {
+            if (!isset($q_uuid) || $q_uuid === '') {
                 continue;
             }
 
-            if (!isset($answerUuid) || $answerUuid === null || $answerUuid === '') {
+            if (!isset($a_uuid) || $a_uuid === '') {
                 continue;
             }
 
-            $qaUuid[$questionUuid] = $answerUuid;
+            $question_answer_uuids[ $q_uuid ] = $a_uuid;
         }
 
         $stmt->close();
 
-        if (empty($qaUuid)) {
+        if (!$question_answer_uuids) {
             return [];
         }
 
-        $questionCollection = new QuestionCollection(
-            $this->db,
-            $this->log
-        );
+        $q_afscs = $this->question_helpers->getQuestionsAfscUuids(array_keys($question_answer_uuids));
+        $afscs = $this->afscs->fetchArray(array_keys($q_afscs));
+        $questions = [];
+        $answers = [];
+        foreach ($q_afscs as $afsc_uuid => $q_uuids) {
+            $question_objs = $this->questions->fetchArray($afscs[ $afsc_uuid ], $q_uuids);
+            $questions[] = $question_objs;
 
-        $questionHelpers = new QuestionHelpers(
-            $this->db,
-            $this->log
-        );
+            $tgt_afsc = $afscs[ $afsc_uuid ];
+            $tgt_answer_uuids = array_values(array_intersect_key($question_answer_uuids, $question_objs));
+            $answer_objs = $this->answers->fetchArray($tgt_afsc,
+                                                      $tgt_answer_uuids);
 
-        $answerCollection = new AnswerCollection(
-            $this->db,
-            $this->log
-        );
+            foreach ($answer_objs as $answer) {
+                $aquuid = $answer->getQuestionUuid();
+                if (!isset($answers[ $aquuid ])) {
+                    $answers[ $aquuid ] = [];
+                }
 
-        $questionAnswers = [];
-        foreach ($qaUuid as $qUuid => $aUuid) {
-            $afsc = $questionHelpers->getQuestionAfsc($qUuid);
-
-            $questionAnswer = new QuestionAnswer();
-            $questionAnswer->setQuestion(
-                $questionCollection->fetch(
-                    $afsc,
-                    $qUuid
-                )
-            );
-            $questionAnswer->setAnswer(
-                $answerCollection->fetch(
-                    $afsc,
-                    $aUuid
-                )
-            );
-            $questionAnswers[] = $questionAnswer;
+                $answers[ $aquuid ] = $answer;
+            }
         }
 
-        return $questionAnswers;
+        if ($questions) {
+            $questions = array_replace(...$questions);
+        }
+
+        $qas = [];
+        foreach ($question_answer_uuids as $q_uuid => $a_uuid) {
+            $qa = new QuestionAnswer();
+            $qa->setQuestion($questions[ $q_uuid ]);
+            $qa->setAnswer($answers[ $q_uuid ]);
+            $qas[] = $qa;
+        }
+
+        return $qas;
     }
 
     /**
