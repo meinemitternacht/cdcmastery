@@ -588,8 +588,8 @@ class Auth extends RootController
     public function do_login(): Response
     {
         if ($this->auth_helpers->assert_logged_in()) {
-            $this->log->addWarning('failed login attempt :: already logged in :: ' .
-                                   "account {$this->auth_helpers->get_user_uuid()} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: already logged in :: ' .
+                                "account {$this->auth_helpers->get_user_uuid()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::INFO,
                                 'You are already logged in');
@@ -598,7 +598,7 @@ class Auth extends RootController
         }
 
         if ($this->limiter->assert_limited()) {
-            $this->log->addWarning("rate-limited login attempt :: username '{$this->get('username')}' :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning("rate-limited login attempt :: username '{$this->get('username')}' :: ip {$_SERVER['REMOTE_ADDR']}");
             $expires = $this->limiter->get_limit_expires_seconds();
 
             $this->flash()->add(MessageTypes::WARNING,
@@ -616,8 +616,8 @@ class Auth extends RootController
             $this->limiter->increment();
 
             $req_str = json_encode($this->request->request->all(), JSON_THROW_ON_ERROR);
-            $this->log->addWarning('login attempt missing parameters :: ' .
-                                   "{$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('login attempt missing parameters :: ' .
+                                "{$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'A required field was not provided, please try again');
@@ -645,8 +645,8 @@ class Auth extends RootController
 
         if ($uuid === null) {
             $this->limiter->increment();
-            $this->log->addWarning('failed login attempt :: unknown user :: ' .
-                                   "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: unknown user :: ' .
+                                "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your username or password is incorrect, please try again');
@@ -658,8 +658,8 @@ class Auth extends RootController
 
         if (!$user->assert_valid()) {
             $this->limiter->increment();
-            $this->log->addWarning('failed login attempt :: unknown user :: ' .
-                                   "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: unknown user :: ' .
+                                "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your username or password is incorrect, please try again');
@@ -667,12 +667,23 @@ class Auth extends RootController
             return $this->show_login();
         }
 
-        /* @todo compare to legacy password */
+        $legacy_hash = $user->getLegacyPassword();
 
-        if (!AuthHelpers::compare($password, $user->getPassword())) {
+        if ($legacy_hash && !AuthHelpers::compare_legacy($password, $legacy_hash)) {
             $this->limiter->increment();
-            $this->log->addWarning('failed login attempt :: password mismatch :: ' .
-                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: legacy password mismatch :: ' .
+                                "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your username or password is incorrect, please try again');
+
+            return $this->show_login();
+        }
+
+        if (!$legacy_hash && !AuthHelpers::compare($password, $user->getPassword())) {
+            $this->limiter->increment();
+            $this->log->warning('failed login attempt :: password mismatch :: ' .
+                                "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your username or password is incorrect, please try again');
@@ -682,8 +693,8 @@ class Auth extends RootController
 
         if ($user->isDisabled()) {
             $this->limiter->increment();
-            $this->log->addWarning('failed login attempt :: account disabled :: ' .
-                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: account disabled :: ' .
+                                "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your account has been disabled.  Please contact the site administrator for more information.');
@@ -692,8 +703,8 @@ class Auth extends RootController
         }
 
         if ($this->activations->fetchByUser($user)) {
-            $this->log->addWarning('failed login attempt :: account not activated :: ' .
-                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: account not activated :: ' .
+                                "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'Your account has not been activated yet. Please check your e-mail for further instructions or contact the site administrator to activate your account manually.');
@@ -704,8 +715,8 @@ class Auth extends RootController
         $role = $this->roles->fetch($user->getRole());
 
         if (!$role) {
-            $this->log->addWarning('login error :: role not found :: ' .
-                                   "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('login error :: role not found :: ' .
+                                "{$user->getHandle()} :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(MessageTypes::WARNING,
                                 'The system had trouble accessing your account, please contact the site administrator');
@@ -719,6 +730,16 @@ class Auth extends RootController
         $now = new DateTime();
         $user->setLastActive($now);
         $user->setLastLogin($now);
+
+        if ($legacy_hash) {
+            $user->setLegacyPassword(null);
+            $user->setPassword(AuthHelpers::hash($password));
+        }
+
+        if (!$legacy_hash) {
+            AuthHelpers::check_rehash($this->log, $user, $password);
+        }
+
         $this->users->save($user);
 
         $this->log->addInfo("login success :: account {$user->getUuid()} " .
@@ -757,9 +778,9 @@ class Auth extends RootController
     public function show_login(): Response
     {
         if ($this->auth_helpers->assert_logged_in()) {
-            $this->log->addWarning('failed login attempt :: already logged in :: ' .
-                                   "account {$this->auth_helpers->get_user_uuid()} " .
-                                   "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
+            $this->log->warning('failed login attempt :: already logged in :: ' .
+                                "account {$this->auth_helpers->get_user_uuid()} " .
+                                "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
             $this->flash()->add(
                 MessageTypes::INFO,

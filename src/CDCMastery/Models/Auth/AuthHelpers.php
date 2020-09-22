@@ -1,8 +1,10 @@
 <?php
+
 namespace CDCMastery\Models\Auth;
 
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\User;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 
@@ -19,7 +21,10 @@ class AuthHelpers
     private const KEY_USER_NAME = 'name';
     private const KEY_USER_UUID = 'uuid';
 
-    private const PASSWORD_HASH_ROUNDS = 13;
+    private const LEGACY_HASH_ALGO = 'sha1';
+
+    private const PASSWORD_HASH_ROUNDS = 14;
+    private const PASSWORD_HASH_OPTIONS = ['cost' => self::PASSWORD_HASH_ROUNDS];
 
     private Session $session;
 
@@ -74,18 +79,38 @@ class AuthHelpers
         return (bool)preg_match('/\.mil$/', $email);
     }
 
+    public static function compare_legacy(string $password, string $hash): bool
+    {
+        return hash_equals($hash, hash(self::LEGACY_HASH_ALGO, $password));
+    }
+
     public static function compare(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
     }
 
+    public static function check_rehash(LoggerInterface $log, User $user, string $password): void
+    {
+        $old_hash = $user->getPassword();
+        if (!$old_hash) {
+            return;
+        }
+
+        if (password_needs_rehash($old_hash,
+                                  PASSWORD_DEFAULT,
+                                  self::PASSWORD_HASH_OPTIONS)) {
+            $user->setPassword(password_hash($password,
+                                             PASSWORD_DEFAULT,
+                                             self::PASSWORD_HASH_OPTIONS));
+            $log->info("user password rehash :: {$user->getName()} [{$user->getUuid()}]");
+        }
+    }
+
     public static function hash(string $password): string
     {
-        return password_hash(
-            $password,
-            PASSWORD_BCRYPT,
-            ['cost' => self::PASSWORD_HASH_ROUNDS]
-        );
+        return password_hash($password,
+                             PASSWORD_DEFAULT,
+                             self::PASSWORD_HASH_OPTIONS);
     }
 
     public function assert_logged_in(): bool
