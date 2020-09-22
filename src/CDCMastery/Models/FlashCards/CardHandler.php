@@ -6,6 +6,7 @@ namespace CDCMastery\Models\FlashCards;
 
 
 use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use Monolog\Logger;
@@ -29,6 +30,8 @@ class CardHandler
     private mysqli $db;
     private Logger $log;
     private CacheHandler $cache;
+    private AfscCollection $afscs;
+    private CdcDataCollection $cdc_data;
     private CardCollection $cards;
     private CardSession $card_session;
 
@@ -37,6 +40,10 @@ class CardHandler
      * @param Session $session
      * @param mysqli $db
      * @param Logger $log
+     * @param CacheHandler $cache
+     * @param AfscCollection $afscs
+     * @param CdcDataCollection $cdc_data
+     * @param CardCollection $cards
      * @param CardSession $card_session
      */
     public function __construct(
@@ -44,6 +51,8 @@ class CardHandler
         mysqli $db,
         Logger $log,
         CacheHandler $cache,
+        AfscCollection $afscs,
+        CdcDataCollection $cdc_data,
         CardCollection $cards,
         CardSession $card_session
     ) {
@@ -51,8 +60,26 @@ class CardHandler
         $this->db = $db;
         $this->log = $log;
         $this->cache = $cache;
+        $this->afscs = $afscs;
+        $this->cdc_data = $cdc_data;
         $this->cards = $cards;
         $this->card_session = $card_session;
+    }
+
+    private static function cache_afsc_cards(CacheHandler $cache, CdcDataCollection $cdc_data, Afsc $afsc): void
+    {
+        $cache_params = [$afsc->getUuid()];
+        $tgt_cards = CardHelpers::create_afsc_cards($cdc_data, $afsc);
+        $keys = [];
+        foreach ($tgt_cards as $tgt_card) {
+            $key = self::CACHE_KEY_PREFIX_AFSC_CARDS . $tgt_card->getUuid();
+            $cache->hashAndSet($tgt_card,
+                               $key,
+                               CacheHandler::TTL_MAX);
+            $keys[] = $key;
+        }
+
+        $cache->hashAndSet($keys, self::CACHE_KEY_PREFIX_AFSC_CARDS, CacheHandler::TTL_MAX, $cache_params);
     }
 
     public static function factory(
@@ -66,10 +93,6 @@ class CardHandler
         Category $category
     ): CardHandler {
         $card_session = CardSession::resume_session($session, $category);
-
-        if ($card_session) {
-            goto out_return;
-        }
 
         switch ($category->getType()) {
             case Category::TYPE_AFSC:
@@ -88,23 +111,29 @@ class CardHandler
                 $cached = $cache->hashAndGet(self::CACHE_KEY_PREFIX_AFSC_CARDS, $cache_params);
 
                 if (is_array($cached)) {
+                    if ($card_session) {
+                        goto out_return;
+                    }
+
                     $tgt_cards = $cached;
                     break;
                 }
 
-                $tgt_cards = CardHelpers::create_afsc_cards($cdc_data, $afsc);
-                foreach ($tgt_cards as $tgt_card) {
-                    $key = self::CACHE_KEY_PREFIX_AFSC_CARDS . $tgt_card->getUuid();
-                    $cache->hashAndSet($tgt_card,
-                                       $key,
-                                       CacheHandler::TTL_MAX);
-                }
+                self::cache_afsc_cards($cache, $cdc_data, $afsc);
                 break;
             case Category::TYPE_PRIVATE:
             case Category::TYPE_GLOBAL:
             default:
+                if ($card_session) {
+                    goto out_return;
+                }
+
                 $tgt_cards = $cards->fetchCategory($category);
                 break;
+        }
+
+        if ($card_session) {
+            goto out_return;
         }
 
         $card_session = (new CardSession())->setCategory($category)
@@ -113,7 +142,7 @@ class CardHandler
                                            ->setTgtUuids(array_keys($tgt_cards));
 
         out_return:
-        return new self($session, $db, $log, $cache, $cards, $card_session);
+        return new self($session, $db, $log, $cache, $afscs, $cdc_data, $cards, $card_session);
     }
 
     public function first(): void

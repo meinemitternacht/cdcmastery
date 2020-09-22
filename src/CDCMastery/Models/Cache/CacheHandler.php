@@ -13,6 +13,7 @@ use Memcached;
 
 class CacheHandler
 {
+    private const HASH_ALGO = 'sha1';
     public const TTL_TINY = 5;
     public const TTL_SMALL = 30;
     public const TTL_MEDIUM = 120;
@@ -105,7 +106,7 @@ class CacheHandler
     public static function hash(string $key, array $params = []): string
     {
         return hash(
-            'sha256',
+            self::HASH_ALGO,
             $key . serialize(
                 $params
             )

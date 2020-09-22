@@ -117,11 +117,9 @@ return [
     Memcached::class => function (ContainerInterface $c) {
         $memcached = new Memcached();
 
-        $config = $c->get(Config::class);
+        $hostList = $c->get(Config::class)->get(['system', 'memcached']);
 
-        $hostList = $config->get(['system', 'memcached']);
-
-        if (is_array($hostList) && count($hostList) > 0) {
+        if (is_array($hostList) && $hostList) {
             foreach ($hostList as $host) {
                 if (!isset($host->host) || !isset($host->port)) {
                     continue;
