@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Files;
 
 
-class FileNotReadableException extends \Exception {}
+use Exception;
+
+class FileNotReadableException extends Exception
+{
+}

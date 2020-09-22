@@ -3,6 +3,7 @@
 namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -15,11 +16,17 @@ use Twig\Environment;
 
 class OfficeSymbols extends Admin
 {
-    /**
-     * @var OfficeSymbolCollection
-     */
-    private $office_symbols;
+    private OfficeSymbolCollection $office_symbols;
 
+    /**
+     * OfficeSymbols constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param OfficeSymbolCollection $office_symbols
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,
@@ -32,7 +39,7 @@ class OfficeSymbols extends Admin
         $this->office_symbols = $office_symbols;
     }
 
-    private function get_osymbol(string $uuid): ?OfficeSymbol
+    private function get_osymbol(string $uuid): OfficeSymbol
     {
         $osymbol = $this->office_symbols->fetch($uuid);
 
@@ -68,8 +75,7 @@ class OfficeSymbols extends Admin
 
         $osymbol->setSymbol($symbol);
 
-        $db_symbols = $this->office_symbols->fetchAll();
-        foreach ($db_symbols as $db_symbol) {
+        foreach ($this->office_symbols->fetchAll() as $db_symbol) {
             if ($edit && $db_symbol->getUuid() === $osymbol->getUuid()) {
                 continue;
             }

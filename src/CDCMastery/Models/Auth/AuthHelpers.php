@@ -37,7 +37,7 @@ class AuthHelpers
             $errors[] = "Password must be at least eight characters.";
         }
 
-        if (!preg_match("#[0-9]+#", $password)) {
+        if (!preg_match("#[\d]+#", $password)) {
             $errors[] = "Password must include at least one number.";
         }
 

@@ -322,7 +322,7 @@ class Profile extends RootController
         }
 
         $valid_ranks = UserHelpers::listRanks(false);
-        if (!$rank || trim($rank) === '' || !isset($valid_ranks[ $rank ])) {
+        if (!$rank || !isset($valid_ranks[ $rank ]) || trim($rank) === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The provided rank is invalid'
@@ -349,8 +349,8 @@ class Profile extends RootController
             goto out_return;
         }
 
-        $new_base = $this->bases->fetch($base);
-        if (!$new_base || $new_base->getUuid() === '' || !$base) {
+        $tgt_base = $this->bases->fetch($base);
+        if (!$tgt_base || $tgt_base->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Base is invalid'
@@ -360,7 +360,7 @@ class Profile extends RootController
         }
 
         $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
-        if (!$time_zone || !in_array($time_zone, $valid_time_zones)) {
+        if (!$time_zone || !in_array($time_zone, $valid_time_zones, true)) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Time Zone is invalid'
@@ -403,7 +403,7 @@ class Profile extends RootController
         $user->setRank($rank);
         $user->setFirstName($first_name);
         $user->setLastName($last_name);
-        $user->setBase($new_base->getUuid());
+        $user->setBase($tgt_base->getUuid());
         $user->setTimeZone($time_zone);
         $user->setOfficeSymbol($office_symbol
                                    ? $new_office_symbol->getUuid()

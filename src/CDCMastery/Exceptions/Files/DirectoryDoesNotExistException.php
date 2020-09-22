@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Files;
 
 
-class DirectoryDoesNotExistException extends \Exception {}
+use Exception;
+
+class DirectoryDoesNotExistException extends Exception
+{
+}

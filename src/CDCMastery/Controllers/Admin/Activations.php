@@ -5,6 +5,7 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\Activation\Activation;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
@@ -20,6 +21,16 @@ class Activations extends Admin
     private ActivationCollection $activations;
     private UserCollection $users;
 
+    /**
+     * Activations constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param ActivationCollection $activations
+     * @param UserCollection $users
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,

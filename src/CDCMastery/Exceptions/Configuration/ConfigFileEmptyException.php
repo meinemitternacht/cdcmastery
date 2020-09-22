@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Configuration;
 
 
-class ConfigFileEmptyException extends \Exception {}
+use Exception;
+
+class ConfigFileEmptyException extends Exception
+{
+}

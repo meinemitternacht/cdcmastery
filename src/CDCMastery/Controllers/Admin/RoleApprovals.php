@@ -5,6 +5,7 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\Roles\PendingRole;
@@ -22,6 +23,17 @@ class RoleApprovals extends Admin
     private RoleCollection $roles;
     private PendingRoleCollection $pending_roles;
 
+    /**
+     * RoleApprovals constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param UserCollection $users
+     * @param RoleCollection $roles
+     * @param PendingRoleCollection $pending_roles
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,

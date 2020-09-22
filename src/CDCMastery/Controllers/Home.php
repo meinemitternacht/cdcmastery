@@ -18,13 +18,11 @@ use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\UserCollection;
 use DateTime;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 class Home extends RootController
 {
@@ -69,9 +67,7 @@ class Home extends RootController
 
     /**
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws JsonException
      */
     public function show_home(): Response
     {
@@ -82,9 +78,7 @@ class Home extends RootController
 
     /**
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws JsonException
      */
     private function show_home_anonymous(): Response
     {
@@ -107,9 +101,7 @@ class Home extends RootController
 
     /**
      * @return Response
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
+     * @throws JsonException
      */
     private function show_home_authorized(): Response
     {
@@ -119,7 +111,7 @@ class Home extends RootController
         uasort(
             $tests,
             static function (Test $a, Test $b) {
-                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+                return $b->getTimeStarted() <=> $a->getTimeStarted();
             }
         );
 

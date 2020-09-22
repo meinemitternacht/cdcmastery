@@ -17,8 +17,6 @@ use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionAnswers;
-use CDCMastery\Models\CdcData\QuestionCollection;
-use CDCMastery\Models\CdcData\QuestionHelpers;
 use DateTime;
 use Exception;
 use Monolog\Logger;
@@ -42,8 +40,6 @@ class TestHandler
     private AfscCollection $afscs;
     private TestCollection $tests;
     private TestDataHelpers $test_data_helpers;
-    private QuestionCollection $questions;
-    private QuestionHelpers $question_helpers;
     private AnswerCollection $answers;
     private ?Test $test;
 
@@ -53,8 +49,6 @@ class TestHandler
         AfscCollection $afscs,
         TestCollection $tests,
         TestDataHelpers $test_data_helpers,
-        QuestionCollection $questions,
-        QuestionHelpers $question_helpers,
         AnswerCollection $answers
     ) {
         $this->db = $mysqli;
@@ -62,8 +56,6 @@ class TestHandler
         $this->afscs = $afscs;
         $this->tests = $tests;
         $this->test_data_helpers = $test_data_helpers;
-        $this->questions = $questions;
-        $this->question_helpers = $question_helpers;
         $this->answers = $answers;
     }
 
@@ -71,9 +63,8 @@ class TestHandler
      * @param mysqli $mysqli
      * @param Logger $logger
      * @param AfscCollection $afscs
+     * @param TestCollection $tests
      * @param CdcDataCollection $cdc_data
-     * @param QuestionCollection $questions
-     * @param QuestionHelpers $question_helpers
      * @param AnswerCollection $answers
      * @param TestDataHelpers $test_data_helpers
      * @param TestOptions $options
@@ -86,8 +77,6 @@ class TestHandler
         AfscCollection $afscs,
         TestCollection $tests,
         CdcDataCollection $cdc_data,
-        QuestionCollection $questions,
-        QuestionHelpers $question_helpers,
         AnswerCollection $answers,
         TestDataHelpers $test_data_helpers,
         TestOptions $options
@@ -152,8 +141,6 @@ class TestHandler
                             $afscs,
                             $tests,
                             $test_data_helpers,
-                            $questions,
-                            $question_helpers,
                             $answers);
         $handler->setTest($test);
 
@@ -167,8 +154,7 @@ class TestHandler
      * @param mysqli $mysqli
      * @param Logger $logger
      * @param AfscCollection $afscs
-     * @param QuestionCollection $questions
-     * @param QuestionHelpers $question_helpers
+     * @param TestCollection $tests
      * @param AnswerCollection $answers
      * @param TestDataHelpers $test_data_helpers
      * @param Test $test
@@ -179,8 +165,6 @@ class TestHandler
         Logger $logger,
         AfscCollection $afscs,
         TestCollection $tests,
-        QuestionCollection $questions,
-        QuestionHelpers $question_helpers,
         AnswerCollection $answers,
         TestDataHelpers $test_data_helpers,
         Test $test
@@ -190,8 +174,6 @@ class TestHandler
                             $afscs,
                             $tests,
                             $test_data_helpers,
-                            $questions,
-                            $question_helpers,
                             $answers);
         $handler->setTest($test);
 
@@ -465,7 +447,7 @@ class TestHandler
     /**
      * @param Test $test
      */
-    public function setTest(Test $test)
+    public function setTest(Test $test): void
     {
         $this->test = $test;
     }

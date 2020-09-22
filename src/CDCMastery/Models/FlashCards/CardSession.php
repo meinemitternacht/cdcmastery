@@ -5,6 +5,7 @@ namespace CDCMastery\Models\FlashCards;
 
 
 use CDCMastery\Helpers\ArrayHelpers;
+use Exception;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class CardSession
@@ -113,6 +114,10 @@ class CardSession
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws Exception
+     */
     public function shuffleTgtUuids(): CardSession
     {
         ArrayHelpers::shuffle($this->tgt_uuids);

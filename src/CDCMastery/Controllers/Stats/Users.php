@@ -17,6 +17,7 @@ use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\UserStats;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\Roles\RoleHelpers;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -64,6 +65,7 @@ class Users extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_users_by_base(): Response
     {
@@ -91,6 +93,7 @@ class Users extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_users_by_role(): Response
     {

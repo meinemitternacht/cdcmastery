@@ -77,7 +77,7 @@ SQL;
 
         $data = [];
         while ($stmt->fetch()) {
-            if (!isset($tBase) || empty($tBase)) {
+            if (!isset($tBase)) {
                 continue;
             }
 

@@ -22,6 +22,7 @@ use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Users\User;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
+use Exception;
 use Monolog\Logger;
 use mysqli;
 use RuntimeException;
@@ -279,6 +280,11 @@ class Cards extends RootController
         return $this->redirect("/cards/{$cat->getUuid()}");
     }
 
+    /**
+     * @param string $uuid
+     * @return Response
+     * @throws Exception
+     */
     public function do_card_handler(string $uuid): Response
     {
         $cat = $this->categories->fetch($uuid);
@@ -290,7 +296,7 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $payload = json_decode($this->getRequest()->getContent() ?? null);
+        $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if (!$payload || !isset($payload->action)) {
             throw new RuntimeException('Malformed request');

@@ -10,6 +10,7 @@ use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\Bases\BasesGrouped;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -57,6 +58,7 @@ class Bases extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_bases_tests(): Response
     {
@@ -96,6 +98,7 @@ class Bases extends Stats
      * @param string $baseUuid
      * @param int $type
      * @return Response
+     * @throws JsonException
      */
     private function show_base_tests_timespan(string $baseUuid, int $type): Response
     {
@@ -201,6 +204,7 @@ class Bases extends Stats
     /**
      * @param string $baseUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_base_tests_last_seven(string $baseUuid): Response
     {
@@ -210,6 +214,7 @@ class Bases extends Stats
     /**
      * @param string $baseUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_base_tests_month(string $baseUuid): Response
     {
@@ -219,6 +224,7 @@ class Bases extends Stats
     /**
      * @param string $baseUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_base_tests_week(string $baseUuid): Response
     {
@@ -228,6 +234,7 @@ class Bases extends Stats
     /**
      * @param string $baseUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_base_tests_year(string $baseUuid): Response
     {

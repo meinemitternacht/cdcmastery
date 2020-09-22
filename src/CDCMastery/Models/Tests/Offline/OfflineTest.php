@@ -9,9 +9,7 @@
 namespace CDCMastery\Models\Tests\Offline;
 
 
-use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\CdcData;
-use CDCMastery\Models\CdcData\Question;
 use DateTime;
 
 class OfflineTest

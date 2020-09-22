@@ -18,7 +18,6 @@ use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\QuestionAnswers;
 use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\CdcData\QuestionCollection;
-use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Users\User;
 use DateTime;
 use Monolog\Logger;

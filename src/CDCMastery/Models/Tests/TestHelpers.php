@@ -233,7 +233,6 @@ SQL;
         }
 
         $newTests = [];
-        /** @var Test $test */
         foreach ($tests as $test) {
             if (empty($test->getUuid())) {
                 continue;

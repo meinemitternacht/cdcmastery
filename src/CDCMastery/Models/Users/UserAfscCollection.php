@@ -56,7 +56,7 @@ class UserAfscCollection
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
     public function getAfscs(): array
     {
@@ -64,7 +64,7 @@ class UserAfscCollection
     }
 
     /**
-     * @param \string[] $afscs
+     * @param string[] $afscs
      */
     public function setAfscs(array $afscs): void
     {

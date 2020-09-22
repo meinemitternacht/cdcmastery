@@ -24,6 +24,7 @@ set_error_handler(static function ($severity, $message, $file, $line) {
         return;
     }
 
+    /** @noinspection PhpUnhandledExceptionInspection */
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
@@ -45,13 +46,17 @@ try {
         try {
             $log = $container->get(Logger::class);
             $log->alert('site offline :: ' . $e);
+            (new Errors($container->get(Logger::class),
+                        $container->get(Environment::class),
+                        $container->get(Session::class)))->show_500()->send();
         } catch (Throwable $e) {
+            if (isset($log)) {
+                $log->debug("site offline :: {$e}");
+                exit;
+            }
+
             fwrite(STDERR, 'site offline :: ' . $e);
         }
-
-        (new Errors($container->get(Logger::class),
-                    $container->get(Environment::class),
-                    $container->get(Session::class)))->show_500()->send();
         exit;
     }
 

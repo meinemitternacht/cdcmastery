@@ -37,10 +37,12 @@ use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
+use JsonException;
 use Monolog\Logger;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 
 class TrainingOverview extends RootController
@@ -366,7 +368,7 @@ class TrainingOverview extends RootController
             if (!$test) {
                 throw new RuntimeException('test cannot be null');
             }
-        } catch (RuntimeException $e) {
+        } catch (Throwable $e) {
             $this->log->debug(__FUNCTION__ . " :: {$e}");
             $this->flash()->add(MessageTypes::ERROR,
                                 "The offline test could not be generated: {$e->getMessage()}");
@@ -396,7 +398,15 @@ class TrainingOverview extends RootController
         $pw_reset = PasswordReset::factory($user);
         $email = ResetPassword::email($initiator, $user, $pw_reset);
 
-        $this->emails->queue($email);
+        try {
+            $this->emails->queue($email);
+        } catch (Throwable $e) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while attempting to send the password reset e-mail');
+
+            return $this->redirect("/training/users/{$user->getUuid()}");
+        }
+
         $this->pw_resets->save($pw_reset);
 
         $this->flash()->add(MessageTypes::SUCCESS,
@@ -803,7 +813,7 @@ class TrainingOverview extends RootController
 
         $userTests = array_filter(
             $userTests,
-            function (Test $v) use ($type) {
+            static function (Test $v) use ($type) {
                 switch ($type) {
                     case self::TYPE_COMPLETE:
                         if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
@@ -1057,6 +1067,7 @@ class TrainingOverview extends RootController
      * @param array $stats
      * @param User[] $users
      * @return array|null
+     * @throws JsonException
      */
     private function format_overview_graph_data(array &$stats, array $users): ?array
     {
@@ -1114,7 +1125,10 @@ LBL,
             return null;
         }
 
-        return ['avg' => json_encode($average_data), 'count' => json_encode($count_data)];
+        return [
+            'avg' => json_encode($average_data, JSON_THROW_ON_ERROR),
+            'count' => json_encode($count_data, JSON_THROW_ON_ERROR),
+        ];
     }
 
     public function show_overview(): Response
@@ -1160,7 +1174,12 @@ LBL,
             $sub_stats_count_overall = $this->sub_stats->subordinate_tests_count_overall($user);
             $sub_stats_avg_overall = $this->sub_stats->subordinate_tests_avg_overall($user);
 
-            $graph_data = $this->format_overview_graph_data($sub_stats_count_avg_grouped, $users);
+            try {
+                $graph_data = $this->format_overview_graph_data($sub_stats_count_avg_grouped, $users);
+            } catch (JsonException $e) {
+                $this->log->debug($e);
+                $graph_data = null;
+            }
 
             if ($role->getType() === Role::TYPE_TRAINING_MANAGER) {
                 $super_role = $this->roles->fetchType(Role::TYPE_SUPERVISOR);

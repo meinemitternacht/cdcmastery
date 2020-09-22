@@ -35,7 +35,7 @@ try {
     exit;
 }
 
-define('CDC_DEBUG', !!$config->get(['system', 'debug']));
+define('CDC_DEBUG', (bool)$config->get(['system', 'debug']));
 define('SYSTEM_UUID', $config->get(['system', 'uuid']));
 define('SUPPORT_EMAIL', $config->get(['email', 'username']));
 define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
@@ -58,7 +58,7 @@ if (!$logged_in) {
     $publicPrefixes = $config->get(['system', 'routing', 'public_prefix']);
 
     foreach ($publicPrefixes as $publicPrefix) {
-        if (strpos($path, $publicPrefix) === 0) {
+        if (str_starts_with($path, $publicPrefix)) {
             goto public_route_ok;
         }
     }

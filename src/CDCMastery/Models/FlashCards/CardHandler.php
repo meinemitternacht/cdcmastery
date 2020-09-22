@@ -9,6 +9,7 @@ use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
+use Exception;
 use Monolog\Logger;
 use mysqli;
 use RuntimeException;
@@ -30,8 +31,6 @@ class CardHandler
     private mysqli $db;
     private Logger $log;
     private CacheHandler $cache;
-    private AfscCollection $afscs;
-    private CdcDataCollection $cdc_data;
     private CardCollection $cards;
     private CardSession $card_session;
 
@@ -41,8 +40,6 @@ class CardHandler
      * @param mysqli $db
      * @param Logger $log
      * @param CacheHandler $cache
-     * @param AfscCollection $afscs
-     * @param CdcDataCollection $cdc_data
      * @param CardCollection $cards
      * @param CardSession $card_session
      */
@@ -51,8 +48,6 @@ class CardHandler
         mysqli $db,
         Logger $log,
         CacheHandler $cache,
-        AfscCollection $afscs,
-        CdcDataCollection $cdc_data,
         CardCollection $cards,
         CardSession $card_session
     ) {
@@ -60,26 +55,26 @@ class CardHandler
         $this->db = $db;
         $this->log = $log;
         $this->cache = $cache;
-        $this->afscs = $afscs;
-        $this->cdc_data = $cdc_data;
         $this->cards = $cards;
         $this->card_session = $card_session;
     }
 
-    private static function cache_afsc_cards(CacheHandler $cache, CdcDataCollection $cdc_data, Afsc $afsc): void
+    private static function cache_afsc_cards(CacheHandler $cache, CdcDataCollection $cdc_data, Afsc $afsc): array
     {
         $cache_params = [$afsc->getUuid()];
         $tgt_cards = CardHelpers::create_afsc_cards($cdc_data, $afsc);
-        $keys = [];
+        $uuids = [];
         foreach ($tgt_cards as $tgt_card) {
-            $key = self::CACHE_KEY_PREFIX_AFSC_CARDS . $tgt_card->getUuid();
+            $uuid = $tgt_card->getUuid();
+            $key = self::CACHE_KEY_PREFIX_AFSC_CARDS . $uuid;
             $cache->hashAndSet($tgt_card,
                                $key,
                                CacheHandler::TTL_MAX);
-            $keys[] = $key;
+            $uuids[] = $uuid;
         }
 
-        $cache->hashAndSet($keys, self::CACHE_KEY_PREFIX_AFSC_CARDS, CacheHandler::TTL_MAX, $cache_params);
+        $cache->hashAndSet($uuids, self::CACHE_KEY_PREFIX_AFSC_CARDS, CacheHandler::TTL_MAX, $cache_params);
+        return $tgt_cards;
     }
 
     public static function factory(
@@ -94,6 +89,7 @@ class CardHandler
     ): CardHandler {
         $card_session = CardSession::resume_session($session, $category);
 
+        $tgt_cards = [];
         switch ($category->getType()) {
             case Category::TYPE_AFSC:
                 $binding = $category->getBinding();
@@ -115,11 +111,11 @@ class CardHandler
                         goto out_return;
                     }
 
-                    $tgt_cards = $cached;
+                    $tgt_cards = array_flip($cached);
                     break;
                 }
 
-                self::cache_afsc_cards($cache, $cdc_data, $afsc);
+                $tgt_cards = self::cache_afsc_cards($cache, $cdc_data, $afsc);
                 break;
             case Category::TYPE_PRIVATE:
             case Category::TYPE_GLOBAL:
@@ -142,7 +138,7 @@ class CardHandler
                                            ->setTgtUuids(array_keys($tgt_cards));
 
         out_return:
-        return new self($session, $db, $log, $cache, $afscs, $cdc_data, $cards, $card_session);
+        return new self($session, $db, $log, $cache, $cards, $card_session);
     }
 
     public function first(): void
@@ -184,6 +180,9 @@ class CardHandler
         CardSession::save_session($this->session, $this->card_session);
     }
 
+    /**
+     * @throws Exception
+     */
     public function shuffle(): void
     {
         $this->card_session->shuffleTgtUuids();

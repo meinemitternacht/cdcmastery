@@ -181,7 +181,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($_uuid) || $_uuid === null) {
+        if (!isset($_uuid)) {
             return null;
         }
 
@@ -210,7 +210,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
@@ -251,7 +251,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 

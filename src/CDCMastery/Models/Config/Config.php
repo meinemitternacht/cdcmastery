@@ -13,16 +13,14 @@ use CDCMastery\Exceptions\Configuration\ConfigFileEmptyException;
 use CDCMastery\Exceptions\Configuration\ConfigFileInvalidException;
 use CDCMastery\Exceptions\Files\FileNotFoundException;
 use CDCMastery\Exceptions\Files\FileNotReadableException;
+use JsonException;
 use stdClass;
 
 class Config
 {
     private const CONFIG_FILE = APP_DIR . '/config.json';
 
-    /**
-     * @var stdClass
-     */
-    protected $configData;
+    private stdClass $configData;
 
     /**
      * Config constructor.
@@ -30,6 +28,7 @@ class Config
      * @throws ConfigFileInvalidException
      * @throws FileNotFoundException
      * @throws FileNotReadableException
+     * @throws JsonException
      */
     public function __construct()
     {
@@ -42,6 +41,7 @@ class Config
      * @throws ConfigFileInvalidException
      * @throws FileNotFoundException
      * @throws FileNotReadableException
+     * @throws JsonException
      */
     private function loadConfigurationData(): bool
     {
@@ -49,7 +49,7 @@ class Config
             die('You are not supposed to be here.');
         }
 
-        if (!file_exists(self::CONFIG_FILE)) {
+        if (!is_file(self::CONFIG_FILE)) {
             throw new FileNotFoundException("Configuration file does not exist: " . self::CONFIG_FILE);
         }
 
@@ -63,12 +63,13 @@ class Config
             throw new ConfigFileEmptyException("Configuration file was empty: " . self::CONFIG_FILE);
         }
 
-        $this->configData = json_decode($configFile);
+        $data = json_decode($configFile, false, 512, JSON_THROW_ON_ERROR);
 
-        if ($this->configData === false) {
+        if ($data === null) {
             throw new ConfigFileInvalidException("Configuration file could not be decoded: " . self::CONFIG_FILE);
         }
 
+        $this->configData = $data;
         return !empty($this->configData);
     }
 

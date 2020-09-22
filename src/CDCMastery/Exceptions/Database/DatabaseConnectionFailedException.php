@@ -9,7 +9,9 @@
 namespace CDCMastery\Exceptions\Database;
 
 
-class DatabaseConnectionFailedException extends \Exception
+use Exception;
+
+class DatabaseConnectionFailedException extends Exception
 {
 
 }

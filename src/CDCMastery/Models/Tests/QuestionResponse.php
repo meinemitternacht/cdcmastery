@@ -37,7 +37,7 @@ class QuestionResponse
     /**
      * @param string $testUuid
      */
-    public function setTestUuid(string $testUuid)
+    public function setTestUuid(string $testUuid): void
     {
         $this->testUuid = $testUuid;
     }
@@ -53,7 +53,7 @@ class QuestionResponse
     /**
      * @param string $questionUuid
      */
-    public function setQuestionUuid(string $questionUuid)
+    public function setQuestionUuid(string $questionUuid): void
     {
         $this->questionUuid = $questionUuid;
     }
@@ -69,7 +69,7 @@ class QuestionResponse
     /**
      * @param string $answerUuid
      */
-    public function setAnswerUuid(string $answerUuid)
+    public function setAnswerUuid(string $answerUuid): void
     {
         $this->answerUuid = $answerUuid;
     }

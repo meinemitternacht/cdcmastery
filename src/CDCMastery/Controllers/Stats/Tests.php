@@ -7,6 +7,7 @@ use CDCMastery\Controllers\Stats;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -41,6 +42,7 @@ class Tests extends Stats
     /**
      * @param int $type
      * @return Response
+     * @throws JsonException
      */
     private function show_tests_timespan(int $type): Response
     {
@@ -119,6 +121,7 @@ class Tests extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_tests_timespan_last_seven(): Response
     {
@@ -127,6 +130,7 @@ class Tests extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_tests_timespan_month(): Response
     {
@@ -135,6 +139,7 @@ class Tests extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_tests_timespan_week(): Response
     {
@@ -143,6 +148,7 @@ class Tests extends Stats
 
     /**
      * @return Response
+     * @throws JsonException
      */
     public function show_tests_timespan_year(): Response
     {

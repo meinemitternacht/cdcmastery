@@ -9,7 +9,6 @@
 namespace CDCMastery\Models\Users;
 
 
-use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Users\Roles\Role;
 use Monolog\Logger;
 use mysqli;

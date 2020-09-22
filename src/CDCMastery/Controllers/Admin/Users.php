@@ -4,6 +4,7 @@ namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Tests;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\Activation\Activation;
@@ -63,6 +64,28 @@ class Users extends Admin
     private PasswordResetCollection $pw_resets;
     private ActivationCollection $activations;
 
+    /**
+     * Users constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param EmailCollection $emails
+     * @param UserCollection $users
+     * @param BaseCollection $bases
+     * @param RoleCollection $roles
+     * @param OfficeSymbolCollection $symbols
+     * @param TestStats $test_stats
+     * @param TestCollection $tests
+     * @param TestDataHelpers $test_data_helpers
+     * @param AfscCollection $afscs
+     * @param UserAfscAssociations $afsc_assocs
+     * @param UserTrainingManagerAssociations $tm_assocs
+     * @param UserSupervisorAssociations $su_assocs
+     * @param PasswordResetCollection $pw_resets
+     * @param ActivationCollection $activations
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,
@@ -191,7 +214,7 @@ class Users extends Admin
         }
 
         $valid_ranks = UserHelpers::listRanks(false);
-        if (!$rank || trim($rank) === '' || !isset($valid_ranks[ $rank ])) {
+        if (!$rank || !isset($valid_ranks[ $rank ]) || trim($rank) === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The provided rank is invalid'
@@ -218,8 +241,8 @@ class Users extends Admin
             goto out_return;
         }
 
-        $new_base = $this->bases->fetch($base);
-        if (!$new_base || $new_base->getUuid() === '' || !$base) {
+        $tgt_base = $this->bases->fetch($base);
+        if (!$tgt_base || $tgt_base->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Base is invalid'
@@ -229,7 +252,7 @@ class Users extends Admin
         }
 
         $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
-        if (!$time_zone || !in_array($time_zone, $valid_time_zones)) {
+        if (!$time_zone || !in_array($time_zone, $valid_time_zones, true)) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Time Zone is invalid'
@@ -294,7 +317,7 @@ class Users extends Admin
         $user->setRank($rank);
         $user->setFirstName($first_name);
         $user->setLastName($last_name);
-        $user->setBase($new_base->getUuid());
+        $user->setBase($tgt_base->getUuid());
         $user->setTimeZone($time_zone);
 
         if ($office_symbol) {
@@ -645,7 +668,7 @@ class Users extends Admin
 
         $tests = array_filter(
             $tests,
-            function ($v) {
+            static function ($v) {
                 if (!$v instanceof Test) {
                     return false;
                 }
@@ -686,7 +709,15 @@ class Users extends Admin
         $pw_reset = PasswordReset::factory($user);
         $email = ResetPassword::email($initiator, $user, $pw_reset);
 
-        $this->emails->queue($email);
+        try {
+            $this->emails->queue($email);
+        } catch (Throwable $e) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while attempting to send the password reset e-mail');
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
         $this->pw_resets->save($pw_reset);
 
         $this->flash()->add(MessageTypes::SUCCESS,
@@ -703,7 +734,15 @@ class Users extends Admin
         $activation = Activation::factory($user);
         $email = ActivateAccount::email($initiator, $user, $activation);
 
-        $this->emails->queue($email);
+        try {
+            $this->emails->queue($email);
+        } catch (Throwable $e) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while attempting to resend the activation e-mail');
+
+            return $this->redirect("/admin/users/{$user->getUuid()}");
+        }
+
         $this->activations->save($activation);
 
         $this->flash()->add(MessageTypes::SUCCESS,
@@ -1277,7 +1316,7 @@ class Users extends Admin
 
         $userTests = array_filter(
             $userTests,
-            function (Test $v) use ($type) {
+            static function (Test $v) use ($type) {
                 switch ($type) {
                     case self::TYPE_COMPLETE:
                         if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {

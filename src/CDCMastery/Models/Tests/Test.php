@@ -15,10 +15,8 @@ use DateTime;
 
 class Test
 {
-    const MIN_QUESTIONS = 1;
-    const MAX_QUESTIONS = 500;
-
-    const SCORE_PRECISION = 2;
+    public const MAX_QUESTIONS = 500;
+    public const SCORE_PRECISION = 2;
 
     /**
      * @var string
@@ -91,7 +89,7 @@ class Test
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -107,7 +105,7 @@ class Test
     /**
      * @param string $userUuid
      */
-    public function setUserUuid(string $userUuid)
+    public function setUserUuid(string $userUuid): void
     {
         $this->userUuid = $userUuid;
     }
@@ -123,7 +121,7 @@ class Test
     /**
      * @param DateTime|null $timeStarted
      */
-    public function setTimeStarted(?DateTime $timeStarted)
+    public function setTimeStarted(?DateTime $timeStarted): void
     {
         $this->timeStarted = $timeStarted;
     }
@@ -139,7 +137,7 @@ class Test
     /**
      * @param DateTime|null $timeCompleted
      */
-    public function setTimeCompleted(?DateTime $timeCompleted)
+    public function setTimeCompleted(?DateTime $timeCompleted): void
     {
         $this->timeCompleted = $timeCompleted;
     }
@@ -155,7 +153,7 @@ class Test
     /**
      * @param Afsc[] $afscs
      */
-    public function setAfscs(array $afscs)
+    public function setAfscs(array $afscs): void
     {
         $this->afscs = $afscs;
     }
@@ -171,7 +169,7 @@ class Test
     /**
      * @param Question[] $questions
      */
-    public function setQuestions(array $questions)
+    public function setQuestions(array $questions): void
     {
         $this->questions = array_values($questions);
     }
@@ -187,7 +185,7 @@ class Test
     /**
      * @param int $currentQuestion
      */
-    public function setCurrentQuestion(int $currentQuestion)
+    public function setCurrentQuestion(int $currentQuestion): void
     {
         $this->currentQuestion = $currentQuestion;
     }
@@ -208,7 +206,7 @@ class Test
     /**
      * @param int $numAnswered
      */
-    public function setNumAnswered(int $numAnswered)
+    public function setNumAnswered(int $numAnswered): void
     {
         $this->numAnswered = $numAnswered;
     }
@@ -224,7 +222,7 @@ class Test
     /**
      * @param int $numMissed
      */
-    public function setNumMissed(int $numMissed)
+    public function setNumMissed(int $numMissed): void
     {
         $this->numMissed = $numMissed;
     }
@@ -246,13 +244,13 @@ class Test
      */
     public function getScore(): float
     {
-        return $this->score ?? 0;
+        return $this->score ?? 0.00;
     }
 
     /**
      * @param float $score
      */
-    public function setScore(float $score)
+    public function setScore(float $score): void
     {
         $this->score = $score;
     }
@@ -268,7 +266,7 @@ class Test
     /**
      * @param bool $combined
      */
-    public function setCombined(bool $combined)
+    public function setCombined(bool $combined): void
     {
         $this->combined = $combined;
     }
@@ -284,7 +282,7 @@ class Test
     /**
      * @param bool $archived
      */
-    public function setArchived(bool $archived)
+    public function setArchived(bool $archived): void
     {
         $this->archived = $archived;
     }

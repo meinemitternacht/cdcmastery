@@ -10,8 +10,6 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
-use CDCMastery\Models\CdcData\QuestionCollection;
-use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Tests\QuestionResponse;
@@ -46,8 +44,6 @@ class Tests extends RootController
     private UserAfscAssociations $user_afscs;
     private AfscCollection $afscs;
     private mysqli $db;
-    private QuestionCollection $questions;
-    private QuestionHelpers $question_helpers;
     private AnswerCollection $answers;
     private TestDataHelpers $test_data_helpers;
     private CdcDataCollection $cdc_data;
@@ -66,8 +62,6 @@ class Tests extends RootController
         mysqli $mysqli,
         TestDataHelpers $test_data_helpers,
         CdcDataCollection $cdc_data,
-        QuestionCollection $questions,
-        QuestionHelpers $question_helpers,
         AnswerCollection $answers
     ) {
         parent::__construct($logger, $twig, $session);
@@ -82,8 +76,6 @@ class Tests extends RootController
         $this->db = $mysqli;
         $this->test_data_helpers = $test_data_helpers;
         $this->cdc_data = $cdc_data;
-        $this->questions = $questions;
-        $this->question_helpers = $question_helpers;
         $this->answers = $answers;
     }
 
@@ -97,7 +89,7 @@ class Tests extends RootController
 
         $tests = array_filter(
             $tests,
-            function ($v) {
+            static function ($v) {
                 if (!$v instanceof Test) {
                     return false;
                 }
@@ -288,8 +280,6 @@ class Tests extends RootController
                                         $this->afscs,
                                         $this->tests,
                                         $this->cdc_data,
-                                        $this->questions,
-                                        $this->question_helpers,
                                         $this->answers,
                                         $this->test_data_helpers,
                                         $testOptions);
@@ -347,13 +337,11 @@ class Tests extends RootController
                                            $this->log,
                                            $this->afscs,
                                            $this->tests,
-                                           $this->questions,
-                                           $this->question_helpers,
                                            $this->answers,
                                            $this->test_data_helpers,
                                            $test);
 
-        $payload = json_decode($this->getRequest()->getContent() ?? null);
+        $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if ($payload === null || !isset($payload->action)) {
             /** @todo send message that request was malformed */
@@ -557,14 +545,14 @@ class Tests extends RootController
 
         $tests = array_filter(
             $tests,
-            function (Test $v) {
+            static function (Test $v) {
                 return $v->getScore() < 1 && $v->getTimeCompleted() === null;
             }
         );
 
         uasort(
             $tests,
-            function (Test $a, Test $b) {
+            static function (Test $a, Test $b) {
                 if ($a->getTimeStarted() === null || $b->getTimeStarted() === null) {
                     return 0;
                 }

@@ -10,6 +10,7 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\Afsc;
@@ -26,6 +27,7 @@ use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Users\AfscUserCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
+use JsonException;
 use Monolog\Logger;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +74,21 @@ class CdcData extends Admin
      */
     private $test_stats;
 
+    /**
+     * CdcData constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param CdcDataCollection $cdc_datas
+     * @param AfscCollection $afscs
+     * @param QuestionCollection $questions
+     * @param AnswerCollection $answers
+     * @param QuestionHelpers $question_helpers
+     * @param UserAfscAssociations $user_afscs
+     * @param TestStats $test_stats
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,
@@ -140,6 +157,7 @@ class CdcData extends Admin
                 continue;
             }
 
+            /** @noinspection DisconnectedForeachInstructionInspection */
             $this->flash()->add(MessageTypes::ERROR,
                                 "The specified AFSC '{$afsc->getName()}' already exists in the database");
             goto out_return;
@@ -406,7 +424,7 @@ class CdcData extends Admin
 
         $qtext = array_shift($qdata_split);
         $qtext = preg_replace("/\r\n/", ' ', $qtext);
-        $qtext = preg_replace("/^[0-9]+\. \([0-9]+\)/", null, $qtext);
+        $qtext = preg_replace("/^[\d]+\. \([\d]+\)/", null, $qtext);
         $answers = array_values($qdata_split);
 
         unset($qdata_split);
@@ -625,7 +643,7 @@ class CdcData extends Admin
 
         $answers = [];
         foreach ($all_params as $key => $val) {
-            if (strpos($key, 'answer_') !== 0) {
+            if (!str_starts_with($key, 'answer_')) {
                 continue;
             }
 
@@ -725,6 +743,11 @@ class CdcData extends Admin
         return $this->redirect("/admin/cdc/afsc/{$afsc->getUuid()}/questions");
     }
 
+    /**
+     * @param string $uuid
+     * @return Response
+     * @throws JsonException
+     */
     public function show_afsc_home(string $uuid): Response
     {
         $afsc = $this->afscs->fetch($uuid);

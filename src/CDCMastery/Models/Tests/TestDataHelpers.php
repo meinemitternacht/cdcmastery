@@ -78,11 +78,7 @@ SQL;
         $stmt->fetch();
         $stmt->close();
 
-        if (!isset($responseCount)) {
-            return 0;
-        }
-
-        return $responseCount;
+        return $responseCount ?? 0;
     }
 
     public function fetch(Test $test, Question $question): ?Answer

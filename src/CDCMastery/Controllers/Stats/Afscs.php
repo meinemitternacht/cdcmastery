@@ -5,10 +5,10 @@ namespace CDCMastery\Controllers\Stats;
 
 use CDCMastery\Controllers\Stats;
 use CDCMastery\Models\CdcData\AfscCollection;
-use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -67,6 +67,7 @@ class Afscs extends Stats
      * @param string $afscUuid
      * @param int $type
      * @return Response
+     * @throws JsonException
      */
     private function show_stats_afsc_tests_timespan(string $afscUuid, int $type): Response
     {
@@ -150,7 +151,6 @@ class Afscs extends Stats
                 );
 
                 return $this->redirect('/stats/afscs');
-                break;
         }
 
         if ($data['averages'] === '') {
@@ -171,6 +171,7 @@ class Afscs extends Stats
     /**
      * @param string $afscUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_afsc_stats_tests_last_seven(string $afscUuid): Response
     {
@@ -180,6 +181,7 @@ class Afscs extends Stats
     /**
      * @param string $afscUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_afsc_stats_tests_month(string $afscUuid): Response
     {
@@ -189,6 +191,7 @@ class Afscs extends Stats
     /**
      * @param string $afscUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_afsc_stats_tests_week(string $afscUuid): Response
     {
@@ -198,6 +201,7 @@ class Afscs extends Stats
     /**
      * @param string $afscUuid
      * @return Response
+     * @throws JsonException
      */
     public function show_afsc_stats_tests_year(string $afscUuid): Response
     {

@@ -19,6 +19,14 @@ class Admin extends RootController
 {
     protected AuthHelpers $auth_helpers;
 
+    /**
+     * Admin constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @throws AccessDeniedException
+     */
     public function __construct(Logger $logger, Environment $twig, Session $session, AuthHelpers $auth_helpers)
     {
         parent::__construct($logger, $twig, $session);

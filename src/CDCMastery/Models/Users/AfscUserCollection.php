@@ -24,7 +24,8 @@ class AfscUserCollection
     /**
      * @param string $userUuid
      */
-    public function addUser(string $userUuid) {
+    public function addUser(string $userUuid): void
+    {
         $this->users[] = $userUuid;
     }
 
@@ -39,7 +40,7 @@ class AfscUserCollection
     /**
      * @param string[] $users
      */
-    public function setUsers(array $users)
+    public function setUsers(array $users): void
     {
         $this->users = $users;
     }
@@ -55,7 +56,7 @@ class AfscUserCollection
     /**
      * @param string $afsc
      */
-    public function setAfsc(string $afsc)
+    public function setAfsc(string $afsc): void
     {
         $this->afsc = $afsc;
     }

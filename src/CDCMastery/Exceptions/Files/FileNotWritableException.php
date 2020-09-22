@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Files;
 
 
-class FileNotWritableException extends \Exception {}
+use Exception;
+
+class FileNotWritableException extends Exception
+{
+}

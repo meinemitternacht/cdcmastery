@@ -114,7 +114,7 @@ class User
     /**
      * @param string $uuid
      */
-    public function setUuid(string $uuid)
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
@@ -130,7 +130,7 @@ class User
     /**
      * @param string $firstName
      */
-    public function setFirstName(string $firstName)
+    public function setFirstName(string $firstName): void
     {
         $this->firstName = $firstName;
     }
@@ -146,7 +146,7 @@ class User
     /**
      * @param string $lastName
      */
-    public function setLastName(string $lastName)
+    public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
     }
@@ -174,7 +174,7 @@ class User
     /**
      * @param string $handle
      */
-    public function setHandle(string $handle)
+    public function setHandle(string $handle): void
     {
         $this->handle = $handle;
     }
@@ -190,7 +190,7 @@ class User
     /**
      * @param string $password
      */
-    public function setPassword(string $password)
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
@@ -206,7 +206,7 @@ class User
     /**
      * @param null|string $legacyPassword
      */
-    public function setLegacyPassword(?string $legacyPassword)
+    public function setLegacyPassword(?string $legacyPassword): void
     {
         $this->legacyPassword = $legacyPassword;
     }
@@ -222,7 +222,7 @@ class User
     /**
      * @param string $email
      */
-    public function setEmail(string $email)
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
@@ -238,7 +238,7 @@ class User
     /**
      * @param string $rank
      */
-    public function setRank(string $rank)
+    public function setRank(string $rank): void
     {
         $this->rank = $rank;
     }
@@ -254,7 +254,7 @@ class User
     /**
      * @param DateTime|null $dateRegistered
      */
-    public function setDateRegistered(?DateTime $dateRegistered)
+    public function setDateRegistered(?DateTime $dateRegistered): void
     {
         $this->dateRegistered = $dateRegistered;
     }
@@ -270,7 +270,7 @@ class User
     /**
      * @param DateTime|null $lastLogin
      */
-    public function setLastLogin(?DateTime $lastLogin)
+    public function setLastLogin(?DateTime $lastLogin): void
     {
         $this->lastLogin = $lastLogin;
     }
@@ -286,7 +286,7 @@ class User
     /**
      * @param DateTime|null $lastActive
      */
-    public function setLastActive(?DateTime $lastActive)
+    public function setLastActive(?DateTime $lastActive): void
     {
         $this->lastActive = $lastActive;
     }
@@ -302,7 +302,7 @@ class User
     /**
      * @param string $timeZone
      */
-    public function setTimeZone(string $timeZone)
+    public function setTimeZone(string $timeZone): void
     {
         $this->timeZone = $timeZone;
     }
@@ -318,7 +318,7 @@ class User
     /**
      * @param string $role
      */
-    public function setRole(string $role)
+    public function setRole(string $role): void
     {
         $this->role = $role;
     }
@@ -334,7 +334,7 @@ class User
     /**
      * @param null|string $officeSymbol
      */
-    public function setOfficeSymbol(?string $officeSymbol)
+    public function setOfficeSymbol(?string $officeSymbol): void
     {
         $this->officeSymbol = $officeSymbol;
     }
@@ -350,7 +350,7 @@ class User
     /**
      * @param string $base
      */
-    public function setBase(string $base)
+    public function setBase(string $base): void
     {
         $this->base = $base;
     }
@@ -366,7 +366,7 @@ class User
     /**
      * @param bool $disabled
      */
-    public function setDisabled(bool $disabled)
+    public function setDisabled(bool $disabled): void
     {
         $this->disabled = $disabled;
     }
@@ -382,7 +382,7 @@ class User
     /**
      * @param bool|null $reminderSent
      */
-    public function setReminderSent(?bool $reminderSent)
+    public function setReminderSent(?bool $reminderSent): void
     {
         $this->reminderSent = $reminderSent;
     }

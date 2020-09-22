@@ -9,16 +9,11 @@ use Twig\TwigFilter;
 
 class StringFunctions extends AbstractExtension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('strtr', [$this, 'strtr']),
         ];
-    }
-
-    public function getFunctions(): array
-    {
-        return [];
     }
 
     public function strtr(string $v, int $max_len): string

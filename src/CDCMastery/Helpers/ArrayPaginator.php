@@ -97,6 +97,13 @@ class ArrayPaginator
         $showNext = true;
         $showLast = true;
 
+        $firstPage = (($curPage - 5) < 0)
+            ? 0
+            : $curPage - 5;
+        $lastPage = ($curPage + 5) > $numPages
+            ? $numPages
+            : $curPage + 5;
+
         if ($curPage === 0) {
             $showFirst = false;
             $showPrevious = false;
@@ -116,13 +123,6 @@ class ArrayPaginator
             $lastPage = $numPages;
             goto out_return;
         }
-
-        $firstPage = (($curPage - 5) < 0)
-            ? 0
-            : $curPage - 5;
-        $lastPage = ($curPage + 5) > $numPages
-            ? $numPages
-            : $curPage + 5;
 
         out_return:
         $htmlParts = [];

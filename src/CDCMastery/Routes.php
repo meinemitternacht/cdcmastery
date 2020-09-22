@@ -21,14 +21,14 @@ use CDCMastery\Controllers\Stats\Users;
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
 
-return simpleDispatcher(function (RouteCollector $r) {
+return simpleDispatcher(static function (RouteCollector $r) {
     /** @uses \CDCMastery\Controllers\Home::show_home() */
     $r->addRoute('GET', '/', [
         Home::class,
         'show_home',
     ]);
 
-    $r->addGroup('/about', function (RouteCollector $r) {
+    $r->addGroup('/about', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\About::show_disclaimer() */
         $r->addRoute('GET', '/disclaimer', [
             About::class,
@@ -54,7 +54,7 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_admin_home',
     ]);
 
-    $r->addGroup('/admin', function (RouteCollector $r) {
+    $r->addGroup('/admin', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Admin\Activations::show_home() */
         $r->addRoute('GET', '/activations', [
             Activations::class,
@@ -73,7 +73,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_home',
         ]);
 
-        $r->addGroup('/bases', function (RouteCollector $r) {
+        $r->addGroup('/bases', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Admin\Bases::do_edit() */
             $r->addRoute('POST', '/add', [
                 Admin\Bases::class,
@@ -105,7 +105,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_home',
         ]);
 
-        $r->addGroup('/cards', function (RouteCollector $r) {
+        $r->addGroup('/cards', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Admin\FlashCards::show_category_add() */
             $r->addRoute('GET', '/add', [
                 FlashCards::class,
@@ -209,7 +209,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_afsc_list',
         ]);
 
-        $r->addGroup('/cdc/afsc', function (RouteCollector $r) {
+        $r->addGroup('/cdc/afsc', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_add() */
             $r->addRoute('POST', '/add', [
                 CdcData::class,
@@ -282,7 +282,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_afsc_questions',
             ]);
 
-            $r->addGroup('/{uuid}/questions', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/questions', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_question_add() */
                 $r->addRoute('GET', '/add', [
                     CdcData::class,
@@ -393,7 +393,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_home',
         ]);
 
-        $r->addGroup('/office-symbols', function (RouteCollector $r) {
+        $r->addGroup('/office-symbols', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::do_add() */
             $r->addRoute('POST', '/add', [
                 OfficeSymbols::class,
@@ -455,7 +455,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_home',
         ]);
 
-        $r->addGroup('/users', function (RouteCollector $r) {
+        $r->addGroup('/users', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
             $r->addRoute('GET', '/{uuid}', [
                 Admin\Users::class,
@@ -528,7 +528,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_afsc_associations',
             ]);
 
-            $r->addGroup('/{uuid}/afsc', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/afsc', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Admin\Users::do_afsc_association_add() */
                 $r->addRoute('POST', '/add', [
                     Admin\Users::class,
@@ -554,7 +554,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_supervisor_associations',
             ]);
 
-            $r->addGroup('/{uuid}/supervisors', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/supervisors', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Admin\Users::do_supervisor_association_add() */
                 $r->addRoute('POST', '/add', [
                     Admin\Users::class,
@@ -574,7 +574,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_tm_associations',
             ]);
 
-            $r->addGroup('/{uuid}/training-managers', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/training-managers', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Admin\Users::do_tm_association_add() */
                 $r->addRoute('POST', '/add', [
                     Admin\Users::class,
@@ -594,7 +594,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_test_history_complete',
             ]);
 
-            $r->addGroup('/{uuid}/tests', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/tests', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Admin\Users::show_test_history_incomplete() */
                 $r->addRoute('GET', '/incomplete', [
                     Admin\Users::class,
@@ -622,7 +622,7 @@ return simpleDispatcher(function (RouteCollector $r) {
         });
     });
 
-    $r->addGroup('/auth', function (RouteCollector $r) {
+    $r->addGroup('/auth', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Auth::show_activation() */
         $r->addRoute('GET', '/activate', [
             Auth::class,
@@ -714,7 +714,7 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_home',
     ]);
 
-    $r->addGroup('/cards', function (RouteCollector $r) {
+    $r->addGroup('/cards', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Cards::show_category_add() */
         $r->addRoute('GET', '/add', [
             Cards::class,
@@ -818,7 +818,7 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_home',
     ]);
 
-    $r->addGroup('/profile', function (RouteCollector $r) {
+    $r->addGroup('/profile', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Profile::show_afsc_associations() */
         $r->addRoute('GET', '/afsc', [
             Profile::class,
@@ -868,21 +868,21 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_stats_home',
     ]);
 
-    $r->addGroup('/stats', function (RouteCollector $r) {
+    $r->addGroup('/stats', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Stats\Afscs::show_stats_afsc_home() */
         $r->addRoute('GET', '/afscs', [
             Afscs::class,
             'show_stats_afsc_home',
         ]);
 
-        $r->addGroup('/afscs', function (RouteCollector $r) {
+        $r->addGroup('/afscs', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Stats\Afscs::show_stats_afsc_tests() */
             $r->addRoute('GET', '/{afscUuid}/tests', [
                 Afscs::class,
                 'show_stats_afsc_tests',
             ]);
 
-            $r->addGroup('/{afscUuid}/tests', function (RouteCollector $r) {
+            $r->addGroup('/{afscUuid}/tests', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Stats\Afscs::show_afsc_stats_tests_last_seven() */
                 $r->addRoute('GET', '/last-seven', [
                     Afscs::class,
@@ -921,14 +921,14 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_bases_tests',
         ]);
 
-        $r->addGroup('/bases', function (RouteCollector $r) {
+        $r->addGroup('/bases', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Stats\Bases::show_bases_tests_timespan_home() */
             $r->addRoute('GET', '/{baseUuid}/tests', [
                 Bases::class,
                 'show_bases_tests_timespan_home',
             ]);
 
-            $r->addGroup('/{baseUuid}/tests', function (RouteCollector $r) {
+            $r->addGroup('/{baseUuid}/tests', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Stats\Bases::show_base_tests_last_seven() */
                 $r->addRoute('GET', '/last-seven', [
                     Bases::class,
@@ -961,7 +961,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_stats_tests_home',
         ]);
 
-        $r->addGroup('/tests', function (RouteCollector $r) {
+        $r->addGroup('/tests', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Stats\Tests::show_tests_timespan_last_seven() */
             $r->addRoute('GET', '/last-seven', [
                 Tests::class,
@@ -993,7 +993,7 @@ return simpleDispatcher(function (RouteCollector $r) {
             'show_stats_users_home',
         ]);
 
-        $r->addGroup('/users', function (RouteCollector $r) {
+        $r->addGroup('/users', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Stats\Users::show_users_by_base() */
             $r->addRoute('GET', '/bases', [
                 Users::class,
@@ -1014,7 +1014,7 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_tests_home',
     ]);
 
-    $r->addGroup('/tests', function (RouteCollector $r) {
+    $r->addGroup('/tests', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\Tests::show_test_history_complete() */
         $r->addRoute('GET', '/history', [
             \CDCMastery\Controllers\Tests::class,
@@ -1082,8 +1082,8 @@ return simpleDispatcher(function (RouteCollector $r) {
         'show_overview',
     ]);
 
-    $r->addGroup('/training', function (RouteCollector $r) {
-        $r->addGroup('/users', function (RouteCollector $r) {
+    $r->addGroup('/training', static function (RouteCollector $r) {
+        $r->addGroup('/users', static function (RouteCollector $r) {
             /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_profile() */
             $r->addRoute('GET', '/{uuid}', [
                 TrainingOverview::class,
@@ -1132,7 +1132,7 @@ return simpleDispatcher(function (RouteCollector $r) {
                 'show_test_history_complete',
             ]);
 
-            $r->addGroup('/{uuid}/tests', function (RouteCollector $r) {
+            $r->addGroup('/{uuid}/tests', static function (RouteCollector $r) {
                 /** @uses \CDCMastery\Controllers\Overviews\TrainingOverview::show_test_history_incomplete() */
                 $r->addRoute('GET', '/incomplete', [
                     TrainingOverview::class,

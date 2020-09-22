@@ -5,6 +5,7 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -22,6 +23,17 @@ class AfscApprovals extends Admin
     private UserCollection $users;
     private AfscCollection $afscs;
 
+    /**
+     * AfscApprovals constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param UserAfscAssociations $assocs
+     * @param UserCollection $users
+     * @param AfscCollection $afscs
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,
@@ -74,7 +86,7 @@ class AfscApprovals extends Admin
         $tgt_user_afscs = [];
         $tgt_afscs = [];
         foreach ($user_afscs as $user_afsc) {
-            if (strpos($user_afsc, '_') === false) {
+            if (!str_contains($user_afsc, '_')) {
                 continue;
             }
 

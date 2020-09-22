@@ -5,6 +5,7 @@ namespace CDCMastery\Controllers\Admin;
 
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
@@ -35,6 +36,19 @@ class FlashCards extends Admin
     private UserCollection $users;
     private CdcDataCollection $cdc_data;
 
+    /**
+     * FlashCards constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param CategoryCollection $categories
+     * @param CardCollection $cards
+     * @param AfscCollection $afscs
+     * @param UserCollection $users
+     * @param CdcDataCollection $cdc_data
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,

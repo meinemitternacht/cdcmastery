@@ -273,7 +273,7 @@ SQL;
      */
     public function batchAddAfscsForUser(User $user, array $afscs, bool $authorized): void
     {
-        if (empty($user->getUuid()) || empty($afscs)) {
+        if (!$afscs || !$user->getUuid()) {
             return;
         }
 
@@ -329,7 +329,7 @@ SQL;
             return;
         }
 
-        $afscUuid = $afsc->getUuid();
+        $afsc_uuid = $afsc->getUuid();
 
         $qry = <<<SQL
 INSERT INTO userAFSCAssociations
@@ -345,31 +345,26 @@ ON DUPLICATE KEY UPDATE
   userAuthorized=VALUES(userAuthorized)
 SQL;
 
-        $userUuid = null;
+        $user_uuid = null;
 
         $stmt = $this->db->prepare($qry);
         $stmt->bind_param(
             'ssi',
-            $userUuid,
-            $afscUuid,
+            $user_uuid,
+            $afsc_uuid,
             $authorized
         );
 
-        $c = count($users);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($users[$i])) {
+        foreach ($users as $user) {
+            if (!$user instanceof User) {
                 continue;
             }
 
-            if (!$users[$i] instanceof User) {
+            if (empty($user->getUuid())) {
                 continue;
             }
 
-            if (empty($users[$i]->getUuid())) {
-                continue;
-            }
-
-            $userUuid = $users[$i]->getUuid();
+            $user_uuid = $user->getUuid();
 
             if (!$stmt->execute()) {
                 /** @todo log */
@@ -600,7 +595,7 @@ SQL;
 
         $userList = [];
         while ($stmt->fetch()) {
-            if (!isset($userUuid) || $userUuid === null) {
+            if (!isset($userUuid)) {
                 continue;
             }
 
@@ -704,7 +699,7 @@ SQL;
         $afscsAuthorized = [];
         $afscsPending = [];
         while ($stmt->fetch()) {
-            if (!isset($afscUuid) || $afscUuid === null) {
+            if (!isset($afscUuid)) {
                 continue;
             }
 

@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Configuration;
 
 
-class ConfigFileInvalidException extends \Exception {}
+use Exception;
+
+class ConfigFileInvalidException extends Exception
+{
+}

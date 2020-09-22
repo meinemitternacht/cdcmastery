@@ -238,7 +238,7 @@ SQL;
         }
 
         out_query:
-        $qry = $qry . implode(' AND ', $parts);
+        $qry .= implode(' AND ', $parts);
 
         return $qry ?? '';
     }

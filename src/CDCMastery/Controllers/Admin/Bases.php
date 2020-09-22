@@ -3,6 +3,7 @@
 namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
@@ -12,6 +13,7 @@ use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\Bases\Bases as BaseStats;
 use CDCMastery\Models\Users\UserCollection;
 use DateTime;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -34,6 +36,17 @@ class Bases extends Admin
      */
     private $stats;
 
+    /**
+     * Bases constructor.
+     * @param Logger $logger
+     * @param Environment $twig
+     * @param Session $session
+     * @param AuthHelpers $auth_helpers
+     * @param UserCollection $users
+     * @param BaseCollection $bases
+     * @param BaseStats $base_stats
+     * @throws AccessDeniedException
+     */
     public function __construct(
         Logger $logger,
         Environment $twig,
@@ -86,8 +99,7 @@ class Bases extends Admin
 
         $base->setName($name);
 
-        $db_bases = $this->bases->fetchAll();
-        foreach ($db_bases as $db_base) {
+        foreach ($this->bases->fetchAll() as $db_base) {
             if ($edit && $db_base->getUuid() === $base->getUuid()) {
                 continue;
             }
@@ -156,6 +168,12 @@ class Bases extends Admin
         );
     }
 
+    /**
+     * @param array $stats
+     * @param int $limit
+     * @return array|null
+     * @throws JsonException
+     */
     private function format_overview_graph_data(array &$stats, int $limit = -1): ?array
     {
         /*
@@ -207,20 +225,40 @@ LBL,
             return null;
         }
 
-        return ['avg' => json_encode($average_data), 'count' => json_encode($count_data)];
+        return [
+            'avg' => json_encode($average_data, JSON_THROW_ON_ERROR),
+            'count' => json_encode($count_data, JSON_THROW_ON_ERROR),
+        ];
     }
 
     public function show_overview(string $uuid): Response
     {
         $base = $this->get_base($uuid);
 
+        if (!$base) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified base could not be found'
+            );
+
+            return $this->redirect('/admin/bases');
+        }
+
         $limit = 100;
         $base_users_avg_count = $this->stats->averageCountOverallByUser($base,
                                                                         (new DateTime())->modify('-2 year'));
+
+        try {
+            $graph_data = $this->format_overview_graph_data($base_users_avg_count, $limit);
+        } catch (JsonException $e) {
+            $this->log->debug($e);
+            $graph_data = null;
+        }
+
         $data = [
             'base' => $base,
             'bases' => $this->bases->fetchAll(),
-            'graph' => $this->format_overview_graph_data($base_users_avg_count, $limit),
+            'graph' => $graph_data,
             'stats' => [
                 'tests' => $this->stats->countOverall($base),
                 'average' => $this->stats->averageOverall($base),

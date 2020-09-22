@@ -28,7 +28,7 @@ use Twig\Loader\FilesystemLoader;
 
 
 return [
-    Environment::class => function (ContainerInterface $c) {
+    Environment::class => static function (ContainerInterface $c) {
         $config = $c->get(Config::class);
         $auth_helpers = $c->get(AuthHelpers::class);
         $loader = new FilesystemLoader(VIEWS_DIR);
@@ -73,7 +73,7 @@ return [
 
         return $twig;
     },
-    Logger::class => function (ContainerInterface $c) {
+    Logger::class => static function (ContainerInterface $c) {
         $logger = new Monolog\Logger('CDC');
         $config = $c->get(Config::class);
 
@@ -114,14 +114,14 @@ return [
 
         return $logger;
     },
-    Memcached::class => function (ContainerInterface $c) {
+    Memcached::class => static function (ContainerInterface $c) {
         $memcached = new Memcached();
 
         $hostList = $c->get(Config::class)->get(['system', 'memcached']);
 
         if (is_array($hostList) && $hostList) {
             foreach ($hostList as $host) {
-                if (!isset($host->host) || !isset($host->port)) {
+                if (!isset($host->host, $host->port)) {
                     continue;
                 }
 
@@ -134,7 +134,7 @@ return [
 
         return $memcached;
     },
-    mysqli::class => function (ContainerInterface $c) {
+    mysqli::class => static function (ContainerInterface $c) {
         $config = $c->get(Config::class);
 
         $db_conf = $config->get(['system', 'debug'])
@@ -160,13 +160,13 @@ return [
 
         return $db;
     },
-    Session::class => function () {
+    Session::class => static function () {
         $session = new Session();
         $session->start();
 
         return $session;
     },
-    Swift_Mailer::class => function (ContainerInterface $c) {
+    Swift_Mailer::class => static function (ContainerInterface $c) {
         $config = $c->get(Config::class);
         $settings = [
             'host' => $config->get(['email', 'host']),

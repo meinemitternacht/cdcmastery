@@ -32,7 +32,7 @@ class TestOptions
     /**
      * @param Afsc $afsc
      */
-    public function addAfsc(Afsc $afsc)
+    public function addAfsc(Afsc $afsc): void
     {
         if (!is_array($this->afscs)) {
             $this->afscs = [];
@@ -51,21 +51,16 @@ class TestOptions
      */
     private function afscExists(Afsc $afsc): bool
     {
-        if (!is_array($this->afscs) || empty($this->afscs)) {
+        if (!is_array($this->afscs) || !$this->afscs) {
             return false;
         }
 
-        $c = count($this->afscs);
-        for ($i = 0; $i < $c; $i++) {
-            if (!isset($this->afscs[$i])) {
+        foreach ($this->afscs as $tgt_afsc) {
+            if (!$tgt_afsc instanceof Afsc) {
                 continue;
             }
 
-            if (!$this->afscs[$i] instanceof Afsc) {
-                continue;
-            }
-
-            if ($this->afscs[$i]->getUuid() === $afsc->getUuid()) {
+            if ($tgt_afsc->getUuid() === $afsc->getUuid()) {
                 return true;
             }
         }
@@ -84,7 +79,7 @@ class TestOptions
     /**
      * @param Afsc[] $afscs
      */
-    public function setAfscs(array $afscs)
+    public function setAfscs(array $afscs): void
     {
         $this->afscs = $afscs;
     }
@@ -100,7 +95,7 @@ class TestOptions
     /**
      * @param int $numQuestions
      */
-    public function setNumQuestions(int $numQuestions)
+    public function setNumQuestions(int $numQuestions): void
     {
         $this->numQuestions = $numQuestions;
     }
@@ -116,7 +111,7 @@ class TestOptions
     /**
      * @param User $user
      */
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }

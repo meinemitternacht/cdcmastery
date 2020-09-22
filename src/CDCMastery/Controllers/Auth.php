@@ -27,6 +27,7 @@ use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use DateTime;
 use Exception;
+use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -377,7 +378,7 @@ class Auth extends RootController
         }
 
         $valid_ranks = UserHelpers::listRanks(false);
-        if (!$rank || trim($rank) === '' || !isset($valid_ranks[ $rank ])) {
+        if (!$rank || !isset($valid_ranks[ $rank ]) || trim($rank) === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The provided rank is invalid'
@@ -404,8 +405,8 @@ class Auth extends RootController
             goto out_error;
         }
 
-        $new_base = $this->bases->fetch($base);
-        if (!$new_base || $new_base->getUuid() === '' || !$base) {
+        $tgt_base = $this->bases->fetch($base);
+        if (!$tgt_base || $tgt_base->getUuid() === '') {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Base is invalid'
@@ -415,7 +416,7 @@ class Auth extends RootController
         }
 
         $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
-        if (!$time_zone || !in_array($time_zone, $valid_time_zones)) {
+        if (!$time_zone || !in_array($time_zone, $valid_time_zones, true)) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The chosen Time Zone is invalid'
@@ -477,7 +478,7 @@ class Auth extends RootController
         $user->setRank($rank);
         $user->setFirstName($first_name);
         $user->setLastName($last_name);
-        $user->setBase($base);
+        $user->setBase($tgt_base->getUuid());
         $user->setTimeZone($time_zone);
         $user->setPassword(AuthHelpers::hash($password));
         $user->setRole($role->getUuid());
@@ -489,9 +490,17 @@ class Auth extends RootController
         $this->users->save($user);
         $activation = Activation::factory($user);
         $this->activations->save($activation);
-        $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
-                                                    $user,
-                                                    $activation));
+        try {
+            $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
+                                                        $user,
+                                                        $activation));
+        } catch (Exception $e) {
+            $this->log->debug($e);
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The system encountered a problem sending the activation e-mail, please contact the site administrator'
+            );
+        }
 
         $pending_role = null;
         switch ($type) {
@@ -528,6 +537,10 @@ class Auth extends RootController
         return $this->redirect("/auth/register/{$type}");
     }
 
+    /**
+     * @return Response
+     * @throws JsonException
+     */
     public function do_login(): Response
     {
         if ($this->auth_helpers->assert_logged_in()) {
@@ -558,7 +571,7 @@ class Auth extends RootController
         if (!$this->checkParameters($params)) {
             $this->limiter->increment();
 
-            $req_str = json_encode($this->request->request->all());
+            $req_str = json_encode($this->request->request->all(), JSON_THROW_ON_ERROR);
             $this->log->addWarning('login attempt missing parameters :: ' .
                                    "{$req_str} :: ip {$_SERVER['REMOTE_ADDR']}");
 

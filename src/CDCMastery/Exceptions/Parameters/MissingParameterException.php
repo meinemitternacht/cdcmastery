@@ -9,4 +9,8 @@
 namespace CDCMastery\Exceptions\Parameters;
 
 
-class MissingParameterException extends \Exception {}
+use Exception;
+
+class MissingParameterException extends Exception
+{
+}

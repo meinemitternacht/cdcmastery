@@ -3,10 +3,16 @@
 namespace CDCMastery\Models\Statistics;
 
 
+use JsonException;
 use function count;
 
 class StatisticsHelpers
 {
+    /**
+     * @param array $data
+     * @return string
+     * @throws JsonException
+     */
     public static function formatGraphDataTests(array $data): string
     {
         $newData = [];
@@ -15,7 +21,7 @@ class StatisticsHelpers
             $newData[] = [
                 'x' => $i,
                 'y' => $val,
-                'label' => $date
+                'label' => $date,
             ];
 
             $i++;
@@ -23,9 +29,15 @@ class StatisticsHelpers
 
         return count($newData) === 0
             ? ''
-            : json_encode($newData);
+            : json_encode($newData, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @param array $data
+     * @param array $names
+     * @return string
+     * @throws JsonException
+     */
     public static function formatGraphDataUsersBases(array $data, array $names): string
     {
         $newData = [];
@@ -33,9 +45,9 @@ class StatisticsHelpers
         foreach ($data as $uuid => $datum) {
             if (is_array($datum)) {
                 $newData[] = [
-                    'label' => $names[$uuid] ?? '',
+                    'label' => $names[ $uuid ] ?? '',
                     'x' => $i,
-                    'y' => $datum['tAvg'] ?? $datum['tCount'] ?? 0
+                    'y' => $datum[ 'tAvg' ] ?? $datum[ 'tCount' ] ?? 0,
                 ];
 
                 $i++;
@@ -43,7 +55,7 @@ class StatisticsHelpers
             }
 
             $newData[] = [
-                'label' => $names[$uuid] ?? '',
+                'label' => $names[ $uuid] ?? '',
                 'x' => $i,
                 'y' => $datum ?? 0
             ];
@@ -53,6 +65,6 @@ class StatisticsHelpers
 
         return count($newData) === 0
             ? ''
-            : json_encode($newData);
+            : json_encode($newData, JSON_THROW_ON_ERROR);
     }
 }

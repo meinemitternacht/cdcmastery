@@ -200,7 +200,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === null) {
+            if (!isset($row[ 'uuid' ])) {
                 continue;
             }
 
