@@ -89,7 +89,6 @@ class CardHandler
     ): CardHandler {
         $card_session = CardSession::resume_session($session, $category);
 
-        $tgt_cards = [];
         switch ($category->getType()) {
             case Category::TYPE_AFSC:
                 $binding = $category->getBinding();

@@ -8,7 +8,6 @@ use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\Bases\BaseHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\Bases\BasesGrouped;
-use CDCMastery\Models\Statistics\Bases\IBaseStats;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use JsonException;
