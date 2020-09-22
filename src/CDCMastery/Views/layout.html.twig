@@ -61,7 +61,7 @@
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
                 <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a></li>
                 {% if logged_in %}
-                    {% if is_admin and not error %}
+                    {% if not is_user and not is_supervisor and not error %}
                         <li class="dropdown{% if cur_url starts with "/admin" %} active{% endif %}">
                             <a href="#"
                                class="dropdown-toggle"

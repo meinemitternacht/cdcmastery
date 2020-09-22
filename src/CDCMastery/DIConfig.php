@@ -56,7 +56,7 @@ return [
             $twig->addGlobal('is_training_manager', $auth_helpers->assert_training_manager());
         }
 
-        if ($auth_helpers->assert_admin()) {
+        if (!$auth_helpers->assert_user() && !$auth_helpers->assert_supervisor()) {
             $twig->addGlobal('pending_roles', $c->get(PendingRoleCollection::class)->count());
             $twig->addGlobal('pending_activations', $c->get(ActivationCollection::class)->count());
             $twig->addGlobal('pending_assocs', $c->get(UserAfscAssociations::class)->countPending());

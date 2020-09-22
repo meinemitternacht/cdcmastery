@@ -90,17 +90,17 @@ class Activations extends Admin
                 break;
             case 'reject':
             default:
-            $users = $this->users->fetchArray(array_map(static function (Activation $v): string {
-                return $v->getUserUuid();
-            }, $tgt_activations));
+                $users = $this->users->fetchArray(array_map(static function (Activation $v): string {
+                    return $v->getUserUuid();
+                }, $tgt_activations));
 
-            foreach ($users as $user) {
-                $user->setDisabled(true);
-                $this->log->alert("admin disable user :: {$user->getName()} :: {$user->getUuid()}");
-            }
+                foreach ($users as $user) {
+                    $user->setDisabled(true);
+                    $this->log->alert("admin disable user :: {$user->getName()} :: {$user->getUuid()}");
+                }
 
-            $this->users->saveArray($users);
-            break;
+                $this->users->saveArray($users);
+                break;
         }
 
         $this->flash()->add(

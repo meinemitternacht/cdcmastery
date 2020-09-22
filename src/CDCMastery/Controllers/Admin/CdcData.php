@@ -245,8 +245,7 @@ class CdcData extends Admin
         Question $question,
         array $answers,
         bool $legacy
-    ): Response
-    {
+    ): Response {
         $this->questions->save($afsc, $question);
         $this->answers->saveArray($afsc, $answers);
 
@@ -904,11 +903,7 @@ class CdcData extends Admin
 
     public function show_afsc_list(): Response
     {
-        $flags = AfscCollection::SHOW_FOUO;
-
-        if ($this->auth_helpers->assert_admin()) {
-            $flags |= AfscCollection::SHOW_HIDDEN | AfscCollection::SHOW_OBSOLETE;
-        }
+        $flags = AfscCollection::SHOW_ALL;
 
         $afscList = $this->afscs->fetchAll($flags,
                                            [
