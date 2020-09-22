@@ -11,45 +11,24 @@ namespace CDCMastery\Models\Users;
 
 class UserAfscCollection
 {
-    /**
-     * @var string
-     */
-    private $user;
+    private string $user;
+    /** @var string[] */
+    private array $afscs;
+    /** @var string[]|null */
+    private ?array $authorized;
+    /** @var string[]|null */
+    private ?array $pending;
 
-    /**
-     * @var string[]
-     */
-    private $afscs;
-
-    /**
-     * @var string[]|null
-     */
-    private $authorized;
-
-    /**
-     * @var string[]|null
-     */
-    private $pending;
-
-    /**
-     * @return string
-     */
     public function getUser(): string
     {
         return $this->user;
     }
 
-    /**
-     * @param string $user
-     */
     public function setUser(string $user): void
     {
         $this->user = $user;
     }
 
-    /**
-     * @param string $afscUuid
-     */
     public function addAfsc(string $afscUuid): void
     {
         $this->afscs[] = $afscUuid;

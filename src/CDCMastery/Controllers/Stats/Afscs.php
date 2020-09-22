@@ -16,15 +16,8 @@ use Twig\Environment;
 
 class Afscs extends Stats
 {
-    /**
-     * @var AfscCollection
-     */
-    private $afscs;
-
-    /**
-     * @var TestStats
-     */
-    private $test_stats;
+    private AfscCollection $afscs;
+    private TestStats $test_stats;
 
     public function __construct(
         Logger $logger,

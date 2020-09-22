@@ -20,15 +20,8 @@ use RuntimeException;
 
 class UserCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * UserCollection constructor.
@@ -59,6 +52,7 @@ class UserCollection
             $user->setEmail($row[ 'userEmail' ] ?? '');
             $user->setRank($row[ 'userRank' ] ?? '');
 
+            $user->setDateRegistered(null);
             if (($row[ 'userDateRegistered' ] ?? null) !== null) {
                 $user->setDateRegistered(
                     DateTime::createFromFormat(
@@ -68,6 +62,7 @@ class UserCollection
                 );
             }
 
+            $user->setLastLogin(null);
             if (($row[ 'userLastLogin' ] ?? null) !== null) {
                 $user->setLastLogin(
                     DateTime::createFromFormat(
@@ -77,6 +72,7 @@ class UserCollection
                 );
             }
 
+            $user->setLastActive(null);
             if (($row[ 'userLastActive' ] ?? null) !== null) {
                 $user->setLastActive(
                     DateTime::createFromFormat(

@@ -134,6 +134,7 @@ class TestHandler
         $test->setQuestions($questionList);
         $test->setCombined(count($options->getAfscs()) > 1);
         $test->setTimeStarted(new DateTime());
+        $test->setTimeCompleted(null);
         $test->setUserUuid($options->getUser()->getUuid());
 
         $handler = new self($mysqli,

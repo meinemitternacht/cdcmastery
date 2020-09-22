@@ -38,41 +38,13 @@ use function count;
 class CdcData extends Admin
 {
     private const NEW_QUESTION_TMP = 'new_question_tmp';
-
-    /**
-     * @var CdcDataCollection
-     */
-    private $cdc_datas;
-
-    /**
-     * @var AfscCollection
-     */
-    private $afscs;
-
-    /**
-     * @var QuestionCollection
-     */
-    private $questions;
-
-    /**
-     * @var AnswerCollection
-     */
-    private $answers;
-
-    /**
-     * @var QuestionHelpers
-     */
-    private $question_helpers;
-
-    /**
-     * @var UserAfscAssociations
-     */
-    private $user_afscs;
-
-    /**
-     * @var TestStats
-     */
-    private $test_stats;
+    private CdcDataCollection $cdc_datas;
+    private AfscCollection $afscs;
+    private QuestionCollection $questions;
+    private AnswerCollection $answers;
+    private QuestionHelpers $question_helpers;
+    private UserAfscAssociations $user_afscs;
+    private TestStats $test_stats;
 
     /**
      * CdcData constructor.

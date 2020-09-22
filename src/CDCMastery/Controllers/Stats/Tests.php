@@ -15,10 +15,7 @@ use Twig\Environment;
 
 class Tests extends Stats
 {
-    /**
-     * @var TestStats
-     */
-    private $test_stats;
+    private TestStats $test_stats;
 
     public function __construct(
         Logger $logger,

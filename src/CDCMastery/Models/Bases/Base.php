@@ -11,64 +11,35 @@ namespace CDCMastery\Models\Bases;
 
 class Base
 {
-    /**
-     * @var string
-     */
-    private $uuid;
+    private string $uuid;
+    private string $name;
+    private int $users = 0;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var int
-     */
-    private $users = 0;
-
-    /**
-     * @return string
-     */
     public function getUuid(): string
     {
         return $this->uuid ?? '';
     }
 
-    /**
-     * @param string $uuid
-     */
     public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return trim($this->name);
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return int
-     */
     public function getUsers(): int
     {
         return $this->users;
     }
 
-    /**
-     * @param int $users
-     */
     public function setUsers(int $users): void
     {
         $this->users = $users;

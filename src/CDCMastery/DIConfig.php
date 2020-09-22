@@ -36,7 +36,7 @@ return [
         $debug = $config->get(['system', 'debug'])
             ?: false;
         $twig = $debug
-            ? new Environment($loader, ['debug' => true])
+            ? new Environment($loader, ['debug' => true, 'cache' => '/tmp/twig_cache'])
             : new Environment($loader, ['debug' => false, 'cache' => '/tmp/twig_cache']);
 
         $loggedIn = $auth_helpers->assert_logged_in();

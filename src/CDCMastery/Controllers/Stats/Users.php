@@ -25,20 +25,9 @@ use Twig\Environment;
 
 class Users extends Stats
 {
-    /**
-     * @var BaseCollection
-     */
-    private $bases;
-
-    /**
-     * @var RoleCollection
-     */
-    private $roles;
-
-    /**
-     * @var UserStats
-     */
-    private $users;
+    private BaseCollection $bases;
+    private RoleCollection $roles;
+    private UserStats $users;
 
     public function __construct(
         Logger $logger,

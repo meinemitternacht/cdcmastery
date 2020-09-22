@@ -26,20 +26,9 @@ class TestHelpers
     private const COUNT_PASSED = 5;
     private const COUNT_FAILED = 6;
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var Config
-     */
-    protected $config;
+    protected mysqli $db;
+    protected Logger $log;
+    protected Config $config;
 
     /**
      * TestHelpers constructor.

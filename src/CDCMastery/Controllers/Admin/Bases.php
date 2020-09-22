@@ -21,20 +21,9 @@ use Twig\Environment;
 
 class Bases extends Admin
 {
-    /**
-     * @var UserCollection
-     */
-    private $users;
-
-    /**
-     * @var BaseCollection
-     */
-    private $bases;
-
-    /**
-     * @var BaseStats
-     */
-    private $stats;
+    private UserCollection $users;
+    private BaseCollection $bases;
+    private BaseStats $stats;
 
     /**
      * Bases constructor.

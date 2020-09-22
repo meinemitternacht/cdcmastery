@@ -8,15 +8,8 @@ use mysqli;
 
 class BaseCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * BaseCollection constructor.

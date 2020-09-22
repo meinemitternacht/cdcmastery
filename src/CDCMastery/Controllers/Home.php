@@ -28,25 +28,10 @@ class Home extends RootController
 {
     private const NUM_COMPLETE_TESTS_DISPLAY = 5;
 
-    /**
-     * @var AuthHelpers
-     */
-    private $auth_helpers;
-
-    /**
-     * @var TestStats
-     */
-    private $test_stats;
-
-    /**
-     * @var UserCollection
-     */
-    private $users;
-
-    /**
-     * @var TestCollection
-     */
-    private $tests;
+    private AuthHelpers $auth_helpers;
+    private TestStats $test_stats;
+    private UserCollection $users;
+    private TestCollection $tests;
 
     public function __construct(
         Logger $logger,

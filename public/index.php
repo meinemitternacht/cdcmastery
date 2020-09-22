@@ -90,6 +90,9 @@ if ($logged_in) {
         $response = RootController::static_redirect('/auth/login');
         goto out_respond;
     }
+
+    $user->setLastActive(new DateTime());
+    $users->save($user);
 }
 
 switch ($route[ 0 ]) {

@@ -122,7 +122,7 @@ class Activations extends Admin
         }, $pending);
 
         $data = [
-            'activations' => $pending,
+            'pending' => $pending,
             'users' => $this->users->fetchArray($user_uuids),
         ];
 

@@ -8,6 +8,7 @@ use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\Bases\BaseHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\Bases\BasesGrouped;
+use CDCMastery\Models\Statistics\Bases\IBaseStats;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use JsonException;
@@ -18,20 +19,9 @@ use Twig\Environment;
 
 class Bases extends Stats
 {
-    /**
-     * @var BaseCollection
-     */
-    private $baseCollection;
-
-    /**
-     * @var BasesGrouped
-     */
-    private $base_stats;
-
-    /**
-     * @var TestStats
-     */
-    private $test_stats;
+    private BaseCollection $baseCollection;
+    private BasesGrouped $base_stats;
+    private TestStats $test_stats;
 
     public function __construct(
         Logger $logger,

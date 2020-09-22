@@ -11,20 +11,9 @@ namespace CDCMastery\Models\OfficeSymbols;
 
 class OfficeSymbol
 {
-    /**
-     * @var string
-     */
-    private $uuid;
-
-    /**
-     * @var string
-     */
-    private $symbol;
-
-    /**
-     * @var int
-     */
-    private $users = 0;
+    private string $uuid;
+    private string $symbol;
+    private int $users = 0;
 
     /**
      * @return string

@@ -12,14 +12,20 @@
                     <table class="table table-condensed table-striped table-hover">
                         <thead>
                         <tr>
-                            <th class="col-xs-1">&nbsp;</th>
+                            <th class="col-xs-1">
+                                <label class="sr-only" for="role-checkall">Select All</label>
+                                <input type="checkbox"
+                                       id="role-checkall"
+                                       value="1"
+                                       onclick="check_all(this.id, 'pending-roles')">
+                            </th>
                             <th>Name</th>
                             <th>Date Registered</th>
                             <th>Date Requested</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        {% for pending_role in pending_roles %}
+                        <tbody id="pending-roles">
+                        {% for pending_role in pending %}
                             <tr>
                                 <td>
                                     <input type="checkbox"

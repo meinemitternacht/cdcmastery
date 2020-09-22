@@ -12,15 +12,8 @@ class UserAfscAssociations
     public const GROUP_BY_AFSC = 0;
     public const GROUP_BY_USER = 1;
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * UserAfscAssociations constructor.

@@ -17,15 +17,8 @@ use mysqli;
 
 class EmailCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * EmailCollection constructor.

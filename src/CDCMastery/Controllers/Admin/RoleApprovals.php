@@ -168,7 +168,7 @@ class RoleApprovals extends Admin
         );
 
         $data = [
-            'pending_roles' => $pending,
+            'pending' => $pending,
             'roles' => $this->roles->fetchAll(),
             'users' => $this->users->fetchArray($user_uuids),
         ];

@@ -8,15 +8,8 @@ use mysqli;
 
 class QuestionHelpers
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * QuestionHelpers constructor.

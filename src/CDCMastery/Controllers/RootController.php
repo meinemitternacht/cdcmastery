@@ -23,25 +23,10 @@ use Twig\Error\SyntaxError;
 
 class RootController
 {
-    /**
-     * @var Logger $log
-     */
-    protected $log;
-
-    /**
-     * @var Environment
-     */
-    protected $twig;
-
-    /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * @var Request
-     */
-    protected $request;
+    protected Logger $log;
+    protected Environment $twig;
+    protected Session $session;
+    protected Request $request;
 
     /**
      * RootController constructor.

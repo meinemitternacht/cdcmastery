@@ -1189,11 +1189,11 @@ LBL,
             }
 
             uasort($sub_stats_count_avg_grouped, static function (array $a, array $b): int {
-                if ($a[ 'name_last' ] === $b[ 'name_last' ]) {
-                    return $a[ 'name_first' ] <=> $b[ 'name_first' ];
+                if (($a[ 'name_last' ] ?? '') === ($b[ 'name_last' ] ?? '')) {
+                    return ($a[ 'name_first' ] ?? '') <=> ($b[ 'name_first' ] ?? '');
                 }
 
-                return $a[ 'name_last' ] <=> $b[ 'name_last' ];
+                return ($a[ 'name_last' ] ?? '') <=> ($b[ 'name_last' ] ?? '');
             });
         }
 

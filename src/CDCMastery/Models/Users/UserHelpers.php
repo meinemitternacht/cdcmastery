@@ -14,15 +14,8 @@ use mysqli;
 
 class UserHelpers
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * AuthProcessor constructor.

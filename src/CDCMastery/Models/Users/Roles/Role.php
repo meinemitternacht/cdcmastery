@@ -27,53 +27,26 @@ class Role
         self::TYPE_USER,
     ];
 
-    /**
-     * @var string
-     */
-    private $uuid;
+    private string $uuid;
+    private string $type;
+    private string $name;
+    private string $description;
 
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $description;
-
-    /**
-     * @return string|null
-     */
     public function getUuid(): ?string
     {
         return $this->uuid;
     }
 
-    /**
-     * @param string $uuid
-     */
     public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         if (!in_array($type, self::VALID_TYPES)) {
@@ -83,33 +56,21 @@ class Role
         $this->type = $type;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
     public function setDescription(string $description): void
     {
         $this->description = $description;

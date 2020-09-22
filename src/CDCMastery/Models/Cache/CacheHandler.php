@@ -21,31 +21,18 @@ class CacheHandler
     public const TTL_XLARGE = 86400;
     public const TTL_MAX = 604800;
 
-    /**
-     * @var Memcached
-     */
-    protected $memcached;
+    protected Memcached $memcached;
 
-    /**
-     * CacheHandler constructor.
-     * @param Memcached $memcached
-     */
     public function __construct(Memcached $memcached)
     {
         $this->memcached = $memcached;
     }
 
-    /**
-     * @param string $hash
-     */
     public function delete(string $hash): void
     {
         $this->memcached->delete($hash);
     }
 
-    /**
-     * @param array $hashes
-     */
     public function deleteArray(array $hashes): void
     {
         $this->memcached->deleteMulti($hashes);

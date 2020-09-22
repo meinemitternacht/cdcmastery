@@ -14,15 +14,8 @@ use mysqli;
 
 class QuestionCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * QuestionCollection constructor.

@@ -78,20 +78,9 @@ class TestStats
     private const STAT_USER_COUNT_LAST_SEVEN = 'user_count_last_seven_days';
     private const STAT_USER_COUNT_OVERALL = 'user_count_overall';
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var CacheHandler
-     */
-    protected $cache;
+    protected mysqli $db;
+    protected Logger $log;
+    protected CacheHandler $cache;
 
     /**
      * Tests constructor.

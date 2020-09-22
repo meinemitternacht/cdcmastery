@@ -27,7 +27,7 @@
                         </tr>
                         </thead>
                         <tbody id="activations">
-                        {% for activation in activations %}
+                        {% for activation in pending %}
                             <tr>
                                 <td>
                                     <input type="checkbox"
@@ -55,14 +55,14 @@
                                    id="determination-approve"
                                    name="determination"
                                    value="approve" CHECKED>
-                            Approve
+                            Activate
                         </label>
                         <label class="radio-inline">
                             <input type="radio"
                                    id="determination-reject"
                                    name="determination"
                                    value="reject">
-                            Reject
+                            <span class="text-danger">Delete</span>
                         </label>
                     </div>
                     <div class="form-group text-center">

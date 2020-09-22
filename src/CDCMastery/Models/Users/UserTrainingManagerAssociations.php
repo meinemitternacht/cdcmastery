@@ -15,15 +15,8 @@ use mysqli;
 
 class UserTrainingManagerAssociations
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * UserTrainingManagerAssociations constructor.

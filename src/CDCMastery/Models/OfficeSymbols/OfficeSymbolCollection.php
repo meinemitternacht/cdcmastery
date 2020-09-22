@@ -14,20 +14,8 @@ use mysqli;
 
 class OfficeSymbolCollection
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var OfficeSymbol[]
-     */
-    private $symbols = [];
+    protected mysqli $db;
+    protected Logger $log;
 
     /**
      * OfficeSymbolCollection constructor.
@@ -50,18 +38,17 @@ class OfficeSymbolCollection
             return [];
         }
 
-        $uuids = [];
+        $symbols = [];
         foreach ($data as $row) {
             $symbol = new OfficeSymbol();
             $symbol->setUuid($row[ 'uuid' ]);
             $symbol->setSymbol($row[ 'officeSymbol' ]);
 
-            $uuids[] = $row[ 'uuid' ];
-            $this->symbols[ $row[ 'uuid' ] ] = $symbol;
+            $symbols[ $row[ 'uuid' ] ] = $symbol;
         }
 
-        $this->fetch_aggregate_data($this->symbols);
-        return array_intersect_key($this->symbols, array_flip($uuids));
+        $this->fetch_aggregate_data($symbols);
+        return $symbols;
     }
 
     /**
@@ -115,8 +102,6 @@ WHERE uuid = '{$uuid}'
 SQL;
 
         $this->db->query($qry);
-
-        unset($this->symbols[ $uuid ]);
     }
 
     /**
@@ -139,10 +124,6 @@ SQL;
 DELETE FROM officeSymbolList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
-
-        foreach ($uuidList as $uuid) {
-            unset($this->symbols[ $uuid ]);
-        }
 
         $this->db->query($qry);
     }
@@ -299,7 +280,6 @@ SQL;
         }
 
         $stmt->close();
-        $this->symbols[ $uuid ] = $officeSymbol;
     }
 
     /**
@@ -339,9 +319,5 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $this->db->query($qry);
-
-        foreach ($officeSymbols as $officeSymbol) {
-            $this->symbols[ $officeSymbol->getUuid() ] = $officeSymbol;
-        }
     }
 }

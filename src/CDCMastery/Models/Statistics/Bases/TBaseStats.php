@@ -12,20 +12,9 @@ use RuntimeException;
 
 trait TBaseStats
 {
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var CacheHandler
-     */
-    protected $cache;
+    protected mysqli $db;
+    protected Logger $log;
+    protected CacheHandler $cache;
 
     /**
      * Tests constructor.

@@ -480,8 +480,12 @@ class Auth extends RootController
         $user->setLastName($last_name);
         $user->setBase($tgt_base->getUuid());
         $user->setTimeZone($time_zone);
+        $user->setLegacyPassword(null);
         $user->setPassword(AuthHelpers::hash($password));
         $user->setRole($role->getUuid());
+        $user->setDateRegistered(new DateTime());
+        $user->setLastLogin(null);
+        $user->setLastActive(null);
 
         if ($office_symbol) {
             $user->setOfficeSymbol($office_symbol);

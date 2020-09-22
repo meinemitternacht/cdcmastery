@@ -14,20 +14,10 @@ use CDCMastery\Models\Users\User;
 
 class TestOptions
 {
-    /**
-     * @var Afsc[]
-     */
-    private $afscs;
-
-    /**
-     * @var int
-     */
-    private $numQuestions;
-
-    /**
-     * @var User
-     */
-    private $user;
+    /** @var Afsc[] */
+    private array $afscs = [];
+    private int $numQuestions;
+    private User $user;
 
     /**
      * @param Afsc $afsc

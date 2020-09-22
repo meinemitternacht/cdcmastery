@@ -11,19 +11,10 @@ namespace CDCMastery\Models\Users;
 
 class AfscUserCollection
 {
-    /**
-     * @var string[]
-     */
-    private $users;
+    /** @var string[] $users */
+    private array $users;
+    private string $afsc;
 
-    /**
-     * @var string
-     */
-    private $afsc;
-
-    /**
-     * @param string $userUuid
-     */
     public function addUser(string $userUuid): void
     {
         $this->users[] = $userUuid;
@@ -45,17 +36,11 @@ class AfscUserCollection
         $this->users = $users;
     }
 
-    /**
-     * @return string
-     */
     public function getAfsc(): string
     {
         return $this->afsc ?? '';
     }
 
-    /**
-     * @param string $afsc
-     */
     public function setAfsc(string $afsc): void
     {
         $this->afsc = $afsc;

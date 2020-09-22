@@ -12,20 +12,9 @@ class UserStats
     private const STAT_USERS_BY_BASE = 'users_by_base';
     private const STAT_USERS_BY_GROUP = 'users_by_group';
 
-    /**
-     * @var mysqli
-     */
-    protected $db;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var CacheHandler
-     */
-    protected $cache;
+    protected mysqli $db;
+    protected Logger $log;
+    protected CacheHandler $cache;
 
     /**
      * Users constructor.
