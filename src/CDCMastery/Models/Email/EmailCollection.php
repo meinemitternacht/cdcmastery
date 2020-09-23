@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Email;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use DateTime;
 use Exception;
 use Monolog\Logger;
@@ -46,7 +47,13 @@ DELETE FROM emailQueue
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
+
+        $res->free();
     }
 
     /**
@@ -79,6 +86,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $emails = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -86,17 +98,17 @@ SQL;
             }
 
             $email = new Email();
-            $email->setUuid($row['uuid'] ?? '');
+            $email->setUuid($row[ 'uuid' ] ?? '');
             $email->setQueueTime(DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
-                                                            $row['queueTime'] ?? ''));
-            $email->setSender($row['emailSender'] ?? '');
-            $email->setRecipient($row['emailRecipient'] ?? '');
-            $email->setSubject($row['emailSubject'] ?? '');
-            $email->setBodyHtml($row['emailBodyHTML'] ?? '');
-            $email->setBodyTxt($row['emailBodyText'] ?? '');
-            $email->setUserUuid($row['queueUser'] ?? '');
+                                                            $row[ 'queueTime' ] ?? ''));
+            $email->setSender($row[ 'emailSender' ] ?? '');
+            $email->setRecipient($row[ 'emailRecipient' ] ?? '');
+            $email->setSubject($row[ 'emailSubject' ] ?? '');
+            $email->setBodyHtml($row[ 'emailBodyHTML' ] ?? '');
+            $email->setBodyTxt($row[ 'emailBodyText' ] ?? '');
+            $email->setUserUuid($row[ 'queueUser' ] ?? '');
 
-            $emails[$row['uuid']] = $email;
+            $emails[ $row[ 'uuid' ] ] = $email;
         }
 
         $res->free();
@@ -149,19 +161,23 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssssssss',
-            $uuid,
-            $queueTime,
-            $sender,
-            $recipient,
-            $subject,
-            $bodyHtml,
-            $bodyText,
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssssssss',
+                               $uuid,
+                               $queueTime,
+                               $sender,
+                               $recipient,
+                               $subject,
+                               $bodyHtml,
+                               $bodyText,
+                               $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

@@ -10,8 +10,10 @@ namespace CDCMastery\Models\Statistics\Bases;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Cache\CacheHandler;
 use DateTime;
+use Throwable;
 
 class BasesGrouped implements IBaseStats
 {
@@ -58,12 +60,12 @@ WHERE testCollection.timeCompleted IS NOT NULL
 GROUP BY tBase
 SQL;
 
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
+        try {
+            $stmt = $this->prepare_and_bind($qry, 'ss', $tStart, $tEnd);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return [];
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
@@ -132,10 +134,15 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $averages = [];
         while ($row = $res->fetch_assoc()) {
-            $averages[$row['tBase']] = round(
-                $row['tAvg'] ?? 0.00,
+            $averages[ $row[ 'tBase' ] ] = round(
+                $row[ 'tAvg' ] ?? 0.00,
                 self::PRECISION_AVG
             );
         }
@@ -189,12 +196,12 @@ WHERE testCollection.timeCompleted IS NOT NULL
 GROUP BY tBase
 SQL;
 
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
+        try {
+            $stmt = $this->prepare_and_bind($qry, 'ss', $tStart, $tEnd);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return [];
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
@@ -256,9 +263,14 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $counts = [];
         while ($row = $res->fetch_assoc()) {
-            $counts[$row['tBase']] = (int)($row['tCount'] ?? 0);
+            $counts[ $row[ 'tBase' ] ] = (int)($row[ 'tCount' ] ?? 0);
         }
 
         $res->free();

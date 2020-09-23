@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Users\Roles;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -37,7 +38,7 @@ class RoleCollection
             $role->setType($row['roleType'] ?? '');
             $role->setName($row['roleName'] ?? '');
             $role->setDescription($row['roleDescription'] ?? '');
-            $roles[$row['uuid']] = $role;
+            $roles[ $row['uuid']] = $role;
         }
 
         return $roles;
@@ -67,15 +68,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             goto out_return;
         }
 
-        if (!$stmt->bind_param('s', $uuid)) {
-            $stmt->close();
-            goto out_return;
-        }
-
-        if (!$stmt->execute()) {
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             goto out_return;
         }
@@ -123,6 +122,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -166,6 +166,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -199,15 +200,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             goto out_return;
         }
 
-        if (!$stmt->bind_param('s', $type)) {
-            $stmt->close();
-            goto out_return;
-        }
-
-        if (!$stmt->execute()) {
+        if (!$stmt->bind_param('s', $type) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             goto out_return;
         }
@@ -270,6 +269,7 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -277,12 +277,13 @@ SQL;
                                $uuid,
                                $type,
                                $name,
-                               $description)) {
+                               $description) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
 
-        $stmt->execute();
         $stmt->close();
     }
 

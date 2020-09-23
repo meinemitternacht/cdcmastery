@@ -3,6 +3,7 @@
 namespace CDCMastery\Models\CdcData;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -53,6 +54,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -97,6 +99,11 @@ GROUP BY afscUUID
 SQL;
 
         $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
 
         $data = [];
         while ($row = $res->fetch_assoc()) {

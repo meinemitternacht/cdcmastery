@@ -7,6 +7,7 @@ use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Cache\CacheHandler;
 use DateTime;
 use DateTimeInterface;
+use Throwable;
 
 class Bases implements IBaseStats
 {
@@ -39,7 +40,12 @@ WHERE testCollection.timeCompleted IS NOT NULL
   AND userData.userBase = ?
 SQL;
 
-        $stmt = $this->prepare_and_bind($qry, 'sss', $tStart, $tEnd, $buuid);
+        try {
+            $stmt = $this->prepare_and_bind($qry, 'sss', $tStart, $tEnd, $buuid);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return null;
+        }
 
         $stmt->bind_result($tAvg);
         $stmt->fetch();
@@ -77,7 +83,12 @@ WHERE testCollection.score > 0
   AND userData.userBase = ?
 SQL;
 
-        $stmt = $this->prepare_and_bind($qry, 's', $buuid);
+        try {
+            $stmt = $this->prepare_and_bind($qry, 's', $buuid);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return null;
+        }
 
         $stmt->bind_result($tAvg);
         $stmt->fetch();
@@ -124,7 +135,13 @@ ORDER BY tAvg DESC, tCount DESC, userData.uuid
 SQL;
 
         $cutoff_fmt = $cutoff->format(DateTimeHelpers::D_FMT_SHORT);
-        $stmt = $this->prepare_and_bind($qry, 'ss', $buuid, $cutoff_fmt);
+
+        try {
+            $stmt = $this->prepare_and_bind($qry, 'ss', $buuid, $cutoff_fmt);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return [];
+        }
 
         $stmt->bind_result($user, $tCount, $tAvg);
 
@@ -184,12 +201,12 @@ WHERE testCollection.timeCompleted IS NOT NULL
 GROUP BY tBase
 SQL;
 
-        $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
+        try {
+            $stmt = $this->prepare_and_bind($qry, 'ss', $tStart, $tEnd);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return [];
+        }
 
         if (!$stmt->execute()) {
             $stmt->close();
@@ -244,7 +261,12 @@ WHERE testCollection.score > 0
   AND userData.userBase = ?
 SQL;
 
-        $stmt = $this->prepare_and_bind($qry, 's', $buuid);
+        try {
+            $stmt = $this->prepare_and_bind($qry, 's', $buuid);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return null;
+        }
 
         $stmt->bind_result($tCount);
         $stmt->fetch();

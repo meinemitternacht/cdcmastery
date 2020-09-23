@@ -5,6 +5,7 @@ namespace CDCMastery\Models\Statistics\Subordinates;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\Users\User;
 use DateTime;
@@ -63,11 +64,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
         if (!$stmt->bind_param('ss', $mgr_uuid, $mgr_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -115,11 +118,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
         if (!$stmt->bind_param('ss', $mgr_uuid, $mgr_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -173,11 +178,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('ss', $mgr_uuid, $mgr_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -242,11 +249,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('ss', $mgr_uuid, $mgr_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }

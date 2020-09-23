@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Tests\Offline;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AnswerCollection;
@@ -97,7 +98,11 @@ DELETE FROM testGeneratorData
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     /**
@@ -121,7 +126,11 @@ DELETE FROM testGeneratorData
 WHERE uuid IN ('{$uuidListString}')
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     public function deleteAllByUser(User $user): void
@@ -139,7 +148,11 @@ DELETE FROM testGeneratorData
 WHERE userUUID = '{$userUuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     public function deleteAllByAfsc(Afsc $afsc): void
@@ -157,7 +170,11 @@ DELETE FROM testGeneratorData
 WHERE afscUUID = '{$afscUuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     public function fetch(string $uuid): ?OfflineTest
@@ -181,11 +198,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return null;
         }
 
         if (!$stmt->bind_param('s', $uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -271,11 +290,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s', $afscUuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -373,11 +394,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s', $userUuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -484,6 +507,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -583,6 +611,7 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -594,6 +623,7 @@ SQL;
                                $userUuid,
                                $dateCreated) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             $stmt->close();
             return;
         }

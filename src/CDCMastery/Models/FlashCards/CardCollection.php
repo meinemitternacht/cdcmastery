@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\FlashCards;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -66,11 +67,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
         if (!$stmt->bind_param('s', $card_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -113,9 +116,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -183,9 +192,15 @@ SQL;
         $uuid = $category->getUuid();
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -265,6 +280,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -324,15 +344,19 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssss',
-            $uuid,
-            $front,
-            $back,
-            $_category
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssss',
+                               $uuid,
+                               $front,
+                               $back,
+                               $_category) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

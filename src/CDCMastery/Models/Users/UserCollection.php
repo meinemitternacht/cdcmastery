@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Users;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
@@ -104,6 +105,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
@@ -126,7 +128,11 @@ DELETE FROM userData
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     /**
@@ -139,6 +145,7 @@ SQL;
         }
     }
 
+    /* @todo return null */
     /**
      * @param string $uuid
      * @return User
@@ -173,9 +180,15 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return new User();
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return new User();
         }
@@ -301,6 +314,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -389,6 +407,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -400,10 +423,7 @@ SQL;
 
         $res->free();
 
-        return array_intersect_key(
-            $this->create_objects($rows),
-            array_flip($uuidList)
-        );
+        return $this->create_objects($rows);
     }
 
     /* @todo proper filter function for each column */
@@ -471,12 +491,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         $base_uuid = $base->getUuid();
         if (!$stmt->bind_param('s', $base_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -608,28 +630,32 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sssssssssssssssii',
-            $uuid,
-            $firstName,
-            $lastName,
-            $handle,
-            $password,
-            $legacyPassword,
-            $email,
-            $rank,
-            $dateRegistered,
-            $lastLogin,
-            $lastActive,
-            $timeZone,
-            $role,
-            $officeSymbol,
-            $base,
-            $disabled,
-            $reminderSent
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('sssssssssssssssii',
+                               $uuid,
+                               $firstName,
+                               $lastName,
+                               $handle,
+                               $password,
+                               $legacyPassword,
+                               $email,
+                               $rank,
+                               $dateRegistered,
+                               $lastLogin,
+                               $lastActive,
+                               $timeZone,
+                               $role,
+                               $officeSymbol,
+                               $base,
+                               $disabled,
+                               $reminderSent) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

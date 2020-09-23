@@ -4,6 +4,7 @@
 namespace CDCMastery\Models\Statistics\Bases;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Cache\CacheHandler;
 use Monolog\Logger;
 use mysqli;
@@ -34,11 +35,13 @@ trait TBaseStats
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             throw new RuntimeException("Unable to prepare statement: {$this->db->error}");
         }
 
         if (!$stmt->bind_param($types, ...$binds) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             throw new RuntimeException("Unable to execute statement: {$stmt->error}");
         }

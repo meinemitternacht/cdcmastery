@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\CdcData;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -55,12 +56,20 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
+
+        $stmt->close();
     }
 
     public function deleteArray(array $uuids): void
@@ -100,9 +109,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -173,6 +188,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -231,16 +251,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s',
-                               $question_uuid)) {
-            $stmt->close();
-            return [];
-        }
-
-        if (!$stmt->execute()) {
+                               $question_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -318,6 +336,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -375,15 +394,19 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssss',
-            $uuid,
-            $questionUuid,
-            $text,
-            $correct
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssss',
+                               $uuid,
+                               $questionUuid,
+                               $text,
+                               $correct) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -436,13 +459,21 @@ SQL;
         $correct = null;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sssi',
-            $uuid,
-            $questionUuid,
-            $text,
-            $correct
-        );
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('sssi',
+                               $uuid,
+                               $questionUuid,
+                               $text,
+                               $correct)) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            $stmt->close();
+            return;
+        }
 
         foreach ($answers as $answer) {
             if (!$answer instanceof Answer) {
@@ -455,7 +486,7 @@ SQL;
             $correct = $answer->isCorrect();
 
             if (!$stmt->execute()) {
-                continue;
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             }
         }
 

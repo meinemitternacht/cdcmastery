@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\FlashCards;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\Sorting\Cards\CardCategorySortOption;
 use CDCMastery\Models\Sorting\ISortOption;
@@ -36,6 +37,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
@@ -70,11 +72,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
         if (!$stmt->bind_param('ss', $user_uuid, $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -130,7 +134,11 @@ DELETE FROM flashCardCategories
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     public function fetch(string $uuid): ?Category
@@ -153,10 +161,16 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
             $stmt->close();
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             return null;
         }
 
@@ -210,9 +224,15 @@ WHERE categoryType = '{$type_afsc}'
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afsc_uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $afsc_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -317,6 +337,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             $rows[] = $row;
@@ -411,12 +436,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         $user_uuid = $user->getUuid();
         if (!$stmt->bind_param('sss', $user_uuid, $user_uuid, $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -512,6 +539,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             $rows[] = $row;
@@ -570,6 +602,7 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -582,6 +615,7 @@ SQL;
                                $createdBy,
                                $comments) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

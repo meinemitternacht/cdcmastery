@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Users;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Users\Roles\Role;
 use Monolog\Logger;
 use mysqli;
@@ -55,13 +56,17 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $supervisorUuid,
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $supervisorUuid,
+                               $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -92,13 +97,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $userUuid,
-            $supervisorUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return false;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $userUuid,
+                               $supervisorUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return false;
         }
@@ -139,18 +148,19 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
 
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
         foreach ($supervisors as $supervisor) {
             $supervisorUuid = $supervisor->getUuid();
 
-            $stmt->bind_param(
-                'ss',
-                $supervisorUuid,
-                $userUuid
-            );
-
-            if (!$stmt->execute()) {
-                /** @todo log */
-                continue;
+            if (!$stmt->bind_param('ss',
+                                   $supervisorUuid,
+                                   $userUuid) ||
+                !$stmt->execute()) {
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             }
         }
 
@@ -183,18 +193,19 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
 
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
         foreach ($users as $user) {
             $userUuid = $user->getUuid();
 
-            $stmt->bind_param(
-                'ss',
-                $supervisorUuid,
-                $userUuid
-            );
-
-            if (!$stmt->execute()) {
-                /** @todo log */
-                continue;
+            if (!$stmt->bind_param('ss',
+                                   $supervisorUuid,
+                                   $userUuid) ||
+                !$stmt->execute()) {
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             }
         }
 
@@ -223,11 +234,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s', $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -265,11 +278,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s', $su_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -317,11 +332,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('ssss', $su_uuid, $base_uuid, $role_1, $role_2) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -357,13 +374,17 @@ WHERE supervisorUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $supervisorUuid,
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $supervisorUuid,
+                               $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -388,12 +409,15 @@ WHERE supervisorUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $supervisorUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $supervisorUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -418,12 +442,16 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s',
+                               $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

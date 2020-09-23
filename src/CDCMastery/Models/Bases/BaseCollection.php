@@ -3,6 +3,7 @@
 namespace CDCMastery\Models\Bases;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -49,7 +50,7 @@ class BaseCollection
             return;
         }
 
-        $sql = <<<SQL
+        $qry = <<<SQL
 SELECT
     COUNT(*) AS count,
     baseList.uuid AS uuid
@@ -59,9 +60,10 @@ GROUP BY userData.userBase
 ORDER BY userData.userBase
 SQL;
 
-        $res = $this->db->query($sql);
+        $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -99,26 +101,15 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             goto out_return;
         }
 
-        if (!$stmt->bind_param('s', $uuid)) {
-            $stmt->close();
-            goto out_return;
-        }
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            goto out_return;
-        }
-
-        if (!$stmt->bind_result($_uuid,
-                                $name)) {
-            $stmt->close();
-            goto out_return;
-        }
-
-        if (!$stmt->fetch()) {
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute() ||
+            !$stmt->bind_result($_uuid, $name) ||
+            !$stmt->fetch()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             goto out_return;
         }
@@ -146,6 +137,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -188,6 +180,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -229,16 +222,15 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
-        if (!$stmt->bind_param('ss',
-                               $uuid,
-                               $name)) {
+        if (!$stmt->bind_param('ss', $uuid, $name) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             goto out_close;
         }
-
-        $stmt->execute();
 
         out_close:
         $stmt->close();

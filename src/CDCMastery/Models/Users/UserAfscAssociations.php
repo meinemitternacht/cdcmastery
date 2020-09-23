@@ -3,6 +3,7 @@
 namespace CDCMastery\Models\Users;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
 use Monolog\Logger;
 use mysqli;
@@ -55,14 +56,18 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssi',
-            $userUuid,
-            $afscUuid,
-            $authorized
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssi',
+                               $userUuid,
+                               $afscUuid,
+                               $authorized) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -91,13 +96,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $userUuid,
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $userUuid,
+                               $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -123,12 +132,15 @@ WHERE afscUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -154,12 +166,15 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -190,13 +205,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $userUuid,
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return false;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $userUuid,
+                               $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return false;
         }
@@ -238,13 +257,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $user_uuid,
-            $afsc_uuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return false;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $user_uuid,
+                               $afsc_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return false;
         }
@@ -290,18 +313,20 @@ SQL;
 
         $stmt = $this->db->prepare($qry);
 
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
         foreach ($afscs as $afsc) {
             $afscUuid = $afsc->getUuid();
 
-            $stmt->bind_param(
-                'ssi',
-                $userUuid,
-                $afscUuid,
-                $authorized
-            );
-
-            if (!$stmt->execute()) {
-                /** @todo log */
+            if (!$stmt->bind_param('ssi',
+                                   $userUuid,
+                                   $afscUuid,
+                                   $authorized) ||
+                !$stmt->execute()) {
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
                 continue;
             }
 
@@ -341,12 +366,19 @@ SQL;
         $user_uuid = null;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssi',
-            $user_uuid,
-            $afsc_uuid,
-            $authorized
-        );
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssi',
+                               $user_uuid,
+                               $afsc_uuid,
+                               $authorized)) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            return;
+        }
 
         foreach ($users as $user) {
             if (!$user instanceof User) {
@@ -360,14 +392,8 @@ SQL;
             $user_uuid = $user->getUuid();
 
             if (!$stmt->execute()) {
-                /** @todo log */
-                continue;
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             }
-        }
-
-        if (!$stmt->execute()) {
-            $stmt->close();
-            return;
         }
 
         $stmt->close();
@@ -382,6 +408,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
@@ -412,13 +439,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $userUuid,
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $userUuid,
+                               $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -444,12 +475,15 @@ WHERE afscUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -475,12 +509,15 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -514,12 +551,17 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $data = [];
         $out = [];
         switch ($groupBy) {
             case self::GROUP_BY_AFSC:
                 while ($row = $res->fetch_assoc()) {
-                    $data[$row['afscUUID']][] = $row['userUUID'];
+                    $data[ $row[ 'afscUUID' ] ][] = $row[ 'userUUID' ];
                 }
 
                 $res->free();
@@ -534,7 +576,7 @@ SQL;
                 break;
             case self::GROUP_BY_USER:
                 while ($row = $res->fetch_assoc()) {
-                    $data[$row['userUUID']][] = $row['afscUUID'];
+                    $data[ $row[ 'userUUID' ] ][] = $row[ 'afscUUID' ];
                 }
 
                 $res->free();
@@ -560,11 +602,12 @@ SQL;
      */
     public function fetchAllByAfsc(Afsc $afsc): AfscUserCollection
     {
+        $afscUserCollection = new AfscUserCollection();
+
         if (empty($afsc->getUuid())) {
-            return new AfscUserCollection();
+            goto out_return;
         }
 
-        $afscUserCollection = new AfscUserCollection();
         $afscUserCollection->setAfsc($afsc->getUuid());
 
         $afscUuid = $afsc->getUuid();
@@ -577,11 +620,17 @@ WHERE afscUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
-            return $afscUserCollection;
+            goto out_return;
         }
 
         $stmt->bind_result($userUuid);
@@ -599,6 +648,7 @@ SQL;
 
         $afscUserCollection->setUsers($userList);
 
+        out_return:
         return $afscUserCollection;
     }
 
@@ -620,6 +670,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -661,13 +712,14 @@ SQL;
      */
     public function fetchAllByUser(User $user): UserAfscCollection
     {
+        $userAfscCollection = new UserAfscCollection();
+
         if (empty($user->getUuid())) {
-            return new UserAfscCollection();
+            goto out_return;
         }
 
         $userUuid = $user->getUuid();
 
-        $userAfscCollection = new UserAfscCollection();
         $userAfscCollection->setUser($userUuid);
 
         $qry = <<<SQL
@@ -679,11 +731,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
-            return $userAfscCollection;
+            goto out_return;
         }
 
         $stmt->bind_result($afscUuid, $authorized);
@@ -712,6 +770,7 @@ SQL;
         $userAfscCollection->setAuthorized($afscsAuthorized);
         $userAfscCollection->setPending($afscsPending);
 
+        out_return:
         return $userAfscCollection;
     }
 
@@ -735,13 +794,17 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $userUuid,
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $userUuid,
+                               $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -766,12 +829,15 @@ WHERE afscUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $afscUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -796,12 +862,15 @@ WHERE userUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            's',
-            $userUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

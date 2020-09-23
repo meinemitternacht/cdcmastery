@@ -5,6 +5,7 @@ namespace CDCMastery\Models\Users\Roles;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use DateTime;
 use Monolog\Logger;
 use mysqli;
@@ -50,6 +51,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return 0;
         }
 
@@ -74,11 +76,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return null;
         }
 
         if (!$stmt->bind_param('s', $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -107,6 +111,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -136,11 +141,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
         if (!$stmt->bind_param('s', $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -170,12 +177,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
         $user_uuid = $role->getUserUuid();
 
         if (!$stmt->bind_param('s', $user_uuid)) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -209,6 +218,7 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -216,12 +226,13 @@ SQL;
         $role_uuid = $role->getRoleUuid();
         $date_requested = $role->getDateRequested()->format(DateTimeHelpers::DT_FMT_DB);
 
-        if (!$stmt->bind_param('sss', $user_uuid, $role_uuid, $date_requested)) {
+        if (!$stmt->bind_param('sss', $user_uuid, $role_uuid, $date_requested) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
 
-        $stmt->execute();
         $stmt->close();
     }
 

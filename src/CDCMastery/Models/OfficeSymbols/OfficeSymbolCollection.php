@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\OfficeSymbols;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use Monolog\Logger;
 use mysqli;
 
@@ -60,7 +61,7 @@ class OfficeSymbolCollection
             return;
         }
 
-        $sql = <<<SQL
+        $qry = <<<SQL
 SELECT
     COUNT(*) AS count,
     officeSymbolList.uuid AS uuid
@@ -71,9 +72,10 @@ GROUP BY userData.userOfficeSymbol
 ORDER BY userData.userOfficeSymbol
 SQL;
 
-        $res = $this->db->query($sql);
+        $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
@@ -101,7 +103,11 @@ DELETE FROM officeSymbolList
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     /**
@@ -125,7 +131,11 @@ DELETE FROM officeSymbolList
 WHERE uuid IN ('{$uuidListString}')
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     /**
@@ -147,9 +157,15 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -188,6 +204,11 @@ ORDER BY officeSymbol
 SQL;
 
         $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
@@ -230,6 +251,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -268,13 +294,17 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $uuid,
-            $symbol
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $uuid,
+                               $symbol) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -318,6 +348,10 @@ ON DUPLICATE KEY UPDATE
   officeSymbol=VALUES(officeSymbol)
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 }

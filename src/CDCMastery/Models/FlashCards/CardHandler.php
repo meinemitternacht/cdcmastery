@@ -28,7 +28,6 @@ class CardHandler
     public const ACTION_FLIP_CARD = 5;
 
     private Session $session;
-    private mysqli $db;
     private Logger $log;
     private CacheHandler $cache;
     private CardCollection $cards;
@@ -37,7 +36,6 @@ class CardHandler
     /**
      * CardHandler constructor.
      * @param Session $session
-     * @param mysqli $db
      * @param Logger $log
      * @param CacheHandler $cache
      * @param CardCollection $cards
@@ -45,14 +43,12 @@ class CardHandler
      */
     public function __construct(
         Session $session,
-        mysqli $db,
         Logger $log,
         CacheHandler $cache,
         CardCollection $cards,
         CardSession $card_session
     ) {
         $this->session = $session;
-        $this->db = $db;
         $this->log = $log;
         $this->cache = $cache;
         $this->cards = $cards;
@@ -79,7 +75,6 @@ class CardHandler
 
     public static function factory(
         Session $session,
-        mysqli $db,
         Logger $log,
         CacheHandler $cache,
         AfscCollection $afscs,
@@ -137,7 +132,7 @@ class CardHandler
                                            ->setTgtUuids(array_keys($tgt_cards));
 
         out_return:
-        return new self($session, $db, $log, $cache, $cards, $card_session);
+        return new self($session, $log, $cache, $cards, $card_session);
     }
 
     public function first(): void

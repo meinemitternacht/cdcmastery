@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\Tests;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\Answer;
 use CDCMastery\Models\CdcData\AnswerCollection;
@@ -64,9 +65,15 @@ WHERE testUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $testUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('s', $testUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -99,13 +106,18 @@ WHERE testUUID = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $test_uuid,
-            $q_uuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param(
+                'ss',
+                $test_uuid,
+                $q_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -149,9 +161,15 @@ ORDER BY questionUUID
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $testUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $testUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -224,9 +242,15 @@ ORDER BY questionUUID
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $testUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $testUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -325,14 +349,18 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $testUuid,
-            $questionUuid,
-            $answerUuid
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $testUuid,
+                               $questionUuid,
+                               $answerUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

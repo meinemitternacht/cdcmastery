@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Statistics;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
@@ -107,9 +108,9 @@ class TestStats
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AVG_BETWEEN, [
-                $tStart,
-                $tEnd
-            ]
+                                      $tStart,
+                                      $tEnd,
+                                  ]
         );
 
         if ($cached !== false) {
@@ -125,13 +126,17 @@ WHERE timeCompleted BETWEEN ? AND ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
@@ -150,8 +155,8 @@ SQL;
             self::STAT_AVG_BETWEEN,
             CacheHandler::TTL_XLARGE, [
                 $tStart,
-                $tEnd
-           ]
+                $tEnd,
+            ]
         );
 
         return $avgScore ?? 0.00;
@@ -231,18 +236,23 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $averages = [];
         while ($row = $res->fetch_assoc()) {
-            if (($row['tDate'] ?? false) === false) {
+            if (($row[ 'tDate' ] ?? false) === false) {
                 continue;
             }
 
-            if (($row['tAvg'] ?? false) === false) {
+            if (($row[ 'tAvg' ] ?? false) === false) {
                 continue;
             }
 
-            $averages[$row['tDate']] = round(
-                $row['tAvg'] ?? 0.00,
+            $averages[ $row[ 'tDate' ] ] = round(
+                $row[ 'tAvg' ] ?? 0.00,
                 self::PRECISION_AVG
             );
         }
@@ -302,7 +312,7 @@ SQL;
         if ($cached !== false) {
             return $cached;
         }
-        
+
         $qry = <<<SQL
 SELECT 
   AVG(score) AS tAvg
@@ -312,10 +322,16 @@ WHERE score > 0
 SQL;
 
         $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
         $row = $res->fetch_assoc();
-        
+
         $average = round(
-            $row['tAvg'] ?? 0.00,
+            $row[ 'tAvg' ] ?? 0.00,
             self::PRECISION_AVG
         );
 
@@ -326,7 +342,7 @@ SQL;
             self::STAT_AVG_OVERALL,
             CacheHandler::TTL_XLARGE
         );
-        
+
         return $average;
     }
 
@@ -342,9 +358,9 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_COUNT_BETWEEN, [
-                $tStart,
-                $tEnd
-            ]
+                                        $tStart,
+                                        $tEnd,
+                                    ]
         );
 
         if ($cached !== false) {
@@ -361,13 +377,16 @@ WHERE timeCompleted BETWEEN ? AND ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ss',
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('ss',
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
             $stmt->close();
             return 0;
         }
@@ -381,7 +400,7 @@ SQL;
             self::STAT_COUNT_BETWEEN,
             CacheHandler::TTL_XLARGE, [
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -462,13 +481,18 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $counts = [];
         while ($row = $res->fetch_assoc()) {
-            if (($row['tDate'] ?? false) === false) {
+            if (($row[ 'tDate' ] ?? false) === false) {
                 continue;
             }
 
-            if (($row['tCount'] ?? false) === false) {
+            if (($row[ 'tCount' ] ?? false) === false) {
                 continue;
             }
 
@@ -540,17 +564,23 @@ WHERE score > 0
 SQL;
 
         $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
         $row = $res->fetch_assoc();
 
         $res->free();
 
         $this->cache->hashAndSet(
-            $row['tCount'] ?? 0,
+            $row[ 'tCount' ] ?? 0,
             self::STAT_COUNT_OVERALL,
             CacheHandler::TTL_XLARGE
         );
 
-        return $row['tCount'] ?? 0;
+        return $row[ 'tCount' ] ?? 0;
     }
 
     /**
@@ -577,10 +607,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AFSC_AVG_BETWEEN, [
-                $afscUuid,
-                $tStart,
-                $tEnd
-            ]
+                                           $afscUuid,
+                                           $tStart,
+                                           $tEnd,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -597,14 +627,18 @@ WHERE afscList = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $afscUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $afscUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
@@ -624,7 +658,7 @@ SQL;
             CacheHandler::TTL_XLARGE, [
                 $afscUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -707,8 +741,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             $type, [
-                $afscUuid
-            ]
+                     $afscUuid,
+                 ]
         );
 
         if ($cached !== false) {
@@ -716,9 +750,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -738,7 +778,7 @@ SQL;
                 continue;
             }
 
-            $averages[$tDate] = round(
+            $averages[ $tDate ] = round(
                 $tAvg ?? 0.00,
                 self::PRECISION_AVG
             );
@@ -750,7 +790,7 @@ SQL;
             $averages,
             $type,
             $timeout, [
-                $afscUuid
+                $afscUuid,
             ]
         );
 
@@ -819,8 +859,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AFSC_AVG_OVERALL, [
-                $afscUuid
-            ]
+                                           $afscUuid,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -837,9 +877,15 @@ WHERE afscList = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
@@ -860,7 +906,7 @@ SQL;
             $average,
             self::STAT_AFSC_AVG_OVERALL,
             CacheHandler::TTL_XLARGE, [
-                $afscUuid
+                $afscUuid,
             ]
         );
 
@@ -891,10 +937,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AFSC_COUNT_BETWEEN, [
-                $afscUuid,
-                $tStart,
-                $tEnd
-            ]
+                                             $afscUuid,
+                                             $tStart,
+                                             $tEnd,
+                                         ]
         );
 
         if ($cached !== false) {
@@ -911,14 +957,18 @@ WHERE afscList = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $afscUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $afscUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -933,7 +983,7 @@ SQL;
             CacheHandler::TTL_XLARGE, [
                 $afscUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -1016,8 +1066,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             $type, [
-                $afscUuid
-            ]
+                     $afscUuid,
+                 ]
         );
 
         if ($cached !== false) {
@@ -1025,9 +1075,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -1047,7 +1103,7 @@ SQL;
                 continue;
             }
 
-            $counts[$tDate] = $tCount ?? 0;
+            $counts[ $tDate ] = $tCount ?? 0;
         }
 
         $stmt->close();
@@ -1056,7 +1112,7 @@ SQL;
             $counts,
             $type,
             $timeout, [
-                $afscUuid
+                $afscUuid,
             ]
         );
 
@@ -1125,8 +1181,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AFSC_COUNT_OVERALL, [
-                $afscUuid
-            ]
+                                             $afscUuid,
+                                         ]
         );
 
         if ($cached !== false) {
@@ -1143,9 +1199,15 @@ WHERE afscList = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $afscUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('s', $afscUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -1161,7 +1223,7 @@ SQL;
             $tCount ?? 0,
             self::STAT_AFSC_COUNT_OVERALL,
             CacheHandler::TTL_XLARGE, [
-                $afscUuid
+                $afscUuid,
             ]
         );
 
@@ -1192,10 +1254,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_BASE_AVG_BETWEEN, [
-                $baseUuid,
-                $tStart,
-                $tEnd
-            ]
+                                           $baseUuid,
+                                           $tStart,
+                                           $tEnd,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -1213,14 +1275,18 @@ WHERE userData.userBase = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $baseUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $baseUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
@@ -1240,7 +1306,7 @@ SQL;
             CacheHandler::TTL_XLARGE, [
                 $baseUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -1325,20 +1391,22 @@ SQL;
                 return [];
         }
 
-        $cached = $this->cache->hashAndGet(
-            $type, [
-                $baseUuid
-            ]
-        );
+        $cached = $this->cache->hashAndGet($type, [$baseUuid]);
 
         if ($cached !== false) {
             return $cached;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $baseUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $baseUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -1358,7 +1426,7 @@ SQL;
                 continue;
             }
 
-            $averages[$tDate] = round(
+            $averages[ $tDate ] = round(
                 $tAvg ?? 0.00,
                 self::PRECISION_AVG
             );
@@ -1370,7 +1438,7 @@ SQL;
             $averages,
             $type,
             $timeout, [
-                $baseUuid
+                $baseUuid,
             ]
         );
 
@@ -1434,13 +1502,13 @@ SQL;
         if (empty($base->getUuid())) {
             return 0.00;
         }
-        
+
         $baseUuid = $base->getUuid();
-        
+
         $cached = $this->cache->hashAndGet(
             self::STAT_BASE_AVG_OVERALL, [
-                $baseUuid
-            ]
+                                           $baseUuid,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -1458,20 +1526,26 @@ WHERE userData.userBase = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $baseUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('s', $baseUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
-        
+
         $stmt->bind_result(
             $tAvg
         );
-        
+
         $stmt->fetch();
         $stmt->close();
-        
+
         $average = round(
             $tAvg ?? 0.00,
             self::PRECISION_AVG
@@ -1481,7 +1555,7 @@ SQL;
             $average,
             self::STAT_BASE_AVG_OVERALL,
             CacheHandler::TTL_XLARGE, [
-                $baseUuid
+                $baseUuid,
             ]
         );
 
@@ -1499,9 +1573,9 @@ SQL;
         if (empty($base->getUuid())) {
             return 0;
         }
-        
+
         $baseUuid = $base->getUuid();
-        
+
         $tStart = $start->format(
             DateTimeHelpers::DT_FMT_DB_DAY_START
         );
@@ -1512,10 +1586,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_BASE_COUNT_BETWEEN, [
-                $baseUuid,
-                $tStart,
-                $tEnd
-            ]
+                                             $baseUuid,
+                                             $tStart,
+                                             $tEnd,
+                                         ]
         );
 
         if ($cached !== false) {
@@ -1533,14 +1607,18 @@ WHERE userData.userBase = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $baseUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $baseUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -1555,7 +1633,7 @@ SQL;
             CacheHandler::TTL_XLARGE, [
                 $baseUuid,
                 $tStart,
-                $tEnd
+                $tEnd,
             ]
         );
 
@@ -1572,9 +1650,9 @@ SQL;
         if (empty($base->getUuid())) {
             return [];
         }
-        
+
         $baseUuid = $base->getUuid();
-        
+
         switch ($type) {
             case self::STAT_BASE_COUNT_BY_MONTH:
                 $timeout = CacheHandler::TTL_XLARGE;
@@ -1640,29 +1718,31 @@ SQL;
                 return [];
         }
 
-        $cached = $this->cache->hashAndGet(
-            $type, [
-                $baseUuid
-            ]
-        );
+        $cached = $this->cache->hashAndGet($type, [$baseUuid]);
 
         if ($cached !== false) {
             return $cached;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $baseUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $baseUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
-        
+
         $stmt->bind_result(
             $tDate,
             $tCount
         );
-        
+
         $counts = [];
         while ($stmt->fetch()) {
             if (($tDate ?? false) === false) {
@@ -1673,7 +1753,7 @@ SQL;
                 continue;
             }
 
-            $counts[$tDate] = $tCount ?? 0;
+            $counts[ $tDate ] = $tCount ?? 0;
         }
 
         $stmt->close();
@@ -1682,7 +1762,7 @@ SQL;
             $counts,
             $type,
             $timeout, [
-                $baseUuid
+                $baseUuid,
             ]
         );
 
@@ -1751,8 +1831,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_BASE_COUNT_OVERALL, [
-                $baseUuid
-            ]
+                                             $baseUuid,
+                                         ]
         );
 
         if ($cached !== false) {
@@ -1770,9 +1850,15 @@ WHERE userData.userBase = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $baseUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('s', $baseUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -1788,7 +1874,7 @@ SQL;
             $tCount ?? 0,
             self::STAT_BASE_COUNT_OVERALL,
             CacheHandler::TTL_XLARGE, [
-                $baseUuid
+                $baseUuid,
             ]
         );
 
@@ -1819,10 +1905,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_USER_AVG_BETWEEN, [
-                $userUuid,
-                $tStart,
-                $tEnd
-            ]
+                                           $userUuid,
+                                           $tStart,
+                                           $tEnd,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -1839,14 +1925,18 @@ WHERE userUuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $userUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $userUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0.00;
         }
@@ -1949,8 +2039,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             $type, [
-                $userUuid
-            ]
+                     $userUuid,
+                 ]
         );
 
         if ($cached !== false) {
@@ -1958,9 +2048,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -1980,7 +2076,7 @@ SQL;
                 continue;
             }
 
-            $averages[$tDate] = round(
+            $averages[ $tDate ] = round(
                 $tAvg ?? 0.00,
                 self::PRECISION_AVG
             );
@@ -1992,7 +2088,7 @@ SQL;
             $averages,
             $type,
             $timeout, [
-                $userUuid
+                $userUuid,
             ]
         );
 
@@ -2061,8 +2157,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_USER_AVG_OVERALL, [
-                $userUuid
-            ]
+                                           $userUuid,
+                                       ]
         );
 
         if ($cached !== false) {
@@ -2079,9 +2175,14 @@ WHERE userUuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0.00;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
             $stmt->close();
             return 0.00;
         }
@@ -2133,10 +2234,10 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             self::STAT_USER_COUNT_BETWEEN, [
-                $userUuid,
-                $tStart,
-                $tEnd
-            ]
+                                             $userUuid,
+                                             $tStart,
+                                             $tEnd,
+                                         ]
         );
 
         if ($cached !== false) {
@@ -2153,14 +2254,18 @@ WHERE userUuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'sss',
-            $userUuid,
-            $tStart,
-            $tEnd
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('sss',
+                               $userUuid,
+                               $tStart,
+                               $tEnd) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }
@@ -2258,8 +2363,8 @@ SQL;
 
         $cached = $this->cache->hashAndGet(
             $type, [
-                $userUuid
-            ]
+                     $userUuid,
+                 ]
         );
 
         if ($cached !== false) {
@@ -2267,9 +2372,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -2289,7 +2400,7 @@ SQL;
                 continue;
             }
 
-            $counts[$tDate] = $tCount ?? 0;
+            $counts[ $tDate ] = $tCount ?? 0;
         }
 
         $stmt->close();
@@ -2298,7 +2409,7 @@ SQL;
             $counts,
             $type,
             $timeout, [
-                $userUuid
+                $userUuid,
             ]
         );
 
@@ -2365,11 +2476,7 @@ SQL;
 
         $userUuid = $user->getUuid();
 
-        $cached = $this->cache->hashAndGet(
-            self::STAT_USER_COUNT_OVERALL, [
-                $userUuid
-            ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_USER_COUNT_OVERALL, [$userUuid]);
 
         if ($cached !== false) {
             return $cached;
@@ -2385,9 +2492,15 @@ WHERE userUuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }

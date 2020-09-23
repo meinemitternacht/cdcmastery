@@ -9,6 +9,7 @@
 namespace CDCMastery\Models\CdcData;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Helpers\UUID;
 use Monolog\Logger;
 use mysqli;
@@ -89,25 +90,23 @@ class AfscCollection
             return;
         }
 
-        $sql = <<<SQL
+        $qry = <<<SQL
 DELETE FROM afscList
 WHERE uuid = ?
 SQL;
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             goto out_error;
         }
 
         $uuid = $afsc->getUuid();
 
-        if (!$stmt->bind_param('s', $uuid)) {
-            $stmt->close();
-            goto out_error;
-        }
-
-        if (!$stmt->execute()) {
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             goto out_error;
         }
@@ -135,15 +134,16 @@ SQL;
             return false;
         }
 
-        $sql = <<<SQL
+        $qry = <<<SQL
 SELECT 1 FROM afscList
 WHERE name = ?
   AND editCode = ?
 SQL;
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return false;
         }
 
@@ -154,6 +154,7 @@ SQL;
             !$stmt->execute() ||
             !$stmt->bind_result($res) ||
             !$stmt->fetch()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return false;
         }
@@ -172,7 +173,7 @@ SQL;
             return self::generateOrderSuffix([self::DEFAULT_COL => self::DEFAULT_ORDER]);
         }
 
-        $sql = [];
+        $qry = [];
         foreach ($columnOrders as $column => $order) {
             switch ($column) {
                 case self::COL_UUID:
@@ -198,10 +199,10 @@ SQL;
                     break;
             }
 
-            $sql[] = $str;
+            $qry[] = $str;
         }
 
-        return ' ORDER BY ' . implode(' , ', $sql);
+        return ' ORDER BY ' . implode(' , ', $qry);
     }
 
     /**
@@ -266,11 +267,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return null;
         }
 
         if (!$stmt->bind_param('s', $uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -332,6 +335,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $rows = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -380,6 +388,11 @@ SQL;
         $qry .= self::generateOrderSuffix($columnOrders);
 
         $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
@@ -441,6 +454,7 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return false;
         }
 
@@ -452,12 +466,9 @@ SQL;
                                $edit_code,
                                $fouo,
                                $hidden,
-                               $obsolete)) {
-            $stmt->close();
-            return false;
-        }
-
-        if (!$stmt->execute()) {
+                               $obsolete) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return false;
         }

@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Tests;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionCollection;
@@ -160,7 +161,6 @@ class TestCollection
         return $out;
     }
 
-    /** @noinspection UnusedFunctionResultInspection */
     public function delete(string $uuid): void
     {
         if (empty($uuid)) {
@@ -174,12 +174,15 @@ DELETE FROM testCollection
 WHERE uuid = '{$uuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     /**
      * @param string[] $uuids
-     * @noinspection UnusedFunctionResultInspection
      */
     public function deleteArray(array $uuids): void
     {
@@ -197,10 +200,13 @@ DELETE FROM testCollection
 WHERE uuid IN ('{$uuids_str}')
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
-    /** @noinspection UnusedFunctionResultInspection */
     public function deleteAllByUser(User $user): void
     {
         if (empty($user->getUuid())) {
@@ -215,7 +221,11 @@ DELETE FROM testCollection
 WHERE userUuid = '{$userUuid}'
 SQL;
 
-        $this->db->query($qry);
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
     }
 
     public function fetch(string $uuid): ?Test
@@ -243,9 +253,15 @@ WHERE uuid = ?
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return null;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -324,9 +340,15 @@ SQL;
         $qry .= self::generateOrderSuffix($columnOrders);
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $uuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return [];
         }
@@ -413,6 +435,11 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $data = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($row[ 'uuid' ])) {
@@ -493,23 +520,27 @@ ON DUPLICATE KEY UPDATE
 SQL;
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param(
-            'ssssssiiidii',
-            $uuid,
-            $userUuid,
-            $afscList,
-            $timeStarted,
-            $timeCompleted,
-            $questionList,
-            $curQuestion,
-            $numAnswered,
-            $numMissed,
-            $score,
-            $combined,
-            $archived
-        );
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        if (!$stmt->bind_param('ssssssiiidii',
+                               $uuid,
+                               $userUuid,
+                               $afscList,
+                               $timeStarted,
+                               $timeCompleted,
+                               $questionList,
+                               $curQuestion,
+                               $numAnswered,
+                               $numMissed,
+                               $score,
+                               $combined,
+                               $archived) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }

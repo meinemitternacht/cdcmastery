@@ -3,6 +3,7 @@
 namespace CDCMastery\Models\Statistics;
 
 
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Cache\CacheHandler;
 use Monolog\Logger;
 use mysqli;
@@ -54,9 +55,14 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $counts = [];
         while ($row = $res->fetch_assoc()) {
-            $counts[$row['uBase']] = (int)($row['uCount'] ?? 0);
+            $counts[ $row[ 'uBase' ] ] = (int)($row[ 'uCount' ] ?? 0);
         }
 
         $res->free();
@@ -94,9 +100,14 @@ SQL;
 
         $res = $this->db->query($qry);
 
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
         $counts = [];
         while ($row = $res->fetch_assoc()) {
-            $counts[$row['uRole']] = (int)($row['uCount'] ?? 0);
+            $counts[ $row[ 'uRole' ] ] = (int)($row[ 'uCount' ] ?? 0);
         }
 
         $res->free();

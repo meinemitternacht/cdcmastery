@@ -10,6 +10,7 @@ namespace CDCMastery\Models\Tests;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Users\User;
@@ -134,9 +135,15 @@ SQL;
         }
 
         $stmt = $this->db->prepare($qry);
-        $stmt->bind_param('s', $userUuid);
 
-        if (!$stmt->execute()) {
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        if (!$stmt->bind_param('s', $userUuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return 0;
         }

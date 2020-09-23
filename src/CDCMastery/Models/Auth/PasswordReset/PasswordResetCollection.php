@@ -5,6 +5,7 @@ namespace CDCMastery\Models\Auth\PasswordReset;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Users\User;
 use DateTime;
 use Monolog\Logger;
@@ -56,11 +57,13 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return null;
         }
 
         if (!$stmt->bind_param('s', $uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -94,6 +97,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -130,6 +134,7 @@ SQL;
         $res = $this->db->query($qry);
 
         if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return [];
         }
 
@@ -161,12 +166,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return null;
         }
 
         $user_uuid = $user->getUuid();
         if (!$stmt->bind_param('s', $user_uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return null;
         }
@@ -202,12 +209,14 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
         $uuid = $reset->getUuid();
         if (!$stmt->bind_param('s', $uuid) ||
             !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
             return;
         }
@@ -240,15 +249,16 @@ SQL;
         $stmt = $this->db->prepare($qry);
 
         if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
 
-        if (!$stmt->bind_param('ssss', $uuid, $user_uuid, $time_requested, $time_expires)) {
+        if (!$stmt->bind_param('ssss', $uuid, $user_uuid, $time_requested, $time_expires) ||
+            !$stmt->execute()) {
             $stmt->close();
             return;
         }
 
-        $stmt->execute();
         $stmt->close();
     }
 

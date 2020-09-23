@@ -296,8 +296,7 @@ class Tests extends RootController
         $testOptions->setUser($user);
         $testOptions->setAfscs($validAfscs);
 
-        $newTest = TestHandler::factory($this->db,
-                                        $this->log,
+        $newTest = TestHandler::factory($this->log,
                                         $this->afscs,
                                         $this->tests,
                                         $this->cdc_data,
@@ -357,8 +356,7 @@ class Tests extends RootController
             goto out_redirect_score;
         }
 
-        $testHandler = TestHandler::resume($this->db,
-                                           $this->log,
+        $testHandler = TestHandler::resume($this->log,
                                            $this->afscs,
                                            $this->tests,
                                            $this->answers,

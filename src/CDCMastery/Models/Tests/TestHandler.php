@@ -20,7 +20,6 @@ use CDCMastery\Models\CdcData\QuestionAnswers;
 use DateTime;
 use Exception;
 use Monolog\Logger;
-use mysqli;
 use RuntimeException;
 use function count;
 
@@ -35,7 +34,6 @@ class TestHandler
     public const ACTION_NAV_NUM = 5;
     public const ACTION_SCORE_TEST = 6;
 
-    protected mysqli $db;
     protected Logger $log;
     private AfscCollection $afscs;
     private TestCollection $tests;
@@ -44,14 +42,12 @@ class TestHandler
     private ?Test $test;
 
     public function __construct(
-        mysqli $mysqli,
         Logger $logger,
         AfscCollection $afscs,
         TestCollection $tests,
         TestDataHelpers $test_data_helpers,
         AnswerCollection $answers
     ) {
-        $this->db = $mysqli;
         $this->log = $logger;
         $this->afscs = $afscs;
         $this->tests = $tests;
@@ -60,7 +56,6 @@ class TestHandler
     }
 
     /**
-     * @param mysqli $mysqli
      * @param Logger $logger
      * @param AfscCollection $afscs
      * @param TestCollection $tests
@@ -72,7 +67,6 @@ class TestHandler
      * @throws Exception
      */
     public static function factory(
-        mysqli $mysqli,
         Logger $logger,
         AfscCollection $afscs,
         TestCollection $tests,
@@ -137,8 +131,7 @@ class TestHandler
         $test->setTimeCompleted(null);
         $test->setUserUuid($options->getUser()->getUuid());
 
-        $handler = new self($mysqli,
-                            $logger,
+        $handler = new self($logger,
                             $afscs,
                             $tests,
                             $test_data_helpers,
@@ -152,7 +145,6 @@ class TestHandler
     }
 
     /**
-     * @param mysqli $mysqli
      * @param Logger $logger
      * @param AfscCollection $afscs
      * @param TestCollection $tests
@@ -162,7 +154,6 @@ class TestHandler
      * @return TestHandler
      */
     public static function resume(
-        mysqli $mysqli,
         Logger $logger,
         AfscCollection $afscs,
         TestCollection $tests,
@@ -170,8 +161,7 @@ class TestHandler
         TestDataHelpers $test_data_helpers,
         Test $test
     ): self {
-        $handler = new self($mysqli,
-                            $logger,
+        $handler = new self($logger,
                             $afscs,
                             $tests,
                             $test_data_helpers,

@@ -316,7 +316,6 @@ class Cards extends RootController
 
         try {
             $handler = CardHandler::factory($this->session,
-                                            $this->db,
                                             $this->log,
                                             $this->cache,
                                             $this->afscs,
