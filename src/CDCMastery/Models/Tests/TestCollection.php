@@ -128,6 +128,7 @@ class TestCollection
             $afscs = $this->afscs->fetchArray($afscs);
             $questions = $this->questions->fetchArrayMixed($questions);
 
+            $timeStarted = null;
             if ($row[ 'timeStarted' ] !== null) {
                 $timeStarted = DateTime::createFromFormat(
                     DateTimeHelpers::DT_FMT_DB,
@@ -137,6 +138,7 @@ class TestCollection
                 $timeStarted->setTimezone(DateTimeHelpers::user_tz());
             }
 
+            $timeCompleted = null;
             if ($row[ 'timeCompleted' ] !== null) {
                 $timeCompleted = DateTime::createFromFormat(
                     DateTimeHelpers::DT_FMT_DB,
