@@ -170,6 +170,9 @@
                     {% endfor %}
                 {% else %}
                     No associations found.
+                    {% if restricted %}
+                        <a href="/profile/training-managers">Add Training Manager</a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -192,6 +195,9 @@
                     {% endfor %}
                 {% else %}
                     No associations found.
+                    {% if restricted %}
+                        <a href="/profile/supervisors">Add Supervisor</a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
