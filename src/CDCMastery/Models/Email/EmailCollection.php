@@ -97,10 +97,14 @@ SQL;
                 continue;
             }
 
+            $queue_time = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                     $row[ 'queueTime' ] ?? '',
+                                                     DateTimeHelpers::utc_tz());
+            $queue_time->setTimezone(DateTimeHelpers::user_tz());
+
             $email = new Email();
             $email->setUuid($row[ 'uuid' ] ?? '');
-            $email->setQueueTime(DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
-                                                            $row[ 'queueTime' ] ?? ''));
+            $email->setQueueTime($queue_time);
             $email->setSender($row[ 'emailSender' ] ?? '');
             $email->setRecipient($row[ 'emailRecipient' ] ?? '');
             $email->setSubject($row[ 'emailSubject' ] ?? '');
@@ -128,6 +132,7 @@ SQL;
 
         $uuid = $email->getUuid();
         $queueTime = $email->getQueueTime()
+                           ->setTimezone(DateTimeHelpers::utc_tz())
                            ->format(DateTimeHelpers::DT_FMT_DB);
         $sender = $email->getSender();
         $recipient = $email->getRecipient();

@@ -68,16 +68,16 @@ class OfflineTestCollection
                 continue;
             }
 
+            $date_created = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                       $tdata[ 'dateCreated' ],
+                                                       DateTimeHelpers::utc_tz());
+            $date_created->setTimezone(DateTimeHelpers::user_tz());
+
             $test = new OfflineTest();
             $test->setUuid($tdata[ '_uuid' ]);
             $test->setUserUuid($tdata[ 'userUuid' ]);
             $test->setCdcData($tdata[ 'cdcData' ]);
-            $test->setDateCreated(
-                DateTime::createFromFormat(
-                    DateTimeHelpers::DT_FMT_DB,
-                    $tdata[ 'dateCreated' ]
-                )
-            );
+            $test->setDateCreated($date_created);
 
             $out[ $tdata[ '_uuid' ] ] = $test;
         }
@@ -584,9 +584,9 @@ SQL;
             }, $offlineTest->getCdcData()->getQuestionAnswerData())
         );
         $numQuestions = $offlineTest->getNumQuestions();
-        $dateCreated = $offlineTest->getDateCreated()->format(
-            DateTimeHelpers::DT_FMT_DB
-        );
+        $dateCreated = $offlineTest->getDateCreated()
+                                   ->setTimezone(DateTimeHelpers::utc_tz())
+                                   ->format(DateTimeHelpers::DT_FMT_DB);
 
         $qry = <<<SQL
 INSERT INTO testGeneratorData

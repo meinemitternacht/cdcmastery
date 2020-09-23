@@ -55,32 +55,35 @@ class UserCollection
 
             $user->setDateRegistered(null);
             if (($row[ 'userDateRegistered' ] ?? null) !== null) {
-                $user->setDateRegistered(
-                    DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row[ 'userDateRegistered' ] ?? ''
-                    )
+                $dt_obj = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'userDateRegistered' ] ?? '',
+                    DateTimeHelpers::utc_tz()
                 );
+                $dt_obj->setTimezone(DateTimeHelpers::user_tz());
+                $user->setDateRegistered($dt_obj);
             }
 
             $user->setLastLogin(null);
             if (($row[ 'userLastLogin' ] ?? null) !== null) {
-                $user->setLastLogin(
-                    DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row[ 'userLastLogin' ] ?? ''
-                    )
+                $dt_obj = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'userLastLogin' ] ?? '',
+                    DateTimeHelpers::utc_tz()
                 );
+                $dt_obj->setTimezone(DateTimeHelpers::user_tz());
+                $user->setLastLogin($dt_obj);
             }
 
             $user->setLastActive(null);
             if (($row[ 'userLastActive' ] ?? null) !== null) {
-                $user->setLastActive(
-                    DateTime::createFromFormat(
-                        DateTimeHelpers::DT_FMT_DB,
-                        $row[ 'userLastActive' ] ?? ''
-                    )
+                $dt_obj = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'userLastActive' ] ?? '',
+                    DateTimeHelpers::utc_tz()
                 );
+                $dt_obj->setTimezone(DateTimeHelpers::user_tz());
+                $user->setLastActive($dt_obj);
             }
 
             $user->setTimeZone($row[ 'userTimeZone' ] ?? '');
@@ -230,6 +233,10 @@ SQL;
             'userDisabled' => $disabled,
             'reminderSent' => $reminderSent,
         ];
+
+        if (!DateTimeHelpers::user_tz_set()) {
+            DateTimeHelpers::set_user_tz($timeZone);
+        }
 
         return $this->create_objects([$row])[ $_uuid ] ?? null;
     }
@@ -560,14 +567,15 @@ SQL;
         $legacyPassword = $user->getLegacyPassword();
         $email = $user->getEmail();
         $rank = $user->getRank();
-        $dateRegistered = $date_registered->format(
-            DateTimeHelpers::DT_FMT_DB
-        );
+        $dateRegistered = $date_registered->setTimezone(DateTimeHelpers::utc_tz())
+                                          ->format(DateTimeHelpers::DT_FMT_DB);
         $lastLogin = $date_last_login instanceof DateTime
-            ? $date_last_login->format(DateTimeHelpers::DT_FMT_DB)
+            ? $date_last_login->setTimezone(DateTimeHelpers::utc_tz())
+                              ->format(DateTimeHelpers::DT_FMT_DB)
             : null;
         $lastActive = $date_last_active instanceof DateTime
-            ? $date_last_active->format(DateTimeHelpers::DT_FMT_DB)
+            ? $date_last_active->setTimezone(DateTimeHelpers::utc_tz())
+                               ->format(DateTimeHelpers::DT_FMT_DB)
             : null;
         $timeZone = $user->getTimeZone();
         $role = $user->getRole();

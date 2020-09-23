@@ -19,8 +19,10 @@ class Bases implements IBaseStats
     {
         $buuid = $base->getUuid();
 
-        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
-        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())
+                        ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())
+                    ->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
         $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_AVG_BETWEEN,
                                            [$tStart, $tEnd, $buuid]);
@@ -134,7 +136,7 @@ GROUP BY userData.uuid
 ORDER BY tAvg DESC, tCount DESC, userData.uuid
 SQL;
 
-        $cutoff_fmt = $cutoff->format(DateTimeHelpers::D_FMT_SHORT);
+        $cutoff_fmt = $cutoff->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::D_FMT_SHORT);
 
         try {
             $stmt = $this->prepare_and_bind($qry, 'ss', $buuid, $cutoff_fmt);
@@ -170,20 +172,12 @@ SQL;
      */
     public function countBetween(DateTime $start, DateTime $end): array
     {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())
+                        ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())
+                    ->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            IBaseStats::STAT_BASE_COUNT_BETWEEN, [
-                                                   $tStart,
-                                                   $tEnd,
-                                               ]
-        );
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASE_COUNT_BETWEEN, [$tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;

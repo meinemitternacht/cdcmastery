@@ -131,15 +131,19 @@ class TestCollection
             if ($row[ 'timeStarted' ] !== null) {
                 $timeStarted = DateTime::createFromFormat(
                     DateTimeHelpers::DT_FMT_DB,
-                    $row[ 'timeStarted' ] ?? ''
+                    $row[ 'timeStarted' ] ?? '',
+                    DateTimeHelpers::utc_tz()
                 );
+                $timeStarted->setTimezone(DateTimeHelpers::user_tz());
             }
 
             if ($row[ 'timeCompleted' ] !== null) {
                 $timeCompleted = DateTime::createFromFormat(
                     DateTimeHelpers::DT_FMT_DB,
-                    $row[ 'timeCompleted' ] ?? ''
+                    $row[ 'timeCompleted' ] ?? '',
+                    DateTimeHelpers::utc_tz()
                 );
+                $timeCompleted->setTimezone(DateTimeHelpers::user_tz());
             }
 
             $test = new Test();
@@ -468,14 +472,14 @@ SQL;
         $afscList = serialize(AfscHelpers::listUuid($test->getAfscs()));
         $timeStarted = $test->getTimeStarted() === null
             ? null
-            : $test->getTimeStarted()->format(
-                DateTimeHelpers::DT_FMT_DB
-            );
+            : $test->getTimeStarted()
+                   ->setTimezone(DateTimeHelpers::utc_tz())
+                   ->format(DateTimeHelpers::DT_FMT_DB);
         $timeCompleted = $test->getTimeCompleted() === null
             ? null
-            : $test->getTimeCompleted()->format(
-                DateTimeHelpers::DT_FMT_DB
-            );
+            : $test->getTimeCompleted()
+                   ->setTimezone(DateTimeHelpers::utc_tz())
+                   ->format(DateTimeHelpers::DT_FMT_DB);
         $questionList = serialize(QuestionHelpers::listUuid($test->getQuestions()));
         $curQuestion = $test->getCurrentQuestion();
         $numAnswered = $test->getNumAnswered();

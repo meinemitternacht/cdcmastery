@@ -103,15 +103,10 @@ class TestStats
      */
     public function averageBetween(DateTime $start, DateTime $end): float
     {
-        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
-        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $cached = $this->cache->hashAndGet(
-            self::STAT_AVG_BETWEEN, [
-                                      $tStart,
-                                      $tEnd,
-                                  ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_AVG_BETWEEN, [$tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -353,15 +348,10 @@ SQL;
      */
     public function countBetween(DateTime $start, DateTime $end): int
     {
-        $tStart = $start->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
-        $tEnd = $end->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $cached = $this->cache->hashAndGet(
-            self::STAT_COUNT_BETWEEN, [
-                                        $tStart,
-                                        $tEnd,
-                                    ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_COUNT_BETWEEN, [$tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -597,21 +587,10 @@ SQL;
 
         $afscUuid = serialize([$afsc->getUuid()]);
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_AFSC_AVG_BETWEEN, [
-                                           $afscUuid,
-                                           $tStart,
-                                           $tEnd,
-                                       ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_AFSC_AVG_BETWEEN, [$afscUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -857,11 +836,7 @@ SQL;
 
         $afscUuid = serialize([$afsc->getUuid()]);
 
-        $cached = $this->cache->hashAndGet(
-            self::STAT_AFSC_AVG_OVERALL, [
-                                           $afscUuid,
-                                       ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_AFSC_AVG_OVERALL, [$afscUuid,]);
 
         if ($cached !== false) {
             return $cached;
@@ -927,21 +902,10 @@ SQL;
 
         $afscUuid = serialize([$afsc->getUuid()]);
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_AFSC_COUNT_BETWEEN, [
-                                             $afscUuid,
-                                             $tStart,
-                                             $tEnd,
-                                         ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_AFSC_COUNT_BETWEEN, [$afscUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -1244,21 +1208,10 @@ SQL;
 
         $baseUuid = $base->getUuid();
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASE_AVG_BETWEEN, [
-                                           $baseUuid,
-                                           $tStart,
-                                           $tEnd,
-                                       ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_BASE_AVG_BETWEEN, [$baseUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -1505,11 +1458,7 @@ SQL;
 
         $baseUuid = $base->getUuid();
 
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASE_AVG_OVERALL, [
-                                           $baseUuid,
-                                       ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_BASE_AVG_OVERALL, [$baseUuid,]);
 
         if ($cached !== false) {
             return $cached;
@@ -1576,21 +1525,10 @@ SQL;
 
         $baseUuid = $base->getUuid();
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_BASE_COUNT_BETWEEN, [
-                                             $baseUuid,
-                                             $tStart,
-                                             $tEnd,
-                                         ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_BASE_COUNT_BETWEEN, [$baseUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -1895,21 +1833,10 @@ SQL;
 
         $userUuid = $user->getUuid();
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_USER_AVG_BETWEEN, [
-                                           $userUuid,
-                                           $tStart,
-                                           $tEnd,
-                                       ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_USER_AVG_BETWEEN, [$userUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -2224,21 +2151,12 @@ SQL;
 
         $userUuid = $user->getUuid();
 
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())
+                        ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())
+                    ->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            self::STAT_USER_COUNT_BETWEEN, [
-                                             $userUuid,
-                                             $tStart,
-                                             $tEnd,
-                                         ]
-        );
+        $cached = $this->cache->hashAndGet(self::STAT_USER_COUNT_BETWEEN, [$userUuid, $tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;

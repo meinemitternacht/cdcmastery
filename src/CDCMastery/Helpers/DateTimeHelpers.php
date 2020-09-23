@@ -23,7 +23,8 @@ class DateTimeHelpers
     public const DT_FMT_LONG = 'l, F jS, Y \a\t g:i:s A';
     public const DT_FMT_SHORT = 'd-M-y H:i:s';
 
-    private static DateTimeZone $utc_tz;
+    private static ?DateTimeZone $utc_tz = null;
+    private static ?DateTimeZone $user_tz = null;
 
     public static function x_days_ago(int $days): DateTime
     {
@@ -71,5 +72,24 @@ class DateTimeHelpers
         }
 
         return self::$utc_tz;
+    }
+
+    public static function user_tz(): DateTimeZone
+    {
+        if (!self::$user_tz) {
+            self::$user_tz = new DateTimeZone('UTC');
+        }
+
+        return self::$user_tz;
+    }
+
+    public static function user_tz_set(): bool
+    {
+        return self::$user_tz !== null;
+    }
+
+    public static function set_user_tz(string $identifier): void
+    {
+        self::$user_tz = new DateTimeZone($identifier);
     }
 }

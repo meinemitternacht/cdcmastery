@@ -30,7 +30,10 @@ class ActivationCollection
     {
         $activations = [];
         foreach ($rows as $row) {
-            $expires = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB, $row[ 'timeExpires' ]);
+            $expires = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                  $row[ 'timeExpires' ],
+                                                  DateTimeHelpers::utc_tz());
+            $expires->setTimezone(DateTimeHelpers::user_tz());
 
             $activations[ $row[ 'activationCode' ] ] = new Activation($row[ 'activationCode' ],
                                                                       $row[ 'userUUID' ],
@@ -255,7 +258,9 @@ SQL;
 
         $code = $activation->getCode();
         $user_uuid = $activation->getUserUuid();
-        $time_expires = $activation->getDateExpires()->format(DateTimeHelpers::DT_FMT_DB);
+        $time_expires = $activation->getDateExpires()
+                                   ->setTimezone(DateTimeHelpers::utc_tz())
+                                   ->format(DateTimeHelpers::DT_FMT_DB);
 
         $qry = <<<SQL
 INSERT INTO queueUnactivatedUsers

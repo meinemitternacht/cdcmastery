@@ -4,6 +4,7 @@
 use CDCMastery\Controllers\Errors;
 use CDCMastery\Controllers\RootController;
 use CDCMastery\Exceptions\AccessDeniedException;
+use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
@@ -100,6 +101,8 @@ if ($logged_in) {
 
     $user->setLastActive(new DateTime());
     $users->save($user);
+    date_default_timezone_set($user->getTimeZone());
+    DateTimeHelpers::set_user_tz($user->getTimeZone());
 }
 
 switch ($route[ 0 ]) {

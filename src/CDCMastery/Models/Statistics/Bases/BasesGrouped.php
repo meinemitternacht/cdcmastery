@@ -28,20 +28,12 @@ class BasesGrouped implements IBaseStats
      */
     public function averagesBetween(DateTime $start, DateTime $end): array
     {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())
+                        ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())
+                    ->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            IBaseStats::STAT_BASES_AVG_BETWEEN, [
-                                                  $tStart,
-                                                  $tEnd,
-                                              ]
-        );
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASES_AVG_BETWEEN, [$tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;
@@ -165,20 +157,12 @@ SQL;
      */
     public function countsBetween(DateTime $start, DateTime $end): array
     {
-        $tStart = $start->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_START
-        );
+        $tStart = $start->setTimezone(DateTimeHelpers::utc_tz())
+                        ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $tEnd = $end->setTimezone(DateTimeHelpers::utc_tz())
+                    ->format(DateTimeHelpers::DT_FMT_DB_DAY_END);
 
-        $tEnd = $end->format(
-            DateTimeHelpers::DT_FMT_DB_DAY_END
-        );
-
-        $cached = $this->cache->hashAndGet(
-            IBaseStats::STAT_BASES_COUNT_BETWEEN, [
-                                                    $tStart,
-                                                    $tEnd,
-                                                ]
-        );
+        $cached = $this->cache->hashAndGet(IBaseStats::STAT_BASES_COUNT_BETWEEN, [$tStart, $tEnd,]);
 
         if ($cached !== false) {
             return $cached;

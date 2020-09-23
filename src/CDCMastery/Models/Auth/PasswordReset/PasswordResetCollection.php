@@ -30,8 +30,15 @@ class PasswordResetCollection
     {
         $resets = [];
         foreach ($rows as $row) {
-            $initiated = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB, $row[ 'timeRequested' ]);
-            $expires = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB, $row[ 'timeExpires' ]);
+            $initiated = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                    $row[ 'timeRequested' ],
+                                                    DateTimeHelpers::utc_tz());
+            $expires = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                  $row[ 'timeExpires' ],
+                                                  DateTimeHelpers::utc_tz());
+
+            $initiated->setTimezone(DateTimeHelpers::user_tz());
+            $initiated->setTimezone(DateTimeHelpers::user_tz());
 
             $resets[ $row[ 'uuid' ] ] = new PasswordReset($row[ 'uuid' ],
                                                           $initiated,
@@ -232,8 +239,12 @@ SQL;
 
         $uuid = $reset->getUuid();
         $user_uuid = $reset->getUserUuid();
-        $time_requested = $reset->getDateInitiated()->format(DateTimeHelpers::DT_FMT_DB);
-        $time_expires = $reset->getDateExpires()->format(DateTimeHelpers::DT_FMT_DB);
+        $time_requested = $reset->getDateInitiated()
+                                ->setTimezone(DateTimeHelpers::utc_tz())
+                                ->format(DateTimeHelpers::DT_FMT_DB);
+        $time_expires = $reset->getDateExpires()
+                              ->setTimezone(DateTimeHelpers::utc_tz())
+                              ->format(DateTimeHelpers::DT_FMT_DB);
 
         $qry = <<<SQL
 INSERT INTO userPasswordResets

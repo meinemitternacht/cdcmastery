@@ -33,10 +33,13 @@ class PendingRoleCollection
                 continue;
             }
 
+            $date_requested = DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
+                                                         $row[ 'dateRequested' ],
+                                                         DateTimeHelpers::utc_tz());
+            $date_requested->setTimezone(DateTimeHelpers::user_tz());
             $roles[ $row[ 'userUUID' ] ] = new PendingRole($row[ 'userUUID' ],
                                                            $row[ 'roleUUID' ],
-                                                           DateTime::createFromFormat(DateTimeHelpers::DT_FMT_DB,
-                                                                                      $row[ 'dateRequested' ]));
+                                                           $date_requested);
         }
 
         return $roles;
@@ -224,7 +227,8 @@ SQL;
 
         $user_uuid = $role->getUserUuid();
         $role_uuid = $role->getRoleUuid();
-        $date_requested = $role->getDateRequested()->format(DateTimeHelpers::DT_FMT_DB);
+        $date_requested = $role->getDateRequested()->setTimezone(DateTimeHelpers::utc_tz())
+                               ->format(DateTimeHelpers::DT_FMT_DB);
 
         if (!$stmt->bind_param('sss', $user_uuid, $role_uuid, $date_requested) ||
             !$stmt->execute()) {
