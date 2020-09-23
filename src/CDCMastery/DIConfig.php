@@ -84,15 +84,13 @@ return [
             true
         );
 
-        if ($config->get(['system', 'debug'])) {
-            $debugHandler = new StreamHandler(
-                $config->get(['system', 'log', 'debug']),
-                Logger::DEBUG
-            );
+        $debugHandler = new StreamHandler(
+            $config->get(['system', 'log', 'debug']),
+            Logger::DEBUG
+        );
 
-            $debugHandler->setFormatter($formatter);
-            $logger->pushHandler($debugHandler);
-        }
+        $debugHandler->setFormatter($formatter);
+        $logger->pushHandler($debugHandler);
 
         $general_log = $config->get(['system', 'log', 'general']);
         if (file_exists($general_log) && !is_writable($general_log)) {
