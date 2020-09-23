@@ -42,7 +42,7 @@ class CreateSortLink extends AbstractExtension
             ? ($curDir === self::DIR_ASC)
                 ? self::DIR_DESC
                 : self::DIR_ASC
-            : self::DIR_DESC;
+            : self::DIR_ASC;
 
         return '<a href="?sort=' . $column . '&dir=' . $newDirection . '">' . $text . '</a>';
     }
