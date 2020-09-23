@@ -85,6 +85,14 @@ class Tests extends RootController
     public function do_delete_incomplete_tests(): Response
     {
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
+
         $tests = $this->tests->fetchAllByUser($user);
 
         $tests = array_filter(
@@ -214,6 +222,14 @@ class Tests extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
+
         $userAfscCollection = $this->user_afscs->fetchAllByUser($user);
 
         $validAfscs = array_intersect(
@@ -474,6 +490,14 @@ class Tests extends RootController
     public function show_delete_incomplete_tests(): Response
     {
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
+
         $tests = $this->tests->fetchAllByUser($user);
 
         $tests = array_filter(
@@ -558,11 +582,9 @@ class Tests extends RootController
     {
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
-        if (empty($user->getUuid())) {
-            $this->flash()->add(
-                MessageTypes::WARNING,
-                'An error has occurred while fetching your user data'
-            );
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
 
             return $this->redirect('/auth/logout');
         }
@@ -658,11 +680,16 @@ class Tests extends RootController
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
+
+
         [$col, $dir] = self::validate_test_sort($sortCol, $sortDir);
-        $userTests = $this->tests->fetchAllByUser($user,
-                                                  [
-                                                      $col => $dir,
-                                                  ]);
+        $userTests = $this->tests->fetchAllByUser($user, [$col => $dir]);
 
         if (empty($userTests)) {
             $this->flash()->add(
@@ -895,10 +922,14 @@ class Tests extends RootController
             return true;
         }
 
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            return false;
+        }
+
         $authorized_afscs =
-            $this->user_afscs->fetchAllByUser(
-                $this->users->fetch(
-                    $this->auth_helpers->get_user_uuid()))->getAuthorized();
+            $this->user_afscs->fetchAllByUser($user)->getAuthorized();
 
         $userAfscs = $this->afscs->fetchArray($authorized_afscs);
 

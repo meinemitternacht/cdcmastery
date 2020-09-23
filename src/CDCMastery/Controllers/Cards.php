@@ -159,6 +159,14 @@ class Cards extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
@@ -208,6 +216,14 @@ class Cards extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
@@ -248,6 +264,14 @@ class Cards extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
@@ -428,6 +452,14 @@ class Cards extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $this->check_access_edit($user, $cat);
 
         $this->categories->delete($uuid);
@@ -454,6 +486,14 @@ class Cards extends RootController
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $this->check_access($user, $cat);
 
         $card = $this->cards->fetch($cat, $card_uuid);
@@ -490,7 +530,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access_edit($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
             $this->flash()->add(MessageTypes::WARNING,
@@ -528,7 +577,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access_edit($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
             $this->flash()->add(MessageTypes::WARNING,
@@ -568,7 +626,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access_edit($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access_edit($user, $cat);
 
         if ($cat->getType() === 'afsc') {
             $this->flash()->add(MessageTypes::WARNING,
@@ -608,7 +675,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access($user, $cat);
 
         $binding = $cat->getBinding();
         $afsc = $binding
@@ -677,7 +753,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access_edit($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access_edit($user, $cat);
 
         $data = [
             'cat' => $cat,
@@ -700,7 +785,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access_edit($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access_edit($user, $cat);
 
         $data = [
             'cat' => $cat,
@@ -723,7 +817,16 @@ class Cards extends RootController
             return $this->redirect('/cards');
         }
 
-        $this->check_access($this->users->fetch($this->auth_helpers->get_user_uuid()), $cat);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
+        $this->check_access($user, $cat);
 
         $data = [
             'cat' => $cat,
@@ -751,6 +854,13 @@ class Cards extends RootController
             ];
 
         $sort[] = new CardCategorySortOption(CardCategorySortOption::COL_UUID);
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
 
         $n_cats = $this->categories->countUser($user);
 

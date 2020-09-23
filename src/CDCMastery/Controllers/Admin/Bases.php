@@ -128,6 +128,13 @@ class Bases extends Admin
         $bases = $this->bases->fetchAll();
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
+
         if ($user->getBase()) {
             $my_base = $this->bases->fetch($user->getBase());
         }

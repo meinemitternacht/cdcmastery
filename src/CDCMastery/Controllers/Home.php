@@ -12,6 +12,7 @@ namespace CDCMastery\Controllers;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
@@ -91,6 +92,14 @@ class Home extends RootController
     private function show_home_authorized(): Response
     {
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect("/auth/logout");
+        }
+
         $tests = $this->tests->fetchAllByUser($user);
 
         uasort(

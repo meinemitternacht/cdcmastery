@@ -174,10 +174,18 @@ class Auth extends RootController
             goto out_return;
         }
 
+        $system_user = $this->users->fetch(SYSTEM_UUID);
+
+        if (!$system_user) {
+            $this->trigger_request_debug(__METHOD__);
+            $this->log->error("resend activation failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
+            goto out_return;
+        }
+
         $this->activations->remove($activation);
         $activation = Activation::factory($user);
         $this->activations->save($activation);
-        $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
+        $this->emails->queue(ActivateAccount::email($system_user,
                                                     $user,
                                                     $activation));
 
@@ -311,7 +319,15 @@ class Auth extends RootController
         $reset = PasswordReset::factory($user);
         $this->resets->save($reset);
         try {
-            $this->emails->queue(ResetPassword::email($this->users->fetch(SYSTEM_UUID),
+            $system_user = $this->users->fetch(SYSTEM_UUID);
+
+            if (!$system_user) {
+                $this->trigger_request_debug(__METHOD__);
+                $this->log->error("queue password reset failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
+                goto out_return;
+            }
+
+            $this->emails->queue(ResetPassword::email($system_user,
                                                       $user,
                                                       $reset));
         } catch (Throwable $e) {
@@ -500,6 +516,7 @@ class Auth extends RootController
 
         $role = $this->roles->fetchType(Role::TYPE_USER);
         if (!$role) {
+            $this->log->debug('register user fail :: role not found :: type ' . Role::TYPE_USER);
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The system encountered a problem while adding your account, please contact the site administrator'
@@ -532,7 +549,19 @@ class Auth extends RootController
         $activation = Activation::factory($user);
         $this->activations->save($activation);
         try {
-            $this->emails->queue(ActivateAccount::email($this->users->fetch(SYSTEM_UUID),
+            $system_user = $this->users->fetch(SYSTEM_UUID);
+
+            if (!$system_user) {
+                $this->log->debug("register user fail :: system user not found");
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The system encountered a problem while adding your account, please contact the site administrator'
+                );
+
+                goto out_error;
+            }
+
+            $this->emails->queue(ActivateAccount::email($system_user,
                                                         $user,
                                                         $activation));
         } catch (Exception $e) {
@@ -656,7 +685,7 @@ class Auth extends RootController
 
         $user = $this->users->fetch($uuid);
 
-        if (!$user->assert_valid()) {
+        if (!$user || !$user->assert_valid()) {
             $this->limiter->increment();
             $this->log->warning('failed login attempt :: unknown user :: ' .
                                 "{$username} :: ip {$_SERVER['REMOTE_ADDR']}");

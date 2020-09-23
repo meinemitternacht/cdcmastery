@@ -145,15 +145,10 @@ SQL;
         }
     }
 
-    /* @todo return null */
-    /**
-     * @param string $uuid
-     * @return User
-     */
-    public function fetch(string $uuid): User
+    public function fetch(string $uuid): ?User
     {
         if (empty($uuid)) {
-            return new User();
+            return null;
         }
 
         $qry = <<<SQL
@@ -183,14 +178,14 @@ SQL;
 
         if ($stmt === false) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
-            return new User();
+            return null;
         }
 
         if (!$stmt->bind_param('s', $uuid) ||
             !$stmt->execute()) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();
-            return new User();
+            return null;
         }
 
         $stmt->bind_result(
@@ -236,13 +231,7 @@ SQL;
             'reminderSent' => $reminderSent,
         ];
 
-        $user = $this->create_objects([$row])[ $_uuid ] ?? null;
-
-        if ($user === null) {
-            throw new RuntimeException('unable to create user object');
-        }
-
-        return $user;
+        return $this->create_objects([$row])[ $_uuid ] ?? null;
     }
 
     /**

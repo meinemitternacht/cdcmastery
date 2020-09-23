@@ -78,6 +78,13 @@ if ($logged_in) {
     $users = $container->get(UserCollection::class);
     $user = $users->fetch($auth_helpers->get_user_uuid());
 
+    if (!$user) {
+        $session->getFlashBag()->add(MessageTypes::WARNING,
+                                     'Your user account could not be located');
+        $response = RootController::static_redirect('/auth/logout');
+        goto out_respond;
+    }
+
     if ($auth_helpers->get_role_uuid() !== $user->getRole()) {
         $auth_helpers->logout_hook();
         $session->start();
