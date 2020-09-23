@@ -1,0 +1,9 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Training Manager Associations" %}
+{% block main %}
+    {% include "blocks/profile/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Training Manager Associations</h3>
+    </div>
+    {% include "blocks/users/tm-assocs-shared.html.twig" with {'url_prefix': '/profile', 'restricted': true} %}
+{% endblock %}

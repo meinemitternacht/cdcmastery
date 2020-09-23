@@ -28,6 +28,14 @@
                 <li{% if cur_url == "/profile/afsc" %} class="active"{% endif %}>
                     <a href="/profile/afsc">Manage AFSCs</a>
                 </li>
+                {% if not role_is_training_manager(role) %}
+                    <li{% if cur_url == "/profile/supervisors" %} class="active"{% endif %}>
+                        <a href="/profile/supervisors">Supervisors</a>
+                    </li>
+                    <li{% if cur_url == "/profile/training-managers" %} class="active"{% endif %}>
+                        <a href="/profile/training-managers">Training Managers</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

@@ -860,6 +860,46 @@ return simpleDispatcher(static function (RouteCollector $r) {
             Profile::class,
             'do_role_request',
         ]);
+
+        /** @uses \CDCMastery\Controllers\Profile::show_supervisor_associations() */
+        $r->addRoute('GET', '/supervisors', [
+            Profile::class,
+            'show_supervisor_associations',
+        ]);
+
+        $r->addGroup('/supervisors', static function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Profile::do_supervisor_association_add() */
+            $r->addRoute('POST', '/add', [
+                Profile::class,
+                'do_supervisor_association_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Profile::do_supervisor_association_remove() */
+            $r->addRoute('POST', '/remove', [
+                Profile::class,
+                'do_supervisor_association_remove',
+            ]);
+        });
+
+        /** @uses \CDCMastery\Controllers\Profile::show_tm_associations() */
+        $r->addRoute('GET', '/training-managers', [
+            Profile::class,
+            'show_tm_associations',
+        ]);
+
+        $r->addGroup('/training-managers', static function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Profile::do_tm_association_add() */
+            $r->addRoute('POST', '/add', [
+                Profile::class,
+                'do_tm_association_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Profile::do_tm_association_remove() */
+            $r->addRoute('POST', '/remove', [
+                Profile::class,
+                'do_tm_association_remove',
+            ]);
+        });
     });
 
     /** @uses \CDCMastery\Controllers\Stats::show_stats_home() */

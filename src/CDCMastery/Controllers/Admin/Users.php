@@ -981,7 +981,6 @@ class Users extends Admin
         ];
 
         $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
-        $subs = $this->users->fetchArray($this->su_assocs->fetchAllBySupervisor($user), $user_sort);
 
         $su_uuids = [];
         foreach ($su_assocs as $su_assoc) {
@@ -1004,7 +1003,6 @@ class Users extends Admin
             'base' => $base,
             'assocs' => [
                 'su' => $su_assocs,
-                'subordinates' => $subs,
                 'available' => $avail_supers,
             ],
         ];
@@ -1033,7 +1031,6 @@ class Users extends Admin
         ];
 
         $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
-        $subs = $this->users->fetchArray($this->tm_assocs->fetchAllByTrainingManager($user), $user_sort);
 
         $tm_uuids = [];
         foreach ($tm_assocs as $tm_assoc) {
@@ -1042,9 +1039,9 @@ class Users extends Admin
 
         $tm_uuids = array_flip($tm_uuids);
 
-        $avail_supers = $this->users->filterByBase($base, $user_sort);
-        $avail_supers = array_filter(
-            $avail_supers,
+        $avail_tms = $this->users->filterByBase($base, $user_sort);
+        $avail_tms = array_filter(
+            $avail_tms,
             static function (User $v) use ($tm_uuids, $role): bool {
                 return !isset($tm_uuids[ $v->getUuid() ]) &&
                        $v->getRole() === $role->getUuid();
@@ -1056,8 +1053,7 @@ class Users extends Admin
             'base' => $base,
             'assocs' => [
                 'tm' => $tm_assocs,
-                'subordinates' => $subs,
-                'available' => $avail_supers,
+                'available' => $avail_tms,
             ],
         ];
 

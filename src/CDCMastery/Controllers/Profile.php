@@ -28,6 +28,7 @@ use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use DateTime;
 use Monolog\Logger;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
@@ -228,6 +229,210 @@ class Profile extends RootController
         );
 
         return $this->redirect("/profile/afsc");
+    }
+
+    public function do_supervisor_association_add(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'new_super',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $new_super = $this->get('new_super');
+
+        if (!is_array($new_super)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $tgt_supers = $this->users->fetchArray($new_super);
+
+        if (!$tgt_supers) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $super_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_supers));
+        $this->log->info("add supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str}");
+
+        $this->su_assocs->batchAddSupervisorsForUser($tgt_supers, $user);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected supervisor associations were successfully added'
+        );
+
+        return $this->redirect("/profile/supervisors");
+    }
+
+    public function do_supervisor_association_remove(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'del_super',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $del_super = $this->get('del_super');
+
+        if (!is_array($del_super)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $tgt_supers = $this->users->fetchArray($del_super);
+
+        if (!$tgt_supers) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/profile/supervisors");
+        }
+
+        $super_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_supers));
+        $this->log->info("delete supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str}");
+
+        foreach ($tgt_supers as $tgt_super) {
+            $this->su_assocs->remove($user, $tgt_super);
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected supervisor associations were successfully removed'
+        );
+
+        return $this->redirect("/profile/supervisors");
+    }
+
+    public function do_tm_association_add(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'new_tm',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $new_tm = $this->get('new_tm');
+
+        if (!is_array($new_tm)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $tgt_tms = $this->users->fetchArray($new_tm);
+
+        if (!$tgt_tms) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $tm_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_tms));
+        $this->log->info("add training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str}");
+
+        $this->tm_assocs->batchAddTrainingManagersForUser($tgt_tms, $user);
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected training manager associations were successfully added'
+        );
+
+        return $this->redirect("/profile/training-managers");
+    }
+
+    public function do_tm_association_remove(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+
+        $params = [
+            'del_tm',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $del_tm = $this->get('del_tm');
+
+        if (!is_array($del_tm)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $tgt_tms = $this->users->fetchArray($del_tm);
+
+        if (!$tgt_tms) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/profile/training-managers");
+        }
+
+        $tm_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_tms));
+        $this->log->info("delete training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str}");
+
+        foreach ($tgt_tms as $tgt_tm) {
+            $this->tm_assocs->remove($user, $tgt_tm);
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected training manager associations were successfully removed'
+        );
+
+        return $this->redirect("/profile/training-managers");
     }
 
     public function do_role_request(): Response
@@ -453,6 +658,16 @@ class Profile extends RootController
     public function show_afsc_associations(): Response
     {
         $user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $role = $this->roles->fetch($user->getRole());
+
+        if (!$role) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'There was a problem accessing your account information'
+            );
+
+            return $this->redirect('/');
+        }
 
         $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
         $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
@@ -472,6 +687,7 @@ class Profile extends RootController
 
         $data = [
             'user' => $user,
+            'role' => $role,
             'afscs' => [
                 'authorized' => array_intersect_key($afscs, array_flip($afsc_assocs->getAuthorized())),
                 'pending' => array_intersect_key($afscs, array_flip($afsc_assocs->getPending())),
@@ -481,6 +697,128 @@ class Profile extends RootController
 
         return $this->render(
             'profile/afsc.html.twig',
+            $data
+        );
+    }
+
+    public function show_supervisor_associations(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $role = $this->roles->fetch($user->getRole());
+        $base = $this->bases->fetch($user->getBase());
+        $super_role = $this->roles->fetchType(Role::TYPE_SUPERVISOR);
+
+        if (!$role || !$super_role) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'There was a problem accessing your account information'
+            );
+
+            return $this->redirect('/');
+        }
+
+        if (!$base) {
+            throw new RuntimeException("invalid base :: {$user->getBase()}");
+        }
+
+        $user_sort = [
+            new UserSortOption(UserSortOption::COL_NAME_LAST),
+            new UserSortOption(UserSortOption::COL_NAME_FIRST),
+            new UserSortOption(UserSortOption::COL_RANK),
+            new UserSortOption(UserSortOption::COL_BASE),
+        ];
+
+        $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
+
+        $su_uuids = [];
+        foreach ($su_assocs as $su_assoc) {
+            $su_uuids[] = $su_assoc->getUuid();
+        }
+
+        $su_uuids = array_flip($su_uuids);
+
+        $avail_supers = $this->users->filterByBase($base, $user_sort);
+        $avail_supers = array_filter(
+            $avail_supers,
+            static function (User $v) use ($su_uuids, $super_role): bool {
+                return !isset($su_uuids[ $v->getUuid() ]) &&
+                       $v->getRole() === $super_role->getUuid();
+            }
+        );
+
+        $data = [
+            'user' => $user,
+            'base' => $base,
+            'role' => $role,
+            'assocs' => [
+                'su' => $su_assocs,
+                'available' => $avail_supers,
+            ],
+        ];
+
+        return $this->render(
+            'profile/super-assocs.html.twig',
+            $data
+        );
+    }
+
+    public function show_tm_associations(): Response
+    {
+        $user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $role = $this->roles->fetch($user->getRole());
+        $base = $this->bases->fetch($user->getBase());
+        $tm_role = $this->roles->fetchType(Role::TYPE_TRAINING_MANAGER);
+
+        if (!$role || !$tm_role) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'There was a problem accessing your account information'
+            );
+
+            return $this->redirect('/');
+        }
+
+        if (!$base) {
+            throw new RuntimeException("invalid base :: {$user->getBase()}");
+        }
+
+        $user_sort = [
+            new UserSortOption(UserSortOption::COL_NAME_LAST),
+            new UserSortOption(UserSortOption::COL_NAME_FIRST),
+            new UserSortOption(UserSortOption::COL_RANK),
+            new UserSortOption(UserSortOption::COL_BASE),
+        ];
+
+        $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
+
+        $tm_uuids = [];
+        foreach ($tm_assocs as $tm_assoc) {
+            $tm_uuids[] = $tm_assoc->getUuid();
+        }
+
+        $tm_uuids = array_flip($tm_uuids);
+
+        $avail_tms = $this->users->filterByBase($base, $user_sort);
+        $avail_tms = array_filter(
+            $avail_tms,
+            static function (User $v) use ($tm_uuids, $tm_role): bool {
+                return !isset($tm_uuids[ $v->getUuid() ]) &&
+                       $v->getRole() === $tm_role->getUuid();
+            }
+        );
+
+        $data = [
+            'user' => $user,
+            'base' => $base,
+            'role' => $role,
+            'assocs' => [
+                'tm' => $tm_assocs,
+                'available' => $avail_tms,
+            ],
+        ];
+
+        return $this->render(
+            'profile/tm-assocs.html.twig',
             $data
         );
     }

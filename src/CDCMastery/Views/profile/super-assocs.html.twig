@@ -1,0 +1,9 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Supervisor Associations" %}
+{% block main %}
+    {% include "blocks/profile/menu.html.twig" %}
+    <div class="page-header">
+        <h3>Supervisor Associations</h3>
+    </div>
+    {% include "blocks/users/super-assocs-shared.html.twig" with {'url_prefix': '/profile', 'restricted': true} %}
+{% endblock %}
