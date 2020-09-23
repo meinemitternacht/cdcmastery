@@ -7,7 +7,7 @@
                           method="POST">
                         <fieldset>
                             <legend>Add Association</legend>
-                            {% if restricted %}
+                            {% if restricted and not role_is_training_manager(role) %}
                                 <div class="help-block">
                                     Note: AFSCs marked as "FOUO" require approval from a site administrator or training
                                     manager.
@@ -109,7 +109,7 @@
                 <fieldset>
                     <legend>Current Associations</legend>
                     {% if afscs.authorized or afscs.pending %}
-                        {% if restricted %}
+                        {% if restricted and not role_is_training_manager(role) %}
                             <div class="help-block">
                                 Note: Accidentally removing any AFSCs marked as "FOUO" will require approval from a site
                                 administrator or training manager before they can be restored.
