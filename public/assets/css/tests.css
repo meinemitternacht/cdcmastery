@@ -24,10 +24,6 @@ label.new-test-afsc {
     cursor: pointer;
 }
 
-.answer:hover {
-    background-color: #faffa3;
-}
-
 .answer.selected {
     background-color: #7cd6f7;
 }
