@@ -23,7 +23,10 @@
                         <a href="/admin/cdc/afsc/{{ afsc.uuid }}/edit">Edit</a>
                     </li>
                     <li{% if cur_url starts with "/admin/cdc/afsc/" ~ afsc.uuid ~ "/questions" %} class="active"{% endif %}>
-                        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">Manage Questions</a>
+                        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/questions">Questions</a>
+                    </li>
+                    <li{% if cur_url == "/admin/cdc/afsc/" ~ afsc.uuid ~ "/users" %} class="active"{% endif %}>
+                        <a href="/admin/cdc/afsc/{{ afsc.uuid }}/users">Users</a>
                     </li>
                     {% if afsc.hidden %}
                         <li class="bg-success">

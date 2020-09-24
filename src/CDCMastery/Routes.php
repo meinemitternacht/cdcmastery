@@ -216,18 +216,6 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 'do_afsc_add',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_migrate() */
-            $r->addRoute('GET', '/migrate', [
-                CdcData::class,
-                'show_afsc_migrate',
-            ]);
-
-            /** @uses \CDCMastery\Controllers\Admin\CdcData::do_afsc_migrate() */
-            $r->addRoute('POST', '/migrate', [
-                CdcData::class,
-                'do_afsc_migrate',
-            ]);
-
             /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_home() */
             $r->addRoute('GET', '/{uuid}', [
                 CdcData::class,
@@ -384,6 +372,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
             $r->addRoute('POST', '/{uuid}/restore', [
                 CdcData::class,
                 'do_afsc_restore',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\CdcData::show_afsc_users() */
+            $r->addRoute('GET', '/{uuid}/users', [
+                CdcData::class,
+                'show_afsc_users',
             ]);
         });
 

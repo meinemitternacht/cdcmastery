@@ -1,10 +1,10 @@
 {% extends "layout.html.twig" %}
-{% set page_title = "Users" %}
+{% set page_title = "AFSC Users - #{afsc.name}" %}
 {% block main %}
     {% include "blocks/admin/users/menu.html.twig" %}
     <div class="page-header">
         <h3>
-            Manage Users
+            <span class="text-muted">AFSC Users</span> - {{ afsc.name }}
         </h3>
     </div>
     {% include "blocks/admin/users/list-common.html.twig" %}

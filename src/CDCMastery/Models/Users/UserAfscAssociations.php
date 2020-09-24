@@ -5,6 +5,7 @@ namespace CDCMastery\Models\Users;
 
 use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\Sorting\Users\UserSortOption;
 use Monolog\Logger;
 use mysqli;
 
@@ -596,25 +597,19 @@ SQL;
         return $out;
     }
 
-    /**
-     * @param Afsc $afsc
-     * @return AfscUserCollection
-     */
-    public function fetchAllByAfsc(Afsc $afsc): AfscUserCollection
+    public function countAllByAfsc(Afsc $afsc): int
     {
-        $afscUserCollection = new AfscUserCollection();
+        $n_users = 0;
 
         if (empty($afsc->getUuid())) {
             goto out_return;
         }
 
-        $afscUserCollection->setAfsc($afsc->getUuid());
-
-        $afscUuid = $afsc->getUuid();
+        $afsc_uuid = $afsc->getUuid();
 
         $qry = <<<SQL
 SELECT
-  userUUID
+  COUNT(userUUID) AS count
 FROM userAFSCAssociations
 WHERE afscUUID = ?
 SQL;
@@ -626,7 +621,94 @@ SQL;
             goto out_return;
         }
 
-        if (!$stmt->bind_param('s', $afscUuid) ||
+        if (!$stmt->bind_param('s', $afsc_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            $stmt->close();
+            goto out_return;
+        }
+
+        $stmt->bind_result($n_users);
+        $stmt->fetch();
+        $stmt->close();
+
+        out_return:
+        return $n_users ?? 0;
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param int|null $start
+     * @param int|null $limit
+     * @param array|null $sort_options
+     * @return AfscUserCollection
+     */
+    public function fetchAllByAfsc(
+        Afsc $afsc,
+        ?int $start = null,
+        ?int $limit = null,
+        ?array $sort_options = null
+    ): AfscUserCollection {
+        $afscUserCollection = new AfscUserCollection();
+
+        if (empty($afsc->getUuid())) {
+            goto out_return;
+        }
+
+        $afsc_uuid = $afsc->getUuid();
+        $afscUserCollection->setAfsc($afsc_uuid);
+
+        if (!$sort_options) {
+            $sort_options = [new UserSortOption(UserSortOption::COL_UUID)];
+        }
+
+        $join_strs = [];
+        $sort_strs = [];
+        foreach ($sort_options as $sort_option) {
+            if (!$sort_option) {
+                continue;
+            }
+
+            $join_str_tmp = $sort_option->getJoinClause();
+
+            if ($join_str_tmp) {
+                $join_strs[] = $join_str_tmp;
+                $sort_strs[] = "{$sort_option->getJoinTgtSortColumn()} {$sort_option->getDirection()}";
+                continue;
+            }
+
+            $sort_strs[] = "`userData`.`{$sort_option->getColumn()}` {$sort_option->getDirection()}";
+        }
+
+        $join_str = $join_strs
+            ? implode("\n", $join_strs)
+            : null;
+        $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
+
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
+
+        $qry = <<<SQL
+SELECT
+  userUUID
+FROM userAFSCAssociations
+LEFT JOIN userData ON userAFSCAssociations.userUUID = userData.uuid
+{$join_str}
+WHERE afscUUID = ?
+{$sort_str}
+{$limit_str}
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $afsc_uuid) ||
             !$stmt->execute()) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();

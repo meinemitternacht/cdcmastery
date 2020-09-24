@@ -11,8 +11,10 @@ namespace CDCMastery\Controllers\Admin;
 
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Exceptions\AccessDeniedException;
+use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
@@ -23,15 +25,19 @@ use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\Sorting\ISortOption;
+use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Users\AfscUserCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\UserCollection;
 use JsonException;
 use Monolog\Logger;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 use function count;
 
@@ -44,6 +50,8 @@ class CdcData extends Admin
     private AnswerCollection $answers;
     private QuestionHelpers $question_helpers;
     private UserAfscAssociations $user_afscs;
+    private UserCollection $users;
+    private BaseCollection $bases;
     private TestStats $test_stats;
 
     /**
@@ -72,6 +80,8 @@ class CdcData extends Admin
         AnswerCollection $answers,
         QuestionHelpers $question_helpers,
         UserAfscAssociations $user_afscs,
+        UserCollection $users,
+        BaseCollection $bases,
         TestStats $test_stats
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
@@ -82,7 +92,23 @@ class CdcData extends Admin
         $this->answers = $answers;
         $this->question_helpers = $question_helpers;
         $this->user_afscs = $user_afscs;
+        $this->users = $users;
+        $this->bases = $bases;
         $this->test_stats = $test_stats;
+    }
+
+    private function validate_sort(string $column, string $direction): ?ISortOption
+    {
+        try {
+            return new UserSortOption($column,
+                                      strtolower($direction ?? 'asc') === 'asc'
+                                          ? ISortOption::SORT_ASC
+                                          : ISortOption::SORT_DESC);
+        } catch (Throwable$e) {
+            $this->log->debug($e);
+            unset($e);
+            return null;
+        }
     }
 
     public function do_afsc_add(?Afsc $afsc = null): Response
@@ -775,7 +801,7 @@ class CdcData extends Admin
             return $this->redirect('/admin/cdc/afsc');
         }
 
-        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc);
+        $n_users = $this->user_afscs->countAllByAfsc($afsc);
         $afsc_questions = $this->question_helpers->getNumQuestionsByAfsc([$afsc->getUuid()]);
 
         $n_afsc_questions = 0;
@@ -785,8 +811,8 @@ class CdcData extends Admin
 
         $data = [
             'afsc' => $afsc,
-            'afscUsers' => count($afsc_users->getUsers()),
-            'afscQuestions' => $n_afsc_questions,
+            'numUsers' => $n_users,
+            'numQuestions' => $n_afsc_questions,
             'subTitle' => 'Tests By Month',
             'period' => 'month',
             'averages' => StatisticsHelpers::formatGraphDataTests(
@@ -799,6 +825,81 @@ class CdcData extends Admin
 
         return $this->render(
             'admin/cdc/afsc/afsc.html.twig',
+            $data
+        );
+    }
+
+    /**
+     * @param string $uuid
+     * @return Response
+     */
+    public function show_afsc_users(string $uuid): Response
+    {
+        $afsc = $this->afscs->fetch($uuid);
+
+        if (!$afsc || $afsc->getUuid() === '') {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                'The specified AFSC does not exist'
+            );
+
+            return $this->redirect('/admin/cdc/afsc');
+        }
+
+        $sortCol = $this->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+
+        $sort = $sortCol
+            ? [$this->validate_sort($sortCol, $sortDir)]
+            : [
+                new UserSortOption(UserSortOption::COL_NAME_LAST),
+                new UserSortOption(UserSortOption::COL_NAME_FIRST),
+                new UserSortOption(UserSortOption::COL_RANK),
+                new UserSortOption(UserSortOption::COL_BASE),
+            ];
+
+        $sort[] = new UserSortOption(UserSortOption::COL_UUID);
+
+        $n_users = $this->user_afscs->countAllByAfsc($afsc);
+        $afsc_users = $this->user_afscs->fetchAllByAfsc($afsc, $curPage * $numRecords, $numRecords, $sort);
+
+        $users = $this->users->fetchArray($afsc_users->getUsers(), $sort);
+
+        $base_uuids = [];
+        foreach ($users as $user) {
+            $base_uuids[ $user->getBase() ] = true;
+        }
+
+        $bases = $this->bases->fetchArray(array_keys($base_uuids));
+
+        $pagination = ArrayPaginator::buildLinks(
+            "/admin/cdc/afsc/{$uuid}/users",
+            $curPage,
+            ArrayPaginator::calcNumPagesNoData(
+                $n_users,
+                $numRecords
+            ),
+            $numRecords,
+            $n_users,
+            $sortCol,
+            $sortDir
+        );
+
+        $data = [
+            'afsc' => $afsc,
+            'users' => $users,
+            'bases' => $bases,
+            'pagination' => $pagination,
+            'sort' => [
+                'col' => $sortCol,
+                'dir' => $sortDir,
+            ],
+        ];
+
+        return $this->render(
+            'admin/cdc/afsc/afsc-users.html.twig',
             $data
         );
     }
