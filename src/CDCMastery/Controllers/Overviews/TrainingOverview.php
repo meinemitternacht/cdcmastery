@@ -1250,7 +1250,7 @@ LBL,
                 'latest' => $sub_stats_latest,
                 'tests' => $sub_stats_count_overall,
                 'average' => $sub_stats_avg_overall,
-                'n_users' => count($sub_stats_count_avg_grouped),
+                'n_users' => count($sub_stats_count_avg_grouped ?? []),
                 'n_supervisors' => $n_supervisors,
             ],
         ];
