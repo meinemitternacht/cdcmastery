@@ -872,6 +872,7 @@ class Users extends Admin
                 $numRecords
             ),
             $numRecords,
+            $n_users,
             $sortCol,
             $sortDir
         );
@@ -1418,6 +1419,7 @@ class Users extends Admin
                 $numRecords
             ),
             $numRecords,
+            count($userTests),
             $col,
             $dir
         );

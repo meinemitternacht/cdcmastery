@@ -81,6 +81,7 @@ class ArrayPaginator
         int $curPage,
         int $numPages,
         int $rows,
+        int $totalRows,
         ?string $sort = null,
         ?string $dir = null
     ): string {
@@ -127,7 +128,7 @@ class ArrayPaginator
         out_return:
         $htmlParts = [];
 
-        $htmlParts[] = '<ul class="pagination pagination-sm">';
+        $htmlParts[] = '<ul class="pagination pagination-sm cdc-pagination">';
 
         if ($showFirst) {
             $htmlParts[] = self::createHtmlLinkPart(
@@ -191,6 +192,8 @@ class ArrayPaginator
                 $dir
             );
         }
+
+        $htmlParts[] = '<li class="disabled"><a href="#">' . number_format($totalRows) . ' records</a></li>';
 
         $htmlParts[] = '</ul>';
 

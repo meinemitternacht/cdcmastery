@@ -881,6 +881,7 @@ class Cards extends RootController
                 $numRecords
             ),
             $numRecords,
+            $n_cats,
             $sortCol,
             $sortDir
         );

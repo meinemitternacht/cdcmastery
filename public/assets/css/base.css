@@ -64,6 +64,10 @@ div.main-container {
     filter: grayscale(1);
 }
 
+.cdc-pagination li.disabled > a {
+    color: #3e3f3a;
+}
+
 .badge-sm {
     font-size: 72%;
 }

@@ -751,6 +751,7 @@ class Tests extends RootController
                 $numRecords
             ),
             $numRecords,
+            count($userTests),
             $col,
             $dir
         );

@@ -703,6 +703,7 @@ class FlashCards extends Admin
                 $numRecords
             ),
             $numRecords,
+            $n_cats,
             $sortCol,
             $sortDir
         );
