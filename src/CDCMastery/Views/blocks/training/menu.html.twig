@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
             </button>
 
-            <div class="navbar-brand hidden-md hidden-lg">
+            <div class="navbar-brand hidden-sm hidden-md hidden-lg">
                 Training Menu
             </div>
         </div>
@@ -20,7 +20,7 @@
                     <a href="/training">Overview</a>
                 </li>
                 <li{% if cur_url == "/training/subordinates" %} class="active"{% endif %}>
-                    <a href="/training/subordinates">Manage Subordinates</a>
+                    <a href="/training/subordinates">Subordinates</a>
                 </li>
                 <li{% if cur_url starts with "/training/offline" %} class="active"{% endif %}>
                     <a href="/training/offline">Offline Tests</a>
@@ -52,14 +52,14 @@
                                 <a href="/training/users/{{ user.uuid }}/tests/incomplete/delete">Delete Incomplete
                                     Tests</a>
                             </li>
+
+                            {% if role_is_training_manager(cur_role) %}
+                                <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/afsc" %} class="active"{% endif %}>
+                                    <a href="/training/users/{{ user.uuid }}/afsc">Manage AFSCs</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
-
-                    {% if role_is_training_manager(cur_role) %}
-                        <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/afsc" %} class="active"{% endif %}>
-                            <a href="/training/users/{{ user.uuid }}/afsc">Manage AFSCs</a>
-                        </li>
-                    {% endif %}
                     <li{% if cur_url == "/training/users/" ~ user.uuid ~ "/reset-password" %} class="active"{% endif %}>
                         <a href="/training/users/{{ user.uuid }}/reset-password">Reset Password</a>
                     </li>
