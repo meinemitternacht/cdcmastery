@@ -10,8 +10,12 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\Roles\PendingRole;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
+use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
+use CDCMastery\Models\Users\SubordinateAssociationHelpers;
 use CDCMastery\Models\Users\UserCollection;
+use CDCMastery\Models\Users\UserSupervisorAssociations;
+use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -22,6 +26,8 @@ class RoleApprovals extends Admin
     private UserCollection $users;
     private RoleCollection $roles;
     private PendingRoleCollection $pending_roles;
+    private UserTrainingManagerAssociations $tm_assocs;
+    private UserSupervisorAssociations $super_assocs;
 
     /**
      * RoleApprovals constructor.
@@ -32,6 +38,8 @@ class RoleApprovals extends Admin
      * @param UserCollection $users
      * @param RoleCollection $roles
      * @param PendingRoleCollection $pending_roles
+     * @param UserTrainingManagerAssociations $tm_assocs
+     * @param UserSupervisorAssociations $super_assocs
      * @throws AccessDeniedException
      */
     public function __construct(
@@ -41,13 +49,17 @@ class RoleApprovals extends Admin
         AuthHelpers $auth_helpers,
         UserCollection $users,
         RoleCollection $roles,
-        PendingRoleCollection $pending_roles
+        PendingRoleCollection $pending_roles,
+        UserTrainingManagerAssociations $tm_assocs,
+        UserSupervisorAssociations $super_assocs
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
 
         $this->users = $users;
         $this->roles = $roles;
         $this->pending_roles = $pending_roles;
+        $this->tm_assocs = $tm_assocs;
+        $this->super_assocs = $super_assocs;
     }
 
     public function do_approve_roles(): Response
@@ -121,10 +133,21 @@ class RoleApprovals extends Admin
                 continue;
             }
 
-            if ($requests_approved) {
-                $tgt_user->setRole($role->getRoleUuid());
+            if (!$requests_approved) {
+                goto out_continue;
             }
 
+            $tgt_user->setRole($role->getRoleUuid());
+
+            SubordinateAssociationHelpers::handle_role_change($this->log,
+                                                              $this->users,
+                                                              $this->tm_assocs,
+                                                              $this->super_assocs,
+                                                              $prev_role,
+                                                              $new_role,
+                                                              $tgt_user);
+
+            out_continue:
             $this->log->addNotice("{$tgt_user->getName()} :: role change " .
                                   ($requests_approved
                                       ? 'approved'

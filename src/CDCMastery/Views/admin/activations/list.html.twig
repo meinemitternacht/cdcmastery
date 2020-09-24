@@ -38,7 +38,9 @@
                                 </td>
                                 <td>
                                     {% if users[activation.userUuid] %}
-                                        {{ users[activation.userUuid].name }}
+                                        <a href="/admin/users/{{ users[activation.userUuid].uuid }}">
+                                            {{ users[activation.userUuid].name }}
+                                        </a>
                                     {% else %}
                                         <span class="text-danger">UNKNOWN USER</span>
                                     {% endif %}

@@ -57,52 +57,54 @@
                     </form>
                 </div>
             {% else %}
-                <div class="help-block">
-                    Your account is not associated with any AFSCs. Go to your <a href="/profile">Profile</a> to manage
-                    your AFSC associations before generating a test.
+                <div class="alert alert-info">
+                    Your account is not associated with any AFSCs. <a href="/profile/afsc">Click Here</a> to go to your
+                    profile and manage AFSC associations before generating a test.
                 </div>
             {% endif %}
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                    <tr>
-                        <th>AFSC</th>
-                        <th>Questions</th>
-                        <th>Date Created</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for test in tests %}
+    {% if tests %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
                         <tr>
-                            <td>
-                                {{ test.cdcData.afsc.name }}
-                                {% if test.cdcData.afsc.isFouo %}
-                                    <span class="label label-danger"
-                                          title="This AFSC is marked 'FOR OFFICIAL USE ONLY'">F</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ test.numQuestions|number_format }}</td>
-                            <td>{{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</td>
-                            <td>
-                                <a class="btn btn-xs btn-success"
-                                   href="/training/offline/{{ test.uuid }}">
-                                    View
-                                </a>
-                                <a class="btn btn-xs btn-info"
-                                   href="/training/offline/{{ test.uuid }}/print">
-                                    Print
-                                </a>
-                            </td>
+                            <th>AFSC</th>
+                            <th>Questions</th>
+                            <th>Date Created</th>
+                            <th>Actions</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for test in tests %}
+                            <tr>
+                                <td>
+                                    {{ test.cdcData.afsc.name }}
+                                    {% if test.cdcData.afsc.isFouo %}
+                                        <span class="label label-danger"
+                                              title="This AFSC is marked 'FOR OFFICIAL USE ONLY'">F</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ test.numQuestions|number_format }}</td>
+                                <td>{{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</td>
+                                <td>
+                                    <a class="btn btn-xs btn-success"
+                                       href="/training/offline/{{ test.uuid }}">
+                                        View
+                                    </a>
+                                    <a class="btn btn-xs btn-info"
+                                       href="/training/offline/{{ test.uuid }}/print">
+                                        Print
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
