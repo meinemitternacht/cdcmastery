@@ -43,6 +43,7 @@
       "debug": "/home/vhosts/cdcmastery.com/logs/cdcmastery.debug.log",
       "general": "/home/vhosts/cdcmastery.com/logs/cdcmastery.log"
     },
+    "maintenance": false,
     "memcached": [
       {
         "host": "127.0.0.1",

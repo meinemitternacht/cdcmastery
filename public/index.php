@@ -105,6 +105,10 @@ if ($logged_in) {
     DateTimeHelpers::set_user_tz($user->getTimeZone());
 }
 
+if ($config->get(['system', 'maintenance'])) {
+    goto out_maintenance;
+}
+
 switch ($route[ 0 ]) {
     case FastRoute\Dispatcher::NOT_FOUND:
         $msg = '404: ' . $_SERVER[ 'REQUEST_URI' ] . ' could not be found';
@@ -189,4 +193,8 @@ exit;
 
 out_error_500:
 (new Errors($log, $container->get(Environment::class), $session))->show_500()->send();
+exit;
+
+out_maintenance:
+(new Errors($log, $container->get(Environment::class), $session))->show_maintenance()->send();
 exit;

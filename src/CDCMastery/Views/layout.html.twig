@@ -59,7 +59,10 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
-                <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a></li>
+                {% if not error %}
+                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a>
+                    </li>
+                {% endif %}
                 {% if logged_in %}
                     {% if not is_user and not is_supervisor and not error %}
                         <li class="dropdown{% if cur_url starts with "/admin" %} active{% endif %}">
@@ -135,18 +138,20 @@
                             <a href="/training">Training Panel</a>
                         </li>
                     {% endif %}
-                    <li{% if cur_url starts with "/profile" %} class="active"{% endif %}>
-                        <a href="/profile">My Profile</a>
-                    </li>
-                    <li><a href="/auth/logout">Sign Out</a></li>
-                {% else %}
+                    {% if not error %}
+                        <li{% if cur_url starts with "/profile" %} class="active"{% endif %}>
+                            <a href="/profile">My Profile</a>
+                        </li>
+                        <li><a href="/auth/logout">Sign Out</a></li>
+                    {% endif %}
+                {% elseif not error %}
                     <li><a href="/auth/login">Sign In</a></li>
                     <li{% if cur_url starts with "/auth/register" %} class="active"{% endif %}>
                         <a href="/auth/register">Register</a>
                     </li>
                 {% endif %}
             </ul>
-            {% if logged_in %}
+            {% if logged_in and not error %}
                 <p class="navbar-text navbar-right text-center hidden-xs hidden-sm">
                     Signed in as
                     <span class="text-white">{{ cur_user_name }}</span>
@@ -169,11 +174,13 @@
                 United States Air Force.
             </em>
         </p>
-        <p>
-            <a href="/about/disclaimer">Disclaimer</a> |
-            <a href="/about/privacy">Privacy Policy</a> |
-            <a href="/about/terms">Terms of Use</a>
-        </p>
+        {% if not error %}
+            <p>
+                <a href="/about/disclaimer">Disclaimer</a> |
+                <a href="/about/privacy">Privacy Policy</a> |
+                <a href="/about/terms">Terms of Use</a>
+            </p>
+        {% endif %}
     </div>
 </footer>
 </body>

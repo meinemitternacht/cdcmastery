@@ -13,6 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class Errors extends RootController
 {
+    public function show_maintenance(): Response
+    {
+        return $this->render('errors/maintenance.html.twig', ['error' => true], 200, true);
+    }
+
     public function show_400(): Response
     {
         return $this->render('errors/400.html.twig', ['error' => true], 400, true);
