@@ -52,13 +52,13 @@
                             <fieldset>
                                 {% for super in assocs.su %}
                                     <div class="row">
-                                        <div class="col-md-1">
+                                        <div class="col-xs-1">
                                             <input type="checkbox"
                                                    id="del-super-{{ super.uuid }}"
                                                    name="del_super[]"
                                                    value="{{ super.uuid }}">
                                         </div>
-                                        <div class="col-md-11">
+                                        <div class="col-xs-11">
                                             <label for="del-super-{{ super.uuid }}">
                                                 {{ super.lastName }}, {{ super.firstName }} {{ super.rank }}
                                             </label>

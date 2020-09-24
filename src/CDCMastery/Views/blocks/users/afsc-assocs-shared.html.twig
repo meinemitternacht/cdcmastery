@@ -73,13 +73,13 @@
                                     <fieldset>
                                         {% for afsc in afscs.pending %}
                                             <div class="row">
-                                                <div class="col-md-1">
+                                                <div class="col-xs-1">
                                                     <input type="checkbox"
                                                            id="approve-afsc-{{ afsc.uuid }}"
                                                            name="approve_afsc[]"
                                                            value="{{ afsc.uuid }}">
                                                 </div>
-                                                <div class="col-md-11">
+                                                <div class="col-xs-11">
                                                     <label for="approve-afsc-{{ afsc.uuid }}">
                                                         {{ afsc.name }}
                                                         {% if afsc.editCode %}<span class="text-info">
@@ -132,13 +132,13 @@
                             <fieldset>
                                 {% for afsc in afscs.authorized %}
                                     <div class="row">
-                                        <div class="col-xs-1 col-md-1">
+                                        <div class="col-xs-1">
                                             <input type="checkbox"
                                                    id="del-afsc-{{ afsc.uuid }}"
                                                    name="del_afsc[]"
                                                    value="{{ afsc.uuid }}">
                                         </div>
-                                        <div class="col-xs-11 col-md-11">
+                                        <div class="col-xs-11">
                                             <label for="del-afsc-{{ afsc.uuid }}">
                                                 {{ afsc.name }}
                                                 {% if afsc.editCode %}<span class="text-info">
@@ -150,13 +150,13 @@
                                 {% if afscs.pending %}
                                     {% for afsc in afscs.pending %}
                                         <div class="row">
-                                            <div class="col-xs-1 col-md-1">
+                                            <div class="col-xs-1">
                                                 <input type="checkbox"
                                                        id="del-afsc-{{ afsc.uuid }}"
                                                        name="del_afsc[]"
                                                        value="{{ afsc.uuid }}">
                                             </div>
-                                            <div class="col-xs-11 col-md-11">
+                                            <div class="col-xs-11">
                                                 <label for="del-afsc-{{ afsc.uuid }}">
                                                     {{ afsc.name }}
                                                     {% if afsc.editCode %}<span class="text-info">

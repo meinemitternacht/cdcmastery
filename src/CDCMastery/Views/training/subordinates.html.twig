@@ -57,13 +57,13 @@
                                 <fieldset>
                                     {% for assoc_user in assocs.cur %}
                                         <div class="row">
-                                            <div class="col-md-1">
+                                            <div class="col-xs-1">
                                                 <input type="checkbox"
                                                        id="del-users-{{ assoc_user.uuid }}"
                                                        name="del_users[]"
                                                        value="{{ assoc_user.uuid }}">
                                             </div>
-                                            <div class="col-md-11">
+                                            <div class="col-xs-11">
                                                 <label for="del-users-{{ assoc_user.uuid }}">
                                                     {{ assoc_user.lastName }}
                                                     , {{ assoc_user.firstName }} {{ assoc_user.rank }}

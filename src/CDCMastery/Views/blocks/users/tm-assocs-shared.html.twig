@@ -52,13 +52,13 @@
                             <fieldset>
                                 {% for tm in assocs.tm %}
                                     <div class="row">
-                                        <div class="col-md-1">
+                                        <div class="col-xs-1">
                                             <input type="checkbox"
                                                    id="del-tm-{{ tm.uuid }}"
                                                    name="del_tm[]"
                                                    value="{{ tm.uuid }}">
                                         </div>
-                                        <div class="col-md-11">
+                                        <div class="col-xs-11">
                                             <label for="del-tm-{{ tm.uuid }}">
                                                 {{ tm.lastName }}, {{ tm.firstName }} {{ tm.rank }}
                                             </label>
