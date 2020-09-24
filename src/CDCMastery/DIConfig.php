@@ -54,6 +54,7 @@ return [
             $twig->addGlobal('is_admin', $auth_helpers->assert_admin());
             $twig->addGlobal('is_supervisor', $auth_helpers->assert_supervisor());
             $twig->addGlobal('is_training_manager', $auth_helpers->assert_training_manager());
+            $twig->addGlobal('is_user', $auth_helpers->assert_user());
         }
 
         if (!$auth_helpers->assert_user() && !$auth_helpers->assert_supervisor()) {
