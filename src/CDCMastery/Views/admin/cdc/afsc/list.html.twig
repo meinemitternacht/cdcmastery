@@ -2,6 +2,13 @@
 {% set page_title = "Manage AFSCs" %}
 {% block main %}
     {% include "blocks/admin/cdc/afsc/menu.html.twig" %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>AFSC Management</h3>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="well well-sm table-header-form-well">
@@ -51,8 +58,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="help-block col-md-12">
-            Click on a row to manage data for that AFSC
+        <div class="col-md-12">
+            <div class="help-block">
+                Click on a row to manage data for that AFSC
+            </div>
         </div>
     </div>
     <div class="row">
