@@ -98,19 +98,26 @@ class ArrayPaginator
         $showNext = true;
         $showLast = true;
 
-        $firstPage = (($curPage - 5) < 0)
+        $firstPage = (($curPage - 4) < 0)
             ? 0
-            : $curPage - 5;
-        $lastPage = ($curPage + 5) > $numPages
+            : $curPage - 4;
+        $lastPage = ($curPage + 4) > $numPages
             ? $numPages
-            : $curPage + 5;
+            : $curPage + 4;
+
+        $firstPage_mobile = (($curPage - 2) < 0)
+            ? 0
+            : $curPage - 2;
+        $lastPage_mobile = ($curPage + 2) > $numPages
+            ? $numPages
+            : $curPage + 2;
 
         if ($curPage === 0) {
             $showFirst = false;
             $showPrevious = false;
             $firstPage = 0;
-            $lastPage = ($numPages > ($firstPage + 9))
-                ? $firstPage + 9
+            $lastPage = ($numPages > ($firstPage + 4))
+                ? $firstPage + 4
                 : $numPages;
             goto out_return;
         }
@@ -118,9 +125,9 @@ class ArrayPaginator
         if ($curPage === $numPages) {
             $showNext = false;
             $showLast = false;
-            $firstPage = (($numPages - 10) < 0)
+            $firstPage = (($numPages - 5) < 0)
                 ? 0
-                : $numPages - 10;
+                : $numPages - 5;
             $lastPage = $numPages;
             goto out_return;
         }
@@ -154,6 +161,7 @@ class ArrayPaginator
             );
         }
 
+        /* desktop */
         $i = $firstPage;
         while ($i <= $lastPage) {
             $htmlParts[] = self::createHtmlLinkPart(
@@ -163,7 +171,25 @@ class ArrayPaginator
                 $rows,
                 self::LINK_TEXT_PAGE,
                 $sort,
-                $dir
+                $dir,
+                false
+            );
+
+            $i++;
+        }
+
+        /* mobile */
+        $i = $firstPage_mobile;
+        while ($i <= $lastPage_mobile) {
+            $htmlParts[] = self::createHtmlLinkPart(
+                $path,
+                $curPage,
+                $i,
+                $rows,
+                self::LINK_TEXT_PAGE,
+                $sort,
+                $dir,
+                true
             );
 
             $i++;
@@ -193,7 +219,7 @@ class ArrayPaginator
             );
         }
 
-        $htmlParts[] = '<li class="disabled"><a href="#">' . number_format($totalRows) . ' records</a></li>';
+        $htmlParts[] = '<li class="disabled hidden-xs hidden-sm"><a href="#">' . number_format($totalRows) . ' records</a></li>';
 
         $htmlParts[] = '</ul>';
 
@@ -210,10 +236,10 @@ class ArrayPaginator
         int $rows,
         int $textType = self::LINK_TEXT_PAGE,
         ?string $sort = null,
-        ?string $dir = null
+        ?string $dir = null,
+        bool $mobile = false
     ): string {
-        $class = '';
-
+        $classes = [];
         switch ($textType) {
             case self::LINK_TEXT_FIRST:
                 $text = '&laquo;';
@@ -231,11 +257,23 @@ class ArrayPaginator
             default:
                 $text = $pageNum + 1;
 
-                $class = ($pageNum) === $curPage
-                    ? ' class="active"'
-                    : '';
+                if ($pageNum === $curPage) {
+                    $classes[] = 'active';
+                }
+
+                if ($mobile) {
+                    $classes[] = 'hidden-sm';
+                    $classes[] = 'hidden-md';
+                    $classes[] = 'hidden-lg';
+                } else {
+                    $classes[] = 'hidden-xs';
+                }
                 break;
         }
+
+        $class_str = $classes
+            ? ' class="' . implode(' ', $classes) . '"'
+            : null;
 
         $sortDir = '';
         if (!empty($sort) && !empty($dir)) {
@@ -243,9 +281,9 @@ class ArrayPaginator
         }
 
         return '<li' .
-                $class .
-                '><a href="' .
-                $path .
+               $class_str .
+               '><a href="' .
+               $path .
                 '?' .
                 self::VAR_START .
                 '=' .
