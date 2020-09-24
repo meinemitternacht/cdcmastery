@@ -60,7 +60,8 @@
             <ul class="nav navbar-nav">
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
                 {% if not error %}
-                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}><a href="/stats">Statistics</a>
+                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}>
+                        <a href="/stats">Statistics</a>
                     </li>
                 {% endif %}
                 {% if logged_in %}
