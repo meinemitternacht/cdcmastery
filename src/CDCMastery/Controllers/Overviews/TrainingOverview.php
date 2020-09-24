@@ -473,6 +473,10 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/subordinates");
         }
 
+        $new_users = array_filter($new_users, static function (string $v) use ($user): bool {
+            return $v !== $user->getUuid();
+        });
+
         $tgt_subs = $this->users->fetchArray($new_users);
 
         if (!$tgt_subs) {

@@ -347,6 +347,10 @@ SQL;
 
         $data = [];
         while ($stmt->fetch()) {
+            if ($user_uuid === $user->getUuid()) {
+                continue;
+            }
+
             $data[] = $user_uuid;
         }
 
