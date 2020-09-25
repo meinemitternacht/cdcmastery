@@ -1008,6 +1008,8 @@ class CdcData extends Admin
 
         $afscList = $this->afscs->fetchAll($flags,
                                            [
+                                               AfscCollection::COL_IS_OBSOLETE => AfscCollection::ORDER_ASC,
+                                               AfscCollection::COL_IS_HIDDEN => AfscCollection::ORDER_ASC,
                                                AfscCollection::COL_NAME => AfscCollection::ORDER_ASC,
                                                AfscCollection::COL_VERSION => AfscCollection::ORDER_ASC,
                                                AfscCollection::COL_DESCRIPTION => AfscCollection::ORDER_ASC,

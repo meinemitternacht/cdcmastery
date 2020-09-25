@@ -183,6 +183,7 @@ SQL;
                 case self::COL_EDIT_CODE:
                 case self::COL_IS_FOUO:
                 case self::COL_IS_HIDDEN:
+                case self::COL_IS_OBSOLETE:
                     $str = self::TABLE_NAME . '.' . $column;
                     break;
                 default:
