@@ -7,6 +7,7 @@
  */
 
 use CDCMastery\Controllers\Errors;
+use CDCMastery\Models\Config\Config;
 use DI\ContainerBuilder;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -30,25 +31,34 @@ set_error_handler(static function ($severity, $message, $file, $line) {
 
 try {
     $builder = new ContainerBuilder;
-    $container = $builder->addDefinitions(__DIR__ . '/DIConfig.php')->build();
+    $c = $builder->addDefinitions(__DIR__ . '/DIConfig.php')->build();
 
     /* check database connectivity */
-    $container->get(mysqli::class);
+    $c->get(mysqli::class);
 
     /* check cache health */
-    $cache = $container->get(Memcached::class);
+    $cache = $c->get(Memcached::class);
     if ($cache->set('site-online', true) === false) {
         throw new RuntimeException('memcached offline');
     }
-    return $container;
+
+    $config = $c->get(Config::class);
+
+    define('CDC_DEBUG', (bool)$config->get(['system', 'debug']));
+    define('SYSTEM_UUID', $config->get(['system', 'uuid']));
+    define('SUPPORT_EMAIL', $config->get(['email', 'username']));
+    define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
+    define('SUPPORT_FACEBOOK_DISPLAY', $config->get(['support', 'facebook', 'display']));
+
+    return $c;
 } catch (Exception $e) {
-    if (isset($container)) {
+    if (isset($c)) {
         try {
-            $log = $container->get(Logger::class);
+            $log = $c->get(Logger::class);
             $log->alert('site offline :: ' . $e);
-            (new Errors($container->get(Logger::class),
-                        $container->get(Environment::class),
-                        $container->get(Session::class)))->show_500()->send();
+            (new Errors($c->get(Logger::class),
+                        $c->get(Environment::class),
+                        $c->get(Session::class)))->show_500()->send();
         } catch (Throwable $e) {
             if (isset($log)) {
                 $log->debug("site offline :: {$e}");
