@@ -15,6 +15,9 @@ use DateTime;
 
 class Test
 {
+    public const TYPE_COMPLETE = 0;
+    public const TYPE_INCOMPLETE = 1;
+
     public const MAX_QUESTIONS = 500;
     public const SCORE_PRECISION = 2;
 

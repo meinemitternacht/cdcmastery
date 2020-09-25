@@ -2,5 +2,8 @@
 {% set page_title = "Incomplete Tests - #{user.name}" %}
 {% block main %}
     {% include "blocks/admin/users/menu.html.twig" %}
+    <div class="page-header">
+        <h3><span class="text-muted">Incomplete Tests</span> - {{ user.name }}</h3>
+    </div>
     {% include "blocks/users/tests/history-incomplete-shared.html.twig" %}
 {% endblock %}

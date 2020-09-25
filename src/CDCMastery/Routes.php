@@ -443,6 +443,24 @@ return simpleDispatcher(static function (RouteCollector $r) {
             'do_approve_roles',
         ]);
 
+        /** @uses \CDCMastery\Controllers\Admin\Tests::show_tests_complete() */
+        $r->addRoute('GET', '/tests', [
+            Admin\Tests::class,
+            'show_tests_complete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\Tests::show_tests_incomplete() */
+        $r->addRoute('GET', '/tests/incomplete', [
+            Admin\Tests::class,
+            'show_tests_incomplete',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Admin\Tests::show_test() */
+        $r->addRoute('GET', '/tests/{test_uuid}', [
+            Admin\Tests::class,
+            'show_test',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
         $r->addRoute('GET', '/users', [
             Admin\Users::class,

@@ -108,6 +108,17 @@
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
+                                <li{% if cur_url == "/admin/tests" %} class="active"{% endif %}>
+                                    <a href="/admin/tests" title="User Manager">
+                                        Completed Tests
+                                    </a>
+                                </li>
+                                <li{% if cur_url == "/admin/tests/incomplete" %} class="active"{% endif %}>
+                                    <a href="/admin/tests/incomplete" title="User Manager">
+                                        Incomplete Tests
+                                    </a>
+                                </li>
+                                <li role="separator" class="divider"></li>
                                 <li{% if cur_url starts with "/admin/activations" %} class="active"{% endif %}>
                                     <a href="/admin/activations" title="View Unactivated Users">
                                         Unactivated Users

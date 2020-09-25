@@ -19,6 +19,7 @@ use CDCMastery\Models\Users\User;
 use DateTime;
 use Monolog\Logger;
 use mysqli;
+use RuntimeException;
 
 class TestCollection
 {
@@ -99,6 +100,48 @@ class TestCollection
         }
 
         return ' ORDER BY ' . implode(' , ', $sql);
+    }
+
+    /**
+     * @param int $type
+     * @return int
+     */
+    public function countAll(int $type): int
+    {
+        switch ($type) {
+            case Test::TYPE_COMPLETE:
+                $qry = <<<SQL
+SELECT
+  COUNT(*) AS count
+FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL
+SQL;
+                break;
+            case Test::TYPE_INCOMPLETE:
+                $qry = <<<SQL
+SELECT
+  COUNT(*) AS count
+FROM testCollection
+WHERE score < 1
+  AND timeCompleted IS NULL
+SQL;
+                break;
+            default:
+                throw new RuntimeException("invalid test type: {$type}");
+        }
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)($row[ 'count' ] ?? 0);
     }
 
     /**
@@ -399,6 +442,92 @@ SQL;
         }
 
         return $this->create_objects($data);
+    }
+
+    /**
+     * @param int $type
+     * @param array $order
+     * @param int|null $start
+     * @param int|null $limit
+     * @return array|Test[]
+     */
+    public function fetchAll(int $type, array $order = [], ?int $start = null, ?int $limit = null): array
+    {
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
+
+        $order_str = self::generateOrderSuffix($order);
+
+        switch ($type) {
+            case Test::TYPE_COMPLETE:
+                $qry = <<<SQL
+SELECT
+  uuid,
+  userUuid,
+  afscList,
+  timeStarted,
+  timeCompleted,
+  questionList,
+  curQuestion,
+  numAnswered,
+  numMissed,
+  score,
+  combined,
+  archived
+FROM testCollection
+WHERE score > 0
+  AND timeCompleted IS NOT NULL
+{$order_str}
+{$limit_str}
+SQL;
+                break;
+            case Test::TYPE_INCOMPLETE:
+                $qry = <<<SQL
+SELECT
+  uuid,
+  userUuid,
+  afscList,
+  timeStarted,
+  timeCompleted,
+  questionList,
+  curQuestion,
+  numAnswered,
+  numMissed,
+  score,
+  combined,
+  archived
+FROM testCollection
+WHERE score < 1
+  AND timeCompleted IS NULL
+{$order_str}
+{$limit_str}
+SQL;
+                break;
+            default:
+                throw new RuntimeException("invalid test type: {$type}");
+        }
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $rows = [];
+        while ($row = $res->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        $res->free();
+
+        if (!$rows) {
+            return [];
+        }
+
+        return $this->create_objects($rows);
     }
 
     /**

@@ -1325,7 +1325,7 @@ class Users extends Admin
         ];
 
         return $this->render(
-            'admin/users/tests/completed.html.twig',
+            'admin/users/tests/complete.html.twig',
             $data
         );
     }

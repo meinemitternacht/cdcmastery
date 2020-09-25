@@ -1,0 +1,8 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Test History - #{user.name}" %}
+{% block main %}
+    <div class="page-header">
+        <h3>Completed Tests</h3>
+    </div>
+    {% include "blocks/users/tests/history-complete-shared.html.twig" with {'redirect_prefix': '/admin/tests'} %}
+{% endblock %}

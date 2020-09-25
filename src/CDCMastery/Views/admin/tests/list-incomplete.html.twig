@@ -1,9 +1,8 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Incomplete Tests - #{user.name}" %}
 {% block main %}
-    {% include "blocks/training/menu.html.twig" %}
     <div class="page-header">
-        <h3><span class="text-muted">Incomplete Tests</span> - {{ user.name }}</h3>
+        <h3>Incomplete Tests</h3>
     </div>
     {% include "blocks/users/tests/history-incomplete-shared.html.twig" %}
 {% endblock %}

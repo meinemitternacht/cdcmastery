@@ -224,21 +224,24 @@ SQL;
      */
     public static function formatHtml(array $tests): array
     {
-        if (empty($tests)) {
+        if (!$tests) {
             return [];
         }
 
-        $newTests = [];
+        $out = [];
         foreach ($tests as $test) {
-            if (empty($test->getUuid())) {
+            if (!$test->getUuid()) {
                 continue;
             }
 
             $started = $test->getTimeStarted();
             $completed = $test->getTimeCompleted();
 
-            $newTests[] = [
+            $out[] = [
                 'uuid' => $test->getUuid(),
+                'user' => [
+                    'uuid' => $test->getUserUuid(),
+                ],
                 'score' => $test->getScore(),
                 'afsc' => implode(
                     ', ',
@@ -246,18 +249,24 @@ SQL;
                 ),
                 'answered' => $test->getNumAnswered(),
                 'questions' => $test->getNumQuestions(),
+                'state' => [
+                    'question' => [
+                        'cur' => $test->getCurrentQuestion(),
+                        'answered' => $test->getNumAnswered(),
+                    ],
+                ],
                 'time' => [
                     'started' => ($started !== null)
                         ? $started->format(DateTimeHelpers::DT_FMT_SHORT)
                         : '',
                     'completed' => ($completed !== null)
                         ? $completed->format(DateTimeHelpers::DT_FMT_SHORT)
-                        : ''
-                ]
+                        : '',
+                ],
             ];
         }
 
-        return $newTests;
+        return $out;
     }
 
     /**
