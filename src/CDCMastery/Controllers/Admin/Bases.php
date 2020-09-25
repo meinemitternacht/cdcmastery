@@ -240,7 +240,7 @@ LBL,
 
         $limit = 100;
         $base_users_avg_count = $this->stats->averageCountOverallByUser($base,
-                                                                        (new DateTime())->modify('-2 year'));
+                                                                        (new DateTime())->modify('-1 year'));
 
         try {
             $graph_data = $this->format_overview_graph_data($base_users_avg_count, $limit);
