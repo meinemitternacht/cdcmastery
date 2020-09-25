@@ -1160,7 +1160,7 @@ SELECT
 FROM testCollection 
 WHERE afscList LIKE CONCAT('%', ?, '%')
   AND score > 0
-  AND timeCompleted IS NOT NULL 
+  AND timeCompleted IS NOT NULL
 SQL;
 
         $stmt = $this->db->prepare($qry);
