@@ -124,10 +124,12 @@ return [
                     continue;
                 }
 
-                $memcached->addServer(
-                    $host->host,
-                    $host->port
-                );
+                if (isset($host->socket)) {
+                    $memcached->addServer($host->socket, 0);
+                    continue;
+                }
+
+                $memcached->addServer($host->host, $host->port);
             }
         }
 
