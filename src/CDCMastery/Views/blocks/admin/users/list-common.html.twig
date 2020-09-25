@@ -25,7 +25,9 @@
                         <td>{{ user.rank }}</td>
                         <td{% if bases[user.base] %} title="{{ bases[user.base].name }}"{% endif %}>
                             {% if bases[user.base] %}
-                                {{ bases[user.base].name|length > 40 ? bases[user.base].name|slice(0,40) ~ '...' : bases[user.base].name }}
+                                <a href="/admin/bases/{{ user.base }}">
+                                    {{ bases[user.base].name|length > 40 ? bases[user.base].name|slice(0,40) ~ '...' : bases[user.base].name }}
+                                </a>
                             {% else %}
                                 &mdash;
                             {% endif %}
