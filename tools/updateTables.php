@@ -108,8 +108,24 @@ ALTER TABLE testData
     ADD CONSTRAINT testData_testCollection_uuid_fk
         FOREIGN KEY (testUUID) REFERENCES testCollection (uuid) ON DELETE CASCADE ON UPDATE CASCADE;
 -- SPLIT ;;
+DELETE FROM questionData
+WHERE afscUUID NOT IN
+      (SELECT uuid FROM afscList ORDER BY uuid);
+-- SPLIT ;;
 ALTER TABLE questionData
-	ADD disabled TINYINT(1) DEFAULT 0 NOT NULL;
+	ADD disabled TINYINT(1) DEFAULT 0 NOT NULL,
+    ADD CONSTRAINT questionData_afscList_uuid_fk
+        FOREIGN KEY (afscUUID) REFERENCES afscList (uuid)
+            ON UPDATE CASCADE ON DELETE CASCADE;
+-- SPLIT ;;
+DELETE FROM answerData
+WHERE questionUUID NOT IN
+      (SELECT uuid FROM questionData ORDER BY uuid);
+-- SPLIT ;;
+ALTER TABLE answerData
+	ADD CONSTRAINT answerData_questionData_uuid_fk
+		FOREIGN KEY (questionUUID) REFERENCES questionData (uuid)
+			ON UPDATE CASCADE ON DELETE CASCADE;
 -- SPLIT ;;
 CREATE INDEX questionData_disabled_index
 	ON questionData (disabled);
