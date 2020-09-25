@@ -13,30 +13,41 @@
                     {% if users %}
                         <th>User</th>
                     {% endif %}
+                    <th>{{ sortlink('score','Score',sort)|raw }}</th>
                     <th>Questions</th>
                     <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
                     <th>{{ sortlink('timeCompleted','Time Completed',sort)|raw }}</th>
-                    <th>{{ sortlink('score','Score',sort)|raw }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for test in tests %}
                     <tr class="{% if test.score >= passing_score %} bg-success{% else %} bg-danger{% endif %}"
                         style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                        <td title="{{ test.afsc }}">
+                        <td class="hidden-xs hidden-sm" title="{{ test.afsc }}">
                             {% if test.afsc|length > 0 %}
-                                {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
+                                {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </td>
+                        <td class="hidden-md hidden-lg" title="{{ test.afsc }}">
+                            {% if test.afsc|length > 0 %}
+                                {{ test.afsc|length > 10 ? test.afsc|slice(0, 10) ~ '...' : test.afsc }}
                             {% else %}
                                 No Data
                             {% endif %}
                         </td>
                         {% if users and users[test.user.uuid] %}
-                            <td>{{ users[test.user.uuid].name }}</td>
+                            <td>
+                                <a href="/admin/users/{{ test.user.uuid }}">
+                                    {{ users[test.user.uuid].name }}
+                                </a>
+                            </td>
                         {% endif %}
+                        <td>{{ test.score }}%</td>
                         <td>{{ test.questions }}</td>
                         <td>{{ test.time.started }}</td>
                         <td>{{ test.time.completed }}</td>
-                        <td>{{ test.score }}%</td>
                     </tr>
                 {% endfor %}
                 </tbody>

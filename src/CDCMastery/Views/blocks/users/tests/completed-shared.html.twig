@@ -4,7 +4,13 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Taken By</div>
                 <div class="panel-body">
-                    {{ user.name }}
+                    {% if not restricted %}
+                        <a href="/admin/users/{{ user.uuid }}">
+                            {{ user.name }}
+                        </a>
+                    {% else %}
+                        {{ user.name }}
+                    {% endif %}
                 </div>
             </div>
             <div class="panel panel-default">

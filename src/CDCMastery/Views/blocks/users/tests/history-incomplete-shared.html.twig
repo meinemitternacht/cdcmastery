@@ -16,13 +16,20 @@
                     <th colspan="2">Answered / Total</th>
                     <th>Current</th>
                     <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
-                    <th>{{ sortlink('numAnswered','Progress',sort)|raw }}</th>
+                    <th class="col-xs-2">{{ sortlink('numAnswered','Progress',sort)|raw }}</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for test in tests %}
                     <tr>
-                        <td title="{{ test.afsc }}">
+                        <td class="hidden-xs hidden-sm" title="{{ test.afsc }}">
+                            {% if test.afsc|length > 0 %}
+                                {{ test.afsc|length > 10 ? test.afsc|slice(0, 10) ~ '...' : test.afsc }}
+                            {% else %}
+                                No Data
+                            {% endif %}
+                        </td>
+                        <td class="hidden-md hidden-lg" title="{{ test.afsc }}">
                             {% if test.afsc|length > 0 %}
                                 {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}
                             {% else %}
@@ -30,7 +37,11 @@
                             {% endif %}
                         </td>
                         {% if users and users[test.user.uuid] %}
-                            <td>{{ users[test.user.uuid].name }}</td>
+                            <td>
+                                <a href="/admin/users/{{ test.user.uuid }}">
+                                    {{ users[test.user.uuid].name }}
+                                </a>
+                            </td>
                         {% endif %}
                         <td class="text-right">
                             {{ test.state.question.answered|number_format }} /
