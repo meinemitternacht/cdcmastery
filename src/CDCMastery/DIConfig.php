@@ -174,8 +174,8 @@ return [
             'password' => $config->get(['email', 'password']),
         ];
 
-        return (new Swift_SmtpTransport($settings[ 'host' ], $settings[ 'port' ]))
-            ->setUsername($settings[ 'username' ])
-            ->setPassword($settings[ 'password' ]);
+        return (new Swift_Mailer((new Swift_SmtpTransport($settings[ 'host' ], $settings[ 'port' ]))
+                                     ->setUsername($settings[ 'username' ])
+                                     ->setPassword($settings[ 'password' ])));
     },
 ];

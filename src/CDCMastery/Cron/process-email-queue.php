@@ -12,7 +12,10 @@ try {
     $queue = $c->get(EmailQueue::class);
 
     $log->debug('email queue start');
-    $queue->process();
+    if (!$queue->process()) {
+        $log->emergency('email queue execution error');
+        exit(1);
+    }
     $log->debug('email queue processed');
 } catch (Throwable $e) {
     if (isset($log)) {

@@ -52,8 +52,6 @@ SQL;
         if ($res === false) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
         }
-
-        $res->free();
     }
 
     /**

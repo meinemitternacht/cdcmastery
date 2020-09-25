@@ -23,8 +23,9 @@ address and activate your account, click the link below:
 
   https://cdcmastery.com/auth/activate/{$activation->getCode()}
 
-This request expires on {$expires_fmt}.  If you cannot click on the link, 
-copy and paste the link into your browser. 
+This request expires on {$expires_fmt}.
+
+If you cannot click on the link, copy and paste the link into your browser.
 
 Regards,
 

@@ -8,6 +8,7 @@ use Monolog\Logger;
 use RuntimeException;
 use Swift_Mailer;
 use Swift_Message;
+use Throwable;
 
 class EmailQueue
 {
@@ -48,26 +49,34 @@ class EmailQueue
         sem_release($this->mutex);
     }
 
-    public function process(): void
+    public function process(): bool
     {
         try {
             $this->lock();
             $emails = $this->emails->fetchAll();
 
             if (!$emails) {
-                return;
+                return true;
             }
 
+            $error = false;
             $success = [];
             foreach ($emails as $email) {
-                if ($this->send($email)) {
-                    $success[] = $email;
+                try {
+                    if ($this->send($email)) {
+                        $success[] = $email;
+                    }
+                } catch (Throwable $e) {
+                    $this->log->debug($e);
+                    $error = true;
                 }
             }
 
             if ($success) {
                 $this->emails->deleteArray($success);
             }
+
+            return $error;
         } finally {
             $this->unlock();
         }
