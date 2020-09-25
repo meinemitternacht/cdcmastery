@@ -79,9 +79,21 @@ SELECT
   testHistory.testArchived IS NOT NULL
 FROM testHistory;
 -- SPLIT ;;
+CREATE INDEX testCollection_score_index
+	ON testCollection (score);
+-- SPLIT ;;
+CREATE INDEX testCollection_timeCompleted_index
+	ON testCollection (timeCompleted);
+-- SPLIT ;;
+CREATE INDEX testCollection_timeStarted_index
+	ON testCollection (timeStarted);
+-- SPLIT ;;
 DROP TABLE testManager;
 -- SPLIT ;;
 DROP TABLE testHistory;
+-- SPLIT ;;
+CREATE INDEX testGeneratorData_dateCreated_index
+	ON testGeneratorData (dateCreated);
 -- SPLIT ;;
 DELETE FROM testData
 WHERE testUUID NOT IN (SELECT uuid FROM testCollection)
