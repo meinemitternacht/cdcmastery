@@ -9,11 +9,11 @@
             <div class="well well-sm table-header-form-well">
                 <div class="container-fluid">
                     <form class="form form-inline table-header-form" action="/admin/bases/add" method="POST">
-                        <div class="form-group col-lg-10 col-sm-12">
+                        <div class="form-group col-xs-11 col-lg-11">
                             <label class="sr-only" for="name">Base Name</label>
                             <input name="name" id="name" class="form-control" placeholder="Base Name">
                         </div>
-                        <div class="form-group col-lg-1 col-sm-12">
+                        <div class="form-group col-xs-1 col-lg-1">
                             <button class="btn btn-sm btn-success"
                                     type="submit">
                                 Add
@@ -27,13 +27,17 @@
     <div class="row">
         <div class="help-block col-md-8 col-md-offset-2">
             Click on a row to show an overview of base information
-            {% if my_base %}
-                <a class="btn btn-sm btn-info pull-right" href="/admin/bases/{{ my_base.uuid }}">
-                    View My Base &raquo;
-                </a>
-            {% endif %}
         </div>
     </div>
+    {% if my_base %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <a class="btn btn-sm btn-info" href="/admin/bases/{{ my_base.uuid }}">
+                    View My Base &raquo;
+                </a>
+            </div>
+        </div>
+    {% endif %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="table-responsive">
