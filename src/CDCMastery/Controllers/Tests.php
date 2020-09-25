@@ -124,7 +124,7 @@ class Tests extends RootController
         $this->log->info("delete incomplete tests :: {$user->getName()} [{$user->getUuid()}] :: {$tests_str}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
-                            'All incomplete tests have been removed from the database');
+                            'All incomplete tests for your account have been removed successfully');
 
         return $this->redirect('/tests/new');
     }
