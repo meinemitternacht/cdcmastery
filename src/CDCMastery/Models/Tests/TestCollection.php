@@ -147,6 +147,7 @@ SQL;
     /**
      * @param array $rows
      * @return Test[]
+     * @noinspection SlowArrayOperationsInLoopInspection
      */
     private function create_objects(array $rows): array
     {
@@ -154,6 +155,7 @@ SQL;
             return [];
         }
 
+        $afsc_cache = [];
         $out = [];
         foreach ($rows as $row) {
             $afscs = unserialize($row[ 'afscList' ] ?? '');
@@ -168,7 +170,12 @@ SQL;
                 $questions = [];
             }
 
-            $afscs = $this->afscs->fetchArray($afscs);
+            $afscs_flipped = array_flip($afscs);
+
+            $afscs_fetch = array_diff_key($afscs_flipped, $afsc_cache);
+            $afsc_cache = array_merge($afsc_cache, $this->afscs->fetchArray(array_flip($afscs_fetch)));
+            $tgt_afscs = array_intersect_key($afsc_cache, $afscs_flipped);
+
             $questions = $this->questions->fetchArrayMixed($questions);
 
             $timeStarted = null;
@@ -194,7 +201,7 @@ SQL;
             $test = new Test();
             $test->setUuid($row[ 'uuid' ]);
             $test->setUserUuid($row[ 'userUuid' ]);
-            $test->setAfscs($afscs);
+            $test->setAfscs($tgt_afscs);
             $test->setTimeStarted($timeStarted ?? null);
             $test->setTimeCompleted($timeCompleted ?? null);
             $test->setQuestions($questions);
