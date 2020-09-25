@@ -311,7 +311,20 @@ SQL;
             $qa = new QuestionAnswer();
             $qa->setQuestion($questions[ $q_uuid ]);
             $qa->setAnswer($answers[ $q_uuid ]);
-            $qas[] = $qa;
+            $qas[ $q_uuid ] = $qa;
+        }
+
+        $t_questions = $test->getQuestions();
+        if ($t_questions) {
+            $keys = array_flip(QuestionHelpers::listUuid($t_questions));
+            $replaced = array_replace($keys, $qas);
+            $qas = array_values($replaced);
+            /*
+            $qas =
+                array_values(
+                    array_replace(
+                        array_flip(
+                            array_keys($t_questions)), $qas));*/
         }
 
         return $qas;

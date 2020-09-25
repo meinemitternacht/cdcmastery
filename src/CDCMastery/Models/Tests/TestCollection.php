@@ -176,7 +176,8 @@ SQL;
             $afsc_cache = array_merge($afsc_cache, $this->afscs->fetchArray(array_flip($afscs_fetch)));
             $tgt_afscs = array_intersect_key($afsc_cache, $afscs_flipped);
 
-            $questions = $this->questions->fetchArrayMixed($questions);
+            $questions = array_replace(array_flip($questions),
+                                       $this->questions->fetchArrayMixed($questions));
 
             $timeStarted = null;
             if ($row[ 'timeStarted' ] !== null) {
