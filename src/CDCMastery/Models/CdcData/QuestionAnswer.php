@@ -13,6 +13,7 @@ class QuestionAnswer
 {
     private Question $question;
     private Answer $answer;
+    private ?Answer $correct = null; /* only used when viewing completed tests */
 
     public function getQuestion(): Question
     {
@@ -32,5 +33,21 @@ class QuestionAnswer
     public function setAnswer(Answer $answer): void
     {
         $this->answer = $answer;
+    }
+
+    /**
+     * @return Answer|null
+     */
+    public function getCorrect(): ?Answer
+    {
+        return $this->correct;
+    }
+
+    /**
+     * @param Answer|null $correct
+     */
+    public function setCorrect(?Answer $correct): void
+    {
+        $this->correct = $correct;
     }
 }

@@ -97,7 +97,7 @@ class Tests extends Admin
 
     private function show_test_complete(User $user, Test $test): Response
     {
-        $testData = $this->test_data->list($test);
+        $test_data = $this->test_data->list($test);
 
         $time_started = $test->getTimeStarted();
         if ($time_started) {
@@ -118,7 +118,7 @@ class Tests extends Admin
             'numMissed' => $test->getNumMissed(),
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
-            'testData' => $testData,
+            'testData' => $test_data,
         ];
 
         return $this->render(

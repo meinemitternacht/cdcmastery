@@ -36,3 +36,7 @@ label.new-test-afsc {
 textarea.tall {
     height: 14rem !important;
 }
+
+.answer-padding-left {
+    padding-left: 0.8rem;
+}

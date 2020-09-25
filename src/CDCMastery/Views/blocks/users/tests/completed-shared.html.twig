@@ -1,18 +1,20 @@
 <div class="row">
     <div class="col-md-4">
         <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">Taken By</div>
-                <div class="panel-body">
-                    {% if not restricted %}
-                        <a href="/admin/users/{{ user.uuid }}">
+            {% if user %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">Taken By</div>
+                    <div class="panel-body">
+                        {% if not restricted %}
+                            <a href="/admin/users/{{ user.uuid }}">
+                                {{ user.name }}
+                            </a>
+                        {% else %}
                             {{ user.name }}
-                        </a>
-                    {% else %}
-                        {{ user.name }}
-                    {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="panel panel-default">
                 <div class="panel-heading">Time Started</div>
                 <div class="panel-body">
@@ -27,12 +29,10 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">AFSC(s)</div>
-                <div class="panel-body">
-                    <ul class="list-unstyled">
-                        {% for afsc in afscList %}
-                            <li>{{ afsc }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="panel-body profile-two-col-container">
+                    {% for afsc in afscList %}
+                        <div class="text-center">{{ afsc }}</div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -70,10 +70,37 @@
         {% elseif testData %}
             <div class="list-group">
                 {% for key, response in testData %}
-                    <div class="list-group-item {% if response.answer.correct %}list-group-item-success{% else %}list-group-item-danger{% endif %}">
-                        <h4 class="list-group-item-heading text-primary">{{ key + 1 }}
-                            . {{ response.question.text }}</h4>
-                        <p class="list-group-item-text text-black">{{ response.answer.text }}</p>
+                    <div class="list-group-item list-group-item-{% if response.answer.correct %}success{% else %}danger{% endif %}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h4 class="list-group-item-heading text-primary">
+                                    {{ key + 1 }}.
+                                    {{ response.question.text }}
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row row-spacer-sm text-black">
+                            <div class="col-xs-12">
+                                <p class="list-group-item-text">
+                                    {% if not response.answer.correct %}
+                                        <span class="glyphicon glyphicon-plus rotate-45 text-danger"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-ok text-success"></span>
+                                    {% endif %}
+                                    <span class="answer-padding-left">{{ response.answer.text }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% if not response.answer.correct and response.correct %}
+                            <div class="row row-spacer-sm text-black">
+                                <div class="col-xs-12">
+                                    <p class="list-group-item-text">
+                                        <strong>Correct Answer:</strong>
+                                        {{ response.correct.text }}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>

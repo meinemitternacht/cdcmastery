@@ -26,9 +26,10 @@ class AnswerCollection
 
     /**
      * @param array $data
+     * @param bool $key_by_question
      * @return Answer[]
      */
-    private function create_objects(array $data): array
+    private function create_objects(array $data, bool $key_by_question = false): array
     {
         $answers = [];
         foreach ($data as $row) {
@@ -37,6 +38,11 @@ class AnswerCollection
             $answer->setQuestionUuid($row[ 'questionUUID' ]);
             $answer->setText($row[ 'answerText' ]);
             $answer->setCorrect((bool)$row[ 'answerCorrect' ]);
+
+            if ($key_by_question) {
+                $answers[ $row[ 'questionUUID' ] ] = $answer;
+                continue;
+            }
 
             $answers[ $row[ 'uuid' ] ] = $answer;
         }
@@ -347,6 +353,72 @@ SQL;
 
         $res->free();
         return $this->create_objects($rows);
+    }
+
+    /**
+     * @param Afsc $afsc
+     * @param Question[] $questions
+     * @return Answer[]
+     */
+    public function fetchCorrectByQuestions(Afsc $afsc, array $questions): array
+    {
+        $uuids = array_map(static function (Question $v): string {
+            return $v->getUuid();
+        }, $questions);
+
+        if (!$uuids) {
+            return [];
+        }
+
+        $uuids_str = implode("','",
+                             array_map([$this->db, 'real_escape_string'],
+                                       $uuids));
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  questionUUID,
+  answerText,
+  answerCorrect
+FROM answerData
+WHERE questionUUID IN ('{$uuids_str}')
+  AND answerCorrect = 1
+ORDER BY answerText
+SQL;
+
+        if ($afsc->isFouo()) {
+            $qry = <<<SQL
+SELECT
+  uuid,
+  questionUUID,
+  AES_DECRYPT(answerText, '%s') as answerText,
+  answerCorrect
+FROM answerData
+WHERE questionUUID IN ('{$uuids_str}')
+  AND answerCorrect = 1
+ORDER BY answerText
+SQL;
+
+            $qry = sprintf(
+                $qry,
+                ENCRYPTION_KEY
+            );
+        }
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $rows = [];
+        while ($row = $res->fetch_assoc()) {
+            $rows[] = $row;
+        }
+
+        $res->free();
+        return $this->create_objects($rows, true);
     }
 
     /**

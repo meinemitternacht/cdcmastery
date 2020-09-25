@@ -56,8 +56,16 @@ div.main-container {
     cursor: pointer;
 }
 
+.row-spacer-sm {
+    margin-top: 0.8rem;
+}
+
 .row-spacer {
     margin-top: 2rem;
+}
+
+.rotate-45 {
+    transform: rotate(45deg);
 }
 
 .disabled-grayscale {

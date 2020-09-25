@@ -283,6 +283,7 @@ SQL;
         $afscs = $this->afscs->fetchArray(array_keys($q_afscs));
         $questions = [];
         $answers = [];
+        $correct = [];
         foreach ($q_afscs as $afsc_uuid => $q_uuids) {
             $question_objs = $this->questions->fetchArray($afscs[ $afsc_uuid ], $q_uuids);
             $questions[] = $question_objs;
@@ -291,6 +292,8 @@ SQL;
             $tgt_answer_uuids = array_values(array_intersect_key($question_answer_uuids, $question_objs));
             $answer_objs = $this->answers->fetchArray($tgt_afsc,
                                                       $tgt_answer_uuids);
+            $correct[] = $this->answers->fetchCorrectByQuestions($tgt_afsc,
+                                                                 $question_objs);
 
             foreach ($answer_objs as $answer) {
                 $aquuid = $answer->getQuestionUuid();
@@ -306,11 +309,16 @@ SQL;
             $questions = array_replace(...$questions);
         }
 
+        if ($correct) {
+            $correct = array_replace(...$correct);
+        }
+
         $qas = [];
         foreach ($question_answer_uuids as $q_uuid => $a_uuid) {
             $qa = new QuestionAnswer();
             $qa->setQuestion($questions[ $q_uuid ]);
             $qa->setAnswer($answers[ $q_uuid ]);
+            $qa->setCorrect($correct[ $q_uuid ]);
             $qas[ $q_uuid ] = $qa;
         }
 
@@ -319,12 +327,6 @@ SQL;
             $keys = array_flip(QuestionHelpers::listUuid($t_questions));
             $replaced = array_replace($keys, $qas);
             $qas = array_values($replaced);
-            /*
-            $qas =
-                array_values(
-                    array_replace(
-                        array_flip(
-                            array_keys($t_questions)), $qas));*/
         }
 
         return $qas;
