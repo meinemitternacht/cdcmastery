@@ -50,6 +50,7 @@ class TestStats
     private const STAT_AFSC_COUNT_BY_YEAR = 'afsc_count_by_year';
     private const STAT_AFSC_COUNT_LAST_SEVEN = 'afsc_count_last_seven_days';
     private const STAT_AFSC_COUNT_OVERALL = 'afsc_count_overall';
+    private const STAT_AFSC_MISSED_BY_QUESTION = 'afsc_missed_by_question';
 
     private const STAT_BASE_AVG_BETWEEN = 'base_avg_between';
     private const STAT_BASE_AVG_BY_MONTH = 'base_avg_by_month';
@@ -1141,7 +1142,7 @@ SQL;
             return 0;
         }
 
-        $afscUuid = serialize([$afsc->getUuid()]);
+        $afscUuid = $afsc->getUuid();
 
         $cached = $this->cache->hashAndGet(
             self::STAT_AFSC_COUNT_OVERALL, [
@@ -1157,7 +1158,7 @@ SQL;
 SELECT 
   COUNT(*) AS tCount
 FROM testCollection 
-WHERE afscList = ?
+WHERE afscList LIKE CONCAT('%', ?, '%')
   AND score > 0
   AND timeCompleted IS NOT NULL 
 SQL;
@@ -1192,6 +1193,68 @@ SQL;
         );
 
         return $tCount ?? 0;
+    }
+
+    public function afscMissedByQuestion(Afsc $afsc): array
+    {
+        $afsc_uuid = $afsc->getUuid();
+
+        $cached = $this->cache->hashAndGet(self::STAT_AFSC_MISSED_BY_QUESTION, [$afsc_uuid]);
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $qry = <<<SQL
+SELECT
+   questionData.uuid,
+   answerCorrect,
+   COUNT(*) AS count
+FROM questionData
+LEFT JOIN testData tD on questionData.uuid = tD.questionUUID
+LEFT JOIN answerData aD on tD.answerUUID = aD.uuid
+WHERE questionData.afscUUID = ?
+GROUP BY tD.questionUUID, answerCorrect;
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$stmt->bind_param('s', $afsc_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            $stmt->close();
+            return [];
+        }
+
+        $stmt->bind_result($uuid,
+                           $correct,
+                           $count);
+
+        $data = [];
+        while ($stmt->fetch()) {
+            if (!isset($data[ $uuid ])) {
+                $data[ $uuid ] = [
+                    0 => 0,
+                    1 => 0,
+                ];
+            }
+
+            $data[ $uuid ][ $correct ] = $count;
+        }
+
+        $stmt->close();
+
+        $this->cache->hashAndSet($data,
+                                 self::STAT_AFSC_MISSED_BY_QUESTION,
+                                 CacheHandler::TTL_MEDIUM,
+                                 [$afsc_uuid]);
+
+        return $data;
     }
 
     /**

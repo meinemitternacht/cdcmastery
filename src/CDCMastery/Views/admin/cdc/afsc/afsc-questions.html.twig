@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="row">
-                <div class="col-md-3 text-center">
+                <div class="col-xs-12 col-sm-12 col-md-3 text-center">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h5>Questions</h5>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 text-center">
+                <div class="col-xs-12 col-sm-12 col-md-3 text-center">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h5>FOUO</h5>
@@ -30,13 +30,13 @@
                     </div>
                 </div>
                 {% if afsc.version %}
-                    <div class="col-md-6 text-center">
+                    <div class="col-xs-12 col-sm-12 col-md-3 text-center">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h5>Version</h5>
                             </div>
-                            <div class="panel-body">
-                                <strong>{{ afsc.version }}</strong>
+                            <div class="panel-body" title="{{ afsc.version }}">
+                                <strong>{{ afsc.version|strtr(20) }}</strong>
                             </div>
                         </div>
                     </div>
@@ -66,9 +66,30 @@
             {% if num_questions > 0 %}
                 <div class="table-responsive">
                     <table class="table table-striped table-hover" id="questions-table">
+                        <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>Question Text</th>
+                            {% if missed_data %}
+                                <th>Seen</th>
+                                <th>Correct</th>
+                                <th>Incorrect</th>
+                                <th>Accuracy</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
                         <tbody>
                         {% set i = 1 %}
                         {% for qa_data in question_data %}
+                            {% if missed_data[qa_data.question.uuid] %}
+                                {% set has_missed_data = missed_data[qa_data.question.uuid][0] > 0 %}
+                                {% set shown = (missed_data[qa_data.question.uuid][0] + missed_data[qa_data.question.uuid][1]) %}
+                                {% set missed = missed_data[qa_data.question.uuid][0] %}
+                                {% set correct = shown - missed %}
+                                {% set accuracy = shown > 0 ? ((((shown - missed)/shown)*100)|number_format(2)) ~ "%" : "&mdash;" %}
+                            {% else %}
+                                {% set has_missed_data = false %}
+                            {% endif %}
                             <tr data-uuid="{{ qa_data.question.uuid }}"
                                 class="cursor-pointer">
                                 <td class="text-muted">{{ i }}</td>
@@ -76,8 +97,21 @@
                                     {% if qa_data.question.disabled %}
                                         <span class="glyphicon glyphicon-remove text-danger"></span>
                                     {% endif %}
-                                    {{ qa_data.question.text|length > 140 ? qa_data.question.text|slice(0, 140) ~ '...' : qa_data.question.text }}
+                                    {{ qa_data.question.text|strtr(110) }}
                                 </td>
+                                {% if missed_data and has_missed_data %}
+                                    {% if accuracy < 75 %}
+                                        {% set accuracy_class = "bg-danger" %}
+                                    {% elseif accuracy < 80 %}
+                                        {% set accuracy_class = "bg-warning" %}
+                                    {% else %}
+                                        {% set accuracy_class = "bg-success" %}
+                                    {% endif %}
+                                    <td>{{ shown|number_format }}</td>
+                                    <td>{{ correct|number_format }}</td>
+                                    <td>{{ missed|number_format }}</td>
+                                    <td class="{{ accuracy_class }}">{{ accuracy|raw }}</td>
+                                {% endif %}
                             </tr>
                             {% set i = i + 1 %}
                         {% endfor %}

@@ -813,6 +813,7 @@ class CdcData extends Admin
             'afsc' => $afsc,
             'numUsers' => $n_users,
             'numQuestions' => $n_afsc_questions,
+            'numTests' => $this->test_stats->afscCountOverall($afsc),
             'subTitle' => 'Tests By Month',
             'period' => 'month',
             'averages' => StatisticsHelpers::formatGraphDataTests(
@@ -1306,6 +1307,7 @@ class CdcData extends Admin
         $data = [
             'afsc' => $afsc,
             'question_data' => $cdc_data->getQuestionAnswerData(),
+            /*'missed_data' => $this->test_stats->afscMissedByQuestion($afsc),*/ // this takes way too long
         ];
 
         return $this->render(
