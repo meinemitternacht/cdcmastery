@@ -25,7 +25,6 @@ use CDCMastery\Models\Users\UserCollection;
 use Exception;
 use Monolog\Logger;
 use mysqli;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -327,15 +326,18 @@ class Cards extends RootController
         if (!$cat || $cat->getUuid() === '') {
             $this->flash()->add(MessageTypes::WARNING,
                                 'The specified flash card category could not be found');
-
-            return $this->redirect('/cards');
+            goto out_redirect_cards;
         }
 
         $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if (!$payload || !isset($payload->action)) {
             $this->trigger_request_debug(__METHOD__);
-            throw new RuntimeException('Malformed request');
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The system encountered an issue while processing your request, please contact the site administrator if the issue persists'
+            );
+            goto out_redirect_cards;
         }
 
         try {
@@ -373,15 +375,21 @@ class Cards extends RootController
             return new JsonResponse($handler->display());
         } catch (Throwable $e) {
             $this->trigger_request_debug(__METHOD__);
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                $e->getMessage()
+            );
             $this->log->debug($e);
+            unset($e);
         }
 
-        $this->flash()->add(
-            MessageTypes::ERROR,
-            'The system encountered an issue while processing your request, please contact the site administrator if the issue persists'
-        );
-
-        return $this->redirect('/');
+        out_redirect_cards:
+        try {
+            return new JsonResponse(['redirect' => '/cards',]);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            return new JsonResponse($e->getMessage(), 500);
+        }
     }
 
     public function do_category_add(?Category $cat = null): Response

@@ -121,6 +121,10 @@ class CardHandler
                 break;
         }
 
+        if (!$tgt_cards) {
+            throw new RuntimeException('The selected category has no flash cards to view');
+        }
+
         if ($card_session) {
             goto out_return;
         }
