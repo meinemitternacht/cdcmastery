@@ -13,6 +13,7 @@ use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Email\EmailCollection;
 use CDCMastery\Models\Email\Templates\ActivateAccount;
 use CDCMastery\Models\Email\Templates\ResetPassword;
@@ -46,6 +47,7 @@ class Auth extends RootController
         self::TYPE_SUPERVISOR => 'Supervisor',
     ];
 
+    private Config $config;
     private AuthHelpers $auth_helpers;
     private UserHelpers $user_helpers;
     private LoginRateLimiter $limiter;
@@ -63,6 +65,7 @@ class Auth extends RootController
         Logger $logger,
         Environment $twig,
         Session $session,
+        Config $config,
         AuthHelpers $auth_helpers,
         UserHelpers $user_helpers,
         LoginRateLimiter $limiter,
@@ -78,6 +81,7 @@ class Auth extends RootController
     ) {
         parent::__construct($logger, $twig, $session);
 
+        $this->config = $config;
         $this->auth_helpers = $auth_helpers;
         $this->user_helpers = $user_helpers;
         $this->limiter = $limiter;
@@ -412,7 +416,8 @@ class Auth extends RootController
             goto out_error;
         }
 
-        if (!AuthHelpers::check_email($email)) {
+        if ($this->config->get(['system', 'auth', 'email', 'require_mil']) &&
+            !AuthHelpers::check_email($email)) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'Your e-mail address must end in .mil'
