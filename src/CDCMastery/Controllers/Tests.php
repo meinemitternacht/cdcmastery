@@ -693,7 +693,6 @@ class Tests extends RootController
             return $this->redirect('/auth/logout');
         }
 
-
         [$col, $dir] = self::validate_test_sort($sortCol, $sortDir);
         $userTests = $this->tests->fetchAllByUser($user, [$col => $dir]);
 
@@ -798,6 +797,14 @@ class Tests extends RootController
     public function show_test(string $testUuid): Response
     {
         $test = $this->tests->fetch($testUuid);
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::ERROR,
+                                'The system encountered an error while loading your user account');
+
+            return $this->redirect('/auth/logout');
+        }
 
         if (!$test) {
             $this->flash()->add(
@@ -808,8 +815,16 @@ class Tests extends RootController
             return $this->redirect('/');
         }
 
+        if (!$this->validate_test($test)) {
+            return $this->redirect('/');
+        }
+
         if ($test->isComplete()) {
             return $this->show_test_complete($test);
+        }
+
+        if ($test->getNumAnswered() > 0) {
+            $this->log->addInfo("resume test :: {$test->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
         }
 
         return $this->show_test_incomplete($testUuid);
@@ -917,6 +932,9 @@ class Tests extends RootController
         }
 
         if ($test->getUserUuid() !== $this->auth_helpers->get_user_uuid()) {
+            $user_name = $this->auth_helpers->get_user_name();
+            $user_uuid = $this->auth_helpers->get_user_uuid();
+            $this->log->warning("test user mismatch :: test {$test->getUuid()} :: test user {$test->getUserUuid()} :: user {$user_name} [{$user_uuid}]");
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The selected test does not belong to your user account'
