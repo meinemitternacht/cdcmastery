@@ -24,6 +24,7 @@ use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
+use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use DateTime;
@@ -60,6 +61,7 @@ class Auth extends RootController
     private ActivationCollection $activations;
     private EmailCollection $emails;
     private PasswordResetCollection $resets;
+    private UserAfscAssociations $afsc_assocs;
 
     public function __construct(
         Logger $logger,
@@ -77,7 +79,8 @@ class Auth extends RootController
         PendingRoleCollection $pending_roles,
         ActivationCollection $activations,
         EmailCollection $emails,
-        PasswordResetCollection $resets
+        PasswordResetCollection $resets,
+        UserAfscAssociations $afsc_assocs
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -94,6 +97,7 @@ class Auth extends RootController
         $this->activations = $activations;
         $this->emails = $emails;
         $this->resets = $resets;
+        $this->afsc_assocs = $afsc_assocs;
     }
 
     public function do_activation(?string $code = null): Response
@@ -782,6 +786,12 @@ class Auth extends RootController
         }
 
         $this->users->save($user);
+
+        if (!$this->afsc_assocs->fetchAllByUser($user)->getAfscs()) {
+            $this->flash()->add(MessageTypes::INFO,
+                                "Your account is not associated with any AFSCs. Use the form below to manage associations.");
+            $this->auth_helpers->set_redirect('/profile/afsc');
+        }
 
         $this->log->addInfo("login success :: account {$user->getUuid()} " .
                             "'{$user->getName()}' :: ip {$_SERVER['REMOTE_ADDR']}");
