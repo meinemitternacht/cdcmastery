@@ -37,7 +37,7 @@ return [
         $debug = $config->get(['system', 'debug'])
             ?: false;
         $twig = $debug
-            ? new Environment($loader, ['debug' => true, 'cache' => '/tmp/twig_cache'])
+            ? new Environment($loader, ['debug' => true])
             : new Environment($loader, ['debug' => false, 'cache' => '/tmp/twig_cache']);
 
         $loggedIn = $auth_helpers->assert_logged_in();
@@ -48,6 +48,9 @@ return [
         $twig->addGlobal('css_assets', $config->get(['twig', 'assets', 'css']));
         $twig->addGlobal('js_assets', $config->get(['twig', 'assets', 'js']));
         $twig->addGlobal('passing_score', $config->get(['testing', 'passingScore']));
+        $twig->addGlobal('support_email', $config->get(['system', 'support', 'email']));
+        $twig->addGlobal('support_fb_url', $config->get(['support', 'facebook', 'url']));
+        $twig->addGlobal('support_fb_display', $config->get(['support', 'facebook', 'display']));
 
         if ($loggedIn) {
             $twig->addGlobal('cur_user_uuid', $auth_helpers->get_user_uuid());

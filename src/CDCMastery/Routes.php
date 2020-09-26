@@ -48,6 +48,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
         ]);
     });
 
+    /** @uses \CDCMastery\Controllers\About::show_contact() */
+    $r->addRoute('GET', '/contact', [
+        About::class,
+        'show_contact',
+    ]);
+
     /** @uses \CDCMastery\Controllers\Admin::show_admin_home() */
     $r->addRoute('GET', '/admin', [
         Admin::class,

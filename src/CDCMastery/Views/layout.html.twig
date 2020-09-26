@@ -70,6 +70,9 @@
                     <li{% if cur_url starts with "/stats" %} class="active"{% endif %}>
                         <a href="/stats">Statistics</a>
                     </li>
+                    <li{% if cur_url == "/contact" %} class="active"{% endif %}>
+                        <a href="/contact">Contact Us</a>
+                    </li>
                 {% endif %}
                 {% if logged_in %}
                     {% if not is_user and not is_supervisor and not error %}

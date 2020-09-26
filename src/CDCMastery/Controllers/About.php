@@ -8,6 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class About extends RootController
 {
+    public function show_contact(): Response
+    {
+        return $this->render('about/contact.html.twig');
+    }
+
     public function show_disclaimer(): Response
     {
         return $this->render('about/disclaimer.html.twig');
