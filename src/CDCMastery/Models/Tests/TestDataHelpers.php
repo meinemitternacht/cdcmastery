@@ -325,11 +325,10 @@ SQL;
         $t_questions = $test->getQuestions();
         if ($t_questions) {
             $keys = array_flip(QuestionHelpers::listUuid($t_questions));
-            $replaced = array_replace($keys, $qas);
-            $qas = array_values($replaced);
+            $qas = array_replace($keys, $qas);
         }
 
-        return $qas;
+        return array_values($qas);
     }
 
     /**
