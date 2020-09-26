@@ -354,6 +354,15 @@ class Auth extends RootController
 
     public function do_registration(string $type): Response
     {
+        if ($this->auth_helpers->assert_logged_in()) {
+            $this->flash()->add(
+                MessageTypes::INFO,
+                'You cannot register for a new account while logged in as another user'
+            );
+
+            return $this->redirect('/');
+        }
+
         $params = [
             'username',
             'email',
