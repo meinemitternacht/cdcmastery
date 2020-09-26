@@ -376,7 +376,7 @@ class TestHandler
         }
 
         $this->test_data_helpers->save($questionResponse);
-        $this->test->setNumAnswered($this->test->getNumAnswered() + 1);
+        $this->test->setNumAnswered($this->getNumAnswered());
         $this->next();
     }
 
