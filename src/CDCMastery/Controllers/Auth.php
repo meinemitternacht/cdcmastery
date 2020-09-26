@@ -540,10 +540,8 @@ class Auth extends RootController
         $user->setDateRegistered(new DateTime());
         $user->setLastLogin(null);
         $user->setLastActive(null);
-
-        if ($office_symbol) {
-            $user->setOfficeSymbol($office_symbol);
-        }
+        $user->setOfficeSymbol($office_symbol
+                                   ?: null);
 
         $this->users->save($user);
         $activation = Activation::factory($user);
