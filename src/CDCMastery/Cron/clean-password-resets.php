@@ -4,8 +4,10 @@ use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use DI\Container;
 use Monolog\Logger;
 
+define('CRON_ROOT', realpath(__DIR__));
+
 /** @var Container $c */
-$c = require "../Bootstrap.php";
+$c = require CRON_ROOT . "/../Bootstrap.php";
 
 try {
     $log = $c->get(Logger::class);
