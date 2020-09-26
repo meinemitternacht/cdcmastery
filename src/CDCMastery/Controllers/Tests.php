@@ -312,29 +312,38 @@ class Tests extends RootController
         $testOptions->setUser($user);
         $testOptions->setAfscs($validAfscs);
 
-        $newTest = TestHandler::factory($this->log,
-                                        $this->afscs,
-                                        $this->tests,
-                                        $this->cdc_data,
-                                        $this->answers,
-                                        $this->test_data_helpers,
-                                        $testOptions);
+        try {
+            $newTest = TestHandler::factory($this->log,
+                                            $this->afscs,
+                                            $this->tests,
+                                            $this->cdc_data,
+                                            $this->answers,
+                                            $this->test_data_helpers,
+                                            $testOptions);
 
-        if (($newTest->getTest()->getUuid() ?? '') === '') {
-            $this->log->warning(
-                'create test failed :: user ' .
-                $user->getUuid() .
-                ' [' .
-                $user->getName() .
-                '] :: options -- AFSC List ' .
-                implode(',', AfscHelpers::listUuid($testOptions->getAfscs())) .
-                ' :: numQuestions ' .
-                $testOptions->getNumQuestions()
-            );
+            if (($newTest->getTest()->getUuid() ?? '') === '') {
+                $this->log->warning(
+                    'create test failed :: user ' .
+                    $user->getUuid() .
+                    ' [' .
+                    $user->getName() .
+                    '] :: options -- AFSC List ' .
+                    implode(',', AfscHelpers::listUuid($testOptions->getAfscs())) .
+                    ' :: numQuestions ' .
+                    $testOptions->getNumQuestions()
+                );
 
+                $this->flash()->add(
+                    MessageTypes::WARNING,
+                    'We could not generate a test using those options'
+                );
+
+                return $this->redirect('/tests/new');
+            }
+        } catch (Throwable $e) {
             $this->flash()->add(
-                MessageTypes::WARNING,
-                'We could not generate a test using those options'
+                MessageTypes::ERROR,
+                $e->getMessage()
             );
 
             return $this->redirect('/tests/new');
