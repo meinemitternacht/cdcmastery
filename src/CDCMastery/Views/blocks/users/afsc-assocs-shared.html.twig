@@ -18,11 +18,12 @@
                                     <label for="new_afsc">
                                         AFSC
                                     </label>
-                                    <select id="new_afsc" name="new_afsc[]" class="form-control" size="8" multiple>
+                                    <select id="new_afsc" name="new_afsc[]" class="form-control" size="12" multiple>
                                         {% for afsc in afscs.available %}
                                             <option value="{{ afsc.uuid }}">
                                                 {{ afsc.name }}
                                                 {% if afsc.editCode %}[EC {{ afsc.editCode }}]{% endif %}
+                                                {% if afsc.isFouo %} (FOUO){% endif %}
                                             </option>
                                         {% endfor %}
                                     </select>
