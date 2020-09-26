@@ -7,6 +7,7 @@
  */
 
 use CDCMastery\Exceptions\Database\DatabaseConnectionFailedException;
+use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
@@ -110,6 +111,7 @@ return [
         $syslogHandler = new SyslogHandler('CDC', LOG_SYSLOG, Logger::WARNING);
         $syslogHandler->setFormatter($formatter);
         $logger->pushHandler($syslogHandler);
+        $logger::setTimezone(new DateTimeZone($config->get(['system', 'time_zone'])));
 
         return $logger;
     },
