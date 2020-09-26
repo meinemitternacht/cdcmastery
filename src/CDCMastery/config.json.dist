@@ -1,5 +1,6 @@
 {
   "archive": {
+    "cutoff": "-6 months",
     "xml": {
       "directory": "/home/vhosts/cdcmastery.com/xml-archive"
     }
@@ -38,6 +39,11 @@
     }
   },
   "system": {
+    "auth": {
+      "email": {
+        "require_mil": true
+      }
+    },
     "debug": true,
     "log": {
       "debug": "/home/vhosts/cdcmastery.com/logs/cdcmastery.debug.log",
@@ -72,10 +78,12 @@
       ],
       "public_prefix": [
         "/stats",
+        "/auth/activate",
         "/auth/register",
         "/auth/reset"
       ]
     },
+    "time_zone": "America/New_York",
     "uuid": "9a077b53-e430-4c44-83ba-a66e3ecca117"
   },
   "testing": {
@@ -95,7 +103,8 @@
         "/assets/css/tests.css",
         "/assets/css/training.css",
         "/assets/css/admin/cdc.css",
-        "/assets/css/admin/users.css"
+        "/assets/css/admin/users.css",
+        "/assets/css/admin/tests.css"
       ],
       "js": [
         "/assets/js/jquery-3.2.1.js",
