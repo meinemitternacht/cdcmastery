@@ -39,7 +39,7 @@ class TestHandler
     private TestCollection $tests;
     private TestDataHelpers $test_data_helpers;
     private AnswerCollection $answers;
-    private ?Test $test;
+    private ?Test $test = null;
 
     public function __construct(
         Logger $logger,

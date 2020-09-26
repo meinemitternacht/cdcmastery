@@ -341,11 +341,8 @@ class Tests extends RootController
                 return $this->redirect('/tests/new');
             }
         } catch (Throwable $e) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                $e->getMessage()
-            );
-
+            $this->log->debug($e);
+            $this->flash()->add(MessageTypes::ERROR, $e->getMessage());
             return $this->redirect('/tests/new');
         }
 
