@@ -406,6 +406,7 @@ class TestHandler
         $test->setNumAnswered(count($test_qa_pairs));
         $test->setNumMissed($nMissed);
         $this->tests->save($test);
+        $this->log->info("score test :: {$this->test->getUuid()} :: user {$this->test->getUserUuid()} :: score {$test->getScore()}");
     }
 
     /**
