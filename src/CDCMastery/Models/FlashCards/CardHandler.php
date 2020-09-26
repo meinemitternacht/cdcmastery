@@ -274,6 +274,9 @@ LOG
             'category' => [
                 'uuid' => $this->card_session->getCategory()->getUuid(),
             ],
+            'card' => [
+                'uuid' => $tgt_card->getUuid(),
+            ],
             'cards' => [
                 'idx' => $this->card_session->getCurIdx(),
                 'total' => $this->card_session->countTgtUuids(),
