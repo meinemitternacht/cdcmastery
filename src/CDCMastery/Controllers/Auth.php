@@ -116,7 +116,7 @@ class Auth extends RootController
         if (!$activation) {
             $this->flash()->add(
                 MessageTypes::ERROR,
-                'The provided activation code was not valid'
+                'The provided activation code was not valid, or your account was already activated. Please sign in to continue.'
             );
 
             $this->log->error("activate user failed :: invalid code {$code}");
@@ -133,7 +133,7 @@ class Auth extends RootController
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'Your account has been activated successfully'
+            'Your account has been activated successfully, please sign in to continue'
         );
 
         $this->auth_helpers->set_redirect('/profile/afsc');
