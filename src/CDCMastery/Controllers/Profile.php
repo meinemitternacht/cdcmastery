@@ -881,7 +881,7 @@ class Profile extends RootController
         $incomplete_tests = array_filter(
             $this->tests->fetchAllByUser($user),
             static function (Test $v) {
-                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 

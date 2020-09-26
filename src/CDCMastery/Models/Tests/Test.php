@@ -184,6 +184,6 @@ class Test
 
     public function isComplete(): bool
     {
-        return $this->getScore() > 0 && $this->getTimeCompleted() !== null;
+        return $this->getTimeCompleted() !== null;
     }
 }

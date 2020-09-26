@@ -720,7 +720,7 @@ class Users extends Admin
                     return false;
                 }
 
-                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -1171,7 +1171,7 @@ class Users extends Admin
         $incomplete_tests = array_filter(
             $this->tests->fetchAllByUser($user),
             static function (Test $v) {
-                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -1239,7 +1239,7 @@ class Users extends Admin
         $tests = array_filter(
             $tests,
             static function (Test $v) {
-                return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -1377,12 +1377,12 @@ class Users extends Admin
             static function (Test $v) use ($type) {
                 switch ($type) {
                     case self::TYPE_COMPLETE:
-                        if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
+                        if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
                     case self::TYPE_INCOMPLETE:
-                        if ($v->getScore() < 1 && $v->getTimeCompleted() === null) {
+                        if ($v->getTimeCompleted() === null) {
                             return true;
                         }
                         break;

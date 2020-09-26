@@ -102,7 +102,7 @@ class Tests extends RootController
                     return false;
                 }
 
-                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -503,7 +503,7 @@ class Tests extends RootController
         $tests = array_filter(
             $tests,
             static function (Test $v) {
-                return $v->getScore() === 0.00 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -605,7 +605,7 @@ class Tests extends RootController
         $tests = array_filter(
             $tests,
             static function (Test $v) {
-                return $v->getScore() < 1 && $v->getTimeCompleted() === null;
+                return $v->getTimeCompleted() === null;
             }
         );
 
@@ -707,12 +707,12 @@ class Tests extends RootController
                     case Tests::TYPE_ALL:
                         return true;
                     case Tests::TYPE_COMPLETE:
-                        if ($v->getScore() > 0 && $v->getTimeCompleted() !== null) {
+                        if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
                     case Tests::TYPE_INCOMPLETE:
-                        if ($v->getScore() < 1 && $v->getTimeCompleted() === null) {
+                        if ($v->getTimeCompleted() === null) {
                             return true;
                         }
                         break;
