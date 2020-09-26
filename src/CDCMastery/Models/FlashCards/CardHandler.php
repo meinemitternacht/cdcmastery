@@ -9,6 +9,10 @@ use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\FlashCards\Sessions\CardSessionMemcached;
+use CDCMastery\Models\FlashCards\Sessions\CardSessionNative;
+use CDCMastery\Models\FlashCards\Sessions\ICardSession;
+use CDCMastery\Models\Users\User;
 use Monolog\Logger;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -16,6 +20,7 @@ use Throwable;
 
 class CardHandler
 {
+    private const STORAGE_ENGINE = CardSessionMemcached::class;
     private const CACHE_KEY_PREFIX_AFSC_CARDS = 'fc-';
 
     public const ACTION_NO_ACTION = -1;
@@ -30,7 +35,8 @@ class CardHandler
     private Logger $log;
     private CacheHandler $cache;
     private CardCollection $cards;
-    private CardSession $card_session;
+    private ICardSession $card_session;
+    private User $user;
 
     /**
      * CardHandler constructor.
@@ -38,20 +44,23 @@ class CardHandler
      * @param Logger $log
      * @param CacheHandler $cache
      * @param CardCollection $cards
-     * @param CardSession $card_session
+     * @param ICardSession $card_session
+     * @param User $user
      */
     public function __construct(
         Session $session,
         Logger $log,
         CacheHandler $cache,
         CardCollection $cards,
-        CardSession $card_session
+        ICardSession $card_session,
+        User $user
     ) {
         $this->session = $session;
         $this->log = $log;
         $this->cache = $cache;
         $this->cards = $cards;
         $this->card_session = $card_session;
+        $this->user = $user;
     }
 
     private static function cache_afsc_cards(CacheHandler $cache, CdcDataCollection $cdc_data, Afsc $afsc): array
@@ -79,9 +88,19 @@ class CardHandler
         AfscCollection $afscs,
         CdcDataCollection $cdc_data,
         CardCollection $cards,
-        Category $category
+        Category $category,
+        User $user
     ): CardHandler {
-        $card_session = CardSession::resume_session($session, $category);
+        switch (self::STORAGE_ENGINE) {
+            case CardSessionMemcached::class:
+                $card_session = CardSessionMemcached::resume_session($cache, $category, $user);
+                break;
+            case CardSessionNative::class:
+                $card_session = CardSessionNative::resume_session($session, $category);
+                break;
+            default:
+                throw new RuntimeException('Invalid flash card storage engine');
+        }
 
         switch ($category->getType()) {
             case Category::TYPE_AFSC:
@@ -129,13 +148,24 @@ class CardHandler
             goto out_return;
         }
 
-        $card_session = (new CardSession())->setCategory($category)
-                                           ->setCurIdx(0)
-                                           ->setCurState(CardSession::STATE_FRONT)
-                                           ->setTgtUuids(array_keys($tgt_cards));
+        switch (self::STORAGE_ENGINE) {
+            case CardSessionMemcached::class:
+                $card_session = new CardSessionMemcached();
+                break;
+            case CardSessionNative::class:
+                $card_session = new CardSessionNative();
+                break;
+            default:
+                throw new RuntimeException('Invalid flash card storage engine');
+        }
+
+        $card_session->setCategory($category)
+                     ->setCurIdx(0)
+                     ->setCurState(CardSessionNative::STATE_FRONT)
+                     ->setTgtUuids(array_keys($tgt_cards));
 
         out_return:
-        return new self($session, $log, $cache, $cards, $card_session);
+        return new self($session, $log, $cache, $cards, $card_session, $user);
     }
 
     /**
@@ -204,9 +234,9 @@ class CardHandler
     public function flip(): void
     {
         $this->card_session->setCurState(
-            $this->card_session->getCurState() === CardSession::STATE_FRONT
-                ? CardSession::STATE_BACK
-                : CardSession::STATE_FRONT
+            $this->card_session->getCurState() === CardSessionNative::STATE_FRONT
+                ? CardSessionNative::STATE_BACK
+                : CardSessionNative::STATE_FRONT
         );
         $this->save_session();
     }
@@ -217,7 +247,16 @@ class CardHandler
     private function save_session(): void
     {
         try {
-            CardSession::save_session($this->session, $this->card_session);
+            switch (self::STORAGE_ENGINE) {
+                case CardSessionMemcached::class:
+                    CardSessionMemcached::save_session($this->cache, $this->card_session, $this->user);
+                    break;
+                case CardSessionNative::class:
+                    CardSessionNative::save_session($this->session, $this->card_session);
+                    break;
+                default:
+                    throw new RuntimeException('Invalid flash card storage engine');
+            }
         } catch (Throwable $e) {
             $this->log_debug(__METHOD__);
             throw $e;
@@ -291,7 +330,7 @@ LOG
             'display' => [
                 'front' => "<strong>Question:</strong><br>" . nl2br($tgt_card->getFront()),
                 'back' => "<strong>Answer:</strong><br>" . nl2br($tgt_card->getBack()),
-                'state' => CardSession::STATE_STRINGS[ $this->card_session->getCurState() ] ?? null,
+                'state' => CardSessionNative::STATE_STRINGS[ $this->card_session->getCurState() ] ?? null,
             ],
         ];
     }

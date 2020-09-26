@@ -321,6 +321,14 @@ class Cards extends RootController
      */
     public function do_card_handler(string $uuid): Response
     {
+        $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$user) {
+            $this->flash()->add(MessageTypes::WARNING,
+                                'Your user account could not be found');
+            goto out_redirect_cards;
+        }
+
         $cat = $this->categories->fetch($uuid);
 
         if (!$cat || $cat->getUuid() === '') {
@@ -347,7 +355,8 @@ class Cards extends RootController
                                             $this->afscs,
                                             $this->cdc_data,
                                             $this->cards,
-                                            $cat);
+                                            $cat,
+                                            $user);
 
             switch ($payload->action) {
                 case CardHandler::ACTION_NO_ACTION:

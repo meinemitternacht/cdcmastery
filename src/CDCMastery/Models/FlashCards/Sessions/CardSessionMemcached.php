@@ -1,38 +1,35 @@
 <?php
 
 
-namespace CDCMastery\Models\FlashCards;
+namespace CDCMastery\Models\FlashCards\Sessions;
 
 
 use CDCMastery\Helpers\ArrayHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\FlashCards\Category;
+use CDCMastery\Models\Users\User;
 use Exception;
-use Symfony\Component\HttpFoundation\Session\Session;
 
-class CardSession
+class CardSessionMemcached implements ICardSession
 {
-    private const SESSION_KEY = 'flash-card-sess';
-
-    public const STATE_FRONT = 0;
-    public const STATE_BACK = 1;
-
-    public const STATE_STRINGS = [
-        self::STATE_FRONT => 'front',
-        self::STATE_BACK => 'back',
-    ];
+    private const CACHE_KEY_PREFIX = 'fc-sess-';
 
     private Category $category;
     private int $cur_idx;
     private int $cur_state;
     private array $tgt_uuids;
 
-    public static function save_session(Session $session, CardSession $card_session): void
+    public static function save_session(CacheHandler $cache, ICardSession $card_session, User $user): void
     {
-        $session->set(self::SESSION_KEY, base64_encode(serialize($card_session)));
+        $cache->hashAndSet(base64_encode(serialize($card_session)),
+                           self::CACHE_KEY_PREFIX,
+                           CacheHandler::TTL_MAX,
+                           [$card_session->getCategory()->getUuid(), $user->getUuid()]);
     }
 
-    public static function resume_session(Session $session, Category $category): ?CardSession
+    public static function resume_session(CacheHandler $cache, Category $category, User $user): ?ICardSession
     {
-        $card_session = $session->get(self::SESSION_KEY);
+        $card_session = $cache->hashAndGet(self::CACHE_KEY_PREFIX, [$category->getUuid(), $user->getUuid()]);
 
         if (!$card_session) {
             return null;
@@ -69,7 +66,7 @@ class CardSession
         return $this->category;
     }
 
-    public function setCategory(Category $category): CardSession
+    public function setCategory(Category $category): ICardSession
     {
         $this->category = $category;
         return $this;
@@ -80,11 +77,10 @@ class CardSession
         return $this->cur_idx;
     }
 
-    public function setCurIdx(int $cur_idx): CardSession
+    public function setCurIdx(int $cur_idx): ICardSession
     {
         $this->cur_idx = $cur_idx;
-        $this->setCurState(self::STATE_FRONT);
-        return $this;
+        return $this->setCurState(ICardSession::STATE_FRONT);
     }
 
     public function getCurState(): int
@@ -92,7 +88,7 @@ class CardSession
         return $this->cur_state;
     }
 
-    public function setCurState(int $cur_state): CardSession
+    public function setCurState(int $cur_state): ICardSession
     {
         $this->cur_state = $cur_state;
         return $this;
@@ -108,17 +104,17 @@ class CardSession
         return $this->tgt_uuids;
     }
 
-    public function setTgtUuids(array $tgt_uuids): CardSession
+    public function setTgtUuids(array $tgt_uuids): ICardSession
     {
         $this->tgt_uuids = $tgt_uuids;
         return $this;
     }
 
     /**
-     * @return $this
+     * @return ICardSession
      * @throws Exception
      */
-    public function shuffleTgtUuids(): CardSession
+    public function shuffleTgtUuids(): ICardSession
     {
         ArrayHelpers::shuffle($this->tgt_uuids);
         $this->tgt_uuids = array_values($this->tgt_uuids);
