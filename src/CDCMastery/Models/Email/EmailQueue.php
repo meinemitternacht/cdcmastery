@@ -73,6 +73,8 @@ class EmailQueue
             }
 
             if ($success) {
+                $n = count($success);
+                $this->log->info("e-mail queue: sent {$n} e-mails");
                 $this->emails->deleteArray($success);
             }
 
