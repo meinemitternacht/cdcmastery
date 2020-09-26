@@ -78,7 +78,7 @@ class EmailQueue
                 $this->emails->deleteArray($success);
             }
 
-            return $error;
+            return !$error;
         } finally {
             $this->unlock();
         }
