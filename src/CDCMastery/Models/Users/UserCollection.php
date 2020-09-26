@@ -43,6 +43,10 @@ class UserCollection
 
         $out = [];
         foreach ($rows as $row) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
             $user = new User();
             $user->setUuid($row[ 'uuid' ] ?? '');
             $user->setFirstName($row[ 'userFirstName' ] ?? '');
