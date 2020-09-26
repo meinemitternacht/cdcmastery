@@ -9,11 +9,10 @@ use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
-use Exception;
 use Monolog\Logger;
-use mysqli;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 
 class CardHandler
 {
@@ -135,12 +134,18 @@ class CardHandler
         return new self($session, $log, $cache, $cards, $card_session);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function first(): void
     {
         $this->card_session->setCurIdx(0);
-        CardSession::save_session($this->session, $this->card_session);
+        $this->save_session();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function previous(): void
     {
         if (($this->card_session->getCurIdx() - 1) <= 0) {
@@ -151,9 +156,12 @@ class CardHandler
         $this->card_session->setCurIdx($this->card_session->getCurIdx() - 1);
 
         out_return:
-        CardSession::save_session($this->session, $this->card_session);
+        $this->save_session();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function next(): void
     {
         $n_tgt_cards = $this->card_session->countTgtUuids();
@@ -165,17 +173,20 @@ class CardHandler
         $this->card_session->setCurIdx($this->card_session->getCurIdx() + 1);
 
         out_return:
-        CardSession::save_session($this->session, $this->card_session);
-    }
-
-    public function last(): void
-    {
-        $this->card_session->setCurIdx($this->card_session->countTgtUuids() - 1);
-        CardSession::save_session($this->session, $this->card_session);
+        $this->save_session();
     }
 
     /**
-     * @throws Exception
+     * @throws Throwable
+     */
+    public function last(): void
+    {
+        $this->card_session->setCurIdx($this->card_session->countTgtUuids() - 1);
+        $this->save_session();
+    }
+
+    /**
+     * @throws Throwable
      */
     public function shuffle(): void
     {
@@ -183,6 +194,9 @@ class CardHandler
         $this->first(); /* save handled by first() */
     }
 
+    /**
+     * @throws Throwable
+     */
     public function flip(): void
     {
         $this->card_session->setCurState(
@@ -190,13 +204,47 @@ class CardHandler
                 ? CardSession::STATE_BACK
                 : CardSession::STATE_FRONT
         );
-        CardSession::save_session($this->session, $this->card_session);
+        $this->save_session();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function save_session(): void
+    {
+        try {
+            CardSession::save_session($this->session, $this->card_session);
+        } catch (Throwable $e) {
+            $this->log_debug(__METHOD__);
+            throw $e;
+        }
+    }
+
+    private function log_debug(string $method): void
+    {
+        $this->log->addDebug(<<<LOG
+CARD SESSION DEBUG
+------------------
+method:     {$method}
+session
+  state:    {$this->card_session->getCurState()}
+  idx:      {$this->card_session->getCurIdx()}
+  total:    {$this->card_session->countTgtUuids()}
+  category
+    uuid:   {$this->card_session->getCategory()->getUuid()}
+    name:   {$this->card_session->getCategory()->getName()}
+
+(tgt uuids follow)
+LOG
+        );
+        $this->log->addDebug(implode(',', array_keys($this->card_session->getTgtUuids())));
     }
 
     public function display(): array
     {
         $tgt_card_uuids = $this->card_session->getTgtUuids();
         if (!isset($tgt_card_uuids[ $this->card_session->getCurIdx() ])) {
+            $this->log_debug(__METHOD__);
             throw new RuntimeException('Card index out of bounds');
         }
 
@@ -218,6 +266,7 @@ class CardHandler
         }
 
         if (!$tgt_card) {
+            $this->log_debug(__METHOD__);
             throw new RuntimeException("Card does not exist ({$tgt_uuid})");
         }
 
