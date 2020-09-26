@@ -52,9 +52,11 @@ if (!$logged_in) {
     $publicRoutes = array_flip($config->get(['system', 'routing', 'public']));
     $publicPrefixes = $config->get(['system', 'routing', 'public_prefix']);
 
-    foreach ($publicPrefixes as $publicPrefix) {
-        if (str_starts_with($path, $publicPrefix)) {
-            goto public_route_ok;
+    if ($path) {
+        foreach ($publicPrefixes as $publicPrefix) {
+            if (str_starts_with($path, $publicPrefix)) {
+                goto public_route_ok;
+            }
         }
     }
 
