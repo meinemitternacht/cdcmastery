@@ -188,6 +188,9 @@ out_error_405:
 exit;
 
 out_error_500:
+if (isset($user)) {
+    $log->debug("application error :: user {$user->getUuid()} :: path {$path}");
+}
 (new Errors($log, $container->get(Environment::class), $session))->show_500()->send();
 exit;
 
