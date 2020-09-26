@@ -82,7 +82,7 @@ return [
         $formatter = new LineFormatter(
             null,
             null,
-            false,
+            true,
             true
         );
 
