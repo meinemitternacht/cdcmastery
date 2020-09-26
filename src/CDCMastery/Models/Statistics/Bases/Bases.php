@@ -38,7 +38,6 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
-  AND testCollection.score > 0
   AND userData.userBase = ?
 SQL;
 
@@ -80,8 +79,7 @@ SELECT
   AVG(score) AS tAvg
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
-WHERE testCollection.score > 0
-  AND testCollection.timeCompleted IS NOT NULL
+WHERE testCollection.timeCompleted IS NOT NULL
   AND userData.userBase = ?
 SQL;
 
@@ -191,7 +189,6 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
-  AND testCollection.score > 0
 GROUP BY tBase
 SQL;
 

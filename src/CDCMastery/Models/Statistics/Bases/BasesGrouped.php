@@ -47,7 +47,6 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
-  AND testCollection.score > 0
   AND userData.userBase IS NOT NULL
 GROUP BY tBase
 SQL;
@@ -118,8 +117,7 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
-WHERE testCollection.score > 0
-  AND testCollection.timeCompleted IS NOT NULL
+WHERE testCollection.timeCompleted IS NOT NULL
 GROUP BY baseList.baseName
 ORDER BY baseList.baseName
 SQL;
@@ -176,7 +174,6 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
-  AND testCollection.score > 0
 GROUP BY tBase
 SQL;
 
@@ -239,8 +236,7 @@ SELECT
 FROM testCollection 
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 LEFT JOIN baseList ON userData.userBase = baseList.uuid
-WHERE testCollection.score > 0
-  AND testCollection.timeCompleted IS NOT NULL 
+WHERE testCollection.timeCompleted IS NOT NULL 
 GROUP BY baseList.baseName
 ORDER BY baseList.baseName
 SQL;
