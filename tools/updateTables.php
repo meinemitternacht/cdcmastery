@@ -451,15 +451,15 @@ UPDATE afscList SET afscList.hidden = 1 WHERE uuid IN (
     HAVING COUNT(questionData.uuid) < 10
 );
 -- SPLIT ;;
+ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_1;
+-- SPLIT ;;
+ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_2;
+-- SPLIT ;;
 DROP INDEX setUUID ON questionData;
 -- SPLIT ;;
 DROP INDEX volumeUUID ON questionData;
 -- SPLIT ;;
-ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_1;
--- SPLIT ;;
 ALTER TABLE questionData DROP COLUMN volumeUUID;
--- SPLIT ;;
-ALTER TABLE questionData DROP FOREIGN KEY questionData_ibfk_2;
 -- SPLIT ;;
 ALTER TABLE questionData DROP COLUMN setUUID;
 -- SPLIT ;;
