@@ -237,7 +237,10 @@ session
 (tgt uuids follow)
 LOG
         );
-        $this->log->addDebug(implode(',', array_keys($this->card_session->getTgtUuids())));
+        $tgt_uuids = $this->card_session->getTgtUuids();
+        $this->log->addDebug($tgt_uuids
+                                 ? implode(',', array_keys($tgt_uuids))
+                                 : 'no tgt uuids');
     }
 
     public function display(): array
