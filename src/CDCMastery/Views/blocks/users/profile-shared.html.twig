@@ -61,12 +61,12 @@
             <div class="panel-body profile-group-container">
                 <div class="profile-group col-xs-12">
                     <label class="profile-label">Base</label>
-                    <div class="profile-data">
+                    <div class="profile-data" title="{{ base.name }}">
                         {% if restricted %}
-                            {{ base.name }}
+                            {{ base.name|strtr(30) }}
                         {% else %}
                             <a href="/admin/bases/{{ base.uuid }}">
-                                {{ base.name }}
+                                {{ base.name|strtr(30) }}
                             </a>
                         {% endif %}
                     </div>
