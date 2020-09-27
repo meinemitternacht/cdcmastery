@@ -18,6 +18,7 @@ use CDCMastery\Models\Twig\UserProfileLink;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
@@ -79,23 +80,33 @@ return [
         return $twig;
     },
     Logger::class => static function (ContainerInterface $c) {
-        $logger = new Monolog\Logger('CDC');
         $config = $c->get(Config::class);
 
-        $formatter = new LineFormatter(
-            null,
-            null,
-            true,
-            true
-        );
+        $logger = new Monolog\Logger($config->get(['system', 'log', 'name']));
+        $logger::setTimezone(new DateTimeZone($config->get(['system', 'time_zone'])));
 
-        $debugHandler = new StreamHandler(
+        $formatter = new LineFormatter(null,
+                                       null,
+                                       true,
+                                       true);
+
+        $debugHandler = (new StreamHandler(
             $config->get(['system', 'log', 'debug']),
             Logger::DEBUG
-        );
-
-        $debugHandler->setFormatter($formatter);
+        ))->setFormatter($formatter);
         $logger->pushHandler($debugHandler);
+
+        $slackHandler = (new SlackWebhookHandler(
+            $config->get(['system', 'log', 'slack', 'webhook', 'url']),
+            $config->get(['system', 'log', 'slack', 'webhook', 'channel']),
+            $config->get(['system', 'log', 'slack', 'webhook', 'username']),
+            true,
+            null,
+            false,
+            false,
+            Logger::ERROR
+        ))->setFormatter($formatter);
+        $logger->pushHandler($slackHandler);
 
         $general_log = $config->get(['system', 'log', 'general']);
         if (file_exists($general_log) && !is_writable($general_log)) {
@@ -103,18 +114,19 @@ return [
             goto out_return;
         }
 
-        $streamHandler = new StreamHandler(
+        $streamHandler = (new StreamHandler(
             $config->get(['system', 'log', 'general']),
             Logger::INFO
-        );
-        $streamHandler->setFormatter($formatter);
+        ))->setFormatter($formatter);
         $logger->pushHandler($streamHandler);
 
         out_return:
-        $syslogHandler = new SyslogHandler('CDC', LOG_SYSLOG, Logger::WARNING);
-        $syslogHandler->setFormatter($formatter);
+        $syslogHandler = (new SyslogHandler(
+            'CDC',
+            LOG_SYSLOG,
+            Logger::WARNING
+        ))->setFormatter($formatter);
         $logger->pushHandler($syslogHandler);
-        $logger::setTimezone(new DateTimeZone($config->get(['system', 'time_zone'])));
 
         return $logger;
     },
