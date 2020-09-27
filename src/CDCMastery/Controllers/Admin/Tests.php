@@ -9,14 +9,12 @@ use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
-use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
-use CDCMastery\Models\Users\User;
 use CDCMastery\Models\Users\UserCollection;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +25,6 @@ class Tests extends Admin
 {
     private TestCollection $tests;
     private UserCollection $users;
-    private BaseCollection $bases;
     private TestDataHelpers $test_data;
 
     /**
@@ -38,7 +35,7 @@ class Tests extends Admin
      * @param AuthHelpers $auth_helpers
      * @param TestCollection $tests
      * @param UserCollection $users
-     * @param BaseCollection $bases
+     * @param TestDataHelpers $test_data
      * @throws AccessDeniedException
      */
     public function __construct(
@@ -48,14 +45,12 @@ class Tests extends Admin
         AuthHelpers $auth_helpers,
         TestCollection $tests,
         UserCollection $users,
-        BaseCollection $bases,
         TestDataHelpers $test_data
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers);
 
         $this->tests = $tests;
         $this->users = $users;
-        $this->bases = $bases;
         $this->test_data = $test_data;
     }
 
@@ -83,20 +78,6 @@ class Tests extends Admin
             return $this->redirect("/admin/tests");
         }
 
-        if (!$test->isComplete()) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'Tests that are still in-progress cannot be viewed'
-            );
-
-            return $this->redirect("/admin/tests");
-        }
-
-        return $this->show_test_complete($user, $test);
-    }
-
-    private function show_test_complete(User $user, Test $test): Response
-    {
         $test_data = $this->test_data->list($test);
 
         $time_started = $test->getTimeStarted();
@@ -109,20 +90,27 @@ class Tests extends Admin
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $n_questions = $test->getNumQuestions();
+        $n_answered = $this->test_data->count($test);
+
         $data = [
             'user' => $user,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
-            'numQuestions' => $test->getNumQuestions(),
+            'numQuestions' => $n_questions,
+            'numAnswered' => $n_answered,
             'numMissed' => $test->getNumMissed(),
+            'pctDone' => round(($n_answered / $n_questions) * 100, 2),
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
         ];
 
         return $this->render(
-            'admin/tests/complete.html.twig',
+            $time_completed
+                ? 'admin/tests/complete.html.twig'
+                : 'admin/tests/incomplete.html.twig',
             $data
         );
     }

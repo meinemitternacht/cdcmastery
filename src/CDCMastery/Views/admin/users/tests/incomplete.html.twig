@@ -1,0 +1,6 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "View Test Progress - #{user.name}" %}
+{% block main %}
+    {% include "blocks/admin/users/menu.html.twig" %}
+    {% include "blocks/users/tests/incomplete-shared.html.twig" with {'restricted': false} %}
+{% endblock %}

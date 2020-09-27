@@ -748,6 +748,9 @@ class TrainingOverview extends RootController
 
     public function show_test(string $uuid, string $test_uuid): Response
     {
+        $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
+        $cur_role = $this->roles->fetch($cur_user->getRole());
+
         $user = $this->get_user($uuid);
         $test = $this->tests->fetch($test_uuid);
 
@@ -760,26 +763,19 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/users/{$user->getUuid()}");
         }
 
-        if (!$test->isComplete()) {
+        $user = $this->users->fetch($test->getUserUuid());
+
+        if (!$user || !$user->getUuid()) {
             $this->flash()->add(
                 MessageTypes::ERROR,
-                'Tests that are still in-progress cannot be viewed'
+                'The user account for the specified test could not be found'
             );
 
             return $this->redirect("/training/users/{$user->getUuid()}");
         }
 
-        return $this->show_test_complete($user, $test);
-    }
-
-    private function show_test_complete(User $user, Test $test): Response
-    {
-        $cur_user = $this->get_user($this->auth_helpers->get_user_uuid());
-        $cur_role = $this->roles->fetch($cur_user->getRole());
-
         $this->check_subordinate($cur_user, $cur_role, $user);
-
-        $testData = $this->test_data_helpers->list($test);
+        $test_data = $this->test_data_helpers->list($test);
 
         $time_started = $test->getTimeStarted();
         if ($time_started) {
@@ -791,6 +787,9 @@ class TrainingOverview extends RootController
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $n_questions = $test->getNumQuestions();
+        $n_answered = $this->test_data_helpers->count($test);
+
         $data = [
             'cur_user' => $cur_user,
             'cur_role' => $cur_role,
@@ -798,15 +797,19 @@ class TrainingOverview extends RootController
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
-            'numQuestions' => $test->getNumQuestions(),
+            'numQuestions' => $n_questions,
+            'numAnswered' => $n_answered,
             'numMissed' => $test->getNumMissed(),
+            'pctDone' => round(($n_answered / $n_questions) * 100, 2),
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
-            'testData' => $testData,
+            'testData' => $test_data,
         ];
 
         return $this->render(
-            'training/users/tests/completed.html.twig',
+            $time_completed
+                ? 'training/users/tests/complete.html.twig'
+                : 'training/users/tests/incomplete.html.twig',
             $data
         );
     }

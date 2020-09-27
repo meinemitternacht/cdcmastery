@@ -12,7 +12,7 @@ namespace CDCMastery\Models\CdcData;
 class QuestionAnswer
 {
     private Question $question;
-    private Answer $answer;
+    private ?Answer $answer = null;
     private ?Answer $correct = null; /* only used when viewing completed tests */
 
     public function getQuestion(): Question
@@ -25,12 +25,12 @@ class QuestionAnswer
         $this->question = $question;
     }
 
-    public function getAnswer(): Answer
+    public function getAnswer(): ?Answer
     {
         return $this->answer;
     }
 
-    public function setAnswer(Answer $answer): void
+    public function setAnswer(?Answer $answer): void
     {
         $this->answer = $answer;
     }

@@ -5,5 +5,5 @@
     <div class="page-header">
         <h3><span class="text-muted">Incomplete Tests</span> - {{ user.name }}</h3>
     </div>
-    {% include "blocks/users/tests/history-incomplete-shared.html.twig" %}
+    {% include "blocks/users/tests/history-incomplete-shared.html.twig" with {'redirect_prefix': '/admin/users/' ~ user.uuid ~ "/tests"} %}
 {% endblock %}

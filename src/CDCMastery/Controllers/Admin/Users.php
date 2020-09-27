@@ -1286,21 +1286,18 @@ class Users extends Admin
             return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
-        if (!$test->isComplete()) {
+        $user = $this->users->fetch($test->getUserUuid());
+
+        if (!$user || !$user->getUuid()) {
             $this->flash()->add(
                 MessageTypes::ERROR,
-                'Tests that are still in-progress cannot be viewed'
+                'The user account for the specified test could not be found'
             );
 
             return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
-        return $this->show_test_complete($user, $test);
-    }
-
-    private function show_test_complete(User $user, Test $test): Response
-    {
-        $testData = $this->test_data_helpers->list($test);
+        $test_data = $this->test_data_helpers->list($test);
 
         $time_started = $test->getTimeStarted();
         if ($time_started) {
@@ -1312,20 +1309,27 @@ class Users extends Admin
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $n_questions = $test->getNumQuestions();
+        $n_answered = $this->test_data_helpers->count($test);
+
         $data = [
             'user' => $user,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
-            'numQuestions' => $test->getNumQuestions(),
+            'numQuestions' => $n_questions,
+            'numAnswered' => $n_answered,
             'numMissed' => $test->getNumMissed(),
+            'pctDone' => round(($n_answered / $n_questions) * 100, 2),
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
-            'testData' => $testData,
+            'testData' => $test_data,
         ];
 
         return $this->render(
-            'admin/users/tests/complete.html.twig',
+            $time_completed
+                ? 'admin/users/tests/complete.html.twig'
+                : 'admin/users/tests/incomplete.html.twig',
             $data
         );
     }

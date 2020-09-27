@@ -390,7 +390,13 @@ class TestHandler
         $nCorrect = 0;
         $nMissed = 0;
         foreach ($test_qa_pairs as $test_qa_pair) {
-            if ($test_qa_pair->getAnswer()->isCorrect()) {
+            $answer = $test_qa_pair->getAnswer();
+
+            if (!$answer) {
+                continue;
+            }
+
+            if ($answer->isCorrect()) {
                 $nCorrect++;
                 continue;
             }

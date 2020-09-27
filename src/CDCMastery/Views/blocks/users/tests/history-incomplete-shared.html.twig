@@ -21,7 +21,7 @@
                 </thead>
                 <tbody>
                 {% for test in tests %}
-                    <tr>
+                    <tr data-uuid="{{ test.uuid }}" class="cursor-pointer">
                         <td class="hidden-xs hidden-sm" title="{{ test.afsc }}">
                             {% if test.afsc|length > 0 %}
                                 {{ test.afsc|length > 10 ? test.afsc|slice(0, 10) ~ '...' : test.afsc }}
@@ -81,6 +81,11 @@
             <div class="text-center">
                 {{ pagination|raw }}
             </div>
+        {% endif %}
+        {% if tests|length > 0 %}
+            {% set tableSelector = "#tests-table" %}
+            {% set redirectPath = redirect_prefix %}
+            {% include "utilities/table-row-link.html.twig" %}
         {% endif %}
     </div>
 </div>

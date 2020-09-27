@@ -1,3 +1,24 @@
+<script>
+    var idleTime = 0;
+    $(document).ready(function () {
+        var idleInterval = setInterval(timerIncrement, 5000);
+
+        $(this).mousemove(function (e) {
+            idleTime = 0;
+        });
+
+        $(this).keypress(function (e) {
+            idleTime = 0;
+        });
+    });
+
+    function timerIncrement() {
+        idleTime = idleTime + 1;
+        if (idleTime > 2) {
+            window.location.reload();
+        }
+    }
+</script>
 <div class="row">
     <div class="col-md-4">
         <div class="col-md-12">
@@ -22,17 +43,19 @@
                 </div>
             </div>
             <div class="panel panel-default text-center">
-                <div class="panel-heading">Time Completed</div>
-                <div class="panel-body">
-                    {{ timeCompleted }}
-                </div>
-            </div>
-            <div class="panel panel-default text-center">
                 <div class="panel-heading">AFSC(s)</div>
                 <div class="panel-body profile-two-col-container">
                     {% for afsc in afscList %}
                         <div>{{ afsc }}</div>
                     {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading"># Answered</div>
+                <div class="panel-body">
+                    {{ numAnswered }}
                 </div>
             </div>
         </div>
@@ -46,31 +69,18 @@
         </div>
         <div class="col-md-6">
             <div class="panel panel-default text-center">
-                <div class="panel-heading">Num. Missed</div>
+                <div class="panel-heading">% Complete</div>
                 <div class="panel-body">
-                    {{ numMissed }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="panel {% if score >= 80 %}panel-success{% else %}panel-danger{% endif %}">
-                <div class="panel-heading">Score</div>
-                <div class="panel-body text-center">
-                    <strong>{{ score }}%</strong>
+                    {{ pctDone }}%
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-8">
-        {% if isArchived %}
-            <div class="alert alert-info">
-                This test has been archived and is no longer available to view. All tests older than six months are
-                automatically archived in order to provide the smoothest experience for all of our users.
-            </div>
-        {% elseif testData %}
+        {% if testData %}
             <div class="list-group">
                 {% for key, response in testData %}
-                    <div class="list-group-item list-group-item-{% if response.answer.correct %}success{% else %}danger{% endif %}">
+                    <div class="list-group-item{% if response.answer %} list-group-item-{% if response.answer.correct %}success{% else %}danger{% endif %}{% endif %}">
                         <div class="row">
                             <div class="col-xs-12">
                                 <h4 class="list-group-item-heading text-primary">
@@ -82,7 +92,9 @@
                         <div class="row row-spacer-sm text-black">
                             <div class="col-xs-12">
                                 <p class="list-group-item-text">
-                                    {% if not response.answer.correct %}
+                                    {% if not response.answer %}
+                                        <em>Unanswered</em>
+                                    {% elseif not response.answer.correct %}
                                         <span class="glyphicon glyphicon-plus rotate-45 text-danger"></span>
                                     {% else %}
                                         <span class="glyphicon glyphicon-ok text-success"></span>

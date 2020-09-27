@@ -276,7 +276,8 @@ SQL;
         $stmt->close();
 
         if (!$question_answer_uuids) {
-            return [];
+            $qas = [];
+            goto out_return;
         }
 
         $q_afscs = $this->question_helpers->getQuestionsAfscUuids(array_keys($question_answer_uuids));
@@ -322,9 +323,24 @@ SQL;
             $qas[ $q_uuid ] = $qa;
         }
 
+        out_return:
         $t_questions = $test->getQuestions();
         if ($t_questions) {
             $keys = array_flip(QuestionHelpers::listUuid($t_questions));
+            $q_diff = array_diff_key($keys, $qas);
+
+            if ($q_diff) {
+                foreach ($q_diff as $q_unanswered_key) {
+                    if (!isset($t_questions[ $q_unanswered_key ])) {
+                        continue;
+                    }
+
+                    $qa = new QuestionAnswer();
+                    $qa->setQuestion($t_questions[ $q_unanswered_key ]);
+                    $qas[ $t_questions[ $q_unanswered_key ]->getUuid() ] = $qa;
+                }
+            }
+
             $qas = array_replace($keys, $qas);
         }
 

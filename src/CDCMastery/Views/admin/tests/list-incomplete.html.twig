@@ -4,5 +4,5 @@
     <div class="page-header">
         <h3>Incomplete Tests</h3>
     </div>
-    {% include "blocks/users/tests/history-incomplete-shared.html.twig" %}
+    {% include "blocks/users/tests/history-incomplete-shared.html.twig" with {'redirect_prefix': '/admin/tests'} %}
 {% endblock %}
