@@ -27,10 +27,11 @@ try {
     $session = $container->get(Session::class);
     $auth_helpers = $container->get(AuthHelpers::class);
 } catch (Throwable $e) {
+    $msg = 'Unable to initialize application: ' . $e;
     if (isset($log) && $log instanceof Logger) {
         $log->addDebug($e);
+        $log->addEmergency($msg);
     }
-    $msg = 'Unable to initialize application: ' . $e;
     $response = new Response($msg, 500);
     $response->send();
     exit;
@@ -109,12 +110,12 @@ switch ($route[ 0 ]) {
     case FastRoute\Dispatcher::NOT_FOUND:
         $msg = '404: ' . $_SERVER[ 'REQUEST_URI' ] . ' could not be found';
         $response = new Response($msg, 404);
-        $log->error($msg);
+        $log->notice($msg);
         goto out_error_404;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $msg = '405: ' . $_SERVER[ 'REQUEST_URI' ] . ' method not allowed';
         $response = new Response($msg, 405);
-        $log->error($msg);
+        $log->notice($msg);
         goto out_error_405;
     case FastRoute\Dispatcher::FOUND:
         try {
@@ -141,7 +142,7 @@ switch ($route[ 0 ]) {
             $msg = '403: Access Denied :: ' . $e;
             $response = new Response($msg, 403);
             $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
-            $log->error($msg);
+            $log->warning($msg);
             goto out_error_403;
         } catch (Exception $e) {
             $msg = '500: Exception :: ' . $e;
