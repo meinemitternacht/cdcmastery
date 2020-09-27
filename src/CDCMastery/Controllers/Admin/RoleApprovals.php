@@ -7,10 +7,11 @@ namespace CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\Roles\PendingRole;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
-use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\SubordinateAssociationHelpers;
 use CDCMastery\Models\Users\UserCollection;
@@ -35,6 +36,8 @@ class RoleApprovals extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param UserCollection $users
      * @param RoleCollection $roles
      * @param PendingRoleCollection $pending_roles
@@ -47,13 +50,15 @@ class RoleApprovals extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         UserCollection $users,
         RoleCollection $roles,
         PendingRoleCollection $pending_roles,
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $super_assocs
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->users = $users;
         $this->roles = $roles;

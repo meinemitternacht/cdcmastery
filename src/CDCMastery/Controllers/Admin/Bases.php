@@ -9,6 +9,8 @@ use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\Bases\BaseCollection;
+use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Statistics\Bases\Bases as BaseStats;
 use CDCMastery\Models\Users\UserCollection;
@@ -31,6 +33,8 @@ class Bases extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param UserCollection $users
      * @param BaseCollection $bases
      * @param BaseStats $base_stats
@@ -41,11 +45,13 @@ class Bases extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         UserCollection $users,
         BaseCollection $bases,
         BaseStats $base_stats
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->users = $users;
         $this->bases = $bases;

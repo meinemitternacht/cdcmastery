@@ -9,7 +9,9 @@ use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
@@ -33,6 +35,8 @@ class Tests extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param TestCollection $tests
      * @param UserCollection $users
      * @param TestDataHelpers $test_data
@@ -43,11 +47,13 @@ class Tests extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         TestCollection $tests,
         UserCollection $users,
         TestDataHelpers $test_data
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->tests = $tests;
         $this->users = $users;

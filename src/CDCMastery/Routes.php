@@ -388,6 +388,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
             ]);
         });
 
+        /** @uses \CDCMastery\Controllers\Admin::show_memcached_stats() */
+        $r->addRoute('GET', '/memcached/stats', [
+            Admin::class,
+            'show_memcached_stats',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Admin\OfficeSymbols::show_home() */
         $r->addRoute('GET', '/office-symbols', [
             OfficeSymbols::class,

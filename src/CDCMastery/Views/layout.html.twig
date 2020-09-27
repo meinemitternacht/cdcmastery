@@ -153,6 +153,12 @@
                                         {% endif %}
                                     </a>
                                 </li>
+                                <li role="separator" class="divider"></li>
+                                <li{% if cur_url == "/admin/memcached/stats" %} class="active"{% endif %}>
+                                    <a href="/admin/memcached/stats" title="View Memcached Stats">
+                                        View memcached Stats
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     {% endif %}

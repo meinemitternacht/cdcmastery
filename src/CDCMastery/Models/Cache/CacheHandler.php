@@ -157,4 +157,9 @@ class CacheHandler
             $timeout
         );
     }
+
+    public function stats(): array
+    {
+        return $this->memcached->getStats();
+    }
 }

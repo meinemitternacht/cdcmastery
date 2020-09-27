@@ -15,6 +15,7 @@ use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
@@ -24,6 +25,7 @@ use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
@@ -60,12 +62,16 @@ class CdcData extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param CdcDataCollection $cdc_datas
      * @param AfscCollection $afscs
      * @param QuestionCollection $questions
      * @param AnswerCollection $answers
      * @param QuestionHelpers $question_helpers
      * @param UserAfscAssociations $user_afscs
+     * @param UserCollection $users
+     * @param BaseCollection $bases
      * @param TestStats $test_stats
      * @throws AccessDeniedException
      */
@@ -74,6 +80,8 @@ class CdcData extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         CdcDataCollection $cdc_datas,
         AfscCollection $afscs,
         QuestionCollection $questions,
@@ -84,7 +92,7 @@ class CdcData extends Admin
         BaseCollection $bases,
         TestStats $test_stats
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->cdc_datas = $cdc_datas;
         $this->afscs = $afscs;

@@ -9,9 +9,11 @@ use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\FlashCards\Card;
 use CDCMastery\Models\FlashCards\CardCollection;
 use CDCMastery\Models\FlashCards\CardHelpers;
@@ -42,6 +44,8 @@ class FlashCards extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param CategoryCollection $categories
      * @param CardCollection $cards
      * @param AfscCollection $afscs
@@ -54,13 +58,15 @@ class FlashCards extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         CategoryCollection $categories,
         CardCollection $cards,
         AfscCollection $afscs,
         UserCollection $users,
         CdcDataCollection $cdc_data
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->categories = $categories;
         $this->cards = $cards;

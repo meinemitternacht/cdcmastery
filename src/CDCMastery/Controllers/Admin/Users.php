@@ -13,9 +13,11 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Email\EmailCollection;
 use CDCMastery\Models\Email\Templates\ActivateAccount;
 use CDCMastery\Models\Email\Templates\ResetPassword;
@@ -70,6 +72,8 @@ class Users extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param EmailCollection $emails
      * @param UserCollection $users
      * @param BaseCollection $bases
@@ -91,6 +95,8 @@ class Users extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         EmailCollection $emails,
         UserCollection $users,
         BaseCollection $bases,
@@ -106,7 +112,7 @@ class Users extends Admin
         PasswordResetCollection $pw_resets,
         ActivationCollection $activations
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->emails = $emails;
         $this->users = $users;

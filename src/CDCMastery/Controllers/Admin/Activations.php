@@ -9,6 +9,8 @@ use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\Activation\Activation;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\UserCollection;
 use Monolog\Logger;
@@ -27,6 +29,8 @@ class Activations extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param ActivationCollection $activations
      * @param UserCollection $users
      * @throws AccessDeniedException
@@ -36,10 +40,12 @@ class Activations extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         ActivationCollection $activations,
         UserCollection $users
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->activations = $activations;
         $this->users = $users;

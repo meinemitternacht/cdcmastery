@@ -7,7 +7,9 @@ namespace CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin;
 use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Users\UserAfscAssociations;
 use CDCMastery\Models\Users\UserAfscCollection;
@@ -29,6 +31,8 @@ class AfscApprovals extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param UserAfscAssociations $assocs
      * @param UserCollection $users
      * @param AfscCollection $afscs
@@ -39,11 +43,13 @@ class AfscApprovals extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         UserAfscAssociations $assocs,
         UserCollection $users,
         AfscCollection $afscs
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->assocs = $assocs;
         $this->users = $users;

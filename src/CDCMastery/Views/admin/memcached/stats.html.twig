@@ -1,0 +1,28 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "memcached Statistics" %}
+{% block main %}
+    <div class="page-header">
+        <h3>memcached Statistics</h3>
+    </div>
+    <div class="row">
+        {% for conn, mstats in stats %}
+            <div class="col-md-4">
+                <div class="panel panel-primary panel-min-150">
+                    <div class="panel-heading text-center">
+                        <h5>{{ conn }}</h5>
+                    </div>
+                    <div class="panel-body profile-group-container">
+                        {% for skey, sdata in mstats %}
+                            <div class="profile-group col-xs-12">
+                                <label class="profile-label">{{ skey }}</label>
+                                <div class="profile-data">
+                                    {{ sdata }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

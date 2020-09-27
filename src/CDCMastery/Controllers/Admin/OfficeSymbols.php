@@ -6,6 +6,8 @@ use CDCMastery\Controllers\Admin;
 use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\UUID;
 use CDCMastery\Models\Auth\AuthHelpers;
+use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
@@ -24,6 +26,8 @@ class OfficeSymbols extends Admin
      * @param Environment $twig
      * @param Session $session
      * @param AuthHelpers $auth_helpers
+     * @param CacheHandler $cache
+     * @param Config $config
      * @param OfficeSymbolCollection $office_symbols
      * @throws AccessDeniedException
      */
@@ -32,9 +36,11 @@ class OfficeSymbols extends Admin
         Environment $twig,
         Session $session,
         AuthHelpers $auth_helpers,
+        CacheHandler $cache,
+        Config $config,
         OfficeSymbolCollection $office_symbols
     ) {
-        parent::__construct($logger, $twig, $session, $auth_helpers);
+        parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->office_symbols = $office_symbols;
     }
