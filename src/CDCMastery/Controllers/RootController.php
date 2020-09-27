@@ -109,7 +109,6 @@ class RootController
             implode(', ', $missing)
         );
 
-        $this->trigger_request_debug(__METHOD__);
         return false;
     }
 
@@ -132,34 +131,34 @@ class RootController
     public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, $options = [])
     {
         return $this->get_param_source($key)
-            ->filter($key, $default, $filter, $options);
+                    ->filter($key, $default, $filter, $options);
     }
 
     public function filter_bool_default(string $key, ?bool $default = null): ?bool
     {
         return $this->get_param_source($key)
-            ->filter($key,
-                     $default,
-                     FILTER_VALIDATE_BOOLEAN,
-                     FILTER_NULL_ON_FAILURE);
+                    ->filter($key,
+                             $default,
+                             FILTER_VALIDATE_BOOLEAN,
+                             FILTER_NULL_ON_FAILURE);
     }
 
     public function filter_int_default(string $key, ?bool $default = null): ?int
     {
         return $this->get_param_source($key)
-            ->filter($key,
-                     $default,
-                     FILTER_VALIDATE_INT,
-                     FILTER_NULL_ON_FAILURE);
+                    ->filter($key,
+                             $default,
+                             FILTER_VALIDATE_INT,
+                             FILTER_NULL_ON_FAILURE);
     }
 
     public function filter_string_default(string $key): ?string
     {
         return $this->get_param_source($key)
-            ->filter($key,
-                     null,
-                     FILTER_SANITIZE_STRING,
-                     FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+                    ->filter($key,
+                             null,
+                             FILTER_SANITIZE_STRING,
+                             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
     }
 
     /**
@@ -170,7 +169,7 @@ class RootController
     public function get(string $key, $default = null)
     {
         return $this->get_param_source($key)
-            ->get($key, $default);
+                    ->get($key, $default);
     }
 
     /**
@@ -228,7 +227,10 @@ class RootController
         $this->log->debug(str_repeat('-', 40));
         $this->log->debug("{$method} :: request debug");
         $this->log->debug(json_encode($this->request->server->all()));
-        $this->log->debug(json_encode($this->request->request->all()));
+        $this->log->debug(
+            json_encode(
+                array_diff_key($this->request->request->all(),
+                               array_flip(['password', 'password_confirm']))));
         $this->log->debug(json_encode($this->request->query->all()));
         $this->log->debug(json_encode($this->session->all()));
         $this->log->debug(str_repeat('-', 40));

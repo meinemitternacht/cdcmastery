@@ -379,7 +379,8 @@ class Auth extends RootController
             'time_zone',
         ];
 
-        $this->session->set('tmp_form', $this->request->request->all());
+        $this->session->set('tmp_form', array_diff_key($this->request->request->all(),
+                                                       array_flip(['password', 'password_confirm'])));
 
         if (!$this->checkParameters($params)) {
             goto out_error;
