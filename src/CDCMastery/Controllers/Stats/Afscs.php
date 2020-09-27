@@ -98,7 +98,7 @@ class Afscs extends Stats
                         "No tests have been taken with {$afsc->getName()} in the last seven days"
                     );
 
-                    return $this->redirect('/stats/afscs/tests');
+                    return $this->redirect('/stats/afscs');
                 }
                 break;
             case self::TYPE_MONTH:
@@ -152,7 +152,7 @@ class Afscs extends Stats
                 "No tests have been taken with {$afsc->getName()}"
             );
 
-            return $this->redirect('/stats/afscs/tests');
+            return $this->redirect('/stats/afscs');
         }
 
         return $this->render(
