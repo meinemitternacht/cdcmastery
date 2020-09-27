@@ -7,7 +7,6 @@
  */
 
 use CDCMastery\Exceptions\Database\DatabaseConnectionFailedException;
-use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Config\Config;
