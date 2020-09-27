@@ -10,6 +10,7 @@ use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
 use CDCMastery\Controllers\Auth;
 use CDCMastery\Controllers\Cards;
+use CDCMastery\Controllers\Errors;
 use CDCMastery\Controllers\Home;
 use CDCMastery\Controllers\Overviews\TrainingOverview;
 use CDCMastery\Controllers\Profile;
@@ -827,6 +828,44 @@ return simpleDispatcher(static function (RouteCollector $r) {
         $r->addRoute('POST', '/{uuid}/data/{card_uuid}/delete', [
             Cards::class,
             'do_card_delete',
+        ]);
+    });
+
+    $r->addGroup('/errors', static function (RouteCollector $r) {
+        /** @uses \CDCMastery\Controllers\Errors::show_400() */
+        $r->addRoute('GET', '/400', [
+            Errors::class,
+            'show_400',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Errors::show_401() */
+        $r->addRoute('GET', '/401', [
+            Errors::class,
+            'show_401',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Errors::show_403() */
+        $r->addRoute('GET', '/403', [
+            Errors::class,
+            'show_403',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Errors::show_404() */
+        $r->addRoute('GET', '/404', [
+            Errors::class,
+            'show_404',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Errors::show_405() */
+        $r->addRoute('GET', '/405', [
+            Errors::class,
+            'show_405',
+        ]);
+
+        /** @uses \CDCMastery\Controllers\Errors::show_500() */
+        $r->addRoute('GET', '/500', [
+            Errors::class,
+            'show_500',
         ]);
     });
 
