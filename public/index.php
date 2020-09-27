@@ -29,8 +29,8 @@ try {
 } catch (Throwable $e) {
     $msg = 'Unable to initialize application: ' . $e;
     if (isset($log) && $log instanceof Logger) {
-        $log->addDebug($e);
-        $log->addEmergency($msg);
+        $log->debug($e);
+        $log->emergency($msg);
     }
     $response = new Response($msg, 500);
     $response->send();

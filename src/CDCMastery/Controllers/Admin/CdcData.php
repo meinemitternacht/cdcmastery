@@ -620,10 +620,10 @@ class CdcData extends Admin
         $question->setDisabled($disable);
         $this->questions->save($afsc, $question);
 
-        $this->log->addInfo(($disable
-                                ? 'disable'
-                                : 'restore') .
-                            " question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
+        $this->log->info(($disable
+                             ? 'disable'
+                             : 'restore') .
+                         " question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -776,7 +776,7 @@ class CdcData extends Admin
         if ($changed) {
             $this->answers->saveArray($afsc, $db_answers);
             $this->questions->save($afsc, $question);
-            $this->log->addInfo("edit question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
+            $this->log->info("edit question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$quuid} :: user {$this->auth_helpers->get_user_uuid()}");
         }
 
         $this->flash()->add(

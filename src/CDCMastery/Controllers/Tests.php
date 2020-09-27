@@ -824,7 +824,7 @@ class Tests extends RootController
         }
 
         if ($test->getNumAnswered() > 0) {
-            $this->log->addInfo("resume test :: {$test->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
+            $this->log->info("resume test :: {$test->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
         }
 
         return $this->show_test_incomplete($testUuid);

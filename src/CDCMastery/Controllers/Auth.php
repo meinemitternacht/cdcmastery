@@ -123,7 +123,7 @@ class Auth extends RootController
                 'The provided activation code was not valid, or your account was already activated. Please sign in to continue.'
             );
 
-            $this->log->error("activate user failed :: invalid code {$code}");
+            $this->log->warning("activate user failed :: invalid code {$code}");
             return $this->redirect('/auth/activate');
         }
 
@@ -154,7 +154,7 @@ class Auth extends RootController
 
         if (!$email) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("resend activation failed :: email invalid");
+            $this->log->warning("resend activation failed :: email invalid");
             goto out_return;
         }
 
@@ -162,7 +162,7 @@ class Auth extends RootController
 
         if (!$user_uuid) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("resend activation failed :: user not found :: {$email}");
+            $this->log->warning("resend activation failed :: user not found :: {$email}");
             goto out_return;
         }
 
@@ -170,7 +170,7 @@ class Auth extends RootController
 
         if (!$user) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("resend activation failed :: user not found :: {$email} :: user uuid {$user_uuid}");
+            $this->log->warning("resend activation failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
 
@@ -178,7 +178,7 @@ class Auth extends RootController
 
         if (!$activation) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("resend activation failed :: user already activated :: {$user->getName()} [{$user->getUuid()}");
+            $this->log->warning("resend activation failed :: user already activated :: {$user->getName()} [{$user->getUuid()}");
             goto out_return;
         }
 
@@ -186,7 +186,7 @@ class Auth extends RootController
 
         if (!$system_user) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("resend activation failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
+            $this->log->alert("resend activation failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
 
@@ -297,7 +297,7 @@ class Auth extends RootController
 
         if (!$email) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("queue password reset failed :: email invalid");
+            $this->log->warning("queue password reset failed :: email invalid");
             goto out_return;
         }
 
@@ -305,7 +305,7 @@ class Auth extends RootController
 
         if (!$user_uuid) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("queue password reset failed :: user not found :: {$email}");
+            $this->log->warning("queue password reset failed :: user not found :: {$email}");
             goto out_return;
         }
 
@@ -313,7 +313,7 @@ class Auth extends RootController
 
         if (!$user) {
             $this->trigger_request_debug(__METHOD__);
-            $this->log->error("queue password reset failed :: user not found :: {$email} :: user uuid {$user_uuid}");
+            $this->log->warning("queue password reset failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
 
@@ -331,7 +331,7 @@ class Auth extends RootController
 
             if (!$system_user) {
                 $this->trigger_request_debug(__METHOD__);
-                $this->log->error("queue password reset failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
+                $this->log->alert("queue password reset failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
                 goto out_return;
             }
 
@@ -568,7 +568,7 @@ class Auth extends RootController
             $system_user = $this->users->fetch(SYSTEM_UUID);
 
             if (!$system_user) {
-                $this->log->debug("register user fail :: system user not found");
+                $this->log->alert("register user fail :: system user not found");
                 $this->flash()->add(
                     MessageTypes::ERROR,
                     'The system encountered a problem while adding your account, please contact the site administrator'
@@ -581,7 +581,7 @@ class Auth extends RootController
                                                         $user,
                                                         $activation));
         } catch (Exception $e) {
-            $this->log->debug($e);
+            $this->log->alert($e);
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'The system encountered a problem sending the activation e-mail, please contact the site administrator'
@@ -613,7 +613,7 @@ class Auth extends RootController
             $this->log->info("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$pending_role->getType()}");
         }
 
-        $this->log->info("register user :: {$user->getName()} [{$user->getUuid()}] :: email {$user->getEmail()}");
+        $this->log->alert("register user :: {$user->getName()} [{$user->getUuid()}] :: email {$user->getEmail()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
@@ -793,8 +793,8 @@ class Auth extends RootController
             $this->auth_helpers->set_redirect('/profile/afsc');
         }
 
-        $this->log->addInfo("login success :: account {$user->getUuid()} " .
-                            "'{$user->getName()}' :: ip {$_SERVER['REMOTE_ADDR']}");
+        $this->log->info("login success :: account {$user->getUuid()} " .
+                         "'{$user->getName()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             "Welcome, {$user->getName()}! You are now signed in.");
@@ -804,8 +804,8 @@ class Auth extends RootController
 
     public function do_logout(): Response
     {
-        $this->log->addInfo("logout success :: account {$this->auth_helpers->get_user_uuid()} " .
-                            "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
+        $this->log->info("logout success :: account {$this->auth_helpers->get_user_uuid()} " .
+                         "'{$this->auth_helpers->get_user_name()}' :: ip {$_SERVER['REMOTE_ADDR']}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'You have been successfully logged out');

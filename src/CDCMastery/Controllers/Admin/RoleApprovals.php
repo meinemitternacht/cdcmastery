@@ -153,11 +153,11 @@ class RoleApprovals extends Admin
                                                               $tgt_user);
 
             out_continue:
-            $this->log->addNotice("{$tgt_user->getName()} :: role change " .
-                                  ($requests_approved
-                                      ? 'approved'
-                                      : 'denied') .
-                                  " :: {$prev_role->getName()} -> {$new_role->getName()}");
+            $this->log->notice("{$tgt_user->getName()} :: role change " .
+                               ($requests_approved
+                                   ? 'approved'
+                                   : 'denied') .
+                               " :: {$prev_role->getName()} -> {$new_role->getName()}");
             $success[] = $role;
         }
 

@@ -112,8 +112,8 @@ class Bases extends Admin
 
         $this->bases->save($base);
         $edit
-            ? $this->log->addInfo("admin edit base :: {$old_name} -> {$base->getName()} :: {$base->getUuid()}")
-            : $this->log->addInfo("admin add base :: {$base->getName()} :: {$base->getUuid()}");
+            ? $this->log->info("admin edit base :: {$old_name} -> {$base->getName()} :: {$base->getUuid()}")
+            : $this->log->info("admin add base :: {$base->getName()} :: {$base->getUuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             $edit

@@ -265,7 +265,7 @@ class CardHandler
 
     private function log_debug(string $method): void
     {
-        $this->log->addDebug(<<<LOG
+        $this->log->debug(<<<LOG
 CARD SESSION DEBUG
 ------------------
 method:     {$method}
@@ -281,9 +281,9 @@ session
 LOG
         );
         $tgt_uuids = $this->card_session->getTgtUuids();
-        $this->log->addDebug($tgt_uuids
-                                 ? implode(',', array_keys($tgt_uuids))
-                                 : 'no tgt uuids');
+        $this->log->debug($tgt_uuids
+                              ? implode(',', array_keys($tgt_uuids))
+                              : 'no tgt uuids');
     }
 
     public function display(): array
