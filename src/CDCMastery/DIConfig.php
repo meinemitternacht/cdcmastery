@@ -95,17 +95,19 @@ return [
         ))->setFormatter($formatter);
         $logger->pushHandler($debugHandler);
 
-        $slackHandler = (new SlackWebhookHandler(
-            $config->get(['system', 'log', 'slack', 'webhook', 'url']),
-            $config->get(['system', 'log', 'slack', 'webhook', 'channel']),
-            $config->get(['system', 'log', 'slack', 'webhook', 'username']),
-            true,
-            null,
-            false,
-            false,
-            Logger::ERROR
-        ))->setFormatter($formatter);
-        $logger->pushHandler($slackHandler);
+        if ($config->get(['system', 'log', 'slack'])) {
+            $slackHandler = (new SlackWebhookHandler(
+                $config->get(['system', 'log', 'slack', 'webhook', 'url']),
+                $config->get(['system', 'log', 'slack', 'webhook', 'channel']),
+                $config->get(['system', 'log', 'slack', 'webhook', 'username']),
+                true,
+                null,
+                false,
+                false,
+                Logger::ERROR
+            ))->setFormatter($formatter);
+            $logger->pushHandler($slackHandler);
+        }
 
         $general_log = $config->get(['system', 'log', 'general']);
         if (file_exists($general_log) && !is_writable($general_log)) {
