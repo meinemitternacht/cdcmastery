@@ -9,7 +9,7 @@
             <div class="col-md-4">
                 <div class="panel panel-primary panel-min-150">
                     <div class="panel-heading text-center">
-                        <h5>{{ conn }}</h5>
+                        <h5 title="{{ conn }}">{{ conn|strtr_right(40) }}</h5>
                     </div>
                     <div class="panel-body profile-group-container">
                         {% for skey, sdata in mstats %}

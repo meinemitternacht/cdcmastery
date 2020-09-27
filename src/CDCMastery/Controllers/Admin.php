@@ -65,7 +65,7 @@ class Admin extends RootController
         if (is_array($session_servers) && $session_servers) {
             $server_conn = new Memcached();
             foreach ($session_servers as $server) {
-                if (isset($server->socket) && is_file($server->socket)) {
+                if (isset($server->socket) && file_exists($server->socket)) {
                     $server_conn->addServer($server->socket, 0);
                     continue;
                 }

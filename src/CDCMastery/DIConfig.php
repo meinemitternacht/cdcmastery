@@ -138,12 +138,12 @@ return [
 
         if (is_array($hostList) && $hostList) {
             foreach ($hostList as $host) {
-                if (!isset($host->host, $host->port)) {
+                if (isset($host->socket)) {
+                    $memcached->addServer($host->socket, 0);
                     continue;
                 }
 
-                if (isset($host->socket)) {
-                    $memcached->addServer($host->socket, 0);
+                if (!isset($host->host, $host->port)) {
                     continue;
                 }
 

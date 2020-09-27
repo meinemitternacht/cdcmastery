@@ -13,6 +13,7 @@ class StringFunctions extends AbstractExtension
     {
         return [
             new TwigFilter('strtr', [$this, 'strtr']),
+            new TwigFilter('strtr_right', [$this, 'strtr_right']),
         ];
     }
 
@@ -29,5 +30,20 @@ class StringFunctions extends AbstractExtension
         }
 
         return substr($v, 0, $max_len) . '...';
+    }
+
+    public function strtr_right(string $v, int $max_len): string
+    {
+        $len = strlen($v);
+
+        if ($len < $max_len) {
+            return $v;
+        }
+
+        if ($len + 3 > $max_len) {
+            return '...' . substr($v, -($max_len - 3));
+        }
+
+        return '...' . substr($v, -$max_len);
     }
 }
