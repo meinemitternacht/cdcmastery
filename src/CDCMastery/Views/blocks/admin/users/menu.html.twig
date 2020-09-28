@@ -98,6 +98,11 @@
                             <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/training-managers" %} class="active"{% endif %}>
                                 <a href="/admin/users/{{ user.uuid }}/training-managers">Training Managers</a>
                             </li>
+                            {% if role_is_training_manager(role) or role_is_supervisor(role) %}
+                                <li{% if cur_url starts with "/admin/users/" ~ user.uuid ~ "/subordinates" %} class="active"{% endif %}>
+                                    <a href="/admin/users/{{ user.uuid }}/subordinates">Subordinates</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </li>
                 {% endif %}

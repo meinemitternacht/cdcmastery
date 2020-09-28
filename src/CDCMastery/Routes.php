@@ -579,6 +579,24 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 ]);
             });
 
+            /** @uses \CDCMastery\Controllers\Admin\Users::show_subordinates() */
+            $r->addRoute('GET', '/{uuid}/subordinates', [
+                Admin\Users::class,
+                'show_subordinates',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_subordinates_add() */
+            $r->addRoute('POST', '/{uuid}/subordinates/add', [
+                Admin\Users::class,
+                'do_subordinates_add',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_subordinates_remove() */
+            $r->addRoute('POST', '/{uuid}/subordinates/remove', [
+                Admin\Users::class,
+                'do_subordinates_remove',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_supervisor_associations() */
             $r->addRoute('GET', '/{uuid}/supervisors', [
                 Admin\Users::class,

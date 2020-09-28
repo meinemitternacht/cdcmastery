@@ -866,6 +866,157 @@ class Users extends Admin
         return $this->redirect("/admin/users/{$user->getUuid()}");
     }
 
+    public function do_subordinates_add(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $role = $this->roles->fetch($user->getRole());
+
+        if ($role === null) {
+            goto out_bad_role;
+        }
+
+        $params = [
+            'new_users',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $new_users = $this->get('new_users');
+
+        if (!is_array($new_users)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $new_users = array_filter($new_users, static function (string $v) use ($user): bool {
+            return $v !== $user->getUuid();
+        });
+
+        $tgt_subs = $this->users->fetchArray($new_users);
+
+        if (!$tgt_subs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_subs));
+        switch ($role->getType()) {
+            case Role::TYPE_TRAINING_MANAGER:
+                $this->tm_assocs->batchAddUsersForTrainingManager($tgt_subs, $user);
+                $this->log->info("add training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
+                break;
+            case Role::TYPE_SUPERVISOR:
+                $this->su_assocs->batchAddUsersForSupervisor($tgt_subs, $user);
+                $this->log->info("add supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
+                break;
+            default:
+                goto out_bad_role;
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected subordinates were successfully added'
+        );
+
+        return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+
+        out_bad_role:
+        $this->trigger_request_debug(__METHOD__);
+        $this->flash()->add(MessageTypes::WARNING,
+                            'We could not properly determine the state of your account. ' .
+                            'Please contact the site administrator.');
+
+        return $this->redirect('/');
+    }
+
+    public function do_subordinates_remove(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $role = $this->roles->fetch($user->getRole());
+
+        if ($role === null) {
+            goto out_bad_role;
+        }
+
+        $params = [
+            'del_users',
+        ];
+
+        if (!$this->checkParameters($params)) {
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $del_users = $this->get('del_users');
+
+        if (!is_array($del_users)) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The submitted data was malformed'
+            );
+
+            $this->trigger_request_debug(__METHOD__);
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $tgt_subs = $this->users->fetchArray($del_users);
+
+        if (!$tgt_subs) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The selected users were not valid'
+            );
+
+            return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+        }
+
+        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
+            return "{$v->getName()} [{$v->getUuid()}]";
+        }, $tgt_subs));
+        switch ($role->getType()) {
+            case Role::TYPE_TRAINING_MANAGER:
+                foreach ($tgt_subs as $del_user) {
+                    $this->tm_assocs->remove($del_user, $user);
+                }
+                $this->log->info("remove training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
+                break;
+            case Role::TYPE_SUPERVISOR:
+                foreach ($tgt_subs as $del_user) {
+                    $this->su_assocs->remove($del_user, $user);
+                }
+                $this->log->info("remove supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
+                break;
+            default:
+                goto out_bad_role;
+        }
+
+        $this->flash()->add(
+            MessageTypes::SUCCESS,
+            'The selected subordinates were successfully removed'
+        );
+
+        return $this->redirect("/admin/users/{$user->getUuid()}/subordinates");
+
+        out_bad_role:
+        $this->trigger_request_debug(__METHOD__);
+        $this->flash()->add(MessageTypes::WARNING,
+                            'This user must be a training manager or a supervisor to have subordinates');
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
+    }
+
     public function toggle_disabled(string $uuid): Response
     {
         $user = $this->get_user($uuid);
@@ -1009,6 +1160,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'role' => $this->roles->fetch($user->getRole()),
             'afscs' => [
                 'authorized' => array_intersect_key($afscs, array_flip($afsc_assocs->getAuthorized())),
                 'pending' => array_intersect_key($afscs, array_flip($afsc_assocs->getPending())),
@@ -1059,6 +1211,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'role' => $this->roles->fetch($user->getRole()),
             'base' => $base,
             'assocs' => [
                 'su' => $su_assocs,
@@ -1109,6 +1262,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'role' => $this->roles->fetch($user->getRole()),
             'base' => $base,
             'assocs' => [
                 'tm' => $tm_assocs,
@@ -1287,6 +1441,60 @@ class Users extends Admin
             'admin/users/profile.html.twig',
             $data
         );
+    }
+
+    public function show_subordinates(string $uuid): Response
+    {
+        $user = $this->get_user($uuid);
+        $base = $this->bases->fetch($user->getBase());
+        $role = $this->roles->fetch($user->getRole());
+
+        if ($role === null) {
+            goto out_bad_role;
+        }
+
+        $user_sort = [
+            new UserSortOption(UserSortOption::COL_NAME_LAST),
+            new UserSortOption(UserSortOption::COL_NAME_FIRST),
+            new UserSortOption(UserSortOption::COL_RANK),
+            new UserSortOption(UserSortOption::COL_BASE),
+        ];
+
+        switch ($role->getType()) {
+            case Role::TYPE_TRAINING_MANAGER:
+                $cur = $this->users->fetchArray($this->tm_assocs->fetchAllByTrainingManager($user), $user_sort);
+                $available = $this->users->fetchArray($this->tm_assocs->fetchUnassociatedByTrainingManager($user),
+                                                      $user_sort);
+                break;
+            case Role::TYPE_SUPERVISOR:
+                $cur = $this->users->fetchArray($this->su_assocs->fetchAllBySupervisor($user), $user_sort);
+                $available = $this->users->fetchArray($this->su_assocs->fetchUnassociatedBySupervisor($user),
+                                                      $user_sort);
+                break;
+            default:
+                goto out_bad_role;
+        }
+
+        $data = [
+            'user' => $user,
+            'role' => $role,
+            'base' => $base,
+            'assocs' => [
+                'cur' => $cur,
+                'available' => $available,
+            ],
+        ];
+
+        return $this->render(
+            'admin/users/subordinates.html.twig',
+            $data
+        );
+
+        out_bad_role:
+        $this->flash()->add(MessageTypes::WARNING,
+                            'This user must be a training manager or a supervisor to have subordinates');
+
+        return $this->redirect("/admin/users/{$user->getUuid()}");
     }
 
     public function show_delete_incomplete_tests(string $uuid): Response

@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Manage Subordinates" %}
+{% block main %}
+    {% include "blocks/admin/users/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            <span class="text-muted">Manage Subordinates</span> - {{ user.name }}
+        </h3>
+    </div>
+    {% include "blocks/users/sub-assocs-shared.html.twig" with {'url_prefix': '/admin/users/' ~ user.uuid} %}
+{% endblock %}
