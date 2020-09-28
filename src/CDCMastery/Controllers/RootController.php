@@ -210,7 +210,7 @@ class RootController
                 $status
             );
         } catch (LoaderError|RuntimeError|SyntaxError $e) {
-            $this->log->debug(__METHOD__ . " :: {$e}");
+            $this->log->error(__METHOD__ . " :: {$e}");
 
             if ($error_controller) {
                 echo "There was a problem handling your request.";
