@@ -166,6 +166,7 @@ class Users extends Admin
         $this->session->save();
         $term = $this->request->query->get('term');
 
+        $matches = [];
         if (!$term || strlen($term) < 3) {
             goto out_return;
         }
@@ -175,7 +176,6 @@ class Users extends Admin
             $terms = explode(' ', $term);
         }
 
-        $matches = [];
         foreach ($terms as $term) {
             $matches[] = $this->users->search($term);
         }
