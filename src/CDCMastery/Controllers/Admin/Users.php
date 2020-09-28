@@ -321,7 +321,7 @@ class Users extends Admin
             goto out_return;
         }
 
-        if (!$this->auth_helpers->assert_admin() && $role !== $user->getRole()) {
+        if ($role && !$this->auth_helpers->assert_admin() && $role !== $user->getRole()) {
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'Your account type cannot change the role for this user'
