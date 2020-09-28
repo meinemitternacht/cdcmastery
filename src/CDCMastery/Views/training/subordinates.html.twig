@@ -53,8 +53,21 @@
                     <fieldset>
                         <legend>Current Associations</legend>
                         {% if assocs.cur %}
-                            <div class="form-group cur-assocs-list">
+                            <div class="form-group cur-assocs-list" id="cur-sub-assocs">
                                 <fieldset>
+                                    <div class="row">
+                                        <div class="col-xs-1">
+                                            <input type="checkbox"
+                                                   id="cur-sub-checkall"
+                                                   value="1"
+                                                   onclick="check_all(this.id, 'cur-sub-assocs')">
+                                        </div>
+                                        <div class="col-xs-11">
+                                            <label for="cur-sub-checkall" class="text-info">
+                                                Select All
+                                            </label>
+                                        </div>
+                                    </div>
                                     {% for assoc_user in assocs.cur %}
                                         <div class="row">
                                             <div class="col-xs-1">
