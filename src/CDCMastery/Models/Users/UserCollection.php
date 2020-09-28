@@ -17,7 +17,6 @@ use CDCMastery\Models\Sorting\Users\UserSortOption;
 use DateTime;
 use Monolog\Logger;
 use mysqli;
-use RuntimeException;
 
 class UserCollection
 {
