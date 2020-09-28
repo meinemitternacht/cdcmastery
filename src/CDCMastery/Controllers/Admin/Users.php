@@ -1699,6 +1699,7 @@ class Users extends Admin
             $template,
             [
                 'user' => $user,
+                'role' => $this->roles->fetch($user->getRole()),
                 'tests' => $filteredList,
                 'pagination' => $pagination,
                 'sort' => [
