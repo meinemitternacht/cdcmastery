@@ -8,7 +8,7 @@
         {% if disableNewTest %}
             <div class="col-md-12">
                 <div class="alert alert-info">
-                    You have too many incomplete tests.  Please finish one before starting a new test.
+                    You have too many incomplete tests. Please finish one before starting a new test.
                 </div>
             </div>
         {% endif %}
@@ -35,12 +35,12 @@
                                         <div class="checkbox new-test-afsc">
                                             <label for="afsc-{{ afsc.uuid }}"
                                                    class="control-label new-test-afsc"
-                                                   title="{{ afsc.name }} -- {{ afsc.version }}">
+                                                   title="{{ afsc.name }} {% if afsc.editCode %}[EC {{ afsc.editCode }}]{% else %}{{ afsc.version }}{% endif %}">
                                                 <input type="checkbox"
                                                        name="afscs[]"
                                                        id="afsc-{{ afsc.uuid }}"
                                                        value="{{ afsc.uuid }}">
-                                                {{ afsc.name|length > 45 ? afsc.name|slice(0, 45) ~ '...' : afsc.name }}
+                                                {{ afsc.name|strtr(45) }}
                                                 {% if afsc.editCode %}
                                                     <span class="badge badge-info badge-sm">
                                                         EC {{ afsc.editCode }}
@@ -72,7 +72,12 @@
                             <fieldset>
                                 <div class="col-md-10 col-md-offset-2">
                                     <button type="reset" class="btn btn-default">Reset</button>
-                                    <button type="submit" class="btn btn-primary"{% if disableNewTest %} disabled="disabled"{% endif %}>Start Test</button>
+                                    <button type="button"
+                                            onclick="disable_submit(this)"
+                                            class="btn btn-primary ld-ext-right hovering"{% if disableNewTest %} disabled="disabled"{% endif %}>
+                                        Start Test
+                                        <div class="ld ld-ring ld-spin"></div>
+                                    </button>
                                 </div>
                             </fieldset>
                         </div>
@@ -97,7 +102,7 @@
                         {% for test in tests %}
                             <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
                                 <td title="{{ test.afsc }}">
-                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc  }}
+                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}
                                 </td>
                                 <td>{{ test.questions }}</td>
                                 <td>{{ test.time.started }}</td>

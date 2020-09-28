@@ -24,11 +24,13 @@
     {% endfor %}
 
     <script>
-        function disable_sign_in() {
-            let form = document.getElementById('sign-in-form');
-            let btn = document.getElementById('sign-in-btn');
+        function disable_submit(btn) {
             btn.setAttribute('disabled', 'disabled');
-            form.submit();
+            btn.classList.add('running');
+
+            setTimeout(function () {
+                btn.form.submit();
+            }, 500);
         }
 
         function check_all(id, pID) {

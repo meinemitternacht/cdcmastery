@@ -318,20 +318,20 @@ SQL;
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
             return;
         }
+        if (!$stmt->bind_param('ssi',
+                               $userUuid,
+                               $afscUuid,
+                               $authorized)) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            return;
+        }
 
         foreach ($afscs as $afsc) {
             $afscUuid = $afsc->getUuid();
 
-            if (!$stmt->bind_param('ssi',
-                                   $userUuid,
-                                   $afscUuid,
-                                   $authorized) ||
-                !$stmt->execute()) {
+            if (!$stmt->execute()) {
                 DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
-                continue;
             }
-
-            $stmt->reset();
         }
 
         $stmt->close();

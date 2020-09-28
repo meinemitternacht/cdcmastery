@@ -171,7 +171,12 @@
         </div>
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center">
-                <button type="submit" class="btn btn-success">Create Account</button>
+                <button type="button"
+                        onclick="disable_submit(this)"
+                        class="btn btn-success ld-ext-right hovering">
+                    Create Account
+                    <div class="ld ld-ring ld-spin"></div>
+                </button>
             </div>
         </div>
     </form>
