@@ -67,8 +67,8 @@ class UserHelpers
 
         if (!$keyed) {
             return $show_special
-                ? array_merge($enlisted, $officer, $special)
-                : array_merge($enlisted, $officer);
+                ? array_merge($enlisted, $officer, $civilian, $special)
+                : array_merge($enlisted, $officer, $civilian);
         }
 
         if (!$show_special) {
