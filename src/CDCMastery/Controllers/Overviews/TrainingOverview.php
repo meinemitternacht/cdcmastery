@@ -808,8 +808,8 @@ class TrainingOverview extends RootController
 
         return $this->render(
             $time_completed
-                ? 'training/users/tests/complete.html.twig'
-                : 'training/users/tests/incomplete.html.twig',
+                ? 'training/users/tests/completed.html.twig'
+                : 'training/users/tests/incompleted.html.twig',
             $data
         );
     }

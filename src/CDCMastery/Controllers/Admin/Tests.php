@@ -115,8 +115,8 @@ class Tests extends Admin
 
         return $this->render(
             $time_completed
-                ? 'admin/tests/complete.html.twig'
-                : 'admin/tests/incomplete.html.twig',
+                ? 'admin/tests/completed.html.twig'
+                : 'admin/tests/incompleted.html.twig',
             $data
         );
     }

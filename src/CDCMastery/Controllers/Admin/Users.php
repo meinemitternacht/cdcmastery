@@ -1595,8 +1595,8 @@ class Users extends Admin
 
         return $this->render(
             $time_completed
-                ? 'admin/users/tests/complete.html.twig'
-                : 'admin/users/tests/incomplete.html.twig',
+                ? 'admin/users/tests/completed.html.twig'
+                : 'admin/users/tests/incompleted.html.twig',
             $data
         );
     }
