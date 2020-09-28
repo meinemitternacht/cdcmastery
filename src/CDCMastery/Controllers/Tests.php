@@ -203,10 +203,21 @@ class Tests extends RootController
         $afscs = $this->get('afscs');
         $numQuestions = $this->filter('numQuestions', FILTER_VALIDATE_INT);
 
-        if (!is_array($afscs) || count($afscs) === 0) {
+        $n_afscs = count($afscs);
+        if (!is_array($afscs) || $n_afscs === 0) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'You must select at least one AFSC'
+            );
+
+            return $this->redirect('/tests/new');
+        }
+
+        $max_afscs = $this->config->get(['testing', 'maxCategories']);
+        if ($n_afscs > $max_afscs) {
+            $this->flash()->add(
+                MessageTypes::WARNING,
+                "You can only take a test using a maximum of {$max_afscs} AFSCs"
             );
 
             return $this->redirect('/tests/new');
