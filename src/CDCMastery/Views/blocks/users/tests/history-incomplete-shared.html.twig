@@ -13,10 +13,10 @@
                     {% if users %}
                         <th>User</th>
                     {% endif %}
-                    <th colspan="2">Answered / Total</th>
+                    <th colspan="2" class="text-center">{{ sortlink('numAnswered','Answered',sort)|raw }} / Total</th>
                     <th>Current</th>
                     <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
-                    <th class="col-xs-2">{{ sortlink('numAnswered','Progress',sort)|raw }}</th>
+                    <th class="col-xs-2">Progress</th>
                 </tr>
                 </thead>
                 <tbody>
