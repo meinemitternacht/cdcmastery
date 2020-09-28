@@ -154,10 +154,17 @@ class Profile extends RootController
             $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
                 return "{$v->getName()} [{$v->getUuid()}]";
             }, $tgt_afscs_fouo));
-            $pending_str = !$override
-                ? ' pending'
-                : null;
-            $this->log->info("add{$pending_str} afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
+
+            $pending_str = ' pending';
+            if ($override) {
+                $pending_str = null;
+            }
+
+            $msg = "add{$pending_str} afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}";
+
+            $override
+                ? $this->log->info($msg)
+                : $this->log->alert($msg);
 
             $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, $override);
         }
