@@ -858,6 +858,7 @@ class Users extends Admin
         }
 
         $this->activations->save($activation);
+        $this->log->info("queue activation :: {$activation->getCode()} :: user {$user->getName()} [{$user->getUuid()}]");
         $this->log->info("resend user activation :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(MessageTypes::SUCCESS,

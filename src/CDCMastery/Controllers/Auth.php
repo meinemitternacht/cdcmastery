@@ -565,6 +565,8 @@ class Auth extends RootController
         $this->users->save($user);
         $activation = Activation::factory($user);
         $this->activations->save($activation);
+        $this->log->info("queue activation :: {$activation->getCode()} :: user {$user->getName()} [{$user->getUuid()}]");
+
         try {
             $system_user = $this->users->fetch(SYSTEM_UUID);
 
