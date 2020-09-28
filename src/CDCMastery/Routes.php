@@ -481,6 +481,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
         ]);
 
         $r->addGroup('/users', static function (RouteCollector $r) {
+            /** @uses \CDCMastery\Controllers\Admin\Users::do_ajax_user_search() */
+            $r->addRoute('GET', '/search', [
+                Admin\Users::class,
+                'do_ajax_user_search',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
             $r->addRoute('GET', '/{uuid}', [
                 Admin\Users::class,

@@ -426,8 +426,7 @@ SQL;
         return $this->create_objects($rows);
     }
 
-    /* @todo proper filter function for each column */
-
+    // @todo proper filter function for each column
     public function filterByBase(Base $base, ?array $sort_options = null): array
     {
         if (!$base->getUuid()) {
@@ -680,5 +679,66 @@ SQL;
 
             $this->save($user);
         }
+    }
+
+    public function search(string $term): array
+    {
+        $term = $this->db->real_escape_string($term);
+
+        $clauses = [
+            "userData.userFirstName LIKE '%{$term}%'",
+            "userData.userEmail LIKE '%{$term}%'",
+            "userData.userHandle LIKE '%{$term}%'",
+        ];
+
+        $clause_str = implode(' OR ', $clauses);
+
+        $qry = <<<SQL
+# noinspection SqlResolve
+
+SELECT
+  userData.uuid,
+  userFirstName,
+  userLastName,
+  userHandle,
+  userPassword,
+  userLegacyPassword,
+  userEmail,
+  userRank,
+  userDateRegistered,
+  userLastLogin,
+  userLastActive,
+  userTimeZone,
+  userRole,
+  userOfficeSymbol,
+  userBase,
+  userDisabled,
+  reminderSent
+FROM userData
+WHERE {$clause_str}
+ORDER BY userData.userLastName,
+         userData.userFirstName,
+         userData.userRank
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $rows = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $rows[] = $row;
+        }
+
+        $res->free();
+
+        return $this->create_objects($rows);
     }
 }

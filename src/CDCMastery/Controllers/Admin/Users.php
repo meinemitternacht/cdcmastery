@@ -41,6 +41,7 @@ use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
 use Monolog\Logger;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Throwable;
@@ -158,6 +159,55 @@ class Users extends Admin
             unset($e);
             return null;
         }
+    }
+
+    public function do_ajax_user_search(): void
+    {
+        $this->session->save();
+        $term = $this->request->query->get('term');
+
+        if (!$term || strlen($term) < 3) {
+            goto out_return;
+        }
+
+        $terms = [$term];
+        if (str_contains($term, ' ')) {
+            $terms = explode(' ', $term);
+        }
+
+        $matches = [];
+        foreach ($terms as $term) {
+            $matches[] = $this->users->search($term);
+        }
+
+        if ($matches) {
+            $matches = count($matches) > 1
+                ? array_intersect_key(...$matches)
+                : array_shift($matches);
+
+            if (!$matches) {
+                goto out_return;
+            }
+
+            $matches = array_map(static function (User $v): array {
+                return [
+                    'uuid' => $v->getUuid(),
+                    'name' => "{$v->getLastName()}, {$v->getFirstName()} {$v->getRank()}",
+                    'url' => "/admin/users/{$v->getUuid()}",
+                ];
+            }, $matches);
+
+            uasort($matches, static function (array $a, array $b): int {
+                return $a[ 'name' ] <=> $b[ 'name' ];
+            });
+
+            $matches = array_slice($matches, 0, 30);
+        }
+
+        out_return:
+        /** @noinspection UnusedFunctionResultInspection */
+        (new JsonResponse(array_values($matches)))->send();
+        exit;
     }
 
     public function do_edit(string $uuid): Response

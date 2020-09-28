@@ -102,6 +102,39 @@
                     </li>
                 {% endif %}
             </ul>
+            {% if cur_url == "/admin/users" %}
+                <form class="navbar-form navbar-left" action="#">
+                    <div class="form-group" id="user-ajax">
+                        <input type="text" class="typeahead user-ajax form-control input-sm" placeholder="Search"
+                               title="Search">
+                    </div>
+                </form>
+                <script>
+                    let userAjax = new Bloodhound({
+                        datumTokenizer: function (data) {
+                            return Bloodhound.tokenizers.obj.whitespace(data.name);
+                        },
+                        queryTokenizer: Bloodhound.tokenizers.whitespace,
+                        remote: {
+                            url: '/admin/users/search?term=%QUERY',
+                            wildcard: '%QUERY'
+                        }
+                    });
+
+                    $('#user-ajax .typeahead').typeahead(null, {
+                        name: 'user-results',
+                        limit: 30,
+                        display: function (e) {
+                            return e.name;
+                        },
+                        source: userAjax
+                    });
+
+                    $('input.user-ajax').on('typeahead:selected', function (event, selected_object) {
+                        window.location.href = selected_object.url
+                    });
+                </script>
+            {% endif %}
         </div>
     </div>
 </nav>
