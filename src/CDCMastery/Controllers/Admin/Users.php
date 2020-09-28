@@ -167,7 +167,8 @@ class Users extends Admin
         $term = $this->request->query->get('term');
 
         $matches = [];
-        if (!$term || strlen($term) < 3) {
+        $len = strlen($term);
+        if (!$term || $len < 3 || $len > 255) { // min 3 characters, max 255 characters
             goto out_return;
         }
 
@@ -176,6 +177,7 @@ class Users extends Admin
             $terms = explode(' ', $term);
         }
 
+        $terms = array_slice($terms, 0, 5); // maximum of 5 terms
         foreach ($terms as $term) {
             $matches[] = $this->users->search($term);
         }
