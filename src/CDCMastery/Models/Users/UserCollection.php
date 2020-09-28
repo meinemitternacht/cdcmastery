@@ -685,6 +685,7 @@ SQL;
         $term = $this->db->real_escape_string($term);
 
         $clauses = [
+            "userData.uuid LIKE '{$term}%'",
             "userData.userFirstName LIKE '%{$term}%'",
             "userData.userEmail LIKE '%{$term}%'",
             "userData.userHandle LIKE '%{$term}%'",
