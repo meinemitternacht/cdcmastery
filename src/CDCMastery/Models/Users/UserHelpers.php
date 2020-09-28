@@ -56,6 +56,11 @@ class UserHelpers
             'Gen' => 'General',
         ];
 
+        $civilian = [
+            'CTR' => 'Contractor',
+            'CIV' => 'Civilian (other)',
+        ];
+
         $special = [
             'SSgt (Ret.)' => 'Staff Sergeant (Retired)',
         ];
@@ -70,12 +75,14 @@ class UserHelpers
             return [
                 'Enlisted' => $enlisted,
                 'Officer' => $officer,
+                'Civilian' => $civilian,
             ];
         }
 
         return [
             'Enlisted' => $enlisted,
             'Officer' => $officer,
+            'Civilian' => $civilian,
             'Special' => $special,
         ];
     }
