@@ -8,9 +8,8 @@ use CDCMastery\Models\FlashCards\CategoryCollection;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 
-
 /** @var ContainerInterface $c */
-$c = require "../src/CDCMastery/Bootstrap.php";
+$c = require realpath(__DIR__) . "/../src/CDCMastery/Bootstrap.php";
 
 /** @var Logger $log */
 $log = $c->get(Logger::class);
