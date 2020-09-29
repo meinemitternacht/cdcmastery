@@ -108,38 +108,61 @@
                 {% endif %}
             </ul>
             {% if cur_url == "/admin/users" %}
-                <form class="navbar-form navbar-left" action="#">
+                <form class="navbar-form navbar-left hidden-xs hidden-sm" action="#">
                     <div class="form-group" id="user-ajax">
-                        <input type="text" class="typeahead user-ajax form-control input-sm" placeholder="Search"
+                        <input type="text" class="typeahead user-ajax form-control input-sm"
+                               placeholder="Search"
                                title="Search">
                     </div>
                 </form>
-                <script>
-                    let userAjax = new Bloodhound({
-                        datumTokenizer: function (data) {
-                            return Bloodhound.tokenizers.obj.whitespace(data.name);
-                        },
-                        queryTokenizer: Bloodhound.tokenizers.whitespace,
-                        remote: {
-                            url: '/admin/users/search?term=%QUERY',
-                            wildcard: '%QUERY'
-                        }
-                    });
-
-                    $('#user-ajax .typeahead').typeahead(null, {
-                        name: 'user-results',
-                        limit: 30,
-                        display: function (e) {
-                            return e.name;
-                        },
-                        source: userAjax
-                    });
-
-                    $('input.user-ajax').on('typeahead:selected', function (event, selected_object) {
-                        window.location.href = selected_object.url
-                    });
-                </script>
             {% endif %}
         </div>
     </div>
 </nav>
+{% if cur_url == "/admin/users" %}
+    <div class="row hidden-md hidden-lg">
+        <div class="col-xs-12">
+            <form class="" action="#">
+                <div class="form-group form-group-lg" id="user-ajax-mobile">
+                    <input type="text" class="typeahead user-ajax form-control input-sm"
+                           placeholder="Search"
+                           title="Search">
+                </div>
+            </form>
+        </div>
+        <script>
+            let userAjax = new Bloodhound({
+                datumTokenizer: function (data) {
+                    return Bloodhound.tokenizers.obj.whitespace(data.name);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/admin/users/search?term=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#user-ajax-mobile .typeahead').typeahead(null, {
+                name: 'user-results-mobile',
+                limit: 10,
+                display: function (e) {
+                    return e.name;
+                },
+                source: userAjax
+            });
+
+            $('#user-ajax .typeahead').typeahead(null, {
+                name: 'user-results',
+                limit: 30,
+                display: function (e) {
+                    return e.name;
+                },
+                source: userAjax
+            });
+
+            $('input.user-ajax').on('typeahead:selected', function (event, selected_object) {
+                window.location.href = selected_object.url
+            });
+        </script>
+    </div>
+{% endif %}
