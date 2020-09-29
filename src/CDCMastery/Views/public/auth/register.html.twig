@@ -1,172 +1,193 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Create Account" %}
 {% block main %}
-    <div class="page-header">
-        <h3>Create {{ type_display }} Account</h3>
-    </div>
     <form action="/auth/register/{{ type }}"
           method="POST">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 well well-lg">
-                <fieldset>
-                    <legend>Account Details</legend>
-                    <div class="form-group">
-                        <label for="username">
-                            Username
-                        </label>
-                        <input class="form-control"
-                               name="username"
-                               id="username"
-                               placeholder="Enter username..."
-                               value="{{ tmp_form.username }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">
-                            E-mail
-                        </label>
-                        <div class="alert alert-warning">
-                            E-mails to addresses ending in <strong>.mil</strong> are having issues being delivered.
-                            Please use your personal e-mail address until this issue is resolved.
-                        </div>
-                        <input class="form-control"
-                               type="email"
-                               name="email"
-                               id="email"
-                               placeholder="Enter e-mail..."
-                               value="{{ tmp_form.email }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">
-                            Password
-                        </label>
-                        <input class="form-control"
-                               type="password"
-                               name="password"
-                               id="password"
-                               placeholder="Enter password...">
-                        <div class="help-block">
-                            Your password must be at least eight characters long and contain one character from each of
-                            the following groups:
-                            <ul>
-                                <li>
-                                    &grave; ~ ! @ # $ % ^ &amp; * ( ) - = _ + , . / &lt; &gt; ? ; &apos; : &quot; [ ] {
-                                    } |
-                                </li>
-                                <li>A-Z</li>
-                                <li>a-z</li>
-                                <li>0-9</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="password-confirm">
-                            Password Confirmation
-                        </label>
-                        <input class="form-control"
-                               type="password"
-                               name="password_confirm"
-                               id="password-confirm"
-                               placeholder="Re-enter password...">
-                    </div>
-                </fieldset>
+            <div class="col-md-8 col-md-offset-2">
+                <div class="page-header">
+                    <h3>Create {{ type_display }} Account</h3>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 well well-lg">
-                <fieldset>
-                    <legend>Personal Details</legend>
-                    <div class="form-group">
-                        <label for="first_name">
-                            First Name
-                        </label>
-                        <input class="form-control"
-                               id="first_name"
-                               name="first_name"
-                               value="{{ tmp_form.first_name }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="last_name">
-                            Last Name
-                        </label>
-                        <input class="form-control"
-                               id="last_name"
-                               name="last_name"
-                               value="{{ tmp_form.last_name }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="rank">
-                            Rank
-                        </label>
-                        <select name="rank"
-                                id="rank"
-                                size="1"
-                                class="form-control">
-                            {% for rank_group, rank_opts in ranks %}
-                                <optgroup label="{{ rank_group }}">
-                                    {% for rank_opt, rank_name in rank_opts %}
-                                        <option value="{{ rank_opt }}"{% if tmp_form.rank == rank_opt %} SELECTED{% endif %}>{{ rank_name }}</option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </fieldset>
+            <div class="col-md-8 col-md-offset-2">
+                <div class="alert alert-info">
+                    Thanks for choosing CDCMastery! Please fill out the form below in order to create an account. Make
+                    sure your e-mail address is entered correctly, since the system will send an activation e-mail to
+                    verify the address.
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 well well-lg">
-                <fieldset>
-                    <legend>Locale</legend>
-                    <div class="form-group">
-                        <label for="base">
-                            Base
-                        </label>
-                        <select name="base"
-                                id="base"
-                                size="1"
-                                class="form-control">
-                            <option value="">Choose Base...</option>
-                            {% for base_opt in bases %}
-                                <option value="{{ base_opt.uuid }}"{% if tmp_form.base == base_opt.uuid %} SELECTED{% endif %}>{{ base_opt.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="office_symbol">
-                            Office Symbol
-                        </label>
-                        <select name="office_symbol"
-                                id="office_symbol"
-                                size="1"
-                                class="form-control">
-                            <option value="">(not listed)</option>
-                            {% for symbol_opt in symbols %}
-                                <option value="{{ symbol_opt.uuid }}"{% if tmp_form.office_symbol == symbol_opt.uuid %} SELECTED{% endif %}>{{ symbol_opt.symbol }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="time_zone">
-                            Time Zone
-                        </label>
-                        <select name="time_zone"
-                                id="time_zone"
-                                size="1"
-                                class="form-control">
-                            <option value="">Choose Time Zone...</option>
-                            {% for tz_region, tz_opts in time_zones %}
-                                <optgroup label="{{ tz_region }}">
-                                    {% for tz_opt in tz_opts %}
-                                        <option value="{{ tz_opt }}"{% if tmp_form.time_zone == tz_opt %} SELECTED{% endif %}>{{ tz_opt }}</option>
-                                    {% endfor %}
-                                </optgroup>
-                            {% endfor %}
-                        </select>
-                        <div class="help-block">
-                            America/New_York is Eastern Time
+            <div class="col-md-8 col-md-offset-2">
+                <div class="well well-lg">
+                    <fieldset>
+                        <legend>Account Details</legend>
+                        <div class="form-group">
+                            <label for="username">
+                                Username
+                            </label>
+                            <input class="form-control"
+                                   name="username"
+                                   id="username"
+                                   placeholder="Enter username..."
+                                   value="{{ tmp_form.username }}">
                         </div>
-                    </div>
-                </fieldset>
+                        <div class="form-group">
+                            <label for="email">
+                                E-mail
+                            </label>
+                            <div class="alert alert-warning">
+                                E-mails to addresses ending in <strong>.mil</strong> are having issues being delivered.
+                                Please use your personal e-mail address until this issue is resolved.
+                            </div>
+                            <input class="form-control"
+                                   type="email"
+                                   name="email"
+                                   id="email"
+                                   placeholder="Enter e-mail..."
+                                   value="{{ tmp_form.email }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">
+                                Password
+                            </label>
+                            <input class="form-control"
+                                   type="password"
+                                   name="password"
+                                   id="password"
+                                   placeholder="Enter password...">
+                            <div class="help-block">
+                                Your password must be at least eight characters long and contain one character from each
+                                of
+                                the following groups:
+                                <ul>
+                                    <li>
+                                        &grave; ~ ! @ # $ % ^ &amp; * ( ) - = _ + , . / &lt; &gt; ? ; &apos; : &quot; [
+                                        ] {
+                                        } |
+                                    </li>
+                                    <li>A-Z</li>
+                                    <li>a-z</li>
+                                    <li>0-9</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password-confirm">
+                                Password Confirmation
+                            </label>
+                            <input class="form-control"
+                                   type="password"
+                                   name="password_confirm"
+                                   id="password-confirm"
+                                   placeholder="Re-enter password...">
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="well well-lg">
+                    <fieldset>
+                        <legend>Personal Details</legend>
+                        <div class="form-group">
+                            <label for="first_name">
+                                First Name
+                            </label>
+                            <input class="form-control"
+                                   id="first_name"
+                                   name="first_name"
+                                   value="{{ tmp_form.first_name }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name">
+                                Last Name
+                            </label>
+                            <input class="form-control"
+                                   id="last_name"
+                                   name="last_name"
+                                   value="{{ tmp_form.last_name }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="rank">
+                                Rank
+                            </label>
+                            <select name="rank"
+                                    id="rank"
+                                    size="1"
+                                    class="form-control">
+                                {% for rank_group, rank_opts in ranks %}
+                                    <optgroup label="{{ rank_group }}">
+                                        {% for rank_opt, rank_name in rank_opts %}
+                                            <option value="{{ rank_opt }}"{% if tmp_form.rank == rank_opt %} SELECTED{% endif %}>{{ rank_name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="well well-lg">
+                    <fieldset>
+                        <legend>Locale</legend>
+                        <div class="form-group">
+                            <label for="base">
+                                Base
+                            </label>
+                            <select name="base"
+                                    id="base"
+                                    size="1"
+                                    class="form-control">
+                                <option value="">Choose Base...</option>
+                                {% for base_opt in bases %}
+                                    <option value="{{ base_opt.uuid }}"{% if tmp_form.base == base_opt.uuid %} SELECTED{% endif %}>{{ base_opt.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="office_symbol">
+                                Office Symbol
+                            </label>
+                            <select name="office_symbol"
+                                    id="office_symbol"
+                                    size="1"
+                                    class="form-control">
+                                <option value="">(not listed)</option>
+                                {% for symbol_opt in symbols %}
+                                    <option value="{{ symbol_opt.uuid }}"{% if tmp_form.office_symbol == symbol_opt.uuid %} SELECTED{% endif %}>{{ symbol_opt.symbol }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_zone">
+                                Time Zone
+                            </label>
+                            <select name="time_zone"
+                                    id="time_zone"
+                                    size="1"
+                                    class="form-control">
+                                <option value="">Choose Time Zone...</option>
+                                {% for tz_region, tz_opts in time_zones %}
+                                    <optgroup label="{{ tz_region }}">
+                                        {% for tz_opt in tz_opts %}
+                                            <option value="{{ tz_opt }}"{% if tmp_form.time_zone == tz_opt %} SELECTED{% endif %}>{{ tz_opt }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                            <div class="help-block">
+                                America/New_York is Eastern Time
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
             </div>
         </div>
         <div class="row">
