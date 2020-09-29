@@ -55,6 +55,6 @@ if (!$new_cats) {
 
 $cats->saveArray($new_cats);
 
-foreach ($logs as $log) {
-    $log->info($log);
+foreach ($logs as $entry) {
+    $log->info($entry);
 }
