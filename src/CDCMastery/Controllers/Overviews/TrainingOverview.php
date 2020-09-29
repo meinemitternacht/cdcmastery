@@ -775,6 +775,16 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/users/{$user->getUuid()}");
         }
 
+        if (!$test->getTimeCompleted() &&
+            $user->getUuid() === $this->auth_helpers->get_user_uuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'You cannot view your own incomplete test'
+            );
+
+            return $this->redirect("/training/users/{$user->getUuid()}");
+        }
+
         $this->check_subordinate($cur_user, $cur_role, $user);
         $test_data = $this->test_data_helpers->list($test);
 

@@ -84,6 +84,16 @@ class Tests extends Admin
             return $this->redirect("/admin/tests");
         }
 
+        if (!$test->getTimeCompleted() &&
+            $user->getUuid() === $this->auth_helpers->get_user_uuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'You cannot view your own incomplete test'
+            );
+
+            return $this->redirect("/admin/tests");
+        }
+
         $test_data = $this->test_data->list($test);
 
         $time_started = $test->getTimeStarted();
