@@ -1021,6 +1021,33 @@ class Users extends Admin
     public function toggle_disabled(string $uuid): Response
     {
         $user = $this->get_user($uuid);
+
+        if (!$this->auth_helpers->assert_admin()) {
+            $role = $this->roles->fetch($user->getRole());
+
+            if (!$role) {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'The system encountered an error fetching the specified user'
+                );
+
+                return $this->redirect("/admin/users/{$user->getUuid()}");
+            }
+
+            switch ($role->getType()) {
+                case Role::TYPE_ADMIN:
+                case Role::TYPE_SUPER_ADMIN:
+                case Role::TYPE_QUESTION_EDITOR:
+                    $this->log->alert("disable user fail :: tgt user {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
+                    $this->flash()->add(
+                        MessageTypes::ERROR,
+                        'Your account type cannot disable that user'
+                    );
+
+                    return $this->redirect("/admin/users/{$user->getUuid()}");
+            }
+        }
+
         $was_disabled = $user->isDisabled();
         $user->setDisabled(!$was_disabled);
         $this->users->save($user);
