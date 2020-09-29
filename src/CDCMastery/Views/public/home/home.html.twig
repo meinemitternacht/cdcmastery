@@ -4,7 +4,7 @@
         <div class="col-xs-12">
             <div class="jumbotron front-tracks">
                 <h1>Get on the right track for your career</h1>
-                <p style="text-align: justify">
+                <p>
                     CDCMastery is an application developed to help you succeed on assessments of your career knowledge.
                     It's
                     free to use, and we're always here when you need us. Register now to join
@@ -22,7 +22,7 @@
                     <h4>Sign in</h4>
                 </div>
                 <div class="panel-body">
-                    <form action="/auth/login" method="POST">
+                    <form action="/auth/login" method="POST" onsubmit="return disable_submit(this);">
                         <div class="form-group">
                             <label for="username">Username / E-mail</label>
                             <input type="text"
@@ -40,8 +40,7 @@
                                    autocomplete="current-password">
                         </div>
                         <div class="text-center">
-                            <button type="button"
-                                    onclick="disable_submit(this)"
+                            <button type="submit"
                                     class="btn btn-default ld-ext-right hovering">
                                 Sign In
                                 <div class="ld ld-ring ld-spin"></div>

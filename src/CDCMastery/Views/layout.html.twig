@@ -24,13 +24,29 @@
     {% endfor %}
 
     <script>
-        function disable_submit(btn) {
+        function disable_submit(form) {
+            let btn;
+            let btns = document.querySelectorAll('[type="submit"]');
+            if (btns === null) {
+                return true;
+            }
+
+            for (let i = 0; i < btns.length; i++) {
+                if (btns[i].form !== form) {
+                    continue;
+                }
+
+                btn = btns[i];
+                break;
+            }
+
             btn.setAttribute('disabled', 'disabled');
             btn.classList.add('running');
 
             setTimeout(function () {
                 btn.form.submit();
             }, 500);
+            return false;
         }
 
         function check_all(id, pID) {

@@ -8,7 +8,7 @@
                     <h4>Sign in</h4>
                 </div>
                 <div class="panel-body">
-                    <form action="/auth/login" method="POST" id="sign-in-form">
+                    <form action="/auth/login" method="POST" onsubmit="return disable_submit(this);">
                         <div class="form-group">
                             <label for="username">Username / E-mail</label>
                             <input type="text"
@@ -26,8 +26,7 @@
                                    autocomplete="current-password">
                         </div>
                         <div class="text-center">
-                            <button type="button"
-                                    onclick="disable_submit(this)"
+                            <button type="submit"
                                     class="btn btn-default ld-ext-right hovering">
                                 Sign In
                                 <div class="ld ld-ring ld-spin"></div>

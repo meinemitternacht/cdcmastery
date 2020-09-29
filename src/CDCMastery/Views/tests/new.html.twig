@@ -14,7 +14,7 @@
         {% endif %}
         <div class="col-md-6{% if not tests %} col-md-offset-3{% endif %}">
             <div class="well">
-                <form action="/tests/new" method="POST">
+                <form action="/tests/new" method="POST" onsubmit="return disable_submit(this);">
                     <fieldset>
                         <legend>Test Options</legend>
                         <div class="form-group">
@@ -72,8 +72,7 @@
                             <fieldset>
                                 <div class="col-md-10 col-md-offset-2">
                                     <button type="reset" class="btn btn-default">Reset</button>
-                                    <button type="button"
-                                            onclick="disable_submit(this)"
+                                    <button type="submit"
                                             class="btn btn-primary ld-ext-right hovering"{% if disableNewTest %} disabled="disabled"{% endif %}>
                                         Start Test
                                         <div class="ld ld-ring ld-spin"></div>

@@ -2,7 +2,8 @@
 {% set page_title = "Create Account" %}
 {% block main %}
     <form action="/auth/register/{{ type }}"
-          method="POST">
+          method="POST"
+          onsubmit="return disable_submit(this);">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header">
@@ -203,8 +204,7 @@
         </div>
         <div class="row">
             <div class="col-md-8 col-md-offset-2 text-center">
-                <button type="button"
-                        onclick="disable_submit(this)"
+                <button type="submit"
                         class="btn btn-success ld-ext-right hovering">
                     Create Account
                     <div class="ld ld-ring ld-spin"></div>
