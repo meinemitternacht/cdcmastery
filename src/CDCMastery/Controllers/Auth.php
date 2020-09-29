@@ -370,6 +370,7 @@ class Auth extends RootController
         $params = [
             'username',
             'email',
+            'email_confirm',
             'password',
             'password_confirm',
             'first_name',
@@ -387,7 +388,14 @@ class Auth extends RootController
         }
 
         $username = $this->filter_string_default('username');
-        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
+        $email = $this->filter('email',
+                               null,
+                               FILTER_VALIDATE_EMAIL,
+                               FILTER_NULL_ON_FAILURE);
+        $email_confirm = $this->filter('email',
+                                       null,
+                                       FILTER_VALIDATE_EMAIL,
+                                       FILTER_NULL_ON_FAILURE);
         $rank = $this->filter_string_default('rank');
         $first_name = $this->get('first_name');
         $last_name = $this->get('last_name');
@@ -444,6 +452,15 @@ class Auth extends RootController
             $this->flash()->add(
                 MessageTypes::ERROR,
                 'An account with that e-mail address already exists, please choose another'
+            );
+
+            goto out_error;
+        }
+
+        if ($email !== $email_confirm) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The e-mail addresses you entered do not match'
             );
 
             goto out_error;
