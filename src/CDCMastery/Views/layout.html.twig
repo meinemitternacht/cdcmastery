@@ -69,11 +69,11 @@
             <ul class="nav navbar-nav">
                 <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
                 {% if not error %}
-                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}>
-                        <a href="/stats">Statistics</a>
-                    </li>
                     <li{% if cur_url == "/contact" %} class="active"{% endif %}>
                         <a href="/contact">Contact Us</a>
+                    </li>
+                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}>
+                        <a href="/stats">Statistics</a>
                     </li>
                 {% endif %}
                 {% if logged_in %}
@@ -207,9 +207,9 @@
         </p>
         {% if not error %}
             <p>
-                <a href="/about/disclaimer">Disclaimer</a> |
-                <a href="/about/privacy">Privacy Policy</a> |
-                <a href="/about/terms">Terms of Use</a> |
+                <a href="/Views/public/about/disclaimer">Disclaimer</a> |
+                <a href="/Views/public/about/privacy">Privacy Policy</a> |
+                <a href="/Views/public/about/terms">Terms of Use</a> |
                 <a href="https://github.com/meinemitternacht/CDCMastery">View on GitHub</a>
             </p>
         {% endif %}
