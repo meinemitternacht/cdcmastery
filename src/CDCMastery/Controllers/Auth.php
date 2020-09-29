@@ -179,7 +179,12 @@ class Auth extends RootController
         if (!$activation) {
             $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user already activated :: {$user->getName()} [{$user->getUuid()}");
-            goto out_return;
+            $this->flash()->add(
+                MessageTypes::INFO,
+                "Your account has already been activated.  Please sign in below."
+            );
+
+            return $this->redirect('/auth/login');
         }
 
         $system_user = $this->users->fetch(SYSTEM_UUID);
