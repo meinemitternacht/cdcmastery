@@ -1619,6 +1619,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'role' => $this->roles->fetch($user->getRole()),
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
