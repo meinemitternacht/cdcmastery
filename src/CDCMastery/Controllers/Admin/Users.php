@@ -1557,6 +1557,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'role' => $this->roles->fetch($user->getRole()),
             'tests' => $tests,
         ];
 
