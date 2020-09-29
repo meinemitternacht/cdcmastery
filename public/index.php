@@ -129,25 +129,25 @@ switch ($route[ 0 ]) {
         } catch (NotCallableException $e) {
             $msg = '500: Not Callable :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
+            $log->debug('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
             goto out_error_500;
         } catch (Error $e) {
             $msg = '500: TypeError :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
+            $log->debug('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
             goto out_error_500;
         } catch (AccessDeniedException $e) {
             $msg = '403: Access Denied :: ' . $e;
             $response = new Response($msg, 403);
-            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
+            $log->debug('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->warning($msg);
             goto out_error_403;
         } catch (Exception $e) {
             $msg = '500: Exception :: ' . $e;
             $response = new Response($msg, 500);
-            $log->info('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
+            $log->debug('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
             $log->error($msg);
             goto out_error_500;
         } finally {
@@ -159,7 +159,7 @@ switch ($route[ 0 ]) {
     default:
         $msg = '500: Not routable';
         $response = new Response($msg, 500);
-        $log->info('Request URI: ' . $_SERVER['REQUEST_URI']);
+        $log->debug('Request URI: ' . $_SERVER[ 'REQUEST_URI' ]);
         $log->error($msg);
         break;
 }
