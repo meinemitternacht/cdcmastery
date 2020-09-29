@@ -17,6 +17,14 @@ div.main-container {
                                      supported by Chrome, Edge, Opera and Firefox */
 }
 
+#about-gallery img {
+    cursor: pointer;
+}
+
+#about-gallery .caption {
+    text-align: justify;
+}
+
 .cur-assocs-list {
     max-height: 48em;
     overflow-y: scroll;

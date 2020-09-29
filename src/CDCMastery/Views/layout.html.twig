@@ -67,13 +67,12 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li{% if cur_url == "/" %} class="active"{% endif %}><a href="/">Home</a></li>
                 {% if not error %}
-                    <li{% if cur_url == "/contact" %} class="active"{% endif %}>
-                        <a href="/contact">Contact Us</a>
+                    <li{% if cur_url == "/about" %} class="active"{% endif %}>
+                        <a href="/about">About</a>
                     </li>
-                    <li{% if cur_url starts with "/stats" %} class="active"{% endif %}>
-                        <a href="/stats">Statistics</a>
+                    <li{% if cur_url == "/contact" %} class="active"{% endif %}>
+                        <a href="/contact">Contact</a>
                     </li>
                 {% endif %}
                 {% if logged_in %}

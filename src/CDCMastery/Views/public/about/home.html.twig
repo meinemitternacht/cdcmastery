@@ -1,0 +1,314 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "About" %}
+{% block main %}
+    <div class="row" id="about-gallery">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h3>About CDCMastery</h3>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="list-group">
+                        <a href="/stats"
+                           class="list-group-item list-group-item-info">
+                            View Statistics
+                        </a>
+                        <a href="#taking-tests"
+                           class="list-group-item">
+                            Taking Tests
+                        </a>
+                        <a href="#flash-cards"
+                           class="list-group-item">
+                            Flash Cards
+                        </a>
+                        <a href="#training-panel"
+                           class="list-group-item">
+                            Training Panel
+                        </a>
+                        <a href="#cdc-data"
+                           class="list-group-item">
+                            Questions and Answers
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <div class="well well-lg">
+                        <p>
+                            CDCMastery is a tool used to study Career Development Course (CDC) materials in order to
+                            achieve outstanding results on examinations. This program also helps supervisors and
+                            training managers to better manage the progress of their subordinates. Scroll down to view
+                            an outline of the most important site features.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="taking-tests">
+                <div class="col-xs-12">
+                    <div class="well well-lg">
+                        <h2>Taking Tests</h2>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/test-new_600.png"
+                                         alt="New Test"
+                                         data-featherlight="/images/ss/test-new.png">
+                                    <div class="caption">
+                                        <h4>New Tests</h4>
+                                        <p>
+                                            Select one or more AFSCs and the desired number of questions to start a new
+                                            test
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/test-in-progress-2_600.png"
+                                         alt="Test In Progress"
+                                         data-featherlight="/images/ss/test-in-progress-2.png">
+                                    <div class="caption">
+                                        <h4>Test Navigation</h4>
+                                        <p>
+                                            Click on the correct answer to continue with the next question. Navigate
+                                            between questions by clicking the directional buttons, or by using the
+                                            arrows on your keyboard.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/test-in-progress_600.png"
+                                         alt="Unanswered Questions"
+                                         data-featherlight="/images/ss/test-in-progress.png">
+                                    <div class="caption">
+                                        <h4>Unanswered Questions</h4>
+                                        <p>
+                                            If you have any unanswered questions, they can be shown by clicking
+                                            "Show Unanswered Questions".
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/test-complete_600.png"
+                                         alt="Completed Test"
+                                         data-featherlight="/images/ss/test-complete.png">
+                                    <div class="caption">
+                                        <h4>Completed Test</h4>
+                                        <p>
+                                            When you answer the last question, a button appears that will allow you to
+                                            score your test. After scoring, you can review the results and prepare
+                                            yourself for the next session.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="flash-cards">
+                <div class="col-xs-12">
+                    <div class="well well-lg">
+                        <h2>Flash Cards</h2>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/flash-card-categories_600.png"
+                                         alt="Flash Cards"
+                                         data-featherlight="/images/ss/flash-card-categories.png">
+                                    <div class="caption">
+                                        <h4>Flash Cards</h4>
+                                        <p>
+                                            Selecting "Flash Cards" on the home page will present you with a list of
+                                            categories to choose from. Clicking on a category name, or clicking "Study"
+                                            will start a flash card session.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/flash-card_600.png"
+                                         alt="Study Session"
+                                         data-featherlight="/images/ss/flash-card.png">
+                                    <div class="caption">
+                                        <h4>Study Session</h4>
+                                        <p>
+                                            Click on a card to flip it over and reveal the answer. Navigate through the
+                                            cards by using the buttons, or by using the arrow keys on your keyboard.
+                                            Mobile users can also use swipe actions to go to the next or previous card.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="training-panel">
+                <div class="col-xs-12">
+                    <div class="well well-lg">
+                        <h2>Training Panel</h2>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/training-panel_600.png"
+                                         alt="Overview"
+                                         data-featherlight="/images/ss/training-panel.png">
+                                    <div class="caption">
+                                        <h4>Overview</h4>
+                                        <p>
+                                            Training Managers and Supervisors have access to this feature of the site.
+                                            After associating users with your account on the "Subordinates" screen, you
+                                            can easily track their progress in one location. Click on a user to view
+                                            their profile and see more detailed test history.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/training-panel-subordinates_600.png"
+                                         alt="Subordinates"
+                                         data-featherlight="/images/ss/training-panel-subordinates.png">
+                                    <div class="caption">
+                                        <h4>Subordinates</h4>
+                                        <p>
+                                            Associating users with your account only takes a few clicks. Use this
+                                            screen to add and remove users as needed. The list of users is limited to
+                                            ones located at your current base, which can be changed on your profile
+                                            page.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/training-panel-offline_600.png"
+                                         alt="Offline Tests"
+                                         data-featherlight="/images/ss/training-panel-offline.png">
+                                    <div class="caption">
+                                        <h4>Offline Tests</h4>
+                                        <p>
+                                            When local policies discourage the use of a web-based study utility, this
+                                            feature can be used to create printable tests with randomized questions.
+                                            The test includes an answer key which will be printed on a separate page.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/training-panel-offline-test_600.png"
+                                         alt="View Offline Test"
+                                         data-featherlight="/images/ss/training-panel-offline-test.png">
+                                    <div class="caption">
+                                        <h4>Viewing Offline Tests</h4>
+                                        <p>
+                                            Simply press the "Print Test" button to automatically open the print dialog.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="cdc-data">
+                <div class="col-xs-12">
+                    <div class="well well-lg">
+                        <h2>Questions and Answers</h2>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/afsc-list_600.png"
+                                         alt="AFSC List"
+                                         data-featherlight="/images/ss/afsc-list.png">
+                                    <div class="caption">
+                                        <h4>AFSC List</h4>
+                                        <p>
+                                            Administrators and Training Managers have the ability to manage CDC data,
+                                            which is used as the source material for tests and some flash card
+                                            categories. Add a new AFSC here, or click an existing one to edit it.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/afsc-detail_600.png"
+                                         alt="AFSC Details"
+                                         data-featherlight="/images/ss/afsc-detail.png">
+                                    <div class="caption">
+                                        <h4>Detailed Information</h4>
+                                        <p>
+                                            Clicking on an AFSC category will present you with an overview of test data.
+                                            From here, all users of this AFSC can be viewed, and a list of questions can
+                                            be shown.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/afsc-questions_600.png"
+                                         alt="AFSC Questions"
+                                         data-featherlight="/images/ss/afsc-questions.png">
+                                    <div class="caption">
+                                        <h4>Question List</h4>
+                                        <p>
+                                            Here you can find the list of questions for the selected AFSC. Clicking on
+                                            a question will allow you to edit or disable it. By selecting the "Add
+                                            Question" button, you can create a question that will show up in new tests.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/afsc-question-detail_600.png"
+                                         alt="Question Details"
+                                         data-featherlight="/images/ss/afsc-question-detail.png">
+                                    <div class="caption">
+                                        <h4>Question Details</h4>
+                                        <p>
+                                            Using this screen you can edit question and answer data, or disable the
+                                            question entirely. This prevents a question from appearing on new tests,
+                                            but can be undone if necessary.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <img src="/images/ss/afsc-question-add_600.png"
+                                         alt="Add Question"
+                                         data-featherlight="/images/ss/afsc-question-add.png">
+                                    <div class="caption">
+                                        <h4>Create Question</h4>
+                                        <p>
+                                            Use this form to add a new question to the database. Copy and paste the
+                                            question and answer text block (select from the beginning of the question to
+                                            the end of the last answer) into the text area. If the system has any
+                                            problems parsing the data, click "Switch to Legacy View" to enter each piece
+                                            separately.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -29,6 +29,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
         'show_home',
     ]);
 
+    /** @uses \CDCMastery\Controllers\About::show_home() */
+    $r->addRoute('GET', '/about', [
+        About::class,
+        'show_home',
+    ]);
+
     $r->addGroup('/about', static function (RouteCollector $r) {
         /** @uses \CDCMastery\Controllers\About::show_disclaimer() */
         $r->addRoute('GET', '/disclaimer', [
