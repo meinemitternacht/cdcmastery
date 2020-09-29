@@ -403,6 +403,7 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/offline");
         }
 
+        $this->log->info("generate offline test :: {$test->getUuid()} :: afsc {$afsc->getUuid()} :: user {$cur_user->getName()} [{$cur_user->getUuid()}]");
         $this->offline_tests->save($test);
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The offline test has been generated');
