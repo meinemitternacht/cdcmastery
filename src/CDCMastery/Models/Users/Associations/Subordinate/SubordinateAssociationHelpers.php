@@ -1,10 +1,12 @@
 <?php
 
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Associations\Subordinate;
 
 
 use CDCMastery\Models\Users\Roles\Role;
+use CDCMastery\Models\Users\User;
+use CDCMastery\Models\Users\UserCollection;
 use Psr\Log\LoggerInterface;
 
 class SubordinateAssociationHelpers

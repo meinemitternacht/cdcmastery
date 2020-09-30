@@ -6,11 +6,12 @@
  * Time: 9:49 PM
  */
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Associations\Subordinate;
 
 
 use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Users\Roles\Role;
+use CDCMastery\Models\Users\User;
 use Monolog\Logger;
 use mysqli;
 
