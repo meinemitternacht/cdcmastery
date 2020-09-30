@@ -31,6 +31,7 @@ use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Tests\TestOptions;
 use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
+use CDCMastery\Models\Users\Associations\Subordinate\SubordinateActions;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
@@ -364,55 +365,18 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/subordinates");
         }
 
-        $new_users = $this->get('new_users');
-
-        if (!is_array($new_users)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/training/subordinates");
-        }
-
-        $new_users = array_filter($new_users, static function (string $v) use ($user): bool {
-            return $v !== $user->getUuid();
-        });
-
-        $tgt_subs = $this->users->fetchArray($new_users);
-
-        if (!$tgt_subs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/training/subordinates");
-        }
-
-        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_subs));
-        switch ($role->getType()) {
-            case Role::TYPE_TRAINING_MANAGER:
-                $this->tm_assocs->batchAddUsersForTrainingManager($tgt_subs, $user);
-                $this->log->info("add training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
-                break;
-            case Role::TYPE_SUPERVISOR:
-                $this->su_assocs->batchAddUsersForSupervisor($tgt_subs, $user);
-                $this->log->info("add supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
-                break;
-            default:
-                goto out_bad_role;
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected subordinates were successfully added'
-        );
-
-        return $this->redirect("/training/subordinates");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_subordinates_add($this->flash(),
+                                  $this->request,
+                                  $role,
+                                  $user,
+                                  $user,
+                                  "/training/subordinates",
+                                  "/training/subordinates");
 
         out_bad_role:
         $this->trigger_request_debug(__METHOD__);
@@ -440,55 +404,18 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/subordinates");
         }
 
-        $del_users = $this->get('del_users');
-
-        if (!is_array($del_users)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/training/subordinates");
-        }
-
-        $tgt_subs = $this->users->fetchArray($del_users);
-
-        if (!$tgt_subs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/training/subordinates");
-        }
-
-        $tgt_sub_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_subs));
-        switch ($role->getType()) {
-            case Role::TYPE_TRAINING_MANAGER:
-                foreach ($tgt_subs as $del_user) {
-                    $this->tm_assocs->remove($del_user, $user);
-                }
-                $this->log->info("remove training manager subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
-                break;
-            case Role::TYPE_SUPERVISOR:
-                foreach ($tgt_subs as $del_user) {
-                    $this->su_assocs->remove($del_user, $user);
-                }
-                $this->log->info("remove supervisor subordinates :: {$user->getName()} [{$user->getUuid()}] :: {$tgt_sub_str} :: user {$this->auth_helpers->get_user_uuid()}");
-                break;
-            default:
-                goto out_bad_role;
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected subordinates were successfully removed'
-        );
-
-        return $this->redirect("/training/subordinates");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_subordinates_remove($this->flash(),
+                                     $this->request,
+                                     $role,
+                                     $user,
+                                     $user,
+                                     "/training/subordinates",
+                                     "/training/subordinates");
 
         out_bad_role:
         $this->trigger_request_debug(__METHOD__);

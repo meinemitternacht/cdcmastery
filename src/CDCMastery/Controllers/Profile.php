@@ -18,6 +18,7 @@ use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
+use CDCMastery\Models\Users\Associations\Subordinate\SubordinateActions;
 use CDCMastery\Models\Users\Roles\PendingRole;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\Roles\Role;
@@ -175,42 +176,18 @@ class Profile extends RootController
             return $this->redirect("/profile/supervisors");
         }
 
-        $new_super = $this->get('new_super');
-
-        if (!is_array($new_super)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/profile/supervisors");
-        }
-
-        $tgt_supers = $this->users->fetchArray($new_super);
-
-        if (!$tgt_supers) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/profile/supervisors");
-        }
-
-        $super_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_supers));
-        $this->log->info("add supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str}");
-
-        $this->su_assocs->batchAddSupervisorsForUser($tgt_supers, $user);
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected supervisor associations were successfully added'
-        );
-
-        return $this->redirect("/profile/supervisors");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_association_add($this->flash(),
+                                 $this->request,
+                                 Role::TYPE_SUPERVISOR,
+                                 $user,
+                                 $this->get_user($this->auth_helpers->get_user_uuid()),
+                                 "/profile/supervisors",
+                                 "/profile/supervisors");
     }
 
     public function do_supervisor_association_remove(): Response
@@ -225,44 +202,18 @@ class Profile extends RootController
             return $this->redirect("/profile/supervisors");
         }
 
-        $del_super = $this->get('del_super');
-
-        if (!is_array($del_super)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/profile/supervisors");
-        }
-
-        $tgt_supers = $this->users->fetchArray($del_super);
-
-        if (!$tgt_supers) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/profile/supervisors");
-        }
-
-        $super_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_supers));
-        $this->log->info("delete supervisor assocs :: {$user->getName()} [{$user->getUuid()}] :: {$super_str}");
-
-        foreach ($tgt_supers as $tgt_super) {
-            $this->su_assocs->remove($user, $tgt_super);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected supervisor associations were successfully removed'
-        );
-
-        return $this->redirect("/profile/supervisors");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_association_remove($this->flash(),
+                                    $this->request,
+                                    Role::TYPE_SUPERVISOR,
+                                    $user,
+                                    $this->get_user($this->auth_helpers->get_user_uuid()),
+                                    "/profile/supervisors",
+                                    "/profile/supervisors");
     }
 
     public function do_tm_association_add(): Response
@@ -277,42 +228,18 @@ class Profile extends RootController
             return $this->redirect("/profile/training-managers");
         }
 
-        $new_tm = $this->get('new_tm');
-
-        if (!is_array($new_tm)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/profile/training-managers");
-        }
-
-        $tgt_tms = $this->users->fetchArray($new_tm);
-
-        if (!$tgt_tms) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/profile/training-managers");
-        }
-
-        $tm_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_tms));
-        $this->log->info("add training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str}");
-
-        $this->tm_assocs->batchAddTrainingManagersForUser($tgt_tms, $user);
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected training manager associations were successfully added'
-        );
-
-        return $this->redirect("/profile/training-managers");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_association_add($this->flash(),
+                                 $this->request,
+                                 Role::TYPE_TRAINING_MANAGER,
+                                 $user,
+                                 $this->get_user($this->auth_helpers->get_user_uuid()),
+                                 "/profile/training-managers",
+                                 "/profile/training-managers");
     }
 
     public function do_tm_association_remove(): Response
@@ -327,44 +254,18 @@ class Profile extends RootController
             return $this->redirect("/profile/training-managers");
         }
 
-        $del_tm = $this->get('del_tm');
-
-        if (!is_array($del_tm)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/profile/training-managers");
-        }
-
-        $tgt_tms = $this->users->fetchArray($del_tm);
-
-        if (!$tgt_tms) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected users were not valid'
-            );
-
-            return $this->redirect("/profile/training-managers");
-        }
-
-        $tm_str = implode(', ', array_map(static function (User $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_tms));
-        $this->log->info("delete training manager assocs :: {$user->getName()} [{$user->getUuid()}] :: {$tm_str}");
-
-        foreach ($tgt_tms as $tgt_tm) {
-            $this->tm_assocs->remove($user, $tgt_tm);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected training manager associations were successfully removed'
-        );
-
-        return $this->redirect("/profile/training-managers");
+        return (new SubordinateActions($this->log,
+                                       $this->roles,
+                                       $this->users,
+                                       $this->su_assocs,
+                                       $this->tm_assocs))
+            ->do_association_remove($this->flash(),
+                                    $this->request,
+                                    Role::TYPE_TRAINING_MANAGER,
+                                    $user,
+                                    $this->get_user($this->auth_helpers->get_user_uuid()),
+                                    "/profile/training-managers",
+                                    "/profile/training-managers");
     }
 
     public function do_role_request(): Response
