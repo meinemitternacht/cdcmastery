@@ -5,7 +5,7 @@
         <h3>Pending Role Requests</h3>
     </div>
     <div class="row">
-        <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <div class="col-xs-12 col-md-12">
             <div class="table-responsive">
                 <form action="/admin/pending-roles"
                       method="POST">
@@ -20,6 +20,8 @@
                                        onclick="check_all(this.id, 'pending-roles')">
                             </th>
                             <th>Name</th>
+                            <th>Current Role</th>
+                            <th>Requested Role</th>
                             <th>Date Registered</th>
                             <th>Date Requested</th>
                         </tr>
@@ -34,13 +36,29 @@
                                            id="user-uuid-{{ pending_role.userUuid }}"
                                            value="{{ pending_role.userUuid }}">
                                 </td>
-                                <td>
-                                    {% if users[pending_role.userUuid] %}
+                                {% if users[pending_role.userUuid] %}
+                                    <td>
                                         <a href="/admin/users/{{ pending_role.userUuid }}">
                                             {{ users[pending_role.userUuid].name }}
                                         </a>
-                                    {% else %}
+                                    </td>
+                                    <td>
+                                        {% if roles[users[pending_role.userUuid].role] %}
+                                            {{ roles[users[pending_role.userUuid].role].name }}
+                                        {% else %}
+                                            UNKNOWN ROLE
+                                        {% endif %}
+                                    </td>
+                                {% else %}
+                                    <td colspan="2">
                                         <span class="text-danger">UNKNOWN USER</span>
+                                    </td>
+                                {% endif %}
+                                <td>
+                                    {% if roles[pending_role.roleUuid] %}
+                                        {{ roles[pending_role.roleUuid].name }}
+                                    {% else %}
+                                        UNKNOWN ROLE
                                     {% endif %}
                                 </td>
                                 <td>{{ users[pending_role.userUuid].dateRegistered|date("F j, Y \\a\\t g:ia") }}</td>
