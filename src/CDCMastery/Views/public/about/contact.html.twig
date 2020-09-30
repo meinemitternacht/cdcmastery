@@ -27,46 +27,43 @@
                 </div>
             </div>
             <div class="row">
-                {% if logged_in %}
-                    <div class="col-xs-12 col-sm-6 col-md-4">
-                        <div class="panel panel-info">
-                            <div class="panel-heading text-center">
-                                <h5>Request Assistance</h5>
-                            </div>
-                            <div class="panel-body text-justify panel-min-250">
-                                <p>
-                                    If you encounter an issue with a site, or need assistance with a site-related task,
-                                    please open a help ticket using the link below. This link is only available for
-                                    users that are logged in. All ticket responses will also be sent via e-mail to the
-                                    specified address.
-                                </p>
-                                <p>
-                                    <strong>
-                                        Please use your CDCMastery e-mail address in the ticket to ensure a faster
-                                        response.
-                                    </strong>
-                                </p>
-                            </div>
-                            <div class="panel-footer text-center">
-                                <button class="btn btn-success" id="feedback-form">Request Assistance</button>
+                <div class="col-xs-12 col-sm-6 col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading text-center">
+                            <h5>Request Assistance</h5>
+                        </div>
+                        <div class="panel-body text-justify panel-min-250">
+                            <p>
+                                If you encounter an issue with a site, or need assistance with a site-related task,
+                                please open a help ticket using the link below. All ticket responses will be sent via
+                                e-mail to the specified address.
+                            </p>
+                            <p>
+                                <strong>
+                                    Please include your CDCMastery e-mail address in the ticket to ensure a faster
+                                    response.
+                                </strong>
+                            </p>
+                        </div>
+                        <div class="panel-footer text-center">
+                            <button class="btn btn-success" id="feedback-form">Request Assistance</button>
 
-                                <script id="zammad_form_script"
-                                        src="https://help.cdcmastery.com/assets/form/form.js"></script>
+                            <script id="zammad_form_script"
+                                    src="https://help.cdcmastery.com/assets/form/form.js"></script>
 
-                                <script>
-                                    $(function () {
-                                        $('#feedback-form').ZammadForm({
-                                            messageTitle: 'Request Assistance',
-                                            messageSubmit: 'Create Ticket',
-                                            messageThankYou: 'Thank you for your inquiry (#%s)! We\'ll contact you as soon as possible.',
-                                            modal: true
-                                        });
+                            <script>
+                                $(function () {
+                                    $('#feedback-form').ZammadForm({
+                                        messageTitle: 'Request Assistance',
+                                        messageSubmit: 'Create Ticket',
+                                        messageThankYou: 'Thank you for your inquiry (#%s)! We\'ll contact you as soon as possible.',
+                                        modal: true
                                     });
-                                </script>
-                            </div>
+                                });
+                            </script>
                         </div>
                     </div>
-                {% endif %}
+                </div>
                 <div class="col-xs-12 col-sm-6 col-md-4">
                     <div class="panel panel-info text-center">
                         <div class="panel-heading">
