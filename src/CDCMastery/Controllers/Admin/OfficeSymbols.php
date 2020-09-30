@@ -73,7 +73,7 @@ class OfficeSymbols extends Admin
             goto out_return;
         }
 
-        $symbol = $this->filter_string_default('symbol');
+        $symbol = mb_strtoupper($this->filter_string_default('symbol'));
 
         if (!$edit) {
             $osymbol = new OfficeSymbol();
@@ -82,12 +82,13 @@ class OfficeSymbols extends Admin
 
         $osymbol->setSymbol($symbol);
 
+        $symbol_lower = mb_strtolower($symbol);
         foreach ($this->office_symbols->fetchAll() as $db_symbol) {
             if ($edit && $db_symbol->getUuid() === $osymbol->getUuid()) {
                 continue;
             }
 
-            if ($db_symbol->getSymbol() === $symbol) {
+            if (mb_strtolower($db_symbol->getSymbol()) === $symbol_lower) {
                 $this->flash()->add(MessageTypes::ERROR,
                                     "The specified Office Symbol '{$osymbol->getSymbol()}' already exists in the database");
                 goto out_return;
