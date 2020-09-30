@@ -31,8 +31,8 @@ use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\StatisticsHelpers;
 use CDCMastery\Models\Statistics\TestStats;
-use CDCMastery\Models\Users\AfscUserCollection;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\AfscUserCollection;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use JsonException;
 use Monolog\Logger;
@@ -69,7 +69,7 @@ class CdcData extends Admin
      * @param QuestionCollection $questions
      * @param AnswerCollection $answers
      * @param QuestionHelpers $question_helpers
-     * @param UserAfscAssociations $user_afscs
+     * @param \CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations $user_afscs
      * @param UserCollection $users
      * @param BaseCollection $bases
      * @param TestStats $test_stats

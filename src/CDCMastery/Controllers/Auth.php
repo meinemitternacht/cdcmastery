@@ -24,7 +24,7 @@ use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use DateTime;

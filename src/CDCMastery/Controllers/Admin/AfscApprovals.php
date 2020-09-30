@@ -11,8 +11,8 @@ use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
-use CDCMastery\Models\Users\UserAfscAssociations;
-use CDCMastery\Models\Users\UserAfscCollection;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscCollection;
 use CDCMastery\Models\Users\UserCollection;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +33,7 @@ class AfscApprovals extends Admin
      * @param AuthHelpers $auth_helpers
      * @param CacheHandler $cache
      * @param Config $config
-     * @param UserAfscAssociations $assocs
+     * @param \CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations $assocs
      * @param UserCollection $users
      * @param AfscCollection $afscs
      * @throws AccessDeniedException

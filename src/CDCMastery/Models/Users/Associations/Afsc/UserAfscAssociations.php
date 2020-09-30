@@ -1,11 +1,12 @@
 <?php
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Associations\Afsc;
 
 
 use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
+use CDCMastery\Models\Users\User;
 use Monolog\Logger;
 use mysqli;
 

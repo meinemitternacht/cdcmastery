@@ -4,6 +4,7 @@
 namespace CDCMastery\Controllers;
 
 
+use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
@@ -16,12 +17,14 @@ use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
 use CDCMastery\Models\Users\Roles\PendingRole;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\UserActions;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
@@ -47,6 +50,7 @@ class Profile extends RootController
     private UserAfscAssociations $afsc_assocs;
     private UserTrainingManagerAssociations $tm_assocs;
     private UserSupervisorAssociations $su_assocs;
+    private UserHelpers $user_helpers;
 
     public function __construct(
         Logger $logger,
@@ -63,7 +67,8 @@ class Profile extends RootController
         AfscCollection $afscs,
         UserAfscAssociations $afsc_assocs,
         UserTrainingManagerAssociations $tm_assocs,
-        UserSupervisorAssociations $su_assocs
+        UserSupervisorAssociations $su_assocs,
+        UserHelpers $user_helpers
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -79,6 +84,7 @@ class Profile extends RootController
         $this->afsc_assocs = $afsc_assocs;
         $this->tm_assocs = $tm_assocs;
         $this->su_assocs = $su_assocs;
+        $this->user_helpers = $user_helpers;
     }
 
     private function get_user(string $uuid): User
@@ -109,35 +115,6 @@ class Profile extends RootController
             return $this->redirect("/profile/afsc");
         }
 
-        $new_afsc = $this->get('new_afsc');
-
-        if (!is_array($new_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/profile/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($new_afsc);
-        $tgt_afscs_fouo = array_filter($tgt_afscs, static function (Afsc $v): bool {
-            return $v->isFouo();
-        });
-        $tgt_afscs_non_fouo = array_filter($tgt_afscs, static function (Afsc $v): bool {
-            return !$v->isFouo();
-        });
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/profile/afsc");
-        }
-
         $override = false;
         if ($role) {
             switch ($role->getType()) {
@@ -150,41 +127,16 @@ class Profile extends RootController
             }
         }
 
-        if ($tgt_afscs_fouo) {
-            $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-                return "{$v->getName()} [{$v->getUuid()}]";
-            }, $tgt_afscs_fouo));
-
-            $pending_str = ' pending';
-            if ($override) {
-                $pending_str = null;
-            }
-
-            $msg = "add{$pending_str} afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}";
-
-            $override
-                ? $this->log->info($msg)
-                : $this->log->alert($msg);
-
-            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_fouo, $override);
-        }
-
-        if ($tgt_afscs_non_fouo) {
-            $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-                return "{$v->getName()} [{$v->getUuid()}]";
-            }, $tgt_afscs_non_fouo));
-            $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-            $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs_non_fouo, true);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully added. ' .
-            'FOUO AFSC associations may take up to 24 hours to be approved.'
-        );
-
-        return $this->redirect("/profile/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_add($this->flash(),
+                                      $this->request,
+                                      $user,
+                                      $user,
+                                      $override,
+                                      '/profile/afsc',
+                                      '/profile/afsc');
     }
 
     public function do_afsc_association_remove(): Response
@@ -199,43 +151,16 @@ class Profile extends RootController
             return $this->redirect("/profile/afsc");
         }
 
-        $del_afsc = $this->get('del_afsc');
 
-        if (!is_array($del_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            return $this->redirect("/profile/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($del_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/profile/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        foreach ($tgt_afscs as $tgt_afsc) {
-            $this->afsc_assocs->remove($user, $tgt_afsc);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully removed'
-        );
-
-        return $this->redirect("/profile/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_remove($this->flash(),
+                                         $this->request,
+                                         $user,
+                                         $user,
+                                         '/profile/afsc',
+                                         '/profile/afsc');
     }
 
     public function do_supervisor_association_add(): Response
@@ -498,6 +423,10 @@ class Profile extends RootController
         return $this->redirect('/profile');
     }
 
+    /**
+     * @return Response
+     * @throws AccessDeniedException
+     */
     public function do_edit(): Response
     {
         $user = $this->get_user($this->auth_helpers->get_user_uuid());
@@ -513,153 +442,21 @@ class Profile extends RootController
         ];
 
         if (!$this->checkParameters($params)) {
-            goto out_return;
+            return $this->redirect('/profile/edit');
         }
 
-        $handle = $this->filter_string_default('handle');
-        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
-        $rank = $this->filter_string_default('rank');
-        $first_name = $this->get('first_name');
-        $last_name = $this->get('last_name');
-        $base = $this->get('base');
-        $time_zone = $this->get('time_zone');
-
-        /* optional */
-        $office_symbol = $this->get('office_symbol');
-        $new_password = $this->get('new_password');
-
-        if ($office_symbol === '') {
-            $office_symbol = null;
-        }
-
-        if ($new_password === '') {
-            $new_password = null;
-        }
-
-        if (!$handle || trim($handle) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The Username field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        if (!$email) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The specified e-mail address is invalid'
-            );
-
-            goto out_return;
-        }
-
-        $valid_ranks = UserHelpers::listRanks(false);
-        if (!$rank || !isset($valid_ranks[ $rank ]) || trim($rank) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The provided rank is invalid'
-            );
-
-            goto out_return;
-        }
-
-        if (!$first_name || trim($first_name) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The First Name field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        if (!$last_name || trim($last_name) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The Last Name field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        $tgt_base = $this->bases->fetch($base);
-        if (!$tgt_base || $tgt_base->getUuid() === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The chosen Base is invalid'
-            );
-
-            goto out_return;
-        }
-
-        $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
-        if (!$time_zone || !in_array($time_zone, $valid_time_zones, true)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The chosen Time Zone is invalid'
-            );
-
-            goto out_return;
-        }
-
-        if ($office_symbol) {
-            $new_office_symbol = $this->symbols->fetch($office_symbol);
-
-            if (!$new_office_symbol || $new_office_symbol->getUuid() === '') {
-                $this->flash()->add(
-                    MessageTypes::ERROR,
-                    'The chosen Office Symbol is invalid'
-                );
-
-                goto out_return;
-            }
-        }
-
-        if ($new_password !== null) {
-            $complexity_check = AuthHelpers::check_complexity($new_password, $handle, $email);
-
-            if ($complexity_check) {
-                $flash = $this->flash();
-                foreach ($complexity_check as $complexity_error) {
-                    $flash->add(
-                        MessageTypes::ERROR,
-                        $complexity_error
-                    );
-                }
-
-                goto out_return;
-            }
-        }
-
-        $user->setHandle($handle);
-        $user->setEmail($email);
-        $user->setRank($rank);
-        $user->setFirstName($first_name);
-        $user->setLastName($last_name);
-        $user->setBase($tgt_base->getUuid());
-        $user->setTimeZone($time_zone);
-        $user->setOfficeSymbol($office_symbol
-                                   ? $new_office_symbol->getUuid()
-                                   : null);
-
-        if ($new_password) {
-            $user->setPassword(AuthHelpers::hash($new_password));
-            $user->setLegacyPassword(null);
-        }
-
-        $this->users->save($user);
-
-        $this->log->info("edit profile :: {$user->getName()} [{$user->getUuid()}]");
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'Your profile information was successfully saved'
-        );
-
-        return $this->redirect("/profile");
-
-        out_return:
-        return $this->redirect("/profile/edit");
+        return (new UserActions($this->log,
+                                $this->auth_helpers,
+                                $this->bases,
+                                $this->symbols,
+                                $this->roles,
+                                $this->users,
+                                $this->user_helpers))
+            ->do_edit($this->flash(),
+                      $this->request,
+                      $user,
+                      '/profile',
+                      '/profile/edit');
     }
 
     public function show_afsc_associations(): Response

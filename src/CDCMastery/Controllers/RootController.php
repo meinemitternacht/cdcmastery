@@ -9,9 +9,9 @@
 namespace CDCMastery\Controllers;
 
 
+use CDCMastery\Helpers\RequestHelpers;
 use CDCMastery\Models\Messages\MessageTypes;
 use Monolog\Logger;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -112,15 +112,6 @@ class RootController
         return false;
     }
 
-    private function get_param_source(string $key): ParameterBag
-    {
-        if ($this->request->query->has($key)) {
-            return $this->request->query;
-        }
-
-        return $this->request->request;
-    }
-
     /**
      * @param string $key
      * @param null|mixed $default
@@ -130,35 +121,22 @@ class RootController
      */
     public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, $options = [])
     {
-        return $this->get_param_source($key)
-                    ->filter($key, $default, $filter, $options);
+        return RequestHelpers::filter($this->request, $key, $default, $filter, $options);
     }
 
     public function filter_bool_default(string $key, ?bool $default = null): ?bool
     {
-        return $this->get_param_source($key)
-                    ->filter($key,
-                             $default,
-                             FILTER_VALIDATE_BOOLEAN,
-                             FILTER_NULL_ON_FAILURE);
+        return RequestHelpers::filter_bool_default($this->request, $key, $default);
     }
 
     public function filter_int_default(string $key, ?bool $default = null): ?int
     {
-        return $this->get_param_source($key)
-                    ->filter($key,
-                             $default,
-                             FILTER_VALIDATE_INT,
-                             FILTER_NULL_ON_FAILURE);
+        return RequestHelpers::filter_int_default($this->request, $key, $default);
     }
 
     public function filter_string_default(string $key): ?string
     {
-        return $this->get_param_source($key)
-                    ->filter($key,
-                             null,
-                             FILTER_SANITIZE_STRING,
-                             FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        return RequestHelpers::filter_string_default($this->request, $key);
     }
 
     /**
@@ -168,8 +146,7 @@ class RootController
      */
     public function get(string $key, $default = null)
     {
-        return $this->get_param_source($key)
-                    ->get($key, $default);
+        return RequestHelpers::get($this->request, $key, $default);
     }
 
     /**
@@ -178,8 +155,7 @@ class RootController
      */
     public function has(string $key): bool
     {
-        return $this->request->request->has($key)
-               || $this->request->query->has($key);
+        return RequestHelpers::has($this->request, $key);
     }
 
     /**

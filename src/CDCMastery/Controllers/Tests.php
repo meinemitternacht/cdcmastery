@@ -19,7 +19,7 @@ use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHandler;
 use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Tests\TestOptions;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use Exception;
 use Monolog\Logger;

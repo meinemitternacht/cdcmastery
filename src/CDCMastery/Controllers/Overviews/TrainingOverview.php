@@ -8,8 +8,9 @@ use CDCMastery\Controllers\RootController;
 use CDCMastery\Controllers\Tests;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
+use CDCMastery\Models\Auth\Activation\ActivationCollection;
+use CDCMastery\Models\Auth\AuthActions;
 use CDCMastery\Models\Auth\AuthHelpers;
-use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\Afsc;
@@ -17,7 +18,6 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\Email\EmailCollection;
-use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
@@ -30,10 +30,11 @@ use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Tests\TestOptions;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
 use CDCMastery\Models\Users\UserTrainingManagerAssociations;
@@ -64,6 +65,7 @@ class TrainingOverview extends RootController
     private UserTrainingManagerAssociations $tm_assocs;
     private UserSupervisorAssociations $su_assocs;
     private PasswordResetCollection $pw_resets;
+    private ActivationCollection $activations;
     private EmailCollection $emails;
     private OfflineTestCollection $offline_tests;
     private QuestionAnswersCollection $qas;
@@ -86,6 +88,7 @@ class TrainingOverview extends RootController
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $su_assocs,
         PasswordResetCollection $pw_resets,
+        ActivationCollection $activations,
         EmailCollection $emails,
         OfflineTestCollection $offline_tests,
         QuestionAnswersCollection $qas
@@ -106,6 +109,7 @@ class TrainingOverview extends RootController
         $this->tm_assocs = $tm_assocs;
         $this->su_assocs = $su_assocs;
         $this->pw_resets = $pw_resets;
+        $this->activations = $activations;
         $this->emails = $emails;
         $this->offline_tests = $offline_tests;
         $this->qas = $qas;
@@ -170,42 +174,16 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
-        $new_afsc = $this->get('new_afsc');
-
-        if (!is_array($new_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($new_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully added'
-        );
-
-        return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_add($this->flash(),
+                                      $this->request,
+                                      $user,
+                                      $this->get_user($this->auth_helpers->get_user_uuid()),
+                                      true,
+                                      "/training/users/{$user->getUuid()}/afsc",
+                                      "/training/users/{$user->getUuid()}/afsc");
     }
 
     public function do_afsc_association_approve(string $uuid): Response
@@ -220,44 +198,15 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
-        $approve_afsc = $this->get('approve_afsc');
-
-        if (!is_array($approve_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($approve_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("approve afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        foreach ($tgt_afscs as $tgt_afsc) {
-            $this->afsc_assocs->authorize($user, $tgt_afsc);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully approved'
-        );
-
-        return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_approve($this->flash(),
+                                          $this->request,
+                                          $user,
+                                          $this->get_user($this->auth_helpers->get_user_uuid()),
+                                          "/training/users/{$user->getUuid()}/afsc",
+                                          "/training/users/{$user->getUuid()}/afsc");
     }
 
     public function do_afsc_association_remove(string $uuid): Response
@@ -272,44 +221,15 @@ class TrainingOverview extends RootController
             return $this->redirect("/training/users/{$user->getUuid()}/afsc");
         }
 
-        $del_afsc = $this->get('del_afsc');
-
-        if (!is_array($del_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($del_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/training/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        foreach ($tgt_afscs as $tgt_afsc) {
-            $this->afsc_assocs->remove($user, $tgt_afsc);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully removed'
-        );
-
-        return $this->redirect("/training/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_remove($this->flash(),
+                                         $this->request,
+                                         $user,
+                                         $this->get_user($this->auth_helpers->get_user_uuid()),
+                                         "/training/users/{$user->getUuid()}/afsc",
+                                         "/training/users/{$user->getUuid()}/afsc");
     }
 
     public function do_delete_incomplete_tests(string $uuid): Response
@@ -416,33 +336,15 @@ class TrainingOverview extends RootController
         $user = $this->get_user($uuid);
         $initiator = $this->get_user($this->auth_helpers->get_user_uuid());
 
-        if ($this->pw_resets->fetchByUser($user) !== null) {
-            $this->flash()->add(MessageTypes::ERROR,
-                                'An active password reset request for this user already exists');
-
-            return $this->redirect("/training/users/{$user->getUuid()}");
-        }
-
-        $pw_reset = PasswordReset::factory($user);
-        $email = ResetPassword::email($initiator, $user, $pw_reset);
-
-        try {
-            $this->emails->queue($email);
-        } catch (Throwable $e) {
-            $this->log->debug($e);
-            $this->flash()->add(MessageTypes::ERROR,
-                                'The system encountered an error while attempting to send the password reset e-mail');
-
-            return $this->redirect("/training/users/{$user->getUuid()}");
-        }
-
-        $this->pw_resets->save($pw_reset);
-        $this->log->info("reset user password :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->flash()->add(MessageTypes::SUCCESS,
-                            'A password reset request for this user was successfully initiated');
-
-        return $this->redirect("/training/users/{$user->getUuid()}");
+        return (new AuthActions($this->log,
+                                $this->pw_resets,
+                                $this->activations,
+                                $this->emails))
+            ->do_password_reset($this->flash(),
+                                $user,
+                                $initiator,
+                                "/training/users/{$user->getUuid()}",
+                                "/training/users/{$user->getUuid()}");
     }
 
     public function do_subordinates_add(): Response

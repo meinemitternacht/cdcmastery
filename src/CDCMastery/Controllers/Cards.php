@@ -20,7 +20,7 @@ use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Sorting\Cards\CardCategorySortOption;
 use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Users\User;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use Exception;
 use Monolog\Logger;

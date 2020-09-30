@@ -7,10 +7,9 @@ use CDCMastery\Controllers\Tests;
 use CDCMastery\Exceptions\AccessDeniedException;
 use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
-use CDCMastery\Models\Auth\Activation\Activation;
 use CDCMastery\Models\Auth\Activation\ActivationCollection;
+use CDCMastery\Models\Auth\AuthActions;
 use CDCMastery\Models\Auth\AuthHelpers;
-use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\Cache\CacheHandler;
@@ -19,8 +18,6 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Email\EmailCollection;
-use CDCMastery\Models\Email\Templates\ActivateAccount;
-use CDCMastery\Models\Email\Templates\ResetPassword;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
@@ -31,10 +28,12 @@ use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
 use CDCMastery\Models\Users\Roles\Role;
 use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\User;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\UserActions;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use CDCMastery\Models\Users\UserHelpers;
 use CDCMastery\Models\Users\UserSupervisorAssociations;
@@ -66,6 +65,7 @@ class Users extends Admin
     private UserSupervisorAssociations $su_assocs;
     private PasswordResetCollection $pw_resets;
     private ActivationCollection $activations;
+    private UserHelpers $user_helpers;
 
     /**
      * Users constructor.
@@ -84,11 +84,12 @@ class Users extends Admin
      * @param TestCollection $tests
      * @param TestDataHelpers $test_data_helpers
      * @param AfscCollection $afscs
-     * @param UserAfscAssociations $afsc_assocs
+     * @param \CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations $afsc_assocs
      * @param UserTrainingManagerAssociations $tm_assocs
      * @param UserSupervisorAssociations $su_assocs
      * @param PasswordResetCollection $pw_resets
      * @param ActivationCollection $activations
+     * @param UserHelpers $user_helpers
      * @throws AccessDeniedException
      */
     public function __construct(
@@ -111,7 +112,8 @@ class Users extends Admin
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $su_assocs,
         PasswordResetCollection $pw_resets,
-        ActivationCollection $activations
+        ActivationCollection $activations,
+        UserHelpers $user_helpers
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
@@ -129,6 +131,7 @@ class Users extends Admin
         $this->su_assocs = $su_assocs;
         $this->pw_resets = $pw_resets;
         $this->activations = $activations;
+        $this->user_helpers = $user_helpers;
     }
 
     private function get_user(string $uuid): User
@@ -212,6 +215,11 @@ class Users extends Admin
         exit;
     }
 
+    /**
+     * @param string $uuid
+     * @return Response
+     * @throws AccessDeniedException
+     */
     public function do_edit(string $uuid): Response
     {
         $user = $this->get_user($uuid);
@@ -230,182 +238,18 @@ class Users extends Admin
             return $this->redirect("/admin/users/{$user->getUuid()}/edit");
         }
 
-        $handle = $this->filter_string_default('handle');
-        $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
-        $rank = $this->filter_string_default('rank');
-        $first_name = $this->get('first_name');
-        $last_name = $this->get('last_name');
-        $base = $this->get('base');
-        $time_zone = $this->get('time_zone');
-
-        /* optional */
-        $office_symbol = $this->get('office_symbol');
-        $role = $this->get('role');
-        $new_password = $this->get('new_password');
-
-        if ($office_symbol === '') {
-            $office_symbol = null;
-        }
-
-        if ($role === '') {
-            $role = null;
-        }
-
-        if ($new_password === '') {
-            $new_password = null;
-        }
-
-        if (!$handle || trim($handle) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The Username field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        if (!$email) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The specified e-mail address is invalid'
-            );
-
-            goto out_return;
-        }
-
-        $valid_ranks = UserHelpers::listRanks(false);
-        if (!$rank || !isset($valid_ranks[ $rank ]) || trim($rank) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The provided rank is invalid'
-            );
-
-            goto out_return;
-        }
-
-        if (!$first_name || trim($first_name) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The First Name field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        if (!$last_name || trim($last_name) === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The Last Name field cannot be empty'
-            );
-
-            goto out_return;
-        }
-
-        $tgt_base = $this->bases->fetch($base);
-        if (!$tgt_base || $tgt_base->getUuid() === '') {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The chosen Base is invalid'
-            );
-
-            goto out_return;
-        }
-
-        $valid_time_zones = array_merge(...DateTimeHelpers::list_time_zones(false));
-        if (!$time_zone || !in_array($time_zone, $valid_time_zones, true)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The chosen Time Zone is invalid'
-            );
-
-            goto out_return;
-        }
-
-        if ($role && !$this->auth_helpers->assert_admin() && $role !== $user->getRole()) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'Your account type cannot change the role for this user'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            goto out_return;
-        }
-
-        if ($office_symbol) {
-            $new_office_symbol = $this->symbols->fetch($office_symbol);
-
-            if (!$new_office_symbol || $new_office_symbol->getUuid() === '') {
-                $this->flash()->add(
-                    MessageTypes::ERROR,
-                    'The chosen Office Symbol is invalid'
-                );
-
-                goto out_return;
-            }
-        }
-
-        if ($role) {
-            $new_role = $this->roles->fetch($role);
-
-            if (!$new_role || $new_role->getUuid() === '') {
-                $this->flash()->add(
-                    MessageTypes::ERROR,
-                    'The chosen Role is invalid'
-                );
-
-                goto out_return;
-            }
-        }
-
-        if ($new_password !== null) {
-            $complexity_check = AuthHelpers::check_complexity($new_password, $handle, $email);
-
-            if ($complexity_check) {
-                $flash = $this->flash();
-                foreach ($complexity_check as $complexity_error) {
-                    $flash->add(
-                        MessageTypes::ERROR,
-                        $complexity_error
-                    );
-                }
-
-                goto out_return;
-            }
-        }
-
-        $user->setHandle($handle);
-        $user->setEmail($email);
-        $user->setRank($rank);
-        $user->setFirstName($first_name);
-        $user->setLastName($last_name);
-        $user->setBase($tgt_base->getUuid());
-        $user->setTimeZone($time_zone);
-
-        if ($office_symbol) {
-            $user->setOfficeSymbol($new_office_symbol->getUuid());
-        }
-
-        if ($role) {
-            $user->setRole($new_role->getUuid());
-        }
-
-        if ($new_password) {
-            $user->setPassword(AuthHelpers::hash($new_password));
-        }
-
-        $this->users->save($user);
-
-        $this->log->info("edit user :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The information for that user was successfully saved'
-        );
-
-        return $this->redirect("/admin/users/{$user->getUuid()}");
-
-        out_return:
-        return $this->redirect("/admin/users/{$user->getUuid()}/edit");
+        return (new UserActions($this->log,
+                                $this->auth_helpers,
+                                $this->bases,
+                                $this->symbols,
+                                $this->roles,
+                                $this->users,
+                                $this->user_helpers))
+            ->do_edit($this->flash(),
+                      $this->request,
+                      $user,
+                      "/admin/users/{$user->getUuid()}",
+                      "/admin/users/{$user->getUuid()}/edit");
     }
 
     public function do_afsc_association_add(string $uuid): Response
@@ -420,42 +264,16 @@ class Users extends Admin
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
-        $new_afsc = $this->get('new_afsc');
-
-        if (!is_array($new_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($new_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("add afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->afsc_assocs->batchAddAfscsForUser($user, $tgt_afscs, true);
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully added'
-        );
-
-        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_add($this->flash(),
+                                      $this->request,
+                                      $user,
+                                      $this->get_user($this->auth_helpers->get_user_uuid()),
+                                      true,
+                                      "/admin/users/{$user->getUuid()}/afsc",
+                                      "/admin/users/{$user->getUuid()}/afsc");
     }
 
     public function do_afsc_association_approve(string $uuid): Response
@@ -470,44 +288,15 @@ class Users extends Admin
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
-        $approve_afsc = $this->get('approve_afsc');
-
-        if (!is_array($approve_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($approve_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("approve afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        foreach ($tgt_afscs as $tgt_afsc) {
-            $this->afsc_assocs->authorize($user, $tgt_afsc);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully approved'
-        );
-
-        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_approve($this->flash(),
+                                          $this->request,
+                                          $user,
+                                          $this->get_user($this->auth_helpers->get_user_uuid()),
+                                          "/admin/users/{$user->getUuid()}/afsc",
+                                          "/admin/users/{$user->getUuid()}/afsc");
     }
 
     public function do_afsc_association_remove(string $uuid): Response
@@ -522,44 +311,15 @@ class Users extends Admin
             return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
         }
 
-        $del_afsc = $this->get('del_afsc');
-
-        if (!is_array($del_afsc)) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The submitted data was malformed'
-            );
-
-            $this->trigger_request_debug(__METHOD__);
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $tgt_afscs = $this->afscs->fetchArray($del_afsc);
-
-        if (!$tgt_afscs) {
-            $this->flash()->add(
-                MessageTypes::ERROR,
-                'The selected AFSCs were not valid'
-            );
-
-            return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
-        }
-
-        $afscs_str = implode(', ', array_map(static function (Afsc $v): string {
-            return "{$v->getName()} [{$v->getUuid()}]";
-        }, $tgt_afscs));
-        $this->log->info("delete afsc assocs :: {$user->getName()} [{$user->getUuid()}] :: {$afscs_str} :: user {$this->auth_helpers->get_user_uuid()}");
-
-        foreach ($tgt_afscs as $tgt_afsc) {
-            $this->afsc_assocs->remove($user, $tgt_afsc);
-        }
-
-        $this->flash()->add(
-            MessageTypes::SUCCESS,
-            'The selected AFSC associations were successfully removed'
-        );
-
-        return $this->redirect("/admin/users/{$user->getUuid()}/afsc");
+        return (new UserAfscActions($this->log,
+                                    $this->afscs,
+                                    $this->afsc_assocs))
+            ->do_afsc_association_remove($this->flash(),
+                                         $this->request,
+                                         $user,
+                                         $this->get_user($this->auth_helpers->get_user_uuid()),
+                                         "/admin/users/{$user->getUuid()}/afsc",
+                                         "/admin/users/{$user->getUuid()}/afsc");
     }
 
     public function do_supervisor_association_add(string $uuid): Response
@@ -810,33 +570,15 @@ class Users extends Admin
         $user = $this->get_user($uuid);
         $initiator = $this->get_user($this->auth_helpers->get_user_uuid());
 
-        if ($this->pw_resets->fetchByUser($user) !== null) {
-            $this->flash()->add(MessageTypes::ERROR,
-                                'An active password reset request for this user already exists');
-
-            return $this->redirect("/admin/users/{$user->getUuid()}");
-        }
-
-        $pw_reset = PasswordReset::factory($user);
-        $email = ResetPassword::email($initiator, $user, $pw_reset);
-
-        try {
-            $this->emails->queue($email);
-        } catch (Throwable $e) {
-            $this->log->debug($e);
-            $this->flash()->add(MessageTypes::ERROR,
-                                'The system encountered an error while attempting to send the password reset e-mail');
-
-            return $this->redirect("/admin/users/{$user->getUuid()}");
-        }
-
-        $this->pw_resets->save($pw_reset);
-        $this->log->info("reset user password :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->flash()->add(MessageTypes::SUCCESS,
-                            'A password reset request for this user was successfully initiated');
-
-        return $this->redirect("/admin/users/{$user->getUuid()}");
+        return (new AuthActions($this->log,
+                                $this->pw_resets,
+                                $this->activations,
+                                $this->emails))
+            ->do_password_reset($this->flash(),
+                                $user,
+                                $initiator,
+                                "/admin/users/{$user->getUuid()}",
+                                "/admin/users/{$user->getUuid()}");
     }
 
     public function do_resend_activation(string $uuid): Response
@@ -844,27 +586,15 @@ class Users extends Admin
         $user = $this->get_user($uuid);
         $initiator = $this->get_user($this->auth_helpers->get_user_uuid());
 
-        $activation = Activation::factory($user);
-        $email = ActivateAccount::email($initiator, $user, $activation);
-
-        try {
-            $this->emails->queue($email);
-        } catch (Throwable $e) {
-            $this->log->debug($e);
-            $this->flash()->add(MessageTypes::ERROR,
-                                'The system encountered an error while attempting to resend the activation e-mail');
-
-            return $this->redirect("/admin/users/{$user->getUuid()}");
-        }
-
-        $this->activations->save($activation);
-        $this->log->info("queue activation :: {$activation->getCode()} :: user {$user->getName()} [{$user->getUuid()}]");
-        $this->log->info("resend user activation :: {$user->getName()} [{$user->getUuid()}] :: user {$this->auth_helpers->get_user_uuid()}");
-
-        $this->flash()->add(MessageTypes::SUCCESS,
-                            'An activation request for this user was successfully initiated');
-
-        return $this->redirect("/admin/users/{$user->getUuid()}");
+        return (new AuthActions($this->log,
+                                $this->pw_resets,
+                                $this->activations,
+                                $this->emails))
+            ->do_resend_activation($this->flash(),
+                                   $user,
+                                   $initiator,
+                                   "/admin/users/{$user->getUuid()}",
+                                   "/admin/users/{$user->getUuid()}");
     }
 
     public function do_subordinates_add(string $uuid): Response

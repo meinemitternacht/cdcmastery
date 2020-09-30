@@ -15,7 +15,7 @@ use CDCMastery\Models\Twig\RoleTypes;
 use CDCMastery\Models\Twig\StringFunctions;
 use CDCMastery\Models\Twig\UserProfileLink;
 use CDCMastery\Models\Users\Roles\PendingRoleCollection;
-use CDCMastery\Models\Users\UserAfscAssociations;
+use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;

@@ -6,7 +6,7 @@
  * Time: 9:01 PM
  */
 
-namespace CDCMastery\Models\Users;
+namespace CDCMastery\Models\Users\Associations\Afsc;
 
 
 class UserAfscCollection
