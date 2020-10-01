@@ -46,8 +46,8 @@
                     {% for base in bases %}
                         <tr data-uuid="{{ base.uuid }}" class="cursor-pointer">
                             <td>{{ base.name }}</td>
-                            <td>{{ base.testsComplete }}</td>
-                            <td>{{ base.testsIncomplete }}</td>
+                            <td>{{ base.testsComplete|number_format }}</td>
+                            <td>{{ base.testsIncomplete|number_format }}</td>
                             <td>{{ base.users|number_format }}</td>
                         </tr>
                     {% endfor %}

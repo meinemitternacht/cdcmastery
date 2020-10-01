@@ -4,31 +4,38 @@ namespace CDCMastery\Models\Bases;
 
 
 use CDCMastery\Helpers\DBLogHelper;
+use CDCMastery\Models\Cache\CacheHandler;
 use Monolog\Logger;
 use mysqli;
 
 class BaseCollection
 {
+    private const AGG_USERS_KEY = 'base-users';
+    private const AGG_TESTS_KEY = 'base-tests';
+
     protected mysqli $db;
     protected Logger $log;
+    protected CacheHandler $cache;
+    private bool $update_cache = false;
 
     /**
      * BaseCollection constructor.
      * @param mysqli $mysqli
      * @param Logger $logger
+     * @param CacheHandler $cache
      */
-    public function __construct(mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger, CacheHandler $cache)
     {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->cache = $cache;
     }
 
     /**
      * @param array $data
-     * @param bool $populate_stats
      * @return Base[]
      */
-    private function create_objects(array $data, bool $populate_stats = false): array
+    private function create_objects(array $data): array
     {
         $bases = [];
         foreach ($data as $row) {
@@ -38,21 +45,23 @@ class BaseCollection
             $bases[ $row[ 'uuid' ] ] = $base;
         }
 
-        if ($populate_stats) {
-            $this->fetch_aggregate_data($bases);
-        }
-
+        $this->fetch_aggregate_data($bases);
         return $bases;
     }
 
     private function fetch_aggregate_users(array $bases): void
     {
+        $data = $this->cache->hashAndGet(self::AGG_USERS_KEY);
+
+        if (is_array($data)) {
+            goto out_set;
+        }
+
         $qry = <<<SQL
 SELECT
     COUNT(*) AS count,
-    baseList.uuid AS uuid
+    userData.userBase AS uuid
 FROM userData
-LEFT JOIN baseList ON userData.userBase = baseList.uuid
 GROUP BY userData.userBase
 ORDER BY userData.userBase
 SQL;
@@ -64,15 +73,29 @@ SQL;
             return;
         }
 
+        $data = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($bases[ $row[ 'uuid' ] ])) {
                 continue;
             }
 
-            $bases[ $row[ 'uuid' ] ]->setUsers((int)$row[ 'count' ]);
+            $data[ $row[ 'uuid' ] ] = (int)$row[ 'count' ];
         }
 
         $res->free();
+
+        if ($this->update_cache) {
+            $this->cache->hashAndSet($data, self::AGG_USERS_KEY, CacheHandler::TTL_LARGE);
+        }
+
+        out_set:
+        foreach ($data as $k => $v) {
+            if (!isset($bases[ $k ])) {
+                continue;
+            }
+
+            $bases[ $k ]->setUsers($v);
+        }
     }
 
     /**
@@ -80,6 +103,12 @@ SQL;
      */
     private function fetch_aggregate_tests(array $bases): void
     {
+        $data = $this->cache->hashAndGet(self::AGG_TESTS_KEY);
+
+        if (is_array($data)) {
+            goto out_set;
+        }
+
         $qry = <<<SQL
 SELECT
     COUNT(*) AS count,
@@ -108,17 +137,34 @@ SQL;
             return;
         }
 
+        $data = [];
         while ($row = $res->fetch_assoc()) {
             if (!isset($bases[ $row[ 'uuid' ] ])) {
                 continue;
             }
 
-            $row[ 'completed' ]
-                ? $bases[ $row[ 'uuid' ] ]->setTestsComplete((int)$row[ 'count' ])
-                : $bases[ $row[ 'uuid' ] ]->setTestsIncomplete((int)$row[ 'count' ]);
+            if (!isset($data[ $row[ 'uuid' ] ])) {
+                $data[ $row[ 'uuid' ] ] = [];
+            }
+
+            $data[ $row[ 'uuid' ] ][ (int)$row[ 'completed' ] ] = (int)$row[ 'count' ];
         }
 
         $res->free();
+
+        if ($this->update_cache) {
+            $this->cache->hashAndSet($data, self::AGG_TESTS_KEY, CacheHandler::TTL_LARGE);
+        }
+
+        out_set:
+        foreach ($data as $buuid => $counts) {
+            if (!isset($bases[ $buuid ])) {
+                continue;
+            }
+
+            $bases[ $buuid ]->setTestsIncomplete($counts[ 0 ] ?? 0);
+            $bases[ $buuid ]->setTestsComplete($counts[ 1 ] ?? 0);
+        }
     }
 
     /**
@@ -132,6 +178,7 @@ SQL;
 
         $this->fetch_aggregate_users($bases);
         $this->fetch_aggregate_tests($bases);
+        $this->update_cache = false;
     }
 
     /**
@@ -181,7 +228,7 @@ SQL;
      * @param bool $populate_stats
      * @return Base[]
      */
-    public function fetchAll(bool $populate_stats = false): array
+    public function fetchAll(): array
     {
         $qry = <<<SQL
 SELECT
@@ -208,7 +255,8 @@ SQL;
         }
 
         $res->free();
-        return $this->create_objects($rows, $populate_stats);
+        $this->update_cache = true;
+        return $this->create_objects($rows);
     }
 
     /**
