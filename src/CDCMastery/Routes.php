@@ -105,6 +105,24 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 'do_edit',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_tests_complete() */
+            $r->addRoute('GET', '/{uuid}/tests', [
+                Admin\Bases::class,
+                'show_tests_complete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_tests_incomplete() */
+            $r->addRoute('GET', '/{uuid}/tests/incomplete', [
+                Admin\Bases::class,
+                'show_tests_incomplete',
+            ]);
+
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_test() */
+            $r->addRoute('GET', '/{uuid}/tests/{test_uuid}', [
+                Admin\Bases::class,
+                'show_test',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Bases::show_overview() */
             $r->addRoute('GET', '/{uuid}', [
                 Admin\Bases::class,

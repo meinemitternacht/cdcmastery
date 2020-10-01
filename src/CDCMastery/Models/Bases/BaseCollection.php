@@ -41,15 +41,8 @@ class BaseCollection
         return $bases;
     }
 
-    /**
-     * @param Base[] $bases
-     */
-    private function fetch_aggregate_data(array $bases): void
+    private function fetch_aggregate_users(array $bases): void
     {
-        if (!$bases) {
-            return;
-        }
-
         $qry = <<<SQL
 SELECT
     COUNT(*) AS count,
@@ -76,6 +69,65 @@ SQL;
         }
 
         $res->free();
+    }
+
+    /**
+     * @param Base[] $bases
+     */
+    private function fetch_aggregate_tests(array $bases): void
+    {
+        $qry = <<<SQL
+SELECT
+    COUNT(*) AS count,
+    userData.userBase AS uuid,
+    1 AS completed
+FROM testCollection
+LEFT JOIN userData ON testCollection.userUuid = userData.uuid
+WHERE testCollection.timeCompleted IS NOT NULL
+GROUP BY userData.userBase
+UNION ALL
+(
+    SELECT COUNT(*)          AS count,
+           userData.userBase AS uuid,
+           0 AS completed
+    FROM testCollection
+    LEFT JOIN userData ON testCollection.userUuid = userData.uuid
+    WHERE testCollection.timeCompleted IS NULL
+    GROUP BY userData.userBase
+)
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return;
+        }
+
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($bases[ $row[ 'uuid' ] ])) {
+                continue;
+            }
+
+            $row[ 'completed' ]
+                ? $bases[ $row[ 'uuid' ] ]->setTestsComplete((int)$row[ 'count' ])
+                : $bases[ $row[ 'uuid' ] ]->setTestsIncomplete((int)$row[ 'count' ]);
+        }
+
+        $res->free();
+    }
+
+    /**
+     * @param Base[] $bases
+     */
+    private function fetch_aggregate_data(array $bases): void
+    {
+        if (!$bases) {
+            return;
+        }
+
+        $this->fetch_aggregate_users($bases);
+        $this->fetch_aggregate_tests($bases);
     }
 
     /**
@@ -143,7 +195,7 @@ SQL;
 
         $rows = [];
         while ($row = $res->fetch_assoc()) {
-            if (!isset($row['uuid']) || $row['uuid'] === '') {
+            if (!isset($row[ 'uuid' ]) || $row[ 'uuid' ] === '') {
                 continue;
             }
 

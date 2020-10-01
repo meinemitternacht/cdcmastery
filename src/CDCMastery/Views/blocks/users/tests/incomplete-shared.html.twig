@@ -21,57 +21,71 @@
 </script>
 <div class="row">
     <div class="col-md-4">
-        <div class="col-md-12">
-            {% if user %}
-                <div class="panel panel-default text-center">
-                    <div class="panel-heading">Taken By</div>
-                    <div class="panel-body">
-                        {% if not restricted %}
-                            <a href="/admin/users/{{ user.uuid }}">
+        {% if user %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default text-center">
+                        <div class="panel-heading">Started By</div>
+                        <div class="panel-body">
+                            {% if not restricted %}
+                                <a href="/admin/users/{{ user.uuid }}">
+                                    {{ user.name }}
+                                </a>
+                            {% else %}
                                 {{ user.name }}
-                            </a>
-                        {% else %}
-                            {{ user.name }}
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            {% endif %}
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Time Started</div>
-                <div class="panel-body">
-                    {{ timeStarted }}
-                </div>
             </div>
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">AFSC(s)</div>
-                <div class="panel-body profile-two-col-container">
-                    {% for afsc in afscList %}
-                        <div>{{ afsc }}</div>
-                    {% endfor %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Time Started</div>
+                    <div class="panel-body">
+                        {{ timeStarted }}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading"># Answered</div>
-                <div class="panel-body">
-                    {{ numAnswered }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">AFSC(s)</div>
+                    <div class="panel-body profile-two-col-container">
+                        {% for afsc in afscList %}
+                            <div>{{ afsc }}</div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Questions</div>
-                <div class="panel-body">
-                    {{ numQuestions }}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading"># Answered</div>
+                    <div class="panel-body">
+                        {{ numAnswered }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Questions</div>
+                    <div class="panel-body">
+                        {{ numQuestions }}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">% Complete</div>
-                <div class="panel-body">
-                    {{ pctDone }}%
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">% Complete</div>
+                    <div class="panel-body">
+                        {{ pctDone }}%
+                    </div>
                 </div>
             </div>
         </div>

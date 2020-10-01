@@ -1,62 +1,80 @@
 <div class="row">
     <div class="col-md-4">
-        <div class="col-md-12">
-            {% if user %}
-                <div class="panel panel-default text-center">
-                    <div class="panel-heading">Taken By</div>
-                    <div class="panel-body">
-                        {% if not restricted %}
-                            <a href="/admin/users/{{ user.uuid }}">
+        {% if user %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default text-center">
+                        <div class="panel-heading">Taken By</div>
+                        <div class="panel-body">
+                            {% if not restricted %}
+                                <a href="/admin/users/{{ user.uuid }}">
+                                    {{ user.name }}
+                                </a>
+                            {% else %}
                                 {{ user.name }}
-                            </a>
-                        {% else %}
-                            {{ user.name }}
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            {% endif %}
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Time Started</div>
-                <div class="panel-body">
-                    {{ timeStarted }}
-                </div>
             </div>
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Time Completed</div>
-                <div class="panel-body">
-                    {{ timeCompleted }}
-                </div>
-            </div>
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">AFSC(s)</div>
-                <div class="panel-body profile-two-col-container">
-                    {% for afsc in afscList %}
-                        <div>{{ afsc }}</div>
-                    {% endfor %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Time Started</div>
+                    <div class="panel-body">
+                        {{ timeStarted }}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Questions</div>
-                <div class="panel-body">
-                    {{ numQuestions }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Time Completed</div>
+                    <div class="panel-body">
+                        {{ timeCompleted }}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default text-center">
-                <div class="panel-heading">Num. Missed</div>
-                <div class="panel-body">
-                    {{ numMissed }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">AFSC(s)</div>
+                    <div class="panel-body profile-two-col-container">
+                        {% for afsc in afscList %}
+                            <div>{{ afsc }}</div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-12">
-            <div class="panel {% if score >= 80 %}panel-success{% else %}panel-danger{% endif %}">
-                <div class="panel-heading">Score</div>
-                <div class="panel-body text-center">
-                    <strong>{{ score }}%</strong>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Questions</div>
+                    <div class="panel-body">
+                        {{ numQuestions }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default text-center">
+                    <div class="panel-heading">Num. Missed</div>
+                    <div class="panel-body">
+                        {{ numMissed }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel {% if score >= 80 %}panel-success{% else %}panel-danger{% endif %}">
+                    <div class="panel-heading">Score</div>
+                    <div class="panel-body text-center">
+                        <strong>{{ score }}%</strong>
+                    </div>
                 </div>
             </div>
         </div>

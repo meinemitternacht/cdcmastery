@@ -1,6 +1,7 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Edit Base - #{base.name}" %}
 {% block main %}
+    {% include "blocks/admin/bases/menu.html.twig" %}
     <div class="page-header">
         <h3><span class="text-muted">Edit</span> {{ base.name }}</h3>
     </div>

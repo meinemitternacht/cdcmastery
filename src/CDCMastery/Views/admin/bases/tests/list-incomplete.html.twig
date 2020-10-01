@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Incomplete Tests - #{base.name}" %}
+{% block main %}
+    {% include "blocks/admin/bases/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            <span class="text-muted">Incomplete Tests</span> - {{ base.name }}
+        </h3>
+    </div>
+    {% include "blocks/users/tests/history-incomplete-shared.html.twig" with {'redirect_prefix': '/admin/bases/' ~ base.uuid ~ '/tests'} %}
+{% endblock %}

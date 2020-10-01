@@ -1,0 +1,55 @@
+<nav class="navbar navbar-sub">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#base-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <div class="navbar-brand hidden-sm hidden-md hidden-lg">
+                Bases Menu
+            </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="base-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% if cur_url == "/admin/bases" %} class="active"{% endif %}>
+                    <a href="/admin/bases">Base List</a>
+                </li>
+                {% if base %}
+                    <li{% if cur_url == "/admin/bases/" ~ base.uuid %} class="active"{% endif %}>
+                        <a href="/admin/bases/{{ base.uuid }}">Overview</a>
+                    </li>
+                    <li{% if cur_url == "/admin/bases/" ~ base.uuid ~ "/edit" %} class="active"{% endif %}>
+                        <a href="/admin/bases/{{ base.uuid }}/edit">Edit Base</a>
+                    </li>
+
+                    <li class="dropdown{% if cur_url starts with "/admin/bases/" ~ base.uuid ~ "/tests" %} active{% endif %}">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Testing <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li{% if cur_url == "/admin/bases/" ~ base.uuid ~ "/tests" %} class="active"{% endif %}>
+                                <a href="/admin/bases/{{ base.uuid }}/tests">Completed Tests</a></li>
+                            <li{% if cur_url == "/admin/bases/" ~ base.uuid ~ "/tests/incomplete" %} class="active"{% endif %}>
+                                <a href="/admin/bases/{{ base.uuid }}/tests/incomplete">Incomplete Tests</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% elseif my_base %}
+                    <li>
+                        <a class="bg-info" href="/admin/bases/{{ my_base.uuid }}">View My Base &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

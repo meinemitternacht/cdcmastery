@@ -1,12 +1,13 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Base Overview - #{base.name}" %}
 {% block main %}
+    {% include "blocks/admin/bases/menu.html.twig" %}
     <div class="page-header">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-xs-12 col-sm-12 col-lg-8">
                 <h3><span class="text-muted">Overview for</span> {{ base.name }}</h3>
             </div>
-            <div class="col-md-4">
+            <div class="col-xs-12 col-sm-12 col-lg-4">
                 <div class="form-group form-inline">
                     <label class="sr-only" for="base-chooser">
                         Change Base
@@ -81,11 +82,6 @@
         </div>
         <div class="col-md-2">
             <div class="row">
-                <a class="btn btn-primary col-md-6 col-md-offset-3"
-                   href="/admin/bases/{{ base.uuid }}/edit"
-                   title="Edit Base Name">Edit Base</a>
-            </div>
-            <div class="row row-spacer">
                 <div class="col-md-12">
                     <div class="panel panel-warning text-center">
                         <div class="panel-heading">

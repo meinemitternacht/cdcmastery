@@ -1,11 +1,12 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Bases" %}
 {% block main %}
+    {% include "blocks/admin/bases/menu.html.twig" %}
     <div class="page-header">
         <h3>Manage Bases</h3>
     </div>
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             <div class="well well-sm table-header-form-well">
                 <div class="container-fluid">
                     <form class="form form-inline table-header-form" action="/admin/bases/add" method="POST">
@@ -25,33 +26,28 @@
         </div>
     </div>
     <div class="row">
-        <div class="help-block col-md-8 col-md-offset-2">
+        <div class="help-block col-md-12">
             Click on a row to show an overview of base information
         </div>
     </div>
-    {% if my_base %}
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <a class="btn btn-sm btn-info" href="/admin/bases/{{ my_base.uuid }}">
-                    View My Base &raquo;
-                </a>
-            </div>
-        </div>
-    {% endif %}
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="bases-table">
                     <thead>
                     <tr>
-                        <th class="col-md-9">Base Name</th>
-                        <th class="col-md-3">Users</th>
+                        <th class="col-md-6">{{ sortlink('name','Base Name',sort)|raw }}</th>
+                        <th class="col-md-2">{{ sortlink('tests-complete','Completed Tests',sort)|raw }}</th>
+                        <th class="col-md-2">{{ sortlink('tests-incomplete','Incomplete Tests',sort)|raw }}</th>
+                        <th class="col-md-2">{{ sortlink('users','Users',sort)|raw }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for base in bases %}
                         <tr data-uuid="{{ base.uuid }}" class="cursor-pointer">
                             <td>{{ base.name }}</td>
+                            <td>{{ base.testsComplete }}</td>
+                            <td>{{ base.testsIncomplete }}</td>
                             <td>{{ base.users|number_format }}</td>
                         </tr>
                     {% endfor %}
