@@ -307,7 +307,7 @@ class Bases extends Admin
         $sort_col = $this->get(ArrayPaginator::VAR_SORT, 'name');
         $sort_dir = $this->get(ArrayPaginator::VAR_DIRECTION, CreateSortLink::DIR_ASC);
 
-        $bases = $this->bases->fetchAll();
+        $bases = $this->bases->fetchAll(true);
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
         if (!$user) {

@@ -25,9 +25,10 @@ class BaseCollection
 
     /**
      * @param array $data
+     * @param bool $populate_stats
      * @return Base[]
      */
-    private function create_objects(array $data): array
+    private function create_objects(array $data, bool $populate_stats = false): array
     {
         $bases = [];
         foreach ($data as $row) {
@@ -37,7 +38,10 @@ class BaseCollection
             $bases[ $row[ 'uuid' ] ] = $base;
         }
 
-        $this->fetch_aggregate_data($bases);
+        if ($populate_stats) {
+            $this->fetch_aggregate_data($bases);
+        }
+
         return $bases;
     }
 
@@ -174,9 +178,10 @@ SQL;
     }
 
     /**
+     * @param bool $populate_stats
      * @return Base[]
      */
-    public function fetchAll(): array
+    public function fetchAll(bool $populate_stats = false): array
     {
         $qry = <<<SQL
 SELECT
@@ -203,7 +208,7 @@ SQL;
         }
 
         $res->free();
-        return $this->create_objects($rows);
+        return $this->create_objects($rows, $populate_stats);
     }
 
     /**
