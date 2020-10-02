@@ -39,7 +39,7 @@ class UserSortOption implements ISortOption
     public const JOIN_COLUMNS = [
         self::COL_BASE => 'userData.userBase = baseList.uuid',
         self::COL_OFFICE_SYMBOL => 'userData.userOfficeSymbol = officeSymbolList.uuid',
-        self::COL_ROLE => 'userData.userRole = roleList.roleName',
+        self::COL_ROLE => 'userData.userRole = roleList.uuid',
     ];
 
     public const JOIN_TGT_SORT_COLUMN = [

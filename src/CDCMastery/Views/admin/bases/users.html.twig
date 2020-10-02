@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+{% set page_title = "Users at #{base.name}" %}
+{% block main %}
+    {% include "blocks/admin/bases/menu.html.twig" %}
+    <div class="page-header">
+        <h3>
+            <span class="text-muted">Manage Users</span> - {{ base.name }}
+        </h3>
+    </div>
+    {% include "blocks/admin/users/list-common.html.twig" with {'show_bases': false, 'show_extra': true} %}
+{% endblock %}

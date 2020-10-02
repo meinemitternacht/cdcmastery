@@ -7,5 +7,5 @@
             Manage Users
         </h3>
     </div>
-    {% include "blocks/admin/users/list-common.html.twig" %}
+    {% include "blocks/admin/users/list-common.html.twig" with {'show_bases': true, 'show_extra': false} %}
 {% endblock %}

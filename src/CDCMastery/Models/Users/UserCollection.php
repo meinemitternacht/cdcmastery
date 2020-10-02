@@ -121,6 +121,25 @@ SQL;
         return (int)$row[ 'count' ];
     }
 
+    public function countByBase(Base $base): int
+    {
+        $qry = <<<SQL
+SELECT COUNT(*) AS count FROM userData WHERE userBase = '{$base->getUuid()}'
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)$row[ 'count' ];
+    }
+
     public function delete(User $user): void
     {
         $uuid = $user->getUuid();
@@ -426,7 +445,15 @@ SQL;
     }
 
     // @todo proper filter function for each column
-    public function filterByBase(Base $base, ?array $sort_options = null): array
+
+    /**
+     * @param Base $base
+     * @param array|null $sort_options
+     * @param int|null $start
+     * @param int|null $limit
+     * @return User[]
+     */
+    public function filterByBase(Base $base, ?array $sort_options = null, ?int $start = null, ?int $limit = null): array
     {
         if (!$base->getUuid()) {
             return [];
@@ -459,6 +486,11 @@ SQL;
             : null;
         $sort_str = ' ORDER BY ' . implode(', ', $sort_strs);
 
+        $limit_str = null;
+        if ($start !== null && $limit !== null) {
+            $limit_str = "LIMIT {$start}, {$limit}";
+        }
+
         $qry = <<<SQL
 # noinspection SqlResolve
 
@@ -484,6 +516,7 @@ FROM userData
 {$join_str}
 WHERE userBase = ?
 {$sort_str}
+{$limit_str}
 SQL;
 
         $stmt = $this->db->prepare($qry);

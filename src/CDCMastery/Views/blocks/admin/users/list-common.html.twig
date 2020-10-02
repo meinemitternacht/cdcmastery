@@ -9,31 +9,67 @@
             <table class="table table-striped table-hover" id="users-table">
                 <thead>
                 <tr>
-                    <th class="col-md-3">{{ sortlink('userLastName','Last Name',sort)|raw }}</th>
-                    <th class="col-md-3">{{ sortlink('userFirstName','First Name',sort)|raw }}</th>
-                    <th class="col-md-1">Rank</th>
-                    <th class="col-md-3">{{ sortlink('userBase','Base',sort)|raw }}</th>
-                    <th class="col-md-2">{{ sortlink('userLastLogin','Last Login',sort)|raw }}</th>
+                    {% if show_extra %}
+                        <th class="col-md-3">
+                            {{ sortlink('userLastName','Last',sort)|raw }},
+                            {{ sortlink('userFirstName','First',sort)|raw }} Rank
+                        </th>
+                        <th class="col-md-2">{{ sortlink('userRole','Role',sort)|raw }}</th>
+                        <th class="col-md-1">{{ sortlink('userDateRegistered','Registered',sort)|raw }}</th>
+                        <th class="col-md-1">{{ sortlink('userOfficeSymbol','Symbol',sort)|raw }}</th>
+                    {% else %}
+                        <th class="col-md-3">{{ sortlink('userLastName','Last Name',sort)|raw }}</th>
+                        <th class="col-md-3">{{ sortlink('userFirstName','First Name',sort)|raw }}</th>
+                        <th class="col-md-1">Rank</th>
+                    {% endif %}
+                    <th class="col-md-1">{{ sortlink('userLastLogin','Last Login',sort)|raw }}</th>
+                    {% if show_bases %}
+                        <th class="col-md-3">{{ sortlink('userBase','Base',sort)|raw }}</th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
                 {% for user in users %}
                     <tr data-uuid="{{ user.uuid }}"
                         class="cursor-pointer{% if user.isDisabled %} text-muted{% endif %}">
-                        <td>{{ user.lastName }}</td>
-                        <td>{{ user.firstName }}</td>
-                        <td>{{ user.rank }}</td>
-                        <td{% if bases[user.base] %} title="{{ bases[user.base].name }}"{% endif %}>
-                            {% if bases[user.base] %}
-                                <a href="/admin/bases/{{ user.base }}">
-                                    {{ bases[user.base].name|length > 40 ? bases[user.base].name|slice(0,40) ~ '...' : bases[user.base].name }}
-                                </a>
-                            {% else %}
-                                &mdash;
-                            {% endif %}
-                        </td>
+                        {% if show_extra %}
+                            <td>
+                                <strong>{{ user.lastName }}</strong>,
+                                {{ user.firstName }}
+                                <strong>{{ user.rank }}</strong>
+                            </td>
+                            <td>
+                                {% if roles[user.role] %}
+                                    {{ roles[user.role].name }}
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.dateRegistered %}{{ user.dateRegistered|date('d-M-Y') }}{% else %}&mdash;{% endif %}
+                            </td>
+                            <td>
+                                {% if symbols[user.officeSymbol] %}{{ symbols[user.officeSymbol].symbol }}{% else %}&mdash;{% endif %}
+                            </td>
+                        {% else %}
+                            <td>{{ user.lastName }}</td>
+                            <td>{{ user.firstName }}</td>
+                            <td>{{ user.rank }}</td>
+                        {% endif %}
                         <td>
-                            {% if user.lastLogin %}{{ user.lastLogin|date('d-M-Y') }}{% else %}&mdash;{% endif %}</td>
+                            {% if user.lastLogin %}{{ user.lastLogin|date('d-M-Y') }}{% else %}&mdash;{% endif %}
+                        </td>
+                        {% if show_bases %}
+                            <td{% if bases[user.base] %} title="{{ bases[user.base].name }}"{% endif %}>
+                                {% if bases[user.base] %}
+                                    <a href="/admin/bases/{{ user.base }}">
+                                        {{ bases[user.base].name|length > 40 ? bases[user.base].name|slice(0,40) ~ '...' : bases[user.base].name }}
+                                    </a>
+                                {% else %}
+                                    &mdash;
+                                {% endif %}
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
                 </tbody>

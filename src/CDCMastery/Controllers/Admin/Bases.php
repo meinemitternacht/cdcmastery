@@ -14,18 +14,23 @@ use CDCMastery\Models\Cache\CacheHandler;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
+use CDCMastery\Models\Sorting\ISortOption;
+use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\Bases\Bases as BaseStats;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
 use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Twig\CreateSortLink;
+use CDCMastery\Models\Users\Roles\RoleCollection;
 use CDCMastery\Models\Users\UserCollection;
 use DateTime;
 use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 
 class Bases extends Admin
@@ -35,6 +40,8 @@ class Bases extends Admin
     private BaseStats $stats;
     private TestCollection $tests;
     private TestDataHelpers $test_data;
+    private OfficeSymbolCollection $symbols;
+    private RoleCollection $roles;
 
     /**
      * Bases constructor.
@@ -47,6 +54,10 @@ class Bases extends Admin
      * @param UserCollection $users
      * @param BaseCollection $bases
      * @param BaseStats $base_stats
+     * @param TestCollection $tests
+     * @param TestDataHelpers $test_data
+     * @param OfficeSymbolCollection $symbols
+     * @param RoleCollection $roles
      * @throws AccessDeniedException
      */
     public function __construct(
@@ -60,7 +71,9 @@ class Bases extends Admin
         BaseCollection $bases,
         BaseStats $base_stats,
         TestCollection $tests,
-        TestDataHelpers $test_data
+        TestDataHelpers $test_data,
+        OfficeSymbolCollection $symbols,
+        RoleCollection $roles
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
@@ -69,6 +82,8 @@ class Bases extends Admin
         $this->stats = $base_stats;
         $this->tests = $tests;
         $this->test_data = $test_data;
+        $this->symbols = $symbols;
+        $this->roles = $roles;
     }
 
     private function get_base(string $uuid): Base
@@ -85,6 +100,20 @@ class Bases extends Admin
         }
 
         return $base;
+    }
+
+    private function validate_sort(string $column, string $direction): ?ISortOption
+    {
+        try {
+            return new UserSortOption($column,
+                                      strtolower($direction ?? 'asc') === 'asc'
+                                          ? ISortOption::SORT_ASC
+                                          : ISortOption::SORT_DESC);
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            unset($e);
+            return null;
+        }
     }
 
     public function do_add(?Base $base = null): Response
@@ -140,6 +169,70 @@ class Bases extends Admin
     public function do_edit(string $uuid): Response
     {
         return $this->do_add($this->get_base($uuid));
+    }
+
+    public function show_base_users(string $uuid): Response
+    {
+        $base = $this->get_base($uuid);
+
+        $sort_col = $this->get(ArrayPaginator::VAR_SORT);
+        $sort_dir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $cur_page = $this->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $n_records = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+
+        $sort = $sort_col
+            ? [$this->validate_sort($sort_col, $sort_dir)]
+            : [
+                new UserSortOption(UserSortOption::COL_NAME_LAST),
+                new UserSortOption(UserSortOption::COL_NAME_FIRST),
+                new UserSortOption(UserSortOption::COL_RANK),
+                new UserSortOption(UserSortOption::COL_BASE),
+            ];
+
+        $sort[] = new UserSortOption(UserSortOption::COL_UUID);
+
+        $n_users = $this->users->countByBase($base);
+        $base_users = $this->users->filterByBase($base, $sort, $cur_page * $n_records, $n_records);
+
+        $tgt_symbols = [];
+        $tgt_roles = [];
+        foreach ($base_users as $user) {
+            $tgt_symbols[ $user->getOfficeSymbol() ] = true;
+            $tgt_roles[ $user->getRole() ] = true;
+        }
+
+        $symbols = $this->symbols->fetchArray(array_keys($tgt_symbols));
+        $roles = $this->roles->fetchArray(array_keys($tgt_roles));
+
+        $pagination = ArrayPaginator::buildLinks(
+            "/admin/bases/{$uuid}/users",
+            $cur_page,
+            ArrayPaginator::calcNumPagesNoData(
+                $n_users,
+                $n_records
+            ),
+            $n_records,
+            $n_users,
+            $sort_col,
+            $sort_dir
+        );
+
+        $data = [
+            'users' => $base_users,
+            'base' => $base,
+            'roles' => $roles,
+            'symbols' => $symbols,
+            'pagination' => $pagination,
+            'sort' => [
+                'col' => $sort_col,
+                'dir' => $sort_dir,
+            ],
+        ];
+
+        return $this->render(
+            'admin/bases/users.html.twig',
+            $data
+        );
     }
 
     public function show_test(string $uuid, string $test_uuid): Response
@@ -307,7 +400,7 @@ class Bases extends Admin
         $sort_col = $this->get(ArrayPaginator::VAR_SORT, 'name');
         $sort_dir = $this->get(ArrayPaginator::VAR_DIRECTION, CreateSortLink::DIR_ASC);
 
-        $bases = $this->bases->fetchAll(true);
+        $bases = $this->bases->fetchAll();
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 
         if (!$user) {

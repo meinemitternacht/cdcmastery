@@ -93,6 +93,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 'do_add',
             ]);
 
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_overview() */
+            $r->addRoute('GET', '/{uuid}', [
+                Admin\Bases::class,
+                'show_overview',
+            ]);
+
             /** @uses \CDCMastery\Controllers\Admin\Bases::show_edit() */
             $r->addRoute('GET', '/{uuid}/edit', [
                 Admin\Bases::class,
@@ -123,10 +129,10 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 'show_test',
             ]);
 
-            /** @uses \CDCMastery\Controllers\Admin\Bases::show_overview() */
-            $r->addRoute('GET', '/{uuid}', [
+            /** @uses \CDCMastery\Controllers\Admin\Bases::show_base_users() */
+            $r->addRoute('GET', '/{uuid}/users', [
                 Admin\Bases::class,
-                'show_overview',
+                'show_base_users',
             ]);
         });
 
