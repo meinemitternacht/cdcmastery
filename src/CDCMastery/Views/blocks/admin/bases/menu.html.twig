@@ -44,6 +44,10 @@
                             </li>
                         </ul>
                     </li>
+
+                    <li{% if cur_url == "/admin/bases/" ~ base.uuid ~ "/users" %} class="active"{% endif %}>
+                        <a href="/admin/bases/{{ base.uuid }}/users">Users</a>
+                    </li>
                 {% elseif my_base %}
                     <li>
                         <a class="bg-info" href="/admin/bases/{{ my_base.uuid }}">View My Base &raquo;</a>
