@@ -49,6 +49,11 @@
                                    id="email"
                                    placeholder="Enter e-mail..."
                                    value="{{ tmp_form.email }}">
+                            <div class="alert alert-danger hidden" id="mil-email-alert">
+                                Are you sure you want to use this address? Using an address that ends in
+                                <strong>.mil</strong> means you will likely never receive the activation e-mail and will
+                                not be able to utilize your account.
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="email-confirm">
@@ -212,4 +217,24 @@
             </div>
         </div>
     </form>
+    <script>
+        $(document).ready(function () {
+            let $msgElem = $('#mil-email-alert');
+            $('#email').blur(function (elem) {
+                let address = elem.target.value;
+
+                if (address === null || address === '') {
+                    $msgElem.addClass('hidden');
+                    return;
+                }
+
+                if (address.substr(-4) !== ".mil") {
+                    $msgElem.addClass('hidden');
+                    return;
+                }
+
+                $msgElem.removeClass('hidden');
+            });
+        });
+    </script>
 {% endblock %}
