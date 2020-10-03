@@ -9,7 +9,8 @@
 }
 
 #card-front,
-#card-back {
+#card-back,
+.index-card-bg {
     background: #fff url(/images/index-card.png) repeat-x top;
     background-size: 100% 12em;
     background-position-y: top;

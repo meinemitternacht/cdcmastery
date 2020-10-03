@@ -2,30 +2,105 @@
     <h3><span class="text-muted">Add Card</span> - {{ cat.name }}</h3>
 </div>
 <div class="row">
-    <div class="well well-sm col-md-8 col-md-offset-2">
+    <div class="well well-sm col-md-12">
         <form action="{{ url_prefix }}/cards/{{ cat.uuid }}/data/add"
               method="POST">
+            <fieldset id="cards-cont">
+                <legend>
+                    Card Data
+                    <button type="button"
+                            class="btn btn-xs btn-info pull-right"
+                            id="new-card-btn">
+                        <span class="glyphicon glyphicon-plus"></span> Append Card
+                    </button>
+                </legend>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="help-block">
+                            <p>
+                                Enter data for the front and back of each card below. Click "Append Card" to add more
+                                entry fields and create more than one card at a time. If text is not entered in both
+                                fields, the card will not be added.
+                            </p>
+                        </div>
+                        <div class="alert alert-warning" style="display:none" id="warning-cont">
+                            You can only add ten cards at a time.
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                        <label for="card-front-0">Card Front</label>
+                        <textarea class="form-control index-card-bg"
+                                  name="card_front[0]"
+                                  id="card-front-0"></textarea>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-12 col-md-6">
+                        <label for="card-back-0">Card Back</label>
+                        <textarea class="form-control index-card-bg"
+                                  name="card_back[0]"
+                                  id="card-back-0"></textarea>
+                    </div>
+                </div>
+            </fieldset>
             <fieldset>
-                <legend>Card Data</legend>
-                <div class="form-group">
-                    <label for="card-front">Card Front</label>
-                    <textarea class="form-control"
-                              name="card_front"
-                              id="card-front"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="card-back">Card Back</label>
-                    <textarea class="form-control"
-                              name="card_back"
-                              id="card-back"></textarea>
-                </div>
-                <div class="form-group">
+                <div class="form-group col-md-12">
                     <button type="submit"
                             class="btn btn-success">
-                        Add Card
+                        Save Cards
                     </button>
                 </div>
             </fieldset>
         </form>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        let $cardsCont = $('#cards-cont');
+        let $warningCont = $('#warning-cont');
+        let idx = 1;
+        let max_idx = 10;
+
+        $('#new-card-btn').click(function () {
+            if (idx === max_idx) {
+                $warningCont.show();
+                return;
+            }
+
+            let frag = document.createDocumentFragment();
+            let row = document.createElement('div');
+            let card_front = document.createElement('div');
+            let card_back = document.createElement('div');
+            let card_front_label = document.createElement('label');
+            let card_back_label = document.createElement('label');
+            let card_front_textarea = document.createElement('textarea');
+            let card_back_textarea = document.createElement('textarea');
+
+            row.classList.add('row');
+            card_front.classList.add('form-group', 'col-xs-12', 'col-sm-12', 'col-md-6');
+            card_back.classList.add('form-group', 'col-xs-12', 'col-sm-12', 'col-md-6');
+            card_front_label.setAttribute('for', 'card-front-' + idx);
+            card_back_label.setAttribute('for', 'card-back-' + idx);
+            card_front_label.innerHTML = 'Card Front ' + (idx + 1);
+            card_back_label.innerHTML = 'Card Back ' + (idx + 1);
+            card_front_textarea.classList.add('form-control', 'index-card-bg');
+            card_back_textarea.classList.add('form-control', 'index-card-bg');
+            card_front_textarea.setAttribute('name', 'card_front[' + idx + ']');
+            card_back_textarea.setAttribute('name', 'card_back[' + idx + ']');
+            card_front_textarea.setAttribute('id', 'card-front-' + idx);
+            card_back_textarea.setAttribute('id', 'card-back-' + idx);
+
+            card_front.appendChild(card_front_label);
+            card_front.appendChild(card_front_textarea);
+            card_back.appendChild(card_back_label);
+            card_back.appendChild(card_back_textarea);
+
+            row.appendChild(card_front);
+            row.appendChild(card_back);
+            frag.appendChild(row);
+
+            $cardsCont.append(frag);
+            idx++;
+        })
+    });
+</script>

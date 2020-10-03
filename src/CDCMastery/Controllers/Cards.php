@@ -187,18 +187,49 @@ class Cards extends RootController
         $front = $this->get('card_front');
         $back = $this->get('card_back');
 
-        $card = new Card();
-        $card->setUuid(UUID::generate());
-        $card->setFront($front);
-        $card->setBack($back);
-        $card->setCategory($cat->getUuid());
+        $flash = $this->flash();
+        $cat_uuid = $cat->getUuid();
 
-        $this->cards->save($cat, $card);
+        $cards = [];
+        $logs = [];
+        foreach ($front as $idx => $val) {
+            if (!isset($back[ $idx ])) {
+                $flash->add(
+                    MessageTypes::WARNING,
+                    'Card #' . ($idx + 1) . ' was missing data for the back of the card'
+                );
+                continue;
+            }
 
-        $this->log->info("add flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+            $f_val = trim($val);
+            $b_val = trim($back[ $idx ]);
+
+            if ($f_val === '' || $b_val === '') {
+                $flash->add(
+                    MessageTypes::WARNING,
+                    'Card #' . ($idx + 1) . ' was missing required data for the front and back of the card'
+                );
+                continue;
+            }
+
+            $card = new Card();
+            $card->setUuid(UUID::generate());
+            $card->setFront($f_val);
+            $card->setBack($b_val);
+            $card->setCategory($cat_uuid);
+
+            $cards[] = $card;
+            $logs[] = "add flash card :: category {$cat->getName()} [{$cat->getUuid()}] :: {$card->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}";
+        }
+
+        $this->cards->saveArray($cat, $cards);
+
+        foreach ($logs as $log) {
+            $this->log->info($log);
+        }
 
         $this->flash()->add(MessageTypes::SUCCESS,
-                            'The flash card was saved successfully');
+                            'The flash card(s) were saved successfully');
 
         return $this->redirect("/cards/{$cat->getUuid()}/data/add");
     }
