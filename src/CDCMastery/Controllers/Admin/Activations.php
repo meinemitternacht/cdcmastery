@@ -89,7 +89,6 @@ class Activations extends Admin
 
         switch ($determination) {
             case 'approve':
-                $this->activations->removeArray($tgt_activations);
                 foreach ($tgt_activations as $tgt_activation) {
                     $this->log->notice("manually activate user :: {$tgt_activation->getUserUuid()}");
                 }
@@ -109,6 +108,7 @@ class Activations extends Admin
                 break;
         }
 
+        $this->activations->removeArray($tgt_activations);
         $this->flash()->add(
             MessageTypes::SUCCESS,
             'The selected users were processed successfully'
