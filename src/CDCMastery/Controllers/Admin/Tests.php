@@ -125,7 +125,7 @@ class Tests extends Admin
 
         try {
             $th->score();
-            $this->log->alert("test manually scored :: test owner {$user->getName()} [{$user->getUuid()}] :: scoring user {$scoring_user->getName()} [{$scoring_user->getUuid()}]");
+            $this->log->alert("test manually scored :: test {$test->getUuid()} :: test owner {$user->getName()} [{$user->getUuid()}] :: scoring user {$scoring_user->getName()} [{$scoring_user->getUuid()}]");
             $this->flash()->add(
                 MessageTypes::SUCCESS,
                 "The test has been manually scored"
