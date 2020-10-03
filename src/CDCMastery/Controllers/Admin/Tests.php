@@ -10,17 +10,21 @@ use CDCMastery\Helpers\ArrayPaginator;
 use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Cache\CacheHandler;
+use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
+use CDCMastery\Models\Tests\TestHandler;
 use CDCMastery\Models\Tests\TestHelpers;
 use CDCMastery\Models\Users\UserCollection;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Throwable;
 use Twig\Environment;
 
 class Tests extends Admin
@@ -28,6 +32,8 @@ class Tests extends Admin
     private TestCollection $tests;
     private UserCollection $users;
     private TestDataHelpers $test_data;
+    private AfscCollection $afscs;
+    private AnswerCollection $answers;
 
     /**
      * Tests constructor.
@@ -40,6 +46,8 @@ class Tests extends Admin
      * @param TestCollection $tests
      * @param UserCollection $users
      * @param TestDataHelpers $test_data
+     * @param AfscCollection $afscs
+     * @param AnswerCollection $answers
      * @throws AccessDeniedException
      */
     public function __construct(
@@ -51,13 +59,88 @@ class Tests extends Admin
         Config $config,
         TestCollection $tests,
         UserCollection $users,
-        TestDataHelpers $test_data
+        TestDataHelpers $test_data,
+        AfscCollection $afscs,
+        AnswerCollection $answers
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
         $this->tests = $tests;
         $this->users = $users;
         $this->test_data = $test_data;
+        $this->afscs = $afscs;
+        $this->answers = $answers;
+    }
+
+    public function do_score_test(string $test_uuid): Response
+    {
+        $test = $this->tests->fetch($test_uuid);
+
+        if (!$test || !$test->getUuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test could not be found'
+            );
+
+            return $this->redirect("/admin/tests");
+        }
+
+        $user = $this->users->fetch($test->getUserUuid());
+
+        if (!$user || !$user->getUuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The user account for the specified test could not be found'
+            );
+
+            return $this->redirect("/admin/tests");
+        }
+
+        $scoring_user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+        if (!$scoring_user || !$scoring_user->getUuid()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'Your user account could not be loaded'
+            );
+
+            return $this->redirect("/auth/logout");
+        }
+
+        if ($test->getTimeCompleted()) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'The specified test has already been scored'
+            );
+
+            return $this->redirect("/admin/tests");
+        }
+
+        $th = TestHandler::resume($this->log,
+                                  $this->afscs,
+                                  $this->tests,
+                                  $this->answers,
+                                  $this->test_data,
+                                  $test);
+
+        try {
+            $th->score();
+            $this->log->alert("test manually scored :: test owner {$user->getName()} [{$user->getUuid()}] :: scoring user {$scoring_user->getName()} [{$scoring_user->getUuid()}]");
+            $this->flash()->add(
+                MessageTypes::SUCCESS,
+                "The test has been manually scored"
+            );
+
+            return $this->redirect("/admin/tests/{$test->getUuid()}");
+        } catch (Throwable $e) {
+            $this->log->debug($e);
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                "Unable to score test: {$e->getMessage()}"
+            );
+
+            return $this->redirect("/admin/tests/{$test->getUuid()}");
+        }
     }
 
     public function show_test(string $test_uuid): Response
@@ -111,6 +194,7 @@ class Tests extends Admin
 
         $data = [
             'user' => $user,
+            'test' => $test,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
@@ -121,6 +205,7 @@ class Tests extends Admin
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
+            'allowScoring' => $this->auth_helpers->assert_admin() && !$time_completed,
         ];
 
         return $this->render(

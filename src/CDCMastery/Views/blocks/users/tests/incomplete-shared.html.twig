@@ -21,6 +21,22 @@
 </script>
 <div class="row">
     <div class="col-md-4">
+        {% if allowScoring %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default text-center">
+                        <div class="panel-body">
+                            <div class="alert alert-danger text-left">
+                                Scoring this test will interrupt the user if they are currently in the middle of this
+                                test. Please be sure you have spoken to the user before performing this action.
+                            </div>
+                            <a class="btn btn-danger"
+                               href="/admin/tests/{{ test.uuid }}/score">Score Test</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         {% if user %}
             <div class="row">
                 <div class="col-md-12">

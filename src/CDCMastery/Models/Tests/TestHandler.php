@@ -387,6 +387,8 @@ class TestHandler
     {
         $test_qa_pairs = $this->test_data_helpers->list($this->getTest());
 
+        $test = $this->getTest();
+        $nQuestions = $test->getNumQuestions();
         $nCorrect = 0;
         $nMissed = 0;
         foreach ($test_qa_pairs as $test_qa_pair) {
@@ -405,9 +407,14 @@ class TestHandler
         }
 
         $test = $this->getTest();
-        $test->setCurrentQuestion($test->getNumQuestions() - 1);
+
+        if ($nMissed + $nCorrect !== $nQuestions) {
+            $nMissed = $nQuestions - $nCorrect;
+        }
+
+        $test->setCurrentQuestion($nQuestions - 1);
         $test->setTimeCompleted(new DateTime());
-        $test->setScore($this->calculateScore($test->getNumQuestions(),
+        $test->setScore($this->calculateScore($nQuestions,
                                               $nCorrect));
         $test->setNumAnswered(count($test_qa_pairs));
         $test->setNumMissed($nMissed);

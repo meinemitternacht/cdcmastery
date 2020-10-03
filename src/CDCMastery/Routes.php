@@ -504,6 +504,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
             'show_test',
         ]);
 
+        /** @uses \CDCMastery\Controllers\Admin\Tests::do_score_test() */
+        $r->addRoute('GET', '/tests/{test_uuid}/score', [
+            Admin\Tests::class,
+            'do_score_test',
+        ]);
+
         /** @uses \CDCMastery\Controllers\Admin\Users::show_home() */
         $r->addRoute('GET', '/users', [
             Admin\Users::class,

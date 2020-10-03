@@ -1175,6 +1175,7 @@ class Users extends Admin
 
         $data = [
             'user' => $user,
+            'test' => $test,
             'role' => $this->roles->fetch($user->getRole()),
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
@@ -1186,6 +1187,7 @@ class Users extends Admin
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
+            'allowScoring' => $this->auth_helpers->assert_admin() && !$time_completed,
         ];
 
         return $this->render(
