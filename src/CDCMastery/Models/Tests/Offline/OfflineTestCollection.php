@@ -78,6 +78,7 @@ class OfflineTestCollection
             $test->setUserUuid($tdata[ 'userUuid' ]);
             $test->setCdcData($tdata[ 'cdcData' ]);
             $test->setDateCreated($date_created);
+            $test->setDeleted($tdata[ 'deleted' ] ?? null);
 
             $out[ $tdata[ '_uuid' ] ] = $test;
         }
@@ -242,8 +243,16 @@ SQL;
             $questions
         );
 
-        $reordered = array_merge(array_flip($questions),
-                                 $questionArr);
+        $reordered = [];
+        $deleted = [];
+        foreach ($questions as $quuid) {
+            if (!isset($questionArr[ $quuid ])) {
+                $deleted[] = $quuid;
+                continue;
+            }
+
+            $reordered[ $quuid ] = $questionArr[ $quuid ];
+        }
 
         $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
@@ -257,6 +266,7 @@ SQL;
             'totalQuestions' => $totalQuestions,
             'userUuid' => $userUuid,
             'dateCreated' => $dateCreated,
+            'deleted' => $deleted,
         ];
 
         return $this->create_objects([$data])[ $_uuid ] ?? null;
@@ -345,8 +355,16 @@ SQL;
                 $questions
             );
 
-            $reordered = array_merge(array_flip($questions),
-                                     $questionArr);
+            $reordered = [];
+            $deleted = [];
+            foreach ($questions as $quuid) {
+                if (!isset($questionArr[ $quuid ])) {
+                    $deleted[] = $quuid;
+                    continue;
+                }
+
+                $reordered[ $quuid ] = $questionArr[ $quuid ];
+            }
 
             $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
@@ -360,6 +378,7 @@ SQL;
                 'totalQuestions' => $row[ 'totalQuestions' ],
                 'userUuid' => $row[ 'userUuid' ],
                 'dateCreated' => $row[ 'dateCreated' ],
+                'deleted' => $deleted,
             ];
         }
 
@@ -454,8 +473,16 @@ SQL;
                 $questions
             );
 
-            $reordered = array_merge(array_flip($questions),
-                                     $questionArr);
+            $reordered = [];
+            $deleted = [];
+            foreach ($questions as $quuid) {
+                if (!isset($questionArr[ $quuid ])) {
+                    $deleted[] = $quuid;
+                    continue;
+                }
+
+                $reordered[ $quuid ] = $questionArr[ $quuid ];
+            }
 
             $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
@@ -469,6 +496,7 @@ SQL;
                 'totalQuestions' => $row[ 'totalQuestions' ],
                 'userUuid' => $row[ 'userUuid' ],
                 'dateCreated' => $row[ 'dateCreated' ],
+                'deleted' => $deleted,
             ];
         }
 
@@ -545,8 +573,16 @@ SQL;
                 $questions
             );
 
-            $reordered = array_merge(array_flip($questions),
-                                     $questionArr);
+            $reordered = [];
+            $deleted = [];
+            foreach ($questions as $quuid) {
+                if (!isset($questionArr[ $quuid ])) {
+                    $deleted[] = $quuid;
+                    continue;
+                }
+
+                $reordered[ $quuid ] = $questionArr[ $quuid ];
+            }
 
             $questionAnswers = $this->questions_answers->fetch($afsc, $reordered);
 
@@ -560,6 +596,7 @@ SQL;
                 'totalQuestions' => $row[ 'totalQuestions' ],
                 'userUuid' => $row[ 'userUuid' ],
                 'dateCreated' => $row[ 'dateCreated' ],
+                'deleted' => $deleted,
             ];
         }
 

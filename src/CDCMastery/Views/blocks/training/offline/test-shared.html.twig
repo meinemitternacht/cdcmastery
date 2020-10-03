@@ -5,12 +5,20 @@
         {% if test.cdcData.afsc.isFouo %}
             <h3 class="text-center text-danger">FOR OFFICIAL USE ONLY</h3>
         {% endif %}
+        {% if test.deleted %}
+            <div class="alert alert-danger">
+                This test references questions which have been removed from the database. The remaining questions are
+                listed below, but it may be best to create another test. We apologize for the inconvenience.
+            </div>
+        {% endif %}
         <h2>{{ test.cdcData.afsc.name }} PRACTICE TEST</h2>
         <h5>
             <strong>Version</strong>: {% if test.cdcData.afsc.version %}{{ test.cdcData.afsc.version }}{% else %}N/A{% endif %}
         </h5>
-        <h5><strong>Test ID</strong>: {{ test.uuid }} <strong>created
-                on</strong> {{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}</h5>
+        <h5>
+            <strong>Test ID</strong>: {{ test.uuid }}
+            <strong>created on</strong> {{ test.dateCreated|date("F j, Y \\a\\t g:ia") }}
+        </h5>
         {% set i = 1 %}
         {% set answer_labels = [
             'a',

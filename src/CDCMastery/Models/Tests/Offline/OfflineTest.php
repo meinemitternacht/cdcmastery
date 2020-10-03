@@ -18,6 +18,7 @@ class OfflineTest
     private string $user_uuid;
     private CdcData $cdc_data;
     private DateTime $date_created;
+    private ?array $deleted = null;
 
     /**
      * @return string
@@ -93,5 +94,21 @@ class OfflineTest
     public function setDateCreated(DateTime $date_created): void
     {
         $this->date_created = $date_created;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getDeleted(): ?array
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param array|null $deleted
+     */
+    public function setDeleted(?array $deleted): void
+    {
+        $this->deleted = $deleted;
     }
 }
