@@ -103,6 +103,15 @@ class Auth extends RootController
 
     public function do_activation(?string $code = null): Response
     {
+        if ($this->limiter->assert_limited()) {
+            $this->log->warning("rate-limited activation attempt :: ip {$_SERVER['REMOTE_ADDR']}");
+            $expires = $this->limiter->get_limit_expires_seconds();
+
+            $this->flash()->add(MessageTypes::WARNING,
+                                "You have made too many activation attempts, please try again in {$expires} seconds");
+            return $this->show_password_reset();
+        }
+
         if (!$code) {
             $code = $this->filter_string_default('code');
         }
@@ -113,6 +122,7 @@ class Auth extends RootController
                 'No activation code was provided'
             );
 
+            $this->limiter->increment();
             return $this->redirect('/auth/activate');
         }
 
@@ -125,6 +135,7 @@ class Auth extends RootController
             );
 
             $this->log->warning("activate user failed :: invalid code {$code}");
+            $this->limiter->increment();
             return $this->redirect('/auth/activate');
         }
 
@@ -142,6 +153,7 @@ class Auth extends RootController
         );
 
         $this->auth_helpers->set_redirect('/profile/afsc');
+        $this->limiter->destroy();
         return $this->redirect('/auth/login');
     }
 
@@ -151,11 +163,21 @@ class Auth extends RootController
      */
     public function do_activation_resend(): Response
     {
+        if ($this->limiter->assert_limited()) {
+            $this->log->warning("rate-limited activation resend attempt :: ip {$_SERVER['REMOTE_ADDR']}");
+            $expires = $this->limiter->get_limit_expires_seconds();
+
+            $this->flash()->add(MessageTypes::WARNING,
+                                "You have made too many activation attempts, please try again in {$expires} seconds");
+            return $this->show_password_reset();
+        }
+
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
             $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: email invalid");
+            $this->limiter->increment();
             goto out_return;
         }
 
@@ -164,6 +186,7 @@ class Auth extends RootController
         if (!$user_uuid) {
             $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user not found :: {$email}");
+            $this->limiter->increment();
             goto out_return;
         }
 
@@ -172,6 +195,7 @@ class Auth extends RootController
         if (!$user) {
             $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user not found :: {$email} :: user uuid {$user_uuid}");
+            $this->limiter->increment();
             goto out_return;
         }
 
@@ -185,6 +209,7 @@ class Auth extends RootController
                 "Your account has already been activated.  Please sign in below."
             );
 
+            $this->limiter->destroy();
             return $this->redirect('/auth/login');
         }
 
@@ -213,6 +238,7 @@ class Auth extends RootController
             'If the e-mail address entered matches an account on file, a new activation e-mail will been sent in a few moments.'
         );
 
+        $this->limiter->destroy();
         return $this->redirect('/auth/activate');
     }
 
@@ -299,9 +325,19 @@ class Auth extends RootController
      */
     public function do_password_reset_send(): Response
     {
+        if ($this->limiter->assert_limited()) {
+            $this->log->warning("rate-limited password reset attempt :: ip {$_SERVER['REMOTE_ADDR']}");
+            $expires = $this->limiter->get_limit_expires_seconds();
+
+            $this->flash()->add(MessageTypes::WARNING,
+                                "You have made too many password reset attempts, please try again in {$expires} seconds");
+            return $this->show_password_reset();
+        }
+
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
+            $this->limiter->increment();
             $this->log->warning("queue password reset failed :: email invalid");
             goto out_return;
         }
@@ -309,6 +345,7 @@ class Auth extends RootController
         $user_uuid = $this->user_helpers->findByEmail($email);
 
         if (!$user_uuid) {
+            $this->limiter->increment();
             $this->log->warning("queue password reset failed :: user not found :: {$email}");
             goto out_return;
         }
@@ -316,6 +353,7 @@ class Auth extends RootController
         $user = $this->users->fetch($user_uuid);
 
         if (!$user) {
+            $this->limiter->increment();
             $this->log->warning("queue password reset failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
@@ -355,6 +393,7 @@ class Auth extends RootController
             'If the e-mail address entered matches an account on file, a one-time password reset link will been sent in a few moments.'
         );
 
+        $this->limiter->destroy();
         return $this->redirect('/auth/login');
     }
 
@@ -423,6 +462,7 @@ class Auth extends RootController
             );
 
             $this->log->debug('no reCAPTCHA token provided');
+            $this->limiter->increment();
             goto out_error;
         }
 
@@ -438,6 +478,7 @@ class Auth extends RootController
             );
 
             $this->log->alert("reCAPTCHA code failed verification :: {$g_recaptcha_response} :: {$this->request->getClientIp()}");
+            $this->limiter->increment();
             goto out_error;
         }
 
