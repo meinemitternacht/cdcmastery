@@ -59,45 +59,6 @@
                             You have not started any tests yet, <a href="/tests/new">click here to start one now</a>!
                         </div>
                     {% endif %}
-                    {% if tests.complete|length > 0 %}
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <h5>Completed Tests</h5>
-                            </div>
-                            <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table id="completed-tests-table" class="table table-striped table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>AFSC</th>
-                                            <th>Questions</th>
-                                            <th>Time Started</th>
-                                            <th>Time Completed</th>
-                                            <th>Score</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for test in tests.complete %}
-                                            <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                                                <td title="{{ test.afsc }}">
-                                                    {% if test.afsc|length > 0 %}
-                                                        {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
-                                                    {% else %}
-                                                        No Data
-                                                    {% endif %}
-                                                </td>
-                                                <td>{{ test.questions }}</td>
-                                                <td>{{ test.time.started }}</td>
-                                                <td>{{ test.time.completed }}</td>
-                                                <td>{{ test.score }}%</td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
                     {% if tests.incomplete|length > 0 %}
                         <div class="panel panel-info">
                             <div class="panel-heading">
@@ -142,6 +103,45 @@
                                                            title="Delete Test">X</a>
                                                     </div>
                                                 </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if tests.complete|length > 0 %}
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h5>Completed Tests</h5>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table id="completed-tests-table" class="table table-striped table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>AFSC</th>
+                                            <th>Questions</th>
+                                            <th>Time Started</th>
+                                            <th>Time Completed</th>
+                                            <th>Score</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for test in tests.complete %}
+                                            <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                                                <td title="{{ test.afsc }}">
+                                                    {% if test.afsc|length > 0 %}
+                                                        {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
+                                                    {% else %}
+                                                        No Data
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ test.questions }}</td>
+                                                <td>{{ test.time.started }}</td>
+                                                <td>{{ test.time.completed }}</td>
+                                                <td>{{ test.score }}%</td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>
