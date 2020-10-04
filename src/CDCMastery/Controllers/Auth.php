@@ -302,7 +302,6 @@ class Auth extends RootController
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("queue password reset failed :: email invalid");
             goto out_return;
         }
@@ -310,7 +309,6 @@ class Auth extends RootController
         $user_uuid = $this->user_helpers->findByEmail($email);
 
         if (!$user_uuid) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("queue password reset failed :: user not found :: {$email}");
             goto out_return;
         }
@@ -318,7 +316,6 @@ class Auth extends RootController
         $user = $this->users->fetch($user_uuid);
 
         if (!$user) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("queue password reset failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
@@ -336,7 +333,6 @@ class Auth extends RootController
             $system_user = $this->users->fetch(SYSTEM_UUID);
 
             if (!$system_user) {
-                $this->trigger_request_debug(__METHOD__);
                 $this->log->alert("queue password reset failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
                 goto out_return;
             }
