@@ -426,6 +426,7 @@ class Auth extends RootController
                 'Please complete the reCAPTCHA "I am not a robot" verification'
             );
 
+            $this->log->debug('no reCAPTCHA token provided');
             goto out_error;
         }
 
@@ -440,7 +441,7 @@ class Auth extends RootController
                 'We apologize, but we were unable to verify your reCAPTCHA response. Please contact the site administrator if this issue persists.'
             );
 
-            $this->log->addDebug("reCAPTCHA code failed verification :: {$g_recaptcha_response} :: {$this->request->getClientIp()}");
+            $this->log->alert("reCAPTCHA code failed verification :: {$g_recaptcha_response} :: {$this->request->getClientIp()}");
             goto out_error;
         }
 
