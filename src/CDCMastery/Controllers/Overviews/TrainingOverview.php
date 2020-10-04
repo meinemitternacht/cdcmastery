@@ -1052,7 +1052,9 @@ LBL,
 
         $users = $this->users->fetchArray($subs);
 
+        $n_users = 0;
         $n_supervisors = 0;
+        $n_training_managers = 0;
         $graph_data = null;
         $sub_stats_count_avg_grouped = null;
         $sub_stats_latest = null;
@@ -1074,9 +1076,27 @@ LBL,
 
             if ($role->getType() === Role::TYPE_TRAINING_MANAGER) {
                 $super_role = $this->roles->fetchType(Role::TYPE_SUPERVISOR);
-                $n_supervisors = count(array_filter($users, static function (User $v) use ($super_role) {
-                    return $v->getRole() === $super_role->getUuid();
-                }));
+                $tm_role = $this->roles->fetchType(Role::TYPE_TRAINING_MANAGER);
+
+                if (!$super_role || !$tm_role) {
+                    goto out_return;
+                }
+
+                $super_role_uuid = $super_role->getUuid();
+                $tm_role_uuid = $tm_role->getUuid();
+
+                foreach ($users as $sub_user) {
+                    switch ($sub_user->getRole()) {
+                        case $super_role_uuid:
+                            $n_supervisors++;
+                            continue 2;
+                        case $tm_role_uuid:
+                            $n_training_managers++;
+                            continue 2;
+                    }
+
+                    $n_users++;
+                }
             }
 
             uasort($sub_stats_count_avg_grouped, static function (array $a, array $b): int {
@@ -1088,6 +1108,7 @@ LBL,
             });
         }
 
+        out_return:
         $data = [
             'cur_user' => $user,
             'cur_role' => $role,
@@ -1098,8 +1119,9 @@ LBL,
                 'latest' => $sub_stats_latest,
                 'tests' => $sub_stats_count_overall,
                 'average' => $sub_stats_avg_overall,
-                'n_users' => count($sub_stats_count_avg_grouped ?? []),
+                'n_users' => $n_users,
                 'n_supervisors' => $n_supervisors,
+                'n_training_managers' => $n_training_managers,
             ],
         ];
 
