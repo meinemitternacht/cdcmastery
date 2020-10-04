@@ -175,7 +175,6 @@ class Auth extends RootController
         $email = $this->filter('email', null, FILTER_VALIDATE_EMAIL, FILTER_NULL_ON_FAILURE);
 
         if (!$email) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: email invalid");
             $this->limiter->increment();
             goto out_return;
@@ -184,7 +183,6 @@ class Auth extends RootController
         $user_uuid = $this->user_helpers->findByEmail($email);
 
         if (!$user_uuid) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user not found :: {$email}");
             $this->limiter->increment();
             goto out_return;
@@ -193,7 +191,6 @@ class Auth extends RootController
         $user = $this->users->fetch($user_uuid);
 
         if (!$user) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user not found :: {$email} :: user uuid {$user_uuid}");
             $this->limiter->increment();
             goto out_return;
@@ -202,7 +199,6 @@ class Auth extends RootController
         $activation = $this->activations->fetchByUser($user);
 
         if (!$activation) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->warning("resend activation failed :: user already activated :: {$user->getName()} [{$user->getUuid()}");
             $this->flash()->add(
                 MessageTypes::INFO,
@@ -216,7 +212,6 @@ class Auth extends RootController
         $system_user = $this->users->fetch(SYSTEM_UUID);
 
         if (!$system_user) {
-            $this->trigger_request_debug(__METHOD__);
             $this->log->alert("resend activation failed :: system user not found :: {$email} :: user uuid {$user_uuid}");
             goto out_return;
         }
