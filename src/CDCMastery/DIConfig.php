@@ -51,6 +51,7 @@ return [
         $twig->addGlobal('support_email', $config->get(['system', 'support', 'email']));
         $twig->addGlobal('support_fb_url', $config->get(['support', 'facebook', 'url']));
         $twig->addGlobal('support_fb_display', $config->get(['support', 'facebook', 'display']));
+        $twig->addGlobal('g_recaptcha_key', $config->get(['system', 'auth', 'recaptcha', 'key']));
 
         if ($loggedIn) {
             $twig->addGlobal('cur_user_uuid', $auth_helpers->get_user_uuid());

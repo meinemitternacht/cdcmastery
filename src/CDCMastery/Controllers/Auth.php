@@ -11,6 +11,7 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Auth\LoginRateLimiter;
 use CDCMastery\Models\Auth\PasswordReset\PasswordReset;
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
+use CDCMastery\Models\Auth\Recaptcha\RecaptchaVerify;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\Config\Config;
@@ -409,12 +410,41 @@ class Auth extends RootController
         $password = $this->get('password');
         $password_confirm = $this->get('password_confirm');
 
+        /* required, but a custom error is preferred */
+        $g_recaptcha_response = $this->get('g-recaptcha-response');
+
         /* optional */
         $office_symbol = $this->get('office_symbol');
 
         if ($office_symbol === '') {
             $office_symbol = null;
         }
+
+        if (!$g_recaptcha_response) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'Please complete the reCAPTCHA "I am not a robot" verification'
+            );
+
+            goto out_error;
+        }
+
+        $recaptcha_verify = (new RecaptchaVerify($this->log,
+                                                 $this->config->get(['system', 'auth', 'recaptcha', 'secret']),
+                                                 $g_recaptcha_response,
+                                                 $this->request->getClientIp()))->verify();
+
+        if (!$recaptcha_verify) {
+            $this->flash()->add(
+                MessageTypes::ERROR,
+                'We apologize, but we were unable to verify your reCAPTCHA response. Please contact the site administrator if this issue persists.'
+            );
+
+            $this->log->addDebug("reCAPTCHA code failed verification :: {$g_recaptcha_response} :: {$this->request->getClientIp()}");
+            goto out_error;
+        }
+
+        $this->log->addDebug("reCAPTCHA code verified :: {$g_recaptcha_response}");
 
         if (!$username || trim($username) === '') {
             $this->flash()->add(
@@ -642,7 +672,7 @@ class Auth extends RootController
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
-            'Your account was created successfully.  An activation link has been sent to the e-mail address provided during registration.'
+            'Your account was created successfully.  An activation link will be sent to the e-mail address provided during registration in a few moments.'
         );
 
         return $this->redirect("/auth/login");
