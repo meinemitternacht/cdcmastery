@@ -42,23 +42,39 @@
     "auth": {
       "email": {
         "require_mil": true
+      },
+      "recaptcha": {
+        "key": "",
+        "secret": ""
       }
     },
     "debug": true,
     "log": {
       "debug": "/home/vhosts/cdcmastery.com/logs/cdcmastery.debug.log",
-      "general": "/home/vhosts/cdcmastery.com/logs/cdcmastery.log"
+      "general": "/home/vhosts/cdcmastery.com/logs/cdcmastery.log",
+      "slack": {
+        "webhook": {
+          "url": "",
+          "channel": "",
+          "username": ""
+        }
+      }
     },
     "maintenance": false,
     "memcached": [
       {
-        "host": "127.0.0.1",
-        "port": 11211
+        "socket": "/home/vhosts/cdcmastery.com/sockets/memcached.sock"
+      }
+    ],
+    "memcached_sessions": [
+      {
+        "socket": "/home/vhosts/cdcmastery.com/sockets/memcached-sessions.sock"
       }
     ],
     "routing": {
       "public": [
         "/",
+        "/about",
         "/about/disclaimer",
         "/about/privacy",
         "/about/terms",
@@ -68,6 +84,7 @@
         "/auth/logout",
         "/auth/register",
         "/auth/reset",
+        "/contact",
         "/errors/400",
         "/errors/401",
         "/errors/403",
@@ -89,6 +106,7 @@
   "testing": {
     "passingScore": 80,
     "numQuestions": 100,
+    "maxCategories": 10,
     "maxIncomplete": 5,
     "maxQuestions": 500
   },
@@ -96,7 +114,11 @@
     "assets": {
       "css": [
         "/assets/css/bootstrap-cdcmastery.css",
+        "/assets/css/ldbtn.min.css",
+        "/assets/css/loading.min.css",
+        "/assets/css/featherlight.min.css",
         "/assets/css/base.css",
+        "/assets/css/typeahead.css",
         "/assets/css/cards.css",
         "/assets/css/forms.css",
         "/assets/css/home.css",
@@ -110,7 +132,10 @@
         "/assets/js/jquery-3.2.1.js",
         "/assets/js/bootstrap.js",
         "/assets/js/canvasjs.min.js",
-        "/assets/js/jquery.touchSwipe.min.js"
+        "/assets/js/jquery.touchSwipe.min.js",
+        "/assets/js/bloodhound.min.js",
+        "/assets/js/typeahead.jquery.min.js",
+        "/assets/js/featherlight.min.js"
       ]
     }
   }
