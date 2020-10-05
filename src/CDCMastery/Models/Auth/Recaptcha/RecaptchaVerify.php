@@ -45,7 +45,7 @@ class RecaptchaVerify
         try {
             $response = (new Client(['base_uri' => 'https://www.google.com']))->post('/recaptcha/api/siteverify',
                                                                                      $params);
-            $body = $response->getBody();
+            $body = (string)$response->getBody();
             $json = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
             if (!is_array($json)) {
