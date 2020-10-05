@@ -34,7 +34,6 @@ use Twig\Environment;
 
 class Cards extends RootController
 {
-    private mysqli $db;
     private CacheHandler $cache;
     private AuthHelpers $auth_helpers;
     private CategoryCollection $categories;
@@ -48,7 +47,6 @@ class Cards extends RootController
         Logger $logger,
         Environment $twig,
         Session $session,
-        mysqli $db,
         CacheHandler $cache,
         AuthHelpers $auth_helpers,
         CategoryCollection $categories,
@@ -60,7 +58,6 @@ class Cards extends RootController
     ) {
         parent::__construct($logger, $twig, $session);
 
-        $this->db = $db;
         $this->cache = $cache;
         $this->auth_helpers = $auth_helpers;
         $this->categories = $categories;

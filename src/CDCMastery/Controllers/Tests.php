@@ -44,7 +44,6 @@ class Tests extends RootController
     private TestHelpers $test_helpers;
     private UserAfscAssociations $user_afscs;
     private AfscCollection $afscs;
-    private mysqli $db;
     private AnswerCollection $answers;
     private TestDataHelpers $test_data_helpers;
     private CdcDataCollection $cdc_data;
@@ -60,7 +59,6 @@ class Tests extends RootController
         TestHelpers $test_helpers,
         UserAfscAssociations $user_afscs,
         AfscCollection $afscs,
-        mysqli $mysqli,
         TestDataHelpers $test_data_helpers,
         CdcDataCollection $cdc_data,
         AnswerCollection $answers
@@ -74,7 +72,6 @@ class Tests extends RootController
         $this->test_helpers = $test_helpers;
         $this->user_afscs = $user_afscs;
         $this->afscs = $afscs;
-        $this->db = $mysqli;
         $this->test_data_helpers = $test_data_helpers;
         $this->cdc_data = $cdc_data;
         $this->answers = $answers;
