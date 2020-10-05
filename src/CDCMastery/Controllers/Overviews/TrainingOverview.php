@@ -788,13 +788,6 @@ class TrainingOverview extends RootController
 
         $this->check_subordinate($cur_user, $cur_role, $user);
 
-        if ($this->pw_resets->fetchByUser($user) !== null) {
-            $this->flash()->add(MessageTypes::ERROR,
-                                'An active password reset request for this user already exists');
-
-            return $this->redirect("/training/users/{$user->getUuid()}");
-        }
-
         $data = [
             'cur_user' => $cur_user,
             'cur_role' => $cur_role,
