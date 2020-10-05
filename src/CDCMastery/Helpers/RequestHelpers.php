@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 namespace CDCMastery\Helpers;
@@ -45,7 +46,7 @@ class RequestHelpers
                             FILTER_NULL_ON_FAILURE);
     }
 
-    public static function filter_int_default(Request $request, string $key, ?bool $default = null): ?int
+    public static function filter_int_default(Request $request, string $key, ?int $default = null): ?int
     {
         return self::get_param_source($request, $key)
                    ->filter($key,

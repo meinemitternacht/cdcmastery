@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: tehbi
@@ -59,9 +60,7 @@ class ArrayPaginator
      */
     public static function calcNumPagesData(array $data, int $count): int
     {
-        return ceil(
-            count($data) / $count
-        ) - 1;
+        return (int)(ceil(count($data) / $count) - 1);
     }
 
     /**
@@ -71,9 +70,7 @@ class ArrayPaginator
      */
     public static function calcNumPagesNoData(int $numRows, int $count): int
     {
-        return ceil(
-            $numRows / $count
-        ) - 1;
+        return (int)(ceil($numRows / $count) - 1);
     }
 
     public static function buildLinks(

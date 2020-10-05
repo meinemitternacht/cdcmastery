@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  * User: tehbi
@@ -178,6 +180,7 @@ return [
             );
         }
 
+        $db->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
         return $db;
     },
     Session::class => static function () {

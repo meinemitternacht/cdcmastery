@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 namespace CDCMastery\Controllers\Admin;
@@ -218,10 +219,10 @@ class Tests extends Admin
 
     private function show_tests(int $type): Response
     {
-        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
-        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $sortCol = $this->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         switch ($type) {
             case Test::TYPE_COMPLETE:

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /** @noinspection PhpRedundantCatchClauseInspection */
 
 use CDCMastery\Controllers\Errors;

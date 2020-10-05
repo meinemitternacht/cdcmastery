@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: tehbi
@@ -109,7 +110,7 @@ SQL;
             $cat = new Category();
             $cat->setUuid($row[ 'uuid' ]);
             $cat->setName($row[ 'categoryName' ]);
-            $cat->setEncrypted($row[ 'categoryEncrypted' ]);
+            $cat->setEncrypted((bool)$row[ 'categoryEncrypted' ]);
             $cat->setType($row[ 'categoryType' ]);
             $cat->setBinding($row[ 'categoryBinding' ]);
             $cat->setCreatedBy($row[ 'categoryCreatedBy' ]);

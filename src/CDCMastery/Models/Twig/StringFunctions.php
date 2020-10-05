@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 namespace CDCMastery\Models\Twig;
@@ -17,8 +18,12 @@ class StringFunctions extends AbstractExtension
         ];
     }
 
-    public function strtr(string $v, int $max_len): string
+    public function strtr(?string $v, int $max_len): ?string
     {
+        if ($v === null) {
+            return null;
+        }
+
         $len = strlen($v);
 
         if ($len < $max_len) {
@@ -32,8 +37,12 @@ class StringFunctions extends AbstractExtension
         return substr($v, 0, $max_len) . '...';
     }
 
-    public function strtr_right(string $v, int $max_len): string
+    public function strtr_right(?string $v, int $max_len): ?string
     {
+        if ($v === null) {
+            return null;
+        }
+
         $len = strlen($v);
 
         if ($len < $max_len) {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CDCMastery\Controllers\Admin;
 
@@ -627,8 +628,8 @@ class Users extends Admin
     {
         $sortCol = $this->get(ArrayPaginator::VAR_SORT);
         $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         $sort = $sortCol
             ? [$this->validate_sort($sortCol, $sortDir)]
@@ -1220,10 +1221,10 @@ class Users extends Admin
                 return $this->redirect("/admin/users/{$user->getUuid()}");
         }
 
-        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
-        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $sortCol = $this->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         [$col, $dir] = Tests::validate_test_sort($sortCol, $sortDir);
         $userTests = $this->tests->fetchAllByUser($user,

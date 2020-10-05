@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: tehbi
@@ -254,9 +255,9 @@ SQL;
             $test->setTimeStarted($timeStarted ?? null);
             $test->setTimeCompleted($timeCompleted ?? null);
             $test->setQuestions($questions);
-            $test->setCurrentQuestion($row[ 'curQuestion' ] ?? 0);
-            $test->setNumAnswered($row[ 'numAnswered' ] ?? 0);
-            $test->setNumMissed($row[ 'numMissed' ] ?? 0);
+            $test->setCurrentQuestion((int)($row[ 'curQuestion' ] ?? 0));
+            $test->setNumAnswered((int)($row[ 'numAnswered' ] ?? 0));
+            $test->setNumMissed((int)($row[ 'numMissed' ] ?? 0));
             $test->setScore((float)($row[ 'score' ] ?? 0.00));
             $test->setCombined((bool)($row[ 'combined' ] ?? false));
             $test->setArchived((bool)($row[ 'archived' ] ?? false));

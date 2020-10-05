@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CDCMastery\Controllers\Admin;
 
@@ -177,8 +178,8 @@ class Bases extends Admin
 
         $sort_col = $this->get(ArrayPaginator::VAR_SORT);
         $sort_dir = $this->get(ArrayPaginator::VAR_DIRECTION);
-        $cur_page = $this->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $n_records = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $cur_page = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $n_records = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         $sort = $sort_col
             ? [$this->validate_sort($sort_col, $sort_dir)]
@@ -311,10 +312,10 @@ class Bases extends Admin
     private function show_tests(string $uuid, int $type): Response
     {
         $base = $this->get_base($uuid);
-        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
-        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $sortCol = $this->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         switch ($type) {
             case Test::TYPE_COMPLETE:

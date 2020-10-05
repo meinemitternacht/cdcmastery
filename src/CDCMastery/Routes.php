@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use CDCMastery\Controllers\About;
 use CDCMastery\Controllers\Admin;

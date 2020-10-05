@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CDCMastery\Controllers;
 
@@ -201,7 +202,7 @@ class Tests extends RootController
         }
 
         $afscs = $this->get('afscs');
-        $numQuestions = $this->filter('numQuestions', FILTER_VALIDATE_INT);
+        $numQuestions = $this->filter_int_default('numQuestions');
 
         $n_afscs = count($afscs);
         if (!is_array($afscs) || $n_afscs === 0) {
@@ -223,7 +224,7 @@ class Tests extends RootController
             return $this->redirect('/tests/new');
         }
 
-        if ($numQuestions === false) {
+        if (!$numQuestions) {
             $this->flash()->add(
                 MessageTypes::WARNING,
                 'The provided amount of questions for the test was invalid'
@@ -396,7 +397,7 @@ class Tests extends RootController
                                            $this->test_data_helpers,
                                            $test);
 
-        $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        $payload = json_decode($this->request->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if ($payload === null || !isset($payload->action)) {
             $this->flash()->add(
@@ -690,10 +691,10 @@ class Tests extends RootController
                 return $this->redirect('/');
         }
 
-        $sortCol = $this->getRequest()->get(ArrayPaginator::VAR_SORT);
-        $sortDir = $this->getRequest()->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->getRequest()->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->getRequest()->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $sortCol = $this->get(ArrayPaginator::VAR_SORT);
+        $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: tehbi
@@ -71,14 +72,6 @@ class RootController
     }
 
     /**
-     * @return Request
-     */
-    public function getRequest(): Request
-    {
-        return $this->request;
-    }
-
-    /**
      * @return FlashBagInterface
      */
     public function flash(): FlashBagInterface
@@ -129,7 +122,7 @@ class RootController
         return RequestHelpers::filter_bool_default($this->request, $key, $default);
     }
 
-    public function filter_int_default(string $key, ?bool $default = null): ?int
+    public function filter_int_default(string $key, ?int $default = null): ?int
     {
         return RequestHelpers::filter_int_default($this->request, $key, $default);
     }

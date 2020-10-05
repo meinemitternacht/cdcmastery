@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 namespace CDCMastery\Controllers;
@@ -368,7 +369,7 @@ class Cards extends RootController
             goto out_redirect_cards;
         }
 
-        $payload = json_decode($this->getRequest()->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        $payload = json_decode($this->request->getContent(), false, 512, JSON_THROW_ON_ERROR);
 
         if (!$payload || !isset($payload->action)) {
             $this->trigger_request_debug(__METHOD__);
@@ -892,8 +893,8 @@ class Cards extends RootController
 
         $sortCol = $this->get(ArrayPaginator::VAR_SORT);
         $sortDir = $this->get(ArrayPaginator::VAR_DIRECTION);
-        $curPage = $this->get(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
-        $numRecords = $this->get(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
+        $curPage = $this->filter_int_default(ArrayPaginator::VAR_START, ArrayPaginator::DEFAULT_START);
+        $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         $sort = $sortCol
             ? [$this->validate_sort($sortCol, $sortDir)]

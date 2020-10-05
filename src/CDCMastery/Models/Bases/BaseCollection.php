@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace CDCMastery\Models\Bases;
 
@@ -225,7 +226,6 @@ SQL;
     }
 
     /**
-     * @param bool $populate_stats
      * @return Base[]
      */
     public function fetchAll(): array

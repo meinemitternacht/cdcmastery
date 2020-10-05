@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use CDCMastery\Models\Auth\PasswordReset\PasswordResetCollection;
 use DI\Container;
