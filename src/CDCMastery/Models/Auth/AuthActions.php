@@ -83,13 +83,6 @@ class AuthActions
         string $url_success,
         string $url_failure
     ): Response {
-        if ($this->pw_resets->fetchByUser($user) !== null) {
-            $flash->add(MessageTypes::ERROR,
-                        'An active password reset request for this user already exists');
-
-            return RootController::static_redirect($url_failure);
-        }
-
         $pw_reset = PasswordReset::factory($user);
         $email = ResetPassword::email($initiator, $user, $pw_reset);
 
