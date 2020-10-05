@@ -76,6 +76,10 @@ if (!$logged_in) {
 
 if ($logged_in) {
     $users = $container->get(UserCollection::class);
+    $user_tz = $users->getUserTimezone($auth_helpers->get_user_uuid());
+    DateTimeHelpers::set_user_tz($user_tz);
+    date_default_timezone_set($user_tz);
+
     $user = $users->fetch($auth_helpers->get_user_uuid());
 
     if (!$user) {
@@ -100,8 +104,6 @@ if ($logged_in) {
 
     $user->setLastActive(new DateTime());
     $users->save($user);
-    date_default_timezone_set($user->getTimeZone());
-    DateTimeHelpers::set_user_tz($user->getTimeZone());
 }
 
 if ($config->get(['system', 'maintenance'])) {
@@ -124,7 +126,7 @@ switch ($route[ 0 ]) {
             [, $controller, $parameters] = $route;
             $response = $container->call($controller, $parameters);
         } catch (NotEnoughParametersException $e) {
-            $msg = '400: ' . $_SERVER['REQUEST_URI'] . ' bad request :: ' . $e;
+            $msg = '400: ' . $_SERVER[ 'REQUEST_URI' ] . ' bad request :: ' . $e;
             $response = new Response($msg, 400);
             $log->error($msg);
             goto out_error_400;

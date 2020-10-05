@@ -257,10 +257,6 @@ SQL;
             'reminderSent' => $reminderSent,
         ];
 
-        if (!DateTimeHelpers::user_tz_set()) {
-            DateTimeHelpers::set_user_tz($timeZone);
-        }
-
         return $this->create_objects([$row])[ $_uuid ] ?? null;
     }
 
@@ -582,6 +578,33 @@ SQL;
         return $this->create_objects($rows);
     }
 
+    public function getUserTimezone(string $uuid): string
+    {
+        $qry = <<<SQL
+SELECT userTimeZone FROM userData WHERE uuid = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            goto out_return;
+        }
+
+        if (!$stmt->bind_param('s', $uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            goto out_return;
+        }
+
+        $stmt->bind_result($tz);
+        $stmt->fetch();
+        $stmt->close();
+
+        out_return:
+        return $tz ?? 'UTC';
+    }
+
     /**
      * @param User $user
      */
@@ -600,7 +623,8 @@ SQL;
         $lastName = $user->getLastName();
         $handle = $user->getHandle();
         $password = $user->getPassword();
-        $legacyPassword = $user->getLegacyPassword();
+        $legacyPassword = $user->getLegacyPassword()
+            ?: null;
         $email = $user->getEmail();
         $rank = $user->getRank();
         $dateRegistered = $date_registered->setTimezone(DateTimeHelpers::utc_tz())
