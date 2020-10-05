@@ -915,13 +915,6 @@ class Users extends Admin
     {
         $user = $this->get_user($uuid);
 
-        if ($this->pw_resets->fetchByUser($user) !== null) {
-            $this->flash()->add(MessageTypes::ERROR,
-                                'An active password reset request for this user already exists');
-
-            return $this->redirect("/admin/users/{$user->getUuid()}");
-        }
-
         $data = [
             'user' => $user,
             'base' => $this->bases->fetch($user->getBase()),
