@@ -110,8 +110,7 @@ class TestCollection
 SELECT
   COUNT(*) AS count
 FROM testCollection
-WHERE score > 0
-  AND timeCompleted IS NOT NULL
+WHERE timeCompleted IS NOT NULL
 SQL;
                 break;
             case Test::TYPE_INCOMPLETE:
@@ -119,8 +118,7 @@ SQL;
 SELECT
   COUNT(*) AS count
 FROM testCollection
-WHERE score < 1
-  AND timeCompleted IS NULL
+WHERE timeCompleted IS NULL
 SQL;
                 break;
             default:
