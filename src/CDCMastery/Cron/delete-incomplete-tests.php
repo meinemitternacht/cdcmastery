@@ -7,12 +7,19 @@ use CDCMastery\Models\Tests\TestCollection;
 use DI\Container;
 use Monolog\Logger;
 
+$mutex = sem_get(ftok(__FILE__, 'i'));
+
 /** @var Container $c */
 $c = require realpath(__DIR__) . "/../Bootstrap.php";
 
 try {
     $log = $c->get(Logger::class);
     $tests = $c->get(TestCollection::class);
+
+    if (!sem_acquire($mutex, true)) {
+        $log->alert('incomplete tests: unable to begin garbage collection because the mutex is locked');
+        exit(1);
+    }
 
     $log->debug('incomplete tests: start garbage collection');
 
@@ -46,4 +53,6 @@ try {
         $log->debug($e);
         $log->emergency('error garbage collecting incomplete tests');
     }
+} finally {
+    sem_release($mutex);
 }
