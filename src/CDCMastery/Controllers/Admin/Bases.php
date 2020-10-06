@@ -283,6 +283,11 @@ class Bases extends Admin
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $last_updated = $test->getLastUpdated();
+        if ($last_updated) {
+            $last_updated = $last_updated->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data->count($test);
 
@@ -291,6 +296,7 @@ class Bases extends Admin
             'base' => $base,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
+            'lastUpdated' => $last_updated,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $n_questions,
             'numAnswered' => $n_answered,
@@ -329,7 +335,7 @@ class Bases extends Admin
                 $path = "/admin/bases/{$base->getUuid()}/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'admin/bases/tests/list-incomplete.html.twig';
-                $sortCol ??= 'timeStarted';
+                $sortCol ??= 'lastUpdated';
                 $sortDir ??= 'DESC';
                 break;
             default:

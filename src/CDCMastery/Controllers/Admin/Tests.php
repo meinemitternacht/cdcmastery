@@ -190,6 +190,11 @@ class Tests extends Admin
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $last_updated = $test->getLastUpdated();
+        if ($last_updated) {
+            $last_updated = $last_updated->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data->count($test);
 
@@ -198,6 +203,7 @@ class Tests extends Admin
             'test' => $test,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
+            'lastUpdated' => $last_updated,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $n_questions,
             'numAnswered' => $n_answered,
@@ -236,7 +242,7 @@ class Tests extends Admin
                 $path = "/admin/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'admin/tests/list-incomplete.html.twig';
-                $sortCol ??= 'timeStarted';
+                $sortCol ??= 'lastUpdated';
                 $sortDir ??= 'DESC';
                 break;
             default:

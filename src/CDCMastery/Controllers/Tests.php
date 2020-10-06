@@ -24,7 +24,6 @@ use CDCMastery\Models\Users\Associations\Afsc\UserAfscAssociations;
 use CDCMastery\Models\Users\UserCollection;
 use Exception;
 use Monolog\Logger;
-use mysqli;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -34,9 +33,6 @@ use function count;
 
 class Tests extends RootController
 {
-    private const TYPE_ALL = 0;
-    private const TYPE_COMPLETE = 1;
-    private const TYPE_INCOMPLETE = 2;
     private AuthHelpers $auth_helpers;
     private UserCollection $users;
     private TestCollection $tests;
@@ -664,17 +660,12 @@ class Tests extends RootController
     private function show_test_history(int $type): Response
     {
         switch ($type) {
-            case self::TYPE_ALL:
-                $path = '/tests/history/all';
-                $typeStr = 'all';
-                $template = 'tests/history-combined.html.twig';
-                break;
-            case self::TYPE_COMPLETE:
+            case Test::TYPE_COMPLETE:
                 $path = '/tests/history';
                 $typeStr = 'complete';
                 $template = 'tests/history-complete.html.twig';
                 break;
-            case self::TYPE_INCOMPLETE:
+            case Test::TYPE_INCOMPLETE:
                 $path = '/tests/history/incomplete';
                 $typeStr = 'incomplete';
                 $template = 'tests/history-incomplete.html.twig';
@@ -718,14 +709,12 @@ class Tests extends RootController
             $userTests,
             static function (Test $v) use ($type) {
                 switch ($type) {
-                    case Tests::TYPE_ALL:
-                        return true;
-                    case Tests::TYPE_COMPLETE:
+                    case Test::TYPE_COMPLETE:
                         if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
-                    case Tests::TYPE_INCOMPLETE:
+                    case Test::TYPE_INCOMPLETE:
                         if ($v->getTimeCompleted() === null) {
                             return true;
                         }
@@ -747,11 +736,9 @@ class Tests extends RootController
         if (count($filteredList) === 0) {
             $this->flash()->add(
                 MessageTypes::INFO,
-                $type === self::TYPE_ALL
-                    ? 'You have not taken any tests'
-                    : ($type === self::TYPE_INCOMPLETE
+                $type === Test::TYPE_INCOMPLETE
                     ? 'You have not started any ' . $typeStr . ' tests'
-                    : 'You have not taken any ' . $typeStr . ' tests')
+                    : 'You have not taken any ' . $typeStr . ' tests'
             );
 
             return $this->redirect('/');
@@ -788,7 +775,7 @@ class Tests extends RootController
      */
     public function show_test_history_complete(): Response
     {
-        return $this->show_test_history(self::TYPE_COMPLETE);
+        return $this->show_test_history(Test::TYPE_COMPLETE);
     }
 
     /**
@@ -796,7 +783,7 @@ class Tests extends RootController
      */
     public function show_test_history_incomplete(): Response
     {
-        return $this->show_test_history(self::TYPE_INCOMPLETE);
+        return $this->show_test_history(Test::TYPE_INCOMPLETE);
     }
 
     /**
@@ -857,10 +844,16 @@ class Tests extends RootController
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $last_updated = $test->getLastUpdated();
+        if ($last_updated) {
+            $last_updated = $last_updated->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $data = [
             'showUser' => false,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
+            'lastUpdated' => $last_updated,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $test->getNumQuestions(),
             'numMissed' => $test->getNumMissed(),
@@ -903,6 +896,7 @@ class Tests extends RootController
             case TestCollection::COL_AFSC_LIST:
             case TestCollection::COL_TIME_STARTED:
             case TestCollection::COL_TIME_COMPLETED:
+            case TestCollection::COL_LAST_UPDATED:
             case TestCollection::COL_CUR_QUESTION:
             case TestCollection::COL_NUM_ANSWERED:
             case TestCollection::COL_NUM_MISSED:

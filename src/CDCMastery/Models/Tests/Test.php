@@ -26,6 +26,7 @@ class Test
     private string $userUuid;
     private ?DateTime $timeStarted;
     private ?DateTime $timeCompleted;
+    private ?DateTime $lastUpdated;
     /** @var Afsc[] */
     private array $afscs;
     /** @var Question[] */
@@ -75,6 +76,22 @@ class Test
     public function setTimeCompleted(?DateTime $timeCompleted): void
     {
         $this->timeCompleted = $timeCompleted;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getLastUpdated(): ?DateTime
+    {
+        return $this->lastUpdated;
+    }
+
+    /**
+     * @param DateTime|null $lastUpdated
+     */
+    public function setLastUpdated(?DateTime $lastUpdated): void
+    {
+        $this->lastUpdated = $lastUpdated;
     }
 
     /**

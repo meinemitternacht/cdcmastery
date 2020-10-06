@@ -120,6 +120,7 @@ class Home extends RootController
 
             $started = $test->getTimeStarted();
             $completed = $test->getTimeCompleted();
+            $updated = $test->getLastUpdated();
 
             if ($test->getTimeCompleted() !== null) {
                 if (count($tests_complete) === self::NUM_COMPLETE_TESTS_DISPLAY) {
@@ -137,6 +138,9 @@ class Home extends RootController
                             : '',
                         'completed' => ($completed !== null)
                             ? $completed->format(DateTimeHelpers::DT_FMT_SHORT)
+                            : '',
+                        'updated' => ($updated !== null)
+                            ? $updated->format(DateTimeHelpers::DT_FMT_SHORT)
                             : '',
                     ],
                 ];

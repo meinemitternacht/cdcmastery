@@ -123,13 +123,15 @@ class TestHandler
                                     0,
                                     $options->getNumQuestions());
 
+        $dt = new DateTime();
         $test = new Test();
         $test->setUuid(UUID::generate());
         $test->setAfscs($options->getAfscs());
         $test->setQuestions($questionList);
         $test->setCombined(count($options->getAfscs()) > 1);
-        $test->setTimeStarted(new DateTime());
+        $test->setTimeStarted($dt);
         $test->setTimeCompleted(null);
+        $test->setLastUpdated($dt);
         $test->setUserUuid($options->getUser()->getUuid());
 
         $handler = new self($logger,
@@ -378,6 +380,7 @@ class TestHandler
 
         $this->test_data_helpers->save($questionResponse);
         $this->test->setNumAnswered($this->getNumAnswered());
+        $this->test->setLastUpdated(new DateTime());
         $this->next();
     }
 
@@ -413,8 +416,10 @@ class TestHandler
             $nMissed = $nQuestions - $nCorrect;
         }
 
+        $dt = new DateTime();
         $test->setCurrentQuestion($nQuestions - 1);
-        $test->setTimeCompleted(new DateTime());
+        $test->setTimeCompleted($dt);
+        $test->setLastUpdated($dt);
         $test->setScore($this->calculateScore($nQuestions,
                                               $nCorrect));
         $test->setNumAnswered(count($test_qa_pairs));

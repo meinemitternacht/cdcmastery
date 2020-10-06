@@ -628,6 +628,11 @@ class TrainingOverview extends RootController
             $time_completed = $time_completed->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $last_updated = $test->getLastUpdated();
+        if ($last_updated) {
+            $last_updated = $last_updated->format(DateTimeHelpers::DT_FMT_LONG);
+        }
+
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data_helpers->count($test);
 
@@ -637,6 +642,7 @@ class TrainingOverview extends RootController
             'user' => $user,
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
+            'lastUpdated' => $last_updated,
             'afscList' => AfscHelpers::listNames($test->getAfscs()),
             'numQuestions' => $n_questions,
             'numAnswered' => $n_answered,

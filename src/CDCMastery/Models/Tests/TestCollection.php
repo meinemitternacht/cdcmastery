@@ -24,6 +24,7 @@ class TestCollection
     public const COL_AFSC_LIST = 'afscList';
     public const COL_TIME_STARTED = 'timeStarted';
     public const COL_TIME_COMPLETED = 'timeCompleted';
+    public const COL_LAST_UPDATED = 'lastUpdated';
     public const COL_CUR_QUESTION = 'curQuestion';
     public const COL_NUM_ANSWERED = 'numAnswered';
     public const COL_NUM_MISSED = 'numMissed';
@@ -70,6 +71,7 @@ class TestCollection
                 case self::COL_AFSC_LIST:
                 case self::COL_TIME_STARTED:
                 case self::COL_TIME_COMPLETED:
+                case self::COL_LAST_UPDATED:
                 case self::COL_CUR_QUESTION:
                 case self::COL_NUM_ANSWERED:
                 case self::COL_NUM_MISSED:
@@ -152,8 +154,7 @@ SELECT
   COUNT(*) AS count
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
-WHERE score > 0
-  AND timeCompleted IS NOT NULL
+WHERE timeCompleted IS NOT NULL
   AND uD.userBase = '{$base->getUuid()}'
 SQL;
                 break;
@@ -163,8 +164,7 @@ SELECT
   COUNT(*) AS count
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
-WHERE score < 1
-  AND timeCompleted IS NULL
+WHERE timeCompleted IS NULL
   AND uD.userBase = '{$base->getUuid()}'
 SQL;
                 break;
@@ -214,7 +214,11 @@ SQL;
             $afscs_flipped = array_flip($afscs);
 
             $afscs_fetch = array_diff_key($afscs_flipped, $afsc_cache);
-            $afsc_cache = array_merge($afsc_cache, $this->afscs->fetchArray(array_flip($afscs_fetch)));
+
+            if ($afscs_fetch) {
+                $afsc_cache = array_merge($afsc_cache, $this->afscs->fetchArray(array_flip($afscs_fetch)));
+            }
+
             $tgt_afscs = array_intersect_key($afsc_cache, $afscs_flipped);
 
             $questions = array_replace(array_flip($questions),
@@ -240,12 +244,23 @@ SQL;
                 $timeCompleted->setTimezone(DateTimeHelpers::user_tz());
             }
 
+            $lastUpdated = null;
+            if ($row[ 'lastUpdated' ] !== null) {
+                $lastUpdated = DateTime::createFromFormat(
+                    DateTimeHelpers::DT_FMT_DB,
+                    $row[ 'lastUpdated' ] ?? '',
+                    DateTimeHelpers::utc_tz()
+                );
+                $lastUpdated->setTimezone(DateTimeHelpers::user_tz());
+            }
+
             $test = new Test();
             $test->setUuid($row[ 'uuid' ]);
             $test->setUserUuid($row[ 'userUuid' ]);
             $test->setAfscs($tgt_afscs);
             $test->setTimeStarted($timeStarted ?? null);
             $test->setTimeCompleted($timeCompleted ?? null);
+            $test->setLastUpdated($lastUpdated ?? null);
             $test->setQuestions($questions);
             $test->setCurrentQuestion((int)($row[ 'curQuestion' ] ?? 0));
             $test->setNumAnswered((int)($row[ 'numAnswered' ] ?? 0));
@@ -268,7 +283,6 @@ SELECT
   COUNT(*) AS count
 FROM testCollection
 WHERE archived = 0
-  AND score > 0
   AND timeCompleted IS NOT NULL
   AND DATE(timeCompleted) < '{$tgt_date}'
 SQL;
@@ -366,6 +380,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -397,6 +412,7 @@ SQL;
             $afscList,
             $timeStarted,
             $timeCompleted,
+            $lastUpdated,
             $questionList,
             $curQuestion,
             $numAnswered,
@@ -419,6 +435,7 @@ SQL;
             'afscList' => $afscList,
             'timeStarted' => $timeStarted,
             'timeCompleted' => $timeCompleted,
+            'lastUpdated' => $lastUpdated,
             'questionList' => $questionList,
             'curQuestion' => $curQuestion,
             'numAnswered' => $numAnswered,
@@ -451,6 +468,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -484,6 +502,7 @@ SQL;
             $afscList,
             $timeStarted,
             $timeCompleted,
+            $lastUpdated,
             $questionList,
             $curQuestion,
             $numAnswered,
@@ -501,6 +520,7 @@ SQL;
                 'afscList' => $afscList,
                 'timeStarted' => $timeStarted,
                 'timeCompleted' => $timeCompleted,
+                'lastUpdated' => $lastUpdated,
                 'questionList' => $questionList,
                 'curQuestion' => $curQuestion,
                 'numAnswered' => $numAnswered,
@@ -545,6 +565,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -553,8 +574,7 @@ SELECT
   combined,
   archived
 FROM testCollection
-WHERE score > 0
-  AND timeCompleted IS NOT NULL
+WHERE timeCompleted IS NOT NULL
 {$order_str}
 {$limit_str}
 SQL;
@@ -567,6 +587,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -575,8 +596,7 @@ SELECT
   combined,
   archived
 FROM testCollection
-WHERE score < 1
-  AND timeCompleted IS NULL
+WHERE timeCompleted IS NULL
 {$order_str}
 {$limit_str}
 SQL;
@@ -637,6 +657,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -646,8 +667,7 @@ SELECT
   archived
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
-WHERE score > 0
-  AND timeCompleted IS NOT NULL
+WHERE timeCompleted IS NOT NULL
   AND uD.userBase = '{$base->getUuid()}'
 {$order_str}
 {$limit_str}
@@ -661,6 +681,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -670,8 +691,7 @@ SELECT
   archived
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
-WHERE score < 1
-  AND timeCompleted IS NULL
+WHERE timeCompleted IS NULL
   AND uD.userBase = '{$base->getUuid()}'
 {$order_str}
 {$limit_str}
@@ -713,6 +733,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -774,6 +795,7 @@ SELECT
   afscList,
   timeStarted,
   timeCompleted,
+  lastUpdated,
   questionList,
   curQuestion,
   numAnswered,
@@ -830,6 +852,11 @@ SQL;
             : $test->getTimeCompleted()
                    ->setTimezone(DateTimeHelpers::utc_tz())
                    ->format(DateTimeHelpers::DT_FMT_DB);
+        $lastUpdated = $test->getLastUpdated() === null
+            ? null
+            : $test->getLastUpdated()
+                   ->setTimezone(DateTimeHelpers::utc_tz())
+                   ->format(DateTimeHelpers::DT_FMT_DB);
         $questionList = serialize(QuestionHelpers::listUuid($test->getQuestions()));
         $curQuestion = $test->getCurrentQuestion();
         $numAnswered = $test->getNumAnswered();
@@ -844,26 +871,28 @@ SQL;
         $qry = <<<SQL
 INSERT INTO testCollection
   (
-    uuid, 
-    userUuid, 
-    afscList, 
-    timeStarted, 
-    timeCompleted, 
-    questionList, 
-    curQuestion, 
-    numAnswered, 
-    numMissed, 
-    score, 
-    combined, 
+    uuid,
+    userUuid,
+    afscList,
+    timeStarted,
+    timeCompleted,
+    lastUpdated,
+    questionList,
+    curQuestion,
+    numAnswered,
+    numMissed,
+    score,
+    combined,
     archived
   )
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
 ON DUPLICATE KEY UPDATE 
     uuid=VALUES(uuid), 
     userUuid=VALUES(userUuid), 
     afscList=VALUES(afscList), 
     timeStarted=VALUES(timeStarted), 
     timeCompleted=VALUES(timeCompleted), 
+    lastUpdated=VALUES(lastUpdated), 
     questionList=VALUES(questionList), 
     curQuestion=VALUES(curQuestion), 
     numAnswered=VALUES(numAnswered), 
@@ -880,12 +909,13 @@ SQL;
             return;
         }
 
-        if (!$stmt->bind_param('ssssssiiidii',
+        if (!$stmt->bind_param('sssssssiiidii',
                                $uuid,
                                $userUuid,
                                $afscList,
                                $timeStarted,
                                $timeCompleted,
+                               $lastUpdated,
                                $questionList,
                                $curQuestion,
                                $numAnswered,

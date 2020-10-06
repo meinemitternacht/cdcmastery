@@ -23,10 +23,8 @@ class TestHelpers
     private const COUNT_COMPLETE = 0;
     private const COUNT_INCOMPLETE = 1;
     private const COUNT_ARCHIVED = 2;
-    private const COUNT_COMBINED_COMPLETE = 3;
-    private const COUNT_COMBINED_INCOMPLETE = 4;
-    private const COUNT_PASSED = 5;
-    private const COUNT_FAILED = 6;
+    private const COUNT_PASSED = 3;
+    private const COUNT_FAILED = 4;
 
     protected mysqli $db;
     protected Logger $log;
@@ -66,7 +64,6 @@ SELECT
   COUNT(*) AS count
 FROM testCollection
 WHERE userUuid = ?
-AND score > 0
 AND timeCompleted IS NOT NULL
 SQL;
                 break;
@@ -76,7 +73,6 @@ SELECT
   COUNT(*) AS count
 FROM testCollection
 WHERE userUuid = ?
-AND score < 1
 AND timeCompleted IS NULL
 SQL;
                 break;
@@ -87,28 +83,6 @@ SELECT
 FROM testCollection
 WHERE userUuid = ?
 AND archived = 1
-SQL;
-                break;
-            case self::COUNT_COMBINED_COMPLETE:
-                $qry = <<<SQL
-SELECT
-  COUNT(*) AS count
-FROM testCollection
-WHERE userUuid = ?
-AND combined = 1
-AND score < 1
-AND timeCompleted IS NULL
-SQL;
-                break;
-            case self::COUNT_COMBINED_INCOMPLETE:
-                $qry = <<<SQL
-SELECT
-  COUNT(*) AS count
-FROM testCollection
-WHERE userUuid = ?
-AND combined = 1
-AND score > 0
-AND timeCompleted IS NOT NULL
 SQL;
                 break;
             case self::COUNT_PASSED:
@@ -169,24 +143,6 @@ SQL;
      * @param User $user
      * @return int
      */
-    public function countCombinedComplete(User $user): int
-    {
-        return $this->count(self::COUNT_COMBINED_COMPLETE, $user);
-    }
-
-    /**
-     * @param User $user
-     * @return int
-     */
-    public function countCombinedIncomplete(User $user): int
-    {
-        return $this->count(self::COUNT_COMBINED_INCOMPLETE, $user);
-    }
-
-    /**
-     * @param User $user
-     * @return int
-     */
     public function countComplete(User $user): int
     {
         return $this->count(self::COUNT_COMPLETE, $user);
@@ -237,6 +193,7 @@ SQL;
 
             $started = $test->getTimeStarted();
             $completed = $test->getTimeCompleted();
+            $updated = $test->getLastUpdated();
 
             $out[] = [
                 'uuid' => $test->getUuid(),
@@ -262,6 +219,9 @@ SQL;
                         : '',
                     'completed' => ($completed !== null)
                         ? $completed->format(DateTimeHelpers::DT_FMT_SHORT)
+                        : '',
+                    'updated' => ($updated !== null)
+                        ? $updated->format(DateTimeHelpers::DT_FMT_SHORT)
                         : '',
                 ],
             ];

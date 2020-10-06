@@ -15,7 +15,7 @@
                     {% endif %}
                     <th colspan="2" class="text-center">{{ sortlink('numAnswered','Answered',sort)|raw }} / Total</th>
                     <th>Current</th>
-                    <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
+                    <th>{{ sortlink('lastUpdated','Last Updated',sort)|raw }}</th>
                     <th class="col-xs-2">Progress</th>
                 </tr>
                 </thead>
@@ -52,7 +52,7 @@
                         <td>
                             #{{ test.state.question.cur|number_format }}
                         </td>
-                        <td>{{ test.time.started }}</td>
+                        <td>{{ test.time.updated }}</td>
                         {% if test.questions > 0 %}
                             {% set test_progress = ((test.answered / test.questions) * 100)|round %}
                             {% if test_progress < 40 %}
