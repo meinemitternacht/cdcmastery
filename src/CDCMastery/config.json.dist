@@ -1,6 +1,6 @@
 {
   "archive": {
-    "cutoff": "-6 months",
+    "cutoff": "-1 year",
     "xml": {
       "directory": "/home/vhosts/cdcmastery.com/xml-archive"
     }
@@ -108,7 +108,10 @@
     "numQuestions": 100,
     "maxCategories": 10,
     "maxIncomplete": 5,
-    "maxQuestions": 500
+    "maxQuestions": 500,
+    "incomplete": {
+      "max_age": "-30 days"
+    }
   },
   "twig": {
     "assets": {

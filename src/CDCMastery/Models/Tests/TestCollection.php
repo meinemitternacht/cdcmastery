@@ -756,6 +756,51 @@ SQL;
         return $this->create_objects($data);
     }
 
+    public function fetchExpiredIncomplete(): array
+    {
+        $tgt_date = (new DateTime())->modify(INCOMPLETE_TEST_MAX_AGE)->format(DateTimeHelpers::D_FMT_SHORT);
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  userUuid,
+  afscList,
+  timeStarted,
+  timeCompleted,
+  lastUpdated,
+  questionList,
+  curQuestion,
+  numAnswered,
+  numMissed,
+  score,
+  archived
+FROM testCollection
+WHERE timeCompleted IS NULL
+  AND DATE(lastUpdated) < '{$tgt_date}'
+ORDER BY timeCompleted DESC
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $data = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $data[] = $row;
+        }
+
+        $res->free();
+
+        return $this->create_objects($data);
+    }
+
     /**
      * @param array $uuidList
      * @param array $columnOrders
