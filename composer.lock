@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "7224d500ee19bb36905c239f0abf349d",
+  "content-hash": "641a01cb065ad3f7ca3cce80162b4cfe",
   "packages": [
     {
       "name": "doctrine/lexer",
@@ -25,16 +25,16 @@
       },
       "require-dev": {
         "doctrine/coding-standard": "^6.0",
-                "phpstan/phpstan": "^0.11.8",
-                "phpunit/phpunit": "^8.2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.2.x-dev"
-                }
-            },
-            "autoload": {
+        "phpstan/phpstan": "^0.11.8",
+        "phpunit/phpunit": "^8.2"
+      },
+      "type": "library",
+      "extra": {
+        "branch-alias": {
+          "dev-master": "1.2.x-dev"
+        }
+      },
+      "autoload": {
                 "psr-4": {
                     "Doctrine\\Common\\Lexer\\": "lib/Doctrine/Common/Lexer"
                 }
@@ -68,20 +68,20 @@
             ],
             "time": "2020-05-25T17:44:05+00:00"
         },
-        {
-            "name": "egulias/email-validator",
-            "version": "2.1.21",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "563d0cdde5d862235ffe24a158497f4d490191b5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/563d0cdde5d862235ffe24a158497f4d490191b5",
-                "reference": "563d0cdde5d862235ffe24a158497f4d490191b5",
-                "shasum": ""
-            },
+    {
+      "name": "egulias/email-validator",
+      "version": "2.1.22",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/egulias/EmailValidator.git",
+        "reference": "68e418ec08fbfc6f58f6fd2eea70ca8efc8cc7d5"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/68e418ec08fbfc6f58f6fd2eea70ca8efc8cc7d5",
+        "reference": "68e418ec08fbfc6f58f6fd2eea70ca8efc8cc7d5",
+        "shasum": ""
+      },
             "require": {
                 "doctrine/lexer": "^1.0.1",
                 "php": ">=5.5",
@@ -97,35 +97,35 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1.x-dev"
-                }
+              "branch-alias": {
+                "dev-master": "2.1.x-dev"
+              }
             },
-            "autoload": {
-                "psr-4": {
-                    "Egulias\\EmailValidator\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Eduardo Gulias Davis"
-            }
-          ],
-          "description": "A library for validating emails against several RFCs",
-          "homepage": "https://github.com/egulias/EmailValidator",
-          "keywords": [
-            "email",
-            "emailvalidation",
-            "emailvalidator",
-            "validation",
-            "validator"
-          ],
-          "time": "2020-09-19T14:37:56+00:00"
-        },
+      "autoload": {
+        "psr-4": {
+          "Egulias\\EmailValidator\\": "src"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Eduardo Gulias Davis"
+        }
+      ],
+      "description": "A library for validating emails against several RFCs",
+      "homepage": "https://github.com/egulias/EmailValidator",
+      "keywords": [
+        "email",
+        "emailvalidation",
+        "emailvalidator",
+        "validation",
+        "validator"
+      ],
+      "time": "2020-09-26T15:48:38+00:00"
+    },
     {
       "name": "guzzlehttp/guzzle",
       "version": "7.1.1",
@@ -349,16 +349,16 @@
       "provide": {
         "psr/log-implementation": "1.0.0"
       },
-            "require-dev": {
-                "aws/aws-sdk-php": "^2.4.9 || ^3.0",
-                "doctrine/couchdb": "~1.0@dev",
-                "graylog2/gelf-php": "~1.0",
-                "php-amqplib/php-amqplib": "~2.4",
-                "php-console/php-console": "^3.1.3",
-                "php-parallel-lint/php-parallel-lint": "^1.0",
-                "phpunit/phpunit": "~4.5",
-                "ruflin/elastica": ">=0.90 <3.0",
-                "sentry/sentry": "^0.13",
+      "require-dev": {
+        "aws/aws-sdk-php": "^2.4.9 || ^3.0",
+        "doctrine/couchdb": "~1.0@dev",
+        "graylog2/gelf-php": "~1.0",
+        "php-amqplib/php-amqplib": "~2.4",
+        "php-console/php-console": "^3.1.3",
+        "php-parallel-lint/php-parallel-lint": "^1.0",
+        "phpunit/phpunit": "~4.5",
+        "ruflin/elastica": ">=0.90 <3.0",
+        "sentry/sentry": "^0.13",
                 "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
@@ -601,20 +601,20 @@
             ],
             "time": "2020-08-01T15:36:25+00:00"
         },
-        {
-            "name": "php-di/php-di",
-            "version": "6.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PHP-DI/PHP-DI.git",
-                "reference": "40140b5bca07c5fed6919a0f1029ff67617faccd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/40140b5bca07c5fed6919a0f1029ff67617faccd",
-                "reference": "40140b5bca07c5fed6919a0f1029ff67617faccd",
-                "shasum": ""
-            },
+    {
+      "name": "php-di/php-di",
+      "version": "6.2.4",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/PHP-DI/PHP-DI.git",
+        "reference": "96a9ddb0c5d790d120c3332821be09d9bc9db288"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/96a9ddb0c5d790d120c3332821be09d9bc9db288",
+        "reference": "96a9ddb0c5d790d120c3332821be09d9bc9db288",
+        "shasum": ""
+      },
             "require": {
                 "opis/closure": "^3.5.5",
                 "php": ">=7.2.0",
@@ -661,7 +661,7 @@
                 "ioc",
                 "psr11"
             ],
-            "time": "2020-08-23T16:23:17+00:00"
+      "time": "2020-10-01T11:44:12+00:00"
         },
         {
             "name": "php-di/phpdoc-reader",
@@ -723,15 +723,15 @@
                     "dev-master": "1.0.x-dev"
                 }
             },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Container\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-              "MIT"
-            ],
+          "autoload": {
+            "psr-4": {
+              "Psr\\Container\\": "src/"
+            }
+          },
+          "notification-url": "https://packagist.org/downloads/",
+          "license": [
+            "MIT"
+          ],
           "authors": [
             {
               "name": "PHP-FIG",
@@ -869,13 +869,13 @@
       "extra": {
         "branch-alias": {
           "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
-                }
-            },
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "Psr\\Log\\": "Psr/Log/"
+        }
+      },
       "notification-url": "https://packagist.org/downloads/",
       "license": [
         "MIT"
@@ -956,16 +956,16 @@
         "symfony/polyfill-intl-idn": "^1.10",
         "symfony/polyfill-mbstring": "^1.0"
       },
-            "require-dev": {
-                "mockery/mockery": "~0.9.1",
-                "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
-            },
-            "suggest": {
-                "ext-intl": "Needed to support internationalized email addresses",
-                "true/punycode": "Needed to support internationalized email addresses, if ext-intl is not installed"
-            },
-            "type": "library",
-            "extra": {
+      "require-dev": {
+        "mockery/mockery": "~0.9.1",
+        "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
+      },
+      "suggest": {
+        "ext-intl": "Needed to support internationalized email addresses",
+        "true/punycode": "Needed to support internationalized email addresses, if ext-intl is not installed"
+      },
+      "type": "library",
+      "extra": {
                 "branch-alias": {
                     "dev-master": "6.2-dev"
                 }
@@ -997,20 +997,20 @@
             ],
             "time": "2019-11-12T09:31:26+00:00"
         },
-        {
-            "name": "symfony/http-foundation",
-            "version": "v4.4.13",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "e3e5a62a6631a461954d471e7206e3750dbe8ee1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/e3e5a62a6631a461954d471e7206e3750dbe8ee1",
-                "reference": "e3e5a62a6631a461954d471e7206e3750dbe8ee1",
-                "shasum": ""
-            },
+    {
+      "name": "symfony/http-foundation",
+      "version": "v4.4.15",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/http-foundation.git",
+        "reference": "10683b407c3b6087c64619ebc97a87e36ea62c92"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/http-foundation/zipball/10683b407c3b6087c64619ebc97a87e36ea62c92",
+        "reference": "10683b407c3b6087c64619ebc97a87e36ea62c92",
+        "shasum": ""
+      },
             "require": {
                 "php": ">=7.1.3",
                 "symfony/mime": "^4.3|^5.0",
@@ -1050,22 +1050,22 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2020-08-17T07:39:58+00:00"
+      "time": "2020-09-27T14:14:06+00:00"
         },
-        {
-            "name": "symfony/mime",
-            "version": "v5.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/mime.git",
-                "reference": "89a2c9b4cb7b5aa516cf55f5194c384f444c81dc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/89a2c9b4cb7b5aa516cf55f5194c384f444c81dc",
-                "reference": "89a2c9b4cb7b5aa516cf55f5194c384f444c81dc",
-                "shasum": ""
-            },
+    {
+      "name": "symfony/mime",
+      "version": "v5.1.7",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/mime.git",
+        "reference": "4404d6545125863561721514ad9388db2661eec5"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/mime/zipball/4404d6545125863561721514ad9388db2661eec5",
+        "reference": "4404d6545125863561721514ad9388db2661eec5",
+        "shasum": ""
+      },
             "require": {
                 "php": ">=7.2.5",
                 "symfony/polyfill-intl-idn": "^1.10",
@@ -1113,7 +1113,7 @@
                 "mime",
                 "mime-type"
             ],
-            "time": "2020-08-17T10:01:29+00:00"
+      "time": "2020-09-02T16:23:27+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -1702,10 +1702,13 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "ext-mysqli": "*",
-        "ext-memcached": "*",
-        "ext-json": "*",
-        "ext-sysvsem": "*"
+      "ext-mysqli": "*",
+      "ext-memcached": "*",
+      "ext-json": "*",
+      "ext-sysvsem": "*",
+      "ext-simplexml": "*",
+      "ext-dom": "*",
+      "ext-pcntl": "*"
     },
     "platform-dev": []
 }
