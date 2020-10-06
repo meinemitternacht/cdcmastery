@@ -28,6 +28,6 @@ class DBLogHelper
             $stmt_error = $stmt_or_db->error;
         }
 
-        $logger->warn('query failed in ' . $method . ' :: ' . serialize($query) . ' :: ' . $stmt_error);
+        $logger->alert('query failed in ' . $method . ' :: ' . serialize($query) . ' :: ' . $stmt_error);
     }
 }
