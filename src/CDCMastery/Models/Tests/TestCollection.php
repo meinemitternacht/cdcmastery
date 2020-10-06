@@ -29,7 +29,6 @@ class TestCollection
     public const COL_NUM_ANSWERED = 'numAnswered';
     public const COL_NUM_MISSED = 'numMissed';
     public const COL_SCORE = 'score';
-    public const COL_IS_COMBINED = 'combined';
     public const COL_IS_ARCHIVED = 'archived';
 
     public const ORDER_ASC = 'ASC';
@@ -76,7 +75,6 @@ class TestCollection
                 case self::COL_NUM_ANSWERED:
                 case self::COL_NUM_MISSED:
                 case self::COL_SCORE:
-                case self::COL_IS_COMBINED:
                 case self::COL_IS_ARCHIVED:
                     $str = self::TABLE_NAME . '.' . $column;
                     break;
@@ -266,7 +264,6 @@ SQL;
             $test->setNumAnswered((int)($row[ 'numAnswered' ] ?? 0));
             $test->setNumMissed((int)($row[ 'numMissed' ] ?? 0));
             $test->setScore((float)($row[ 'score' ] ?? 0.00));
-            $test->setCombined((bool)($row[ 'combined' ] ?? false));
             $test->setArchived((bool)($row[ 'archived' ] ?? false));
             $out[ $row[ 'uuid' ] ] = $test;
         }
@@ -386,7 +383,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE uuid = ?
@@ -418,7 +414,6 @@ SQL;
             $numAnswered,
             $numMissed,
             $score,
-            $combined,
             $archived
         );
 
@@ -441,7 +436,6 @@ SQL;
             'numAnswered' => $numAnswered,
             'numMissed' => $numMissed,
             'score' => $score,
-            'combined' => $combined,
             'archived' => $archived,
         ];
 
@@ -474,7 +468,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE userUuid = ?
@@ -508,7 +501,6 @@ SQL;
             $numAnswered,
             $numMissed,
             $score,
-            $combined,
             $archived
         );
 
@@ -526,7 +518,6 @@ SQL;
                 'numAnswered' => $numAnswered,
                 'numMissed' => $numMissed,
                 'score' => $score,
-                'combined' => $combined,
                 'archived' => $archived,
             ];
         }
@@ -571,7 +562,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE timeCompleted IS NOT NULL
@@ -593,7 +583,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE timeCompleted IS NULL
@@ -663,7 +652,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
@@ -687,7 +675,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
@@ -739,7 +726,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE archived = 0
@@ -801,7 +787,6 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  combined,
   archived
 FROM testCollection
 WHERE uuid IN ('{$uuidListString}')
@@ -865,7 +850,6 @@ SQL;
             $test->getScore(),
             Test::SCORE_PRECISION
         );
-        $combined = (int)$test->isCombined();
         $archived = (int)$test->isArchived();
 
         $qry = <<<SQL
@@ -882,23 +866,21 @@ INSERT INTO testCollection
     numAnswered,
     numMissed,
     score,
-    combined,
     archived
   )
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
 ON DUPLICATE KEY UPDATE 
-    uuid=VALUES(uuid), 
-    userUuid=VALUES(userUuid), 
-    afscList=VALUES(afscList), 
-    timeStarted=VALUES(timeStarted), 
-    timeCompleted=VALUES(timeCompleted), 
-    lastUpdated=VALUES(lastUpdated), 
-    questionList=VALUES(questionList), 
-    curQuestion=VALUES(curQuestion), 
-    numAnswered=VALUES(numAnswered), 
-    numMissed=VALUES(numMissed), 
-    score=VALUES(score), 
-    combined=VALUES(combined), 
+    uuid=VALUES(uuid),
+    userUuid=VALUES(userUuid),
+    afscList=VALUES(afscList),
+    timeStarted=VALUES(timeStarted),
+    timeCompleted=VALUES(timeCompleted),
+    lastUpdated=VALUES(lastUpdated),
+    questionList=VALUES(questionList),
+    curQuestion=VALUES(curQuestion),
+    numAnswered=VALUES(numAnswered),
+    numMissed=VALUES(numMissed),
+    score=VALUES(score),
     archived=VALUES(archived)
 SQL;
 
@@ -909,7 +891,7 @@ SQL;
             return;
         }
 
-        if (!$stmt->bind_param('sssssssiiidii',
+        if (!$stmt->bind_param('sssssssiiidi',
                                $uuid,
                                $userUuid,
                                $afscList,
@@ -921,7 +903,6 @@ SQL;
                                $numAnswered,
                                $numMissed,
                                $score,
-                               $combined,
                                $archived) ||
             !$stmt->execute()) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);

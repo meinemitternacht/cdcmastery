@@ -128,7 +128,6 @@ class TestHandler
         $test->setUuid(UUID::generate());
         $test->setAfscs($options->getAfscs());
         $test->setQuestions($questionList);
-        $test->setCombined(count($options->getAfscs()) > 1);
         $test->setTimeStarted($dt);
         $test->setTimeCompleted(null);
         $test->setLastUpdated($dt);

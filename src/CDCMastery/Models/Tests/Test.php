@@ -1,11 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/24/2017
- * Time: 6:51 PM
- */
+
 
 namespace CDCMastery\Models\Tests;
 
@@ -35,7 +30,6 @@ class Test
     private int $numAnswered;
     private int $numMissed;
     private float $score;
-    private bool $combined;
     private bool $archived;
 
     public function getUuid(): string
@@ -178,16 +172,6 @@ class Test
     public function setScore(float $score): void
     {
         $this->score = $score;
-    }
-
-    public function isCombined(): bool
-    {
-        return $this->combined ?? false;
-    }
-
-    public function setCombined(bool $combined): void
-    {
-        $this->combined = $combined;
     }
 
     public function isArchived(): bool

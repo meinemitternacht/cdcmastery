@@ -901,7 +901,6 @@ class Tests extends RootController
             case TestCollection::COL_NUM_ANSWERED:
             case TestCollection::COL_NUM_MISSED:
             case TestCollection::COL_SCORE:
-            case TestCollection::COL_IS_COMBINED:
             case TestCollection::COL_IS_ARCHIVED:
                 break;
             default:
