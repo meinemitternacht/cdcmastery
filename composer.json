@@ -16,7 +16,10 @@
     "ext-memcached": "*",
     "ext-json": "*",
     "ext-sysvsem": "*",
-    "guzzlehttp/guzzle": "^7.0"
+    "guzzlehttp/guzzle": "^7.0",
+    "ext-simplexml": "*",
+    "ext-dom": "*",
+    "ext-pcntl": "*"
   },
   "autoload": {
     "psr-4": {

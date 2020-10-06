@@ -89,6 +89,53 @@ SQL;
         return $responseCount ?? 0;
     }
 
+    public function delete(Test $test): bool
+    {
+        $test_uuid = $test->getUuid();
+
+        $qry = <<<SQL
+DELETE FROM testData WHERE testUUID = ?
+SQL;
+
+        $stmt = $this->db->prepare($qry);
+
+        if ($stmt === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return false;
+        }
+
+        if (!$stmt->bind_param('s', $test_uuid) ||
+            !$stmt->execute()) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
+            $stmt->close();
+            return false;
+        }
+
+        $stmt->close();
+        return true;
+    }
+
+    public function delete_array(array $tests): bool
+    {
+        $test_uuids = array_map(static function (Test $v): string {
+            return $v->getUuid();
+        }, $tests);
+        $test_uuid_str = implode("','", $test_uuids);
+
+        $qry = <<<SQL
+DELETE FROM testData WHERE testUUID IN ('{$test_uuid_str}')
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return false;
+        }
+
+        return true;
+    }
+
     public function fetch(Test $test, Question $question): ?Answer
     {
         if (empty($test->getUuid()) || empty($question->getUuid())) {

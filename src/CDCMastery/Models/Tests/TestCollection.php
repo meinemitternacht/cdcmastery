@@ -1,11 +1,5 @@
 <?php
 declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: tehbi
- * Date: 6/28/2017
- * Time: 8:43 PM
- */
 
 namespace CDCMastery\Models\Tests;
 
@@ -265,6 +259,33 @@ SQL;
         }
 
         return $out;
+    }
+
+    public function countArchivable(): int
+    {
+        $tgt_date = (new DateTime())->modify(XML_ARCHIVE_CUTOFF)->format(DateTimeHelpers::D_FMT_SHORT);
+
+        $qry = <<<SQL
+SELECT
+  COUNT(*) AS count
+FROM testCollection
+WHERE archived = 0
+  AND score > 0
+  AND timeCompleted IS NOT NULL
+  AND DATE(timeCompleted) < '{$tgt_date}'
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return 0;
+        }
+
+        $row = $res->fetch_assoc();
+        $res->free();
+
+        return (int)($row[ 'count' ] ?? 0);
     }
 
     public function delete(string $uuid): void
@@ -681,6 +702,53 @@ SQL;
         }
 
         return $this->create_objects($rows);
+    }
+
+    public function fetchArchivable(int $limit = 1000): array
+    {
+        $tgt_date = (new DateTime())->modify(XML_ARCHIVE_CUTOFF)->format(DateTimeHelpers::D_FMT_SHORT);
+
+        $qry = <<<SQL
+SELECT
+  uuid,
+  userUuid,
+  afscList,
+  timeStarted,
+  timeCompleted,
+  questionList,
+  curQuestion,
+  numAnswered,
+  numMissed,
+  score,
+  combined,
+  archived
+FROM testCollection
+WHERE archived = 0
+  AND timeCompleted IS NOT NULL
+  AND DATE(timeCompleted) < '{$tgt_date}'
+ORDER BY timeCompleted DESC
+LIMIT {$limit}
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $data = [];
+        while ($row = $res->fetch_assoc()) {
+            if (!isset($row[ 'uuid' ])) {
+                continue;
+            }
+
+            $data[] = $row;
+        }
+
+        $res->free();
+
+        return $this->create_objects($data);
     }
 
     /**

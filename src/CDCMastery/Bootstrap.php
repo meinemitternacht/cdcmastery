@@ -51,6 +51,8 @@ try {
     define('SUPPORT_EMAIL', $config->get(['email', 'username']));
     define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
     define('SUPPORT_FACEBOOK_DISPLAY', $config->get(['support', 'facebook', 'display']));
+    define('XML_ARCHIVE_DIR', $config->get(['archive', 'xml', 'directory']));
+    define('XML_ARCHIVE_CUTOFF', $config->get(['archive', 'cutoff']));
 
     return $c;
 } catch (Exception $e) {
