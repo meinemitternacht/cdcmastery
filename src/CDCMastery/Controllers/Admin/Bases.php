@@ -324,14 +324,14 @@ class Bases extends Admin
         $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $path = "/admin/bases/{$base->getUuid()}/tests";
                 $typeStr = 'complete';
                 $template = 'admin/bases/tests/list-complete.html.twig';
                 $sortCol ??= 'timeCompleted';
                 $sortDir ??= 'DESC';
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $path = "/admin/bases/{$base->getUuid()}/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'admin/bases/tests/list-incomplete.html.twig';
@@ -394,12 +394,12 @@ class Bases extends Admin
 
     public function show_tests_complete(string $uuid): Response
     {
-        return $this->show_tests($uuid, Test::TYPE_COMPLETE);
+        return $this->show_tests($uuid, Test::STATE_COMPLETE);
     }
 
     public function show_tests_incomplete(string $uuid): Response
     {
-        return $this->show_tests($uuid, Test::TYPE_INCOMPLETE);
+        return $this->show_tests($uuid, Test::STATE_INCOMPLETE);
     }
 
     public function show_home(): Response

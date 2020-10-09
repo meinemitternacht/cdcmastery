@@ -50,9 +50,6 @@ use Twig\Environment;
 
 class TrainingOverview extends RootController
 {
-    private const TYPE_COMPLETE = 0;
-    private const TYPE_INCOMPLETE = 1;
-
     private AuthHelpers $auth_helpers;
     private UserCollection $users;
     private BaseCollection $bases;
@@ -669,12 +666,12 @@ class TrainingOverview extends RootController
         $this->check_subordinate($cur_user, $cur_role, $user);
 
         switch ($type) {
-            case self::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $path = "/training/users/{$user->getUuid()}/tests";
                 $typeStr = 'complete';
                 $template = 'training/users/tests/history-complete.html.twig';
                 break;
-            case self::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $path = "/training/users/{$user->getUuid()}/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'training/users/tests/history-incomplete.html.twig';
@@ -712,12 +709,12 @@ class TrainingOverview extends RootController
             $userTests,
             static function (Test $v) use ($type) {
                 switch ($type) {
-                    case self::TYPE_COMPLETE:
+                    case Test::STATE_COMPLETE:
                         if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
-                    case self::TYPE_INCOMPLETE:
+                    case Test::STATE_INCOMPLETE:
                         if ($v->getTimeCompleted() === null) {
                             return true;
                         }
@@ -739,7 +736,7 @@ class TrainingOverview extends RootController
         if (count($filteredList) === 0) {
             $this->flash()->add(
                 MessageTypes::INFO,
-                $type === self::TYPE_INCOMPLETE
+                $type === Test::STATE_INCOMPLETE
                     ? 'This account does not have ' . $typeStr . ' tests'
                     : 'This account has not taken any ' . $typeStr . ' tests'
             );
@@ -778,12 +775,12 @@ class TrainingOverview extends RootController
 
     public function show_test_history_complete(string $uuid): Response
     {
-        return $this->show_test_history($this->get_user($uuid), self::TYPE_COMPLETE);
+        return $this->show_test_history($this->get_user($uuid), Test::STATE_COMPLETE);
     }
 
     public function show_test_history_incomplete(string $uuid): Response
     {
-        return $this->show_test_history($this->get_user($uuid), self::TYPE_INCOMPLETE);
+        return $this->show_test_history($this->get_user($uuid), Test::STATE_INCOMPLETE);
     }
 
     public function show_password_reset(string $uuid): Response

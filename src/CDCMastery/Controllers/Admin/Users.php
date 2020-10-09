@@ -1192,12 +1192,12 @@ class Users extends Admin
     private function show_test_history(User $user, int $type): Response
     {
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $path = "/admin/users/{$user->getUuid()}/tests";
                 $typeStr = 'complete';
                 $template = 'admin/users/tests/history-complete.html.twig';
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $path = "/admin/users/{$user->getUuid()}/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'admin/users/tests/history-incomplete.html.twig';
@@ -1235,12 +1235,12 @@ class Users extends Admin
             $userTests,
             static function (Test $v) use ($type) {
                 switch ($type) {
-                    case Test::TYPE_COMPLETE:
+                    case Test::STATE_COMPLETE:
                         if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
-                    case Test::TYPE_INCOMPLETE:
+                    case Test::STATE_INCOMPLETE:
                         if ($v->getTimeCompleted() === null) {
                             return true;
                         }
@@ -1262,7 +1262,7 @@ class Users extends Admin
         if (count($filteredList) === 0) {
             $this->flash()->add(
                 MessageTypes::INFO,
-                $type === Test::TYPE_INCOMPLETE
+                $type === Test::STATE_INCOMPLETE
                     ? 'This account does not have ' . $typeStr . ' tests'
                     : 'This account has not taken any ' . $typeStr . ' tests'
             );
@@ -1300,11 +1300,11 @@ class Users extends Admin
 
     public function show_test_history_complete(string $uuid): Response
     {
-        return $this->show_test_history($this->get_user($uuid), Test::TYPE_COMPLETE);
+        return $this->show_test_history($this->get_user($uuid), Test::STATE_COMPLETE);
     }
 
     public function show_test_history_incomplete(string $uuid): Response
     {
-        return $this->show_test_history($this->get_user($uuid), Test::TYPE_INCOMPLETE);
+        return $this->show_test_history($this->get_user($uuid), Test::STATE_INCOMPLETE);
     }
 }

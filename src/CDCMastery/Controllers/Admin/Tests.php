@@ -231,14 +231,14 @@ class Tests extends Admin
         $numRecords = $this->filter_int_default(ArrayPaginator::VAR_ROWS, ArrayPaginator::DEFAULT_ROWS);
 
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $path = "/admin/tests";
                 $typeStr = 'complete';
                 $template = 'admin/tests/list-complete.html.twig';
                 $sortCol ??= 'timeCompleted';
                 $sortDir ??= 'DESC';
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $path = "/admin/tests/incomplete";
                 $typeStr = 'incomplete';
                 $template = 'admin/tests/list-incomplete.html.twig';
@@ -300,11 +300,11 @@ class Tests extends Admin
 
     public function show_tests_complete(): Response
     {
-        return $this->show_tests(Test::TYPE_COMPLETE);
+        return $this->show_tests(Test::STATE_COMPLETE);
     }
 
     public function show_tests_incomplete(): Response
     {
-        return $this->show_tests(Test::TYPE_INCOMPLETE);
+        return $this->show_tests(Test::STATE_INCOMPLETE);
     }
 }

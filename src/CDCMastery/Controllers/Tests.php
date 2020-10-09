@@ -660,12 +660,12 @@ class Tests extends RootController
     private function show_test_history(int $type): Response
     {
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $path = '/tests/history';
                 $typeStr = 'complete';
                 $template = 'tests/history-complete.html.twig';
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $path = '/tests/history/incomplete';
                 $typeStr = 'incomplete';
                 $template = 'tests/history-incomplete.html.twig';
@@ -709,12 +709,12 @@ class Tests extends RootController
             $userTests,
             static function (Test $v) use ($type) {
                 switch ($type) {
-                    case Test::TYPE_COMPLETE:
+                    case Test::STATE_COMPLETE:
                         if ($v->getTimeCompleted() !== null) {
                             return true;
                         }
                         break;
-                    case Test::TYPE_INCOMPLETE:
+                    case Test::STATE_INCOMPLETE:
                         if ($v->getTimeCompleted() === null) {
                             return true;
                         }
@@ -736,7 +736,7 @@ class Tests extends RootController
         if (count($filteredList) === 0) {
             $this->flash()->add(
                 MessageTypes::INFO,
-                $type === Test::TYPE_INCOMPLETE
+                $type === Test::STATE_INCOMPLETE
                     ? 'You have not started any ' . $typeStr . ' tests'
                     : 'You have not taken any ' . $typeStr . ' tests'
             );
@@ -775,7 +775,7 @@ class Tests extends RootController
      */
     public function show_test_history_complete(): Response
     {
-        return $this->show_test_history(Test::TYPE_COMPLETE);
+        return $this->show_test_history(Test::STATE_COMPLETE);
     }
 
     /**
@@ -783,7 +783,7 @@ class Tests extends RootController
      */
     public function show_test_history_incomplete(): Response
     {
-        return $this->show_test_history(Test::TYPE_INCOMPLETE);
+        return $this->show_test_history(Test::STATE_INCOMPLETE);
     }
 
     /**

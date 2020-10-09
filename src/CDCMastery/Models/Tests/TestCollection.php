@@ -105,7 +105,7 @@ class TestCollection
     public function countAll(int $type): int
     {
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $qry = <<<SQL
 SELECT
   COUNT(*) AS count
@@ -113,7 +113,7 @@ FROM testCollection
 WHERE timeCompleted IS NOT NULL
 SQL;
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $qry = <<<SQL
 SELECT
   COUNT(*) AS count
@@ -146,7 +146,7 @@ SQL;
     public function countAllByBase(int $type, Base $base): int
     {
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $qry = <<<SQL
 SELECT
   COUNT(*) AS count
@@ -156,7 +156,7 @@ WHERE timeCompleted IS NOT NULL
   AND uD.userBase = '{$base->getUuid()}'
 SQL;
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $qry = <<<SQL
 SELECT
   COUNT(*) AS count
@@ -548,7 +548,7 @@ SQL;
         $order_str = self::generateOrderSuffix($order);
 
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $qry = <<<SQL
 SELECT
   uuid,
@@ -569,7 +569,7 @@ WHERE timeCompleted IS NOT NULL
 {$limit_str}
 SQL;
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $qry = <<<SQL
 SELECT
   uuid,
@@ -638,7 +638,7 @@ SQL;
         $order_str = self::generateOrderSuffix($order);
 
         switch ($type) {
-            case Test::TYPE_COMPLETE:
+            case Test::STATE_COMPLETE:
                 $qry = <<<SQL
 SELECT
   testCollection.uuid,
@@ -661,7 +661,7 @@ WHERE timeCompleted IS NOT NULL
 {$limit_str}
 SQL;
                 break;
-            case Test::TYPE_INCOMPLETE:
+            case Test::STATE_INCOMPLETE:
                 $qry = <<<SQL
 SELECT
   testCollection.uuid,
