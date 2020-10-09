@@ -60,6 +60,7 @@ WHERE t1.userUuid IN (
             WHERE supervisorUUID = ?   
         ) t2
     )
+  AND t1.testType = 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -114,6 +115,7 @@ WHERE t1.userUuid IN (
             WHERE supervisorUUID = ?   
         ) t2
     )
+  AND t1.testType = 0
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -158,11 +160,11 @@ SQL;
 SELECT
     userData.uuid,
     COUNT(*) AS tCount,
-    AVG(testCollection.score) AS tAvg
-FROM testCollection
-LEFT JOIN userData ON testCollection.userUuid = userData.uuid
-WHERE testCollection.userUuid IN (
-    SELECT DISTINCT (t3.userUUID) FROM (              
+    AVG(t1.score) AS tAvg
+FROM testCollection t1
+LEFT JOIN userData ON t1.userUuid = userData.uuid
+WHERE t1.userUuid IN (
+    SELECT DISTINCT (t2.userUUID) FROM (              
         SELECT userUUID
             FROM userTrainingManagerAssociations
             WHERE trainingManagerUUID = ?
@@ -170,8 +172,9 @@ WHERE testCollection.userUuid IN (
         SELECT userUUID
             FROM userSupervisorAssociations
             WHERE supervisorUUID = ?   
-        ) t3
+        ) t2
     )
+  AND t1.testType = 0
 GROUP BY userData.uuid
 ORDER BY tAvg DESC, tCount DESC, userData.uuid
 SQL;
@@ -242,6 +245,7 @@ WHERE t1.userUuid IN (
     )
   AND t1.timeCompleted IS NOT NULL
   AND t1.score > 0
+  AND t1.testType = 0
   AND t2.timeCompleted IS NULL
 GROUP BY userData.uuid
 ORDER BY userData.uuid;

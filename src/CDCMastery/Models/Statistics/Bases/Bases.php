@@ -40,6 +40,7 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
   AND userData.userBase = ?
+  AND testCollection.testType = 0
 SQL;
 
         try {
@@ -82,6 +83,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND userData.userBase = ?
+  AND testCollection.testType = 0
 SQL;
 
         try {
@@ -130,7 +132,8 @@ SELECT
 FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE userData.userBase = ?
-    AND userData.userLastActive > ?
+  AND userData.userLastActive > ?
+  AND testCollection.testType = 0
 GROUP BY userData.uuid
 ORDER BY tAvg DESC, tCount DESC, userData.uuid
 SQL;
@@ -190,6 +193,7 @@ FROM testCollection
 LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.timeCompleted IS NOT NULL
   AND testCollection.timeStarted BETWEEN ? AND ?
+  AND testCollection.testType = 0
 GROUP BY tBase
 SQL;
 
@@ -251,6 +255,7 @@ LEFT JOIN userData ON testCollection.userUuid = userData.uuid
 WHERE testCollection.score > 0
   AND testCollection.timeCompleted IS NOT NULL
   AND userData.userBase = ?
+  AND testCollection.testType = 0
 SQL;
 
         try {

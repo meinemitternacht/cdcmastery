@@ -88,11 +88,19 @@
                                                 </td>
                                                 <td>{{ test.questions }}</td>
                                                 <td>{{ test.time.started }}</td>
-                                                {% if test.questions > 0 %}
-                                                    <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
-                                                {% else %}
-                                                    <td>0%</td>
-                                                {% endif %}
+                                                <td>
+                                                    {% if test.questions > 0 %}
+                                                        {{ ((test.answered / test.questions) * 100)|round }}%
+                                                    {% else %}
+                                                        0%
+                                                    {% endif %}
+                                                    {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                                        <span class="badge badge-sm badge-info"
+                                                              title="Practice Test">
+                                                            P
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
                                                 <td>
                                                     <div class="btn-group btn-group-justified btn-group-xs">
                                                         <a class="btn btn-success"
@@ -130,10 +138,10 @@
                                         </thead>
                                         <tbody>
                                         {% for test in tests.complete %}
-                                            <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                                            <tr class="cursor-pointer" data-uuid="{{ test.uuid }}">
                                                 <td title="{{ test.afsc }}">
                                                     {% if test.afsc|length > 0 %}
-                                                        {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
+                                                        {{ test.afsc|strtr(20) }}
                                                     {% else %}
                                                         No Data
                                                     {% endif %}
@@ -141,7 +149,15 @@
                                                 <td>{{ test.questions }}</td>
                                                 <td>{{ test.time.started }}</td>
                                                 <td>{{ test.time.completed }}</td>
-                                                <td>{{ test.score }}%</td>
+                                                <td>
+                                                    {{ test.score }}%
+                                                    {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                                        <span class="badge badge-sm badge-info"
+                                                              title="Practice Test">
+                                                            P
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>

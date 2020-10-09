@@ -265,6 +265,7 @@ SQL;
             $test->setNumMissed((int)($row[ 'numMissed' ] ?? 0));
             $test->setScore((float)($row[ 'score' ] ?? 0.00));
             $test->setArchived((bool)($row[ 'archived' ] ?? false));
+            $test->setType((int)($row[ 'testType' ] ?? Test::TYPE_NORMAL));
             $out[ $row[ 'uuid' ] ] = $test;
         }
 
@@ -383,7 +384,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE uuid = ?
 SQL;
@@ -414,7 +416,8 @@ SQL;
             $numAnswered,
             $numMissed,
             $score,
-            $archived
+            $archived,
+            $testType
         );
 
         $stmt->fetch();
@@ -437,6 +440,7 @@ SQL;
             'numMissed' => $numMissed,
             'score' => $score,
             'archived' => $archived,
+            'testType' => $testType,
         ];
 
         return $this->create_objects([$row])[ $uuid ] ?? null;
@@ -468,7 +472,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE userUuid = ?
 SQL;
@@ -501,7 +506,8 @@ SQL;
             $numAnswered,
             $numMissed,
             $score,
-            $archived
+            $archived,
+            $testType
         );
 
         $data = [];
@@ -519,6 +525,7 @@ SQL;
                 'numMissed' => $numMissed,
                 'score' => $score,
                 'archived' => $archived,
+                'testType' => $testType,
             ];
         }
 
@@ -562,7 +569,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE timeCompleted IS NOT NULL
 {$order_str}
@@ -583,7 +591,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE timeCompleted IS NULL
 {$order_str}
@@ -652,7 +661,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
 WHERE timeCompleted IS NOT NULL
@@ -675,7 +685,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 LEFT JOIN userData uD on testCollection.userUuid = uD.uuid
 WHERE timeCompleted IS NULL
@@ -726,7 +737,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE archived = 0
   AND timeCompleted IS NOT NULL
@@ -773,7 +785,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE timeCompleted IS NULL
   AND DATE(lastUpdated) < '{$tgt_date}'
@@ -832,7 +845,8 @@ SELECT
   numAnswered,
   numMissed,
   score,
-  archived
+  archived,
+  testType
 FROM testCollection
 WHERE uuid IN ('{$uuidListString}')
 SQL;
@@ -896,6 +910,7 @@ SQL;
             Test::SCORE_PRECISION
         );
         $archived = (int)$test->isArchived();
+        $type = $test->getType();
 
         $qry = <<<SQL
 INSERT INTO testCollection
@@ -911,9 +926,10 @@ INSERT INTO testCollection
     numAnswered,
     numMissed,
     score,
-    archived
+    archived,
+    testType
   )
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
 ON DUPLICATE KEY UPDATE 
     uuid=VALUES(uuid),
     userUuid=VALUES(userUuid),
@@ -926,7 +942,8 @@ ON DUPLICATE KEY UPDATE
     numAnswered=VALUES(numAnswered),
     numMissed=VALUES(numMissed),
     score=VALUES(score),
-    archived=VALUES(archived)
+    archived=VALUES(archived),
+    testType=VALUES(testType)
 SQL;
 
         $stmt = $this->db->prepare($qry);
@@ -936,7 +953,7 @@ SQL;
             return;
         }
 
-        if (!$stmt->bind_param('sssssssiiidi',
+        if (!$stmt->bind_param('sssssssiiidii',
                                $uuid,
                                $userUuid,
                                $afscList,
@@ -948,7 +965,8 @@ SQL;
                                $numAnswered,
                                $numMissed,
                                $score,
-                               $archived) ||
+                               $archived,
+                               $type) ||
             !$stmt->execute()) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $stmt);
             $stmt->close();

@@ -955,13 +955,6 @@ class Users extends Admin
             $symbol = $this->symbols->fetch($u_symbol);
         }
 
-        $incomplete_tests = array_filter(
-            $this->tests->fetchAllByUser($user),
-            static function (Test $v) {
-                return $v->getTimeCompleted() === null;
-            }
-        );
-
         $user_sort = [
             new UserSortOption(UserSortOption::COL_NAME_LAST),
             new UserSortOption(UserSortOption::COL_NAME_FIRST),
@@ -1006,7 +999,10 @@ class Users extends Admin
                         'avg' => $this->test_stats->userAverageOverall($user),
                     ],
                     'incomplete' => [
-                        'count' => count($incomplete_tests),
+                        'count' => $this->test_stats->userCountIncompleteOverall($user),
+                    ],
+                    'practice' => [
+                        'count' => $this->test_stats->userCountPracticeOverall($user),
                     ],
                 ],
             ],

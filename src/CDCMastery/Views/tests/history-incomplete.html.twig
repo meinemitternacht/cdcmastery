@@ -25,18 +25,26 @@
                         <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
                             <td title="{{ test.afsc }}">
                                 {% if test.afsc|length > 0 %}
-                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc  }}
+                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}
                                 {% else %}
                                     No Data
                                 {% endif %}
                             </td>
                             <td>{{ test.questions }}</td>
                             <td>{{ test.time.started }}</td>
-                            {% if test.questions > 0 %}
-                                <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
-                            {% else %}
-                                <td>0%</td>
-                            {% endif %}
+                            <td>
+                                {% if test.questions > 0 %}
+                                    {{ ((test.answered / test.questions) * 100)|round }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                                {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                    <span class="badge badge-sm badge-info"
+                                          title="Practice Test">
+                                        P
+                                    </span>
+                                {% endif %}
+                            </td>
                             <td><a href="/tests/{{ test.uuid }}">Resume &raquo;</a></td>
                         </tr>
                     {% endfor %}

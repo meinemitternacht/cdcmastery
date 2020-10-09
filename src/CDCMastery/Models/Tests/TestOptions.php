@@ -19,6 +19,7 @@ class TestOptions
     private array $afscs = [];
     private int $numQuestions;
     private User $user;
+    private int $type;
 
     /**
      * @param Afsc $afsc
@@ -105,5 +106,21 @@ class TestOptions
     public function setUser(User $user): void
     {
         $this->user = $user;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     */
+    public function setType(int $type): void
+    {
+        $this->type = $type;
     }
 }

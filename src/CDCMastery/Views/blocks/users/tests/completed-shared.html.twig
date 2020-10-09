@@ -70,10 +70,16 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="panel {% if score >= 80 %}panel-success{% else %}panel-danger{% endif %}">
+                <div class="panel {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}panel-info{% elseif score >= 80 %}panel-success{% else %}panel-danger{% endif %}">
                     <div class="panel-heading">Score</div>
                     <div class="panel-body text-center">
                         <strong>{{ score }}%</strong>
+                        {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                            <span class="badge badge-sm badge-info"
+                                  title="Practice Test">
+                                P
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
             </div>

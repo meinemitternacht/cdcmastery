@@ -34,7 +34,15 @@
                             <td>{{ test.questions }}</td>
                             <td>{{ test.time.started }}</td>
                             <td>{{ test.time.completed }}</td>
-                            <td>{{ test.score }}%</td>
+                            <td>
+                                {{ test.score }}%
+                                {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                    <span class="badge badge-sm badge-info"
+                                          title="Practice Test">
+                                        P
+                                    </span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

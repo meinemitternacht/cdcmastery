@@ -19,64 +19,106 @@
                         <legend>Test Options</legend>
                         <div class="form-group">
                             <fieldset>
-                                <label class="col-md-2 control-label">
-                                    AFSC(s)
-                                </label>
-                                <div class="col-md-10" id="newTestAfscList">
-                                    <div class="checkbox new-test-afsc">
-                                        <label for="afscs-checkall" class="control-label new-test-afsc">
-                                            <input type="checkbox"
-                                                   id="afscs-checkall"
-                                                   onclick="check_all(this.id, 'newTestAfscList');">
-                                            <strong>Select All</strong>
-                                        </label>
-                                    </div>
-                                    {% for afsc in afscList %}
+                                <div class="row">
+                                    <label class="col-md-2 control-label">
+                                        AFSC(s)
+                                    </label>
+                                    <div class="col-md-10" id="newTestAfscList">
                                         <div class="checkbox new-test-afsc">
-                                            <label for="afsc-{{ afsc.uuid }}"
-                                                   class="control-label new-test-afsc"
-                                                   title="{{ afsc.name }} {% if afsc.editCode %}[EC {{ afsc.editCode }}]{% else %}{{ afsc.version }}{% endif %}">
+                                            <label for="afscs-checkall" class="control-label new-test-afsc">
                                                 <input type="checkbox"
-                                                       name="afscs[]"
-                                                       id="afsc-{{ afsc.uuid }}"
-                                                       value="{{ afsc.uuid }}">
-                                                {{ afsc.name|strtr(45) }}
-                                                {% if afsc.editCode %}
-                                                    <span class="badge badge-info badge-sm">
-                                                        EC {{ afsc.editCode }}
-                                                    </span>
-                                                {% endif %}
+                                                       id="afscs-checkall"
+                                                       onclick="check_all(this.id, 'newTestAfscList');">
+                                                <strong>Select All</strong>
                                             </label>
                                         </div>
-                                    {% endfor %}
+                                        {% for afsc in afscList %}
+                                            <div class="checkbox new-test-afsc">
+                                                <label for="afsc-{{ afsc.uuid }}"
+                                                       class="control-label new-test-afsc"
+                                                       title="{{ afsc.name }} {% if afsc.editCode %}[EC {{ afsc.editCode }}]{% else %}{{ afsc.version }}{% endif %}">
+                                                    <input type="checkbox"
+                                                           name="afscs[]"
+                                                           id="afsc-{{ afsc.uuid }}"
+                                                           value="{{ afsc.uuid }}">
+                                                    {{ afsc.name|strtr(45) }}
+                                                    {% if afsc.editCode %}
+                                                        <span class="badge badge-info badge-sm">
+                                                        EC {{ afsc.editCode }}
+                                                    </span>
+                                                    {% endif %}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </fieldset>
                         </div>
                         <div class="form-group">
                             <fieldset>
-                                <label for="numQuestions" class="col-md-2 control-label">
-                                    Questions
-                                </label>
-                                <div class="col-md-10">
-                                    <input class="form-control"
-                                           type="number"
-                                           min="100"
-                                           max="500"
-                                           name="numQuestions"
-                                           id="numQuestions"
-                                           value="100">
+                                <div class="row">
+                                    <label class="col-md-2 control-label">Type</label>
+                                    <div class="col-md-10">
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="testType" id="normalTest" value="0" checked>
+                                                Normal Test
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="testType" id="practiceTest" value="1">
+                                                Practice Test
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="help-block">
+                                            <p>
+                                                Normal tests will affect your average score, and usually contain 100
+                                                questions. If there are not enough questions in the database for the
+                                                selected AFSC(s), the number could be lower.
+                                            </p>
+                                            <p>
+                                                Practice tests do not affect your average score, and can contain between
+                                                25 and 500 questions.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </fieldset>
                         </div>
                         <div class="form-group">
                             <fieldset>
-                                <div class="col-md-10 col-md-offset-2">
-                                    <button type="reset" class="btn btn-default">Reset</button>
-                                    <button type="submit"
-                                            class="btn btn-primary ld-ext-right hovering"{% if disableNewTest %} disabled="disabled"{% endif %}>
-                                        Start Test
-                                        <div class="ld ld-ring ld-spin"></div>
-                                    </button>
+                                <div class="row">
+                                    <label for="numQuestions" class="col-md-2 control-label">
+                                        Questions
+                                    </label>
+                                    <div class="col-md-10">
+                                        <input class="form-control"
+                                               type="number"
+                                               min="{{ minQuestionsPractice }}"
+                                               max="{{ maxQuestions }}"
+                                               name="numQuestions"
+                                               id="numQuestions"
+                                               value="100">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-group">
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-md-10 col-md-offset-2">
+                                        <button type="reset" class="btn btn-default">Reset</button>
+                                        <button type="submit"
+                                                class="btn btn-primary ld-ext-right hovering"{% if disableNewTest %} disabled="disabled"{% endif %}>
+                                            Start Test
+                                            <div class="ld ld-ring ld-spin"></div>
+                                        </button>
+                                    </div>
                                 </div>
                             </fieldset>
                         </div>
@@ -84,54 +126,84 @@
                 </form>
             </div>
         </div>
-        <div class="col-md-6">
-            {% if tests|length > 0 %}
-                <div class="table-responsive">
-                    <table id="tests-table" class="table table-striped table-hover">
-                        <thead>
-                        <tr>
-                            <th>AFSC</th>
-                            <th>Questions</th>
-                            <th>Time Started</th>
-                            <th>Progress</th>
-                            <th style="width:15%">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for test in tests %}
-                            <tr style="cursor:pointer" data-uuid="{{ test.uuid }}">
-                                <td title="{{ test.afsc }}">
-                                    {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}
-                                </td>
-                                <td>{{ test.questions }}</td>
-                                <td>{{ test.time.started }}</td>
-                                {% if test.questions > 0 %}
-                                    <td>{{ ((test.answered / test.questions) * 100)|round }}%</td>
-                                {% else %}
-                                    <td>0%</td>
-                                {% endif %}
-                                <td>
-                                    <div class="btn-group btn-group-justified btn-group-xs">
-                                        <a class="btn btn-success"
-                                           href="/tests/{{ test.uuid }}"
-                                           title="Resume Test">Go</a>
-                                        <a class="btn btn-danger"
-                                           href="/tests/{{ test.uuid }}/delete"
-                                           title="Delete Test">X</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+        {% if tests|length > 0 %}
+            <div class="col-md-6">
+                <div class="panel panel-info">
+                    <div class="panel-heading text-center">
+                        <h5>Incomplete Tests</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table id="tests-table" class="table table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th>AFSC</th>
+                                    <th>Questions</th>
+                                    <th>Time Started</th>
+                                    <th>Progress</th>
+                                    <th style="width:15%">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for test in tests %}
+                                    <tr class="cursor-pointer" data-uuid="{{ test.uuid }}">
+                                        <td title="{{ test.afsc }}">
+                                            {{ test.afsc|strtr(20) }}
+                                        </td>
+                                        <td>{{ test.questions }}</td>
+                                        <td>{{ test.time.started }}</td>
+                                        <td>
+                                            {% if test.questions > 0 %}
+                                                {{ ((test.answered / test.questions) * 100)|round }}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                            {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                                <span class="badge badge-sm badge-info"
+                                                      title="Practice Test">
+                                                    P
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-justified btn-group-xs">
+                                                <a class="btn btn-success"
+                                                   href="/tests/{{ test.uuid }}"
+                                                   title="Resume Test">Go</a>
+                                                <a class="btn btn-danger"
+                                                   href="/tests/{{ test.uuid }}/delete"
+                                                   title="Delete Test">X</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <a class="btn btn-warning btn-sm" href="/tests/incomplete/delete">Delete All</a>
+                        </div>
+                        {% set tableSelector = "#tests-table" %}
+                        {% set redirectPath = "/tests" %}
+                        {% include "utilities/table-row-link.html.twig" %}
+                    </div>
                 </div>
-                <div class="text-right">
-                    <a class="btn btn-warning btn-sm" href="/tests/incomplete/delete">Delete All</a>
-                </div>
-                {% set tableSelector = "#tests-table" %}
-                {% set redirectPath = "/tests" %}
-                {% include "utilities/table-row-link.html.twig" %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
+    <script>
+        $(document).ready(function () {
+            let $n_questions = $('#numQuestions');
+            $n_questions.prop('disabled', true);
+
+            $('#practiceTest').click(function () {
+                $n_questions.prop('disabled', false);
+            });
+
+            $('#normalTest').click(function () {
+                $n_questions.prop('disabled', true);
+                $n_questions.val('100');
+            });
+        });
+    </script>
 {% endblock %}

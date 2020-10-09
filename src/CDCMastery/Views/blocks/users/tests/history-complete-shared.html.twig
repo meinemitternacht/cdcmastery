@@ -9,6 +9,7 @@
             <table id="tests-table" class="table table-hover">
                 <thead>
                 <tr>
+                    <th>Type</th>
                     <th class="col-xs-3">{{ sortlink('afscList','AFSC',sort)|raw }}</th>
                     {% if users %}
                         <th>User</th>
@@ -23,6 +24,19 @@
                 {% for test in tests %}
                     <tr class="{% if test.score >= passing_score %} bg-success{% else %} bg-danger{% endif %}"
                         style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                        <td>
+                            {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                <span class="badge badge-sm badge-info"
+                                      title="Practice Test">
+                                    P
+                                </span>
+                            {% else %}
+                                <span class="badge badge-sm badge-success"
+                                      title="Normal Test">
+                                    N
+                                </span>
+                            {% endif %}
+                        </td>
                         <td class="hidden-xs hidden-sm" title="{{ test.afsc }}">
                             {% if test.afsc|length > 0 %}
                                 {{ test.afsc|length > 20 ? test.afsc|slice(0, 20) ~ '...' : test.afsc }}

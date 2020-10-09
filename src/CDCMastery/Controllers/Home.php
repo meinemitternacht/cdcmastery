@@ -110,6 +110,7 @@ class Home extends RootController
             }
         );
 
+        /* @todo this is terrible.  use the test objects or TestHelpers::formatHtml() */
         $tests_complete = [];
         $tests_incomplete = [];
         /** @var Test $test */
@@ -129,6 +130,7 @@ class Home extends RootController
 
                 $tests_complete[] = [
                     'uuid' => $test->getUuid(),
+                    'type' => $test->getType(),
                     'score' => $test->getScore(),
                     'afsc' => implode(', ', AfscHelpers::listNames($test->getAfscs())),
                     'questions' => $test->getNumQuestions(),
@@ -150,6 +152,7 @@ class Home extends RootController
 
             $tests_incomplete[] = [
                 'uuid' => $test->getUuid(),
+                'type' => $test->getType(),
                 'afsc' => implode(', ', AfscHelpers::listNames($test->getAfscs())),
                 'answered' => $test->getNumAnswered(),
                 'questions' => $test->getNumQuestions(),

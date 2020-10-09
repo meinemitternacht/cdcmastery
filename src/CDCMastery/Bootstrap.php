@@ -48,12 +48,18 @@ try {
 
     define('CDC_DEBUG', (bool)$config->get(['system', 'debug']));
     define('SYSTEM_UUID', $config->get(['system', 'uuid']));
+
+    define('XML_ARCHIVE_DIR', $config->get(['archive', 'xml', 'directory']));
+    define('XML_ARCHIVE_CUTOFF', $config->get(['archive', 'cutoff']));
+
+    define('INCOMPLETE_TEST_MAX_AGE', $config->get(['testing', 'incomplete', 'max_age']));
+    define('TEST_MIN_QUESTIONS_NORMAL', $config->get(['testing', 'minQuestionsNormal']));
+    define('TEST_MIN_QUESTIONS_PRACTICE', $config->get(['testing', 'minQuestionsPractice']));
+    define('TEST_MAX_QUESTIONS', $config->get(['testing', 'maxQuestions']));
+
     define('SUPPORT_EMAIL', $config->get(['email', 'username']));
     define('SUPPORT_FACEBOOK_URL', $config->get(['support', 'facebook', 'url']));
     define('SUPPORT_FACEBOOK_DISPLAY', $config->get(['support', 'facebook', 'display']));
-    define('XML_ARCHIVE_DIR', $config->get(['archive', 'xml', 'directory']));
-    define('XML_ARCHIVE_CUTOFF', $config->get(['archive', 'cutoff']));
-    define('INCOMPLETE_TEST_MAX_AGE', $config->get(['testing', 'incomplete', 'max_age']));
 
     return $c;
 } catch (Exception $e) {

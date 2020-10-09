@@ -109,6 +109,8 @@
     "maxCategories": 10,
     "maxIncomplete": 5,
     "maxQuestions": 500,
+    "minQuestionsNormal": 100,
+    "minQuestionsPractice": 25,
     "incomplete": {
       "max_age": "-30 days"
     }

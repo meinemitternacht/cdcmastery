@@ -76,12 +76,13 @@ class TestHandler
         TestDataHelpers $test_data_helpers,
         TestOptions $options
     ): self {
-        if ($options->getNumQuestions() <= 0) {
+        $n_wanted_questions = $options->getNumQuestions();
+        if ($n_wanted_questions <= 0) {
             throw new RuntimeException('The test parameters asked for 0 questions to be presented');
         }
 
-        if ($options->getNumQuestions() > Test::MAX_QUESTIONS) {
-            $options->setNumQuestions(Test::MAX_QUESTIONS);
+        if ($n_wanted_questions > Test::MAX_QUESTIONS) {
+            $n_wanted_questions = Test::MAX_QUESTIONS;
         }
 
         if (!$options->getAfscs()) {
@@ -113,15 +114,15 @@ class TestHandler
         /* Randomize questions and extract a slice of them */
         ArrayHelpers::shuffle($tgt_questions);
 
-        $n_questions = count($tgt_questions);
+        $n_avail_questions = count($tgt_questions);
 
-        if ($options->getNumQuestions() > $n_questions) {
-            $options->setNumQuestions($n_questions);
+        if ($n_wanted_questions > $n_avail_questions) {
+            $n_wanted_questions = $n_avail_questions;
         }
 
         $questionList = array_slice($tgt_questions,
                                     0,
-                                    $options->getNumQuestions());
+                                    $n_wanted_questions);
 
         $dt = new DateTime();
         $test = new Test();
@@ -132,6 +133,7 @@ class TestHandler
         $test->setTimeCompleted(null);
         $test->setLastUpdated($dt);
         $test->setUserUuid($options->getUser()->getUuid());
+        $test->setType($options->getType());
 
         $handler = new self($logger,
                             $afscs,

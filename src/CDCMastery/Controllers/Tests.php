@@ -182,7 +182,7 @@ class Tests extends RootController
     {
         $params = [
             'afscs',
-            'numQuestions',
+            'testType',
         ];
 
         if (!$this->checkParameters($params)) {
@@ -195,7 +195,7 @@ class Tests extends RootController
         }
 
         $afscs = $this->get('afscs');
-        $numQuestions = $this->filter_int_default('numQuestions');
+        $testType = $this->filter_int_default('testType');
 
         $n_afscs = count($afscs);
         if (!is_array($afscs) || $n_afscs === 0) {
@@ -217,13 +217,31 @@ class Tests extends RootController
             return $this->redirect('/tests/new');
         }
 
-        if (!$numQuestions) {
-            $this->flash()->add(
-                MessageTypes::WARNING,
-                'The provided amount of questions for the test was invalid'
-            );
+        $n_questions = TEST_MIN_QUESTIONS_NORMAL;
+        switch ($testType) {
+            case Test::TYPE_NORMAL:
+                $test_type_str = 'normal';
+                break;
+            case Test::TYPE_PRACTICE:
+                $test_type_str = 'practice';
+                $n_questions = $this->filter_int_default('numQuestions');
 
-            return $this->redirect('/tests/new');
+                if (!$n_questions) {
+                    $this->flash()->add(
+                        MessageTypes::WARNING,
+                        'The provided amount of questions for the test was invalid'
+                    );
+
+                    return $this->redirect('/tests/new');
+                }
+                break;
+            default:
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    "An invalid test type was specified, please choose 'Normal' or 'Practice'"
+                );
+
+                return $this->redirect('/tests/new');
         }
 
         $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
@@ -253,11 +271,7 @@ class Tests extends RootController
 
         if (!$validAfscs) {
             $this->log->warning(
-                'create test failed :: afsc not associated :: user ' .
-                $user->getName() .
-                ' [' .
-                $user->getUuid() .
-                '] :: AFSC list ' .
+                "create test failed :: afsc not associated :: user {$user->getName()} [{$user->getUuid()}] :: AFSC list " .
                 implode(',', $afscs)
             );
 
@@ -291,68 +305,42 @@ class Tests extends RootController
 
             if (!$isAuthorized) {
                 $this->log->warning(
-                    'create test failed :: afsc not authorized :: user ' .
-                    $user->getUuid() .
-                    ' [' .
-                    $user->getName() .
-                    '] :: AFSC ' .
-                    $validAfsc->getUuid() .
-                    ' [' .
-                    $validAfsc->getName() .
-                    ']'
+                    "create test failed :: afsc not authorized :: user {$user->getName()} [{$user->getUuid()}] :: AFSC {$validAfsc->getName()} [{$validAfsc->getUuid()}]"
                 );
 
                 $this->flash()->add(
                     MessageTypes::WARNING,
-                    'You are not authorized to take tests for ' .
-                    $validAfsc->getName()
+                    "You are not authorized to take tests for AFSC '{$validAfsc->getName()}'"
                 );
 
                 return $this->redirect('/tests/new');
             }
         }
 
-        $testOptions = new TestOptions();
-        $testOptions->setNumQuestions(min($numQuestions, $this->config->get(['testing', 'maxQuestions'])));
-        $testOptions->setUser($user);
-        $testOptions->setAfscs($validAfscs);
+        $opts = new TestOptions();
+        $opts->setNumQuestions(min($n_questions, $this->config->get(['testing', 'maxQuestions'])));
+        $opts->setUser($user);
+        $opts->setAfscs($validAfscs);
+        $opts->setType($testType);
 
         try {
-            $newTest = TestHandler::factory($this->log,
+            $handler = TestHandler::factory($this->log,
                                             $this->afscs,
                                             $this->tests,
                                             $this->cdc_data,
                                             $this->answers,
                                             $this->test_data_helpers,
-                                            $testOptions);
+                                            $opts);
 
-            if (($newTest->getTest()->getUuid() ?? '') === '') {
-                $this->log->warning(
-                    'create test failed :: user ' .
-                    $user->getUuid() .
-                    ' [' .
-                    $user->getName() .
-                    '] :: options -- AFSC List ' .
-                    implode(',', AfscHelpers::listUuid($testOptions->getAfscs())) .
-                    ' :: numQuestions ' .
-                    $testOptions->getNumQuestions()
-                );
-
-                $this->flash()->add(
-                    MessageTypes::WARNING,
-                    'We could not generate a test using those options'
-                );
-
-                return $this->redirect('/tests/new');
-            }
+            $this->log->info(
+                "new test :: {$handler->getTest()->getUuid()} :: {$user->getName()} [{$user->getUuid()}] :: type '{$test_type_str}' :: n_questions {$n_questions}"
+            );
+            return $this->redirect('/tests/' . $handler->getTest()->getUuid());
         } catch (Throwable $e) {
             $this->log->debug($e);
             $this->flash()->add(MessageTypes::ERROR, $e->getMessage());
             return $this->redirect('/tests/new');
         }
-
-        $this->log->info("new test :: {$newTest->getTest()->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
-        return $this->redirect('/tests/' . $newTest->getTest()->getUuid());
     }
 
     /**
@@ -627,7 +615,7 @@ class Tests extends RootController
                     return 0;
                 }
 
-                return $b->getTimeStarted()->format('U') <=> $a->getTimeStarted()->format('U');
+                return $b->getTimeStarted() <=> $a->getTimeStarted();
             }
         );
 
@@ -637,6 +625,8 @@ class Tests extends RootController
             'afscList' => $userAfscs,
             'tests' => $tests,
             'disableNewTest' => count($tests) >= ($this->config->get(['testing', 'maxIncomplete']) ?? 0),
+            'minQuestionsPractice' => $this->config->get(['testing', 'minQuestionsPractice']),
+            'maxQuestions' => $this->config->get(['testing', 'maxQuestions']),
         ];
 
         return $this->render(

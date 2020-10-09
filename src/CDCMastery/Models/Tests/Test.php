@@ -14,6 +14,9 @@ class Test
     public const STATE_COMPLETE = 0;
     public const STATE_INCOMPLETE = 1;
 
+    public const TYPE_NORMAL = 0;
+    public const TYPE_PRACTICE = 1;
+
     public const MAX_QUESTIONS = 500;
     public const SCORE_PRECISION = 2;
 
@@ -31,6 +34,7 @@ class Test
     private int $numMissed;
     private float $score;
     private bool $archived;
+    private int $type;
 
     public function getUuid(): string
     {
@@ -187,5 +191,21 @@ class Test
     public function isComplete(): bool
     {
         return $this->getTimeCompleted() !== null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     */
+    public function setType(int $type): void
+    {
+        $this->type = $type;
     }
 }
