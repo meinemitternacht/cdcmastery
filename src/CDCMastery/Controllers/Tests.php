@@ -841,6 +841,7 @@ class Tests extends RootController
 
         $data = [
             'showUser' => false,
+            'testType' => $test->getType(),
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'lastUpdated' => $last_updated,

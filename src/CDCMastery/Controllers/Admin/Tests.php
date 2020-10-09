@@ -201,6 +201,7 @@ class Tests extends Admin
         $data = [
             'user' => $user,
             'test' => $test,
+            'testType' => $test->getType(),
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'lastUpdated' => $last_updated,

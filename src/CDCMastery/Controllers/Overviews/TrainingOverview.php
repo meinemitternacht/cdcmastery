@@ -638,6 +638,7 @@ class TrainingOverview extends RootController
             'cur_user' => $cur_user,
             'cur_role' => $cur_role,
             'user' => $user,
+            'testType' => $test->getType(),
             'timeStarted' => $time_started,
             'timeCompleted' => $time_completed,
             'lastUpdated' => $last_updated,
