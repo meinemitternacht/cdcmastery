@@ -134,8 +134,8 @@
         "/assets/css/admin/tests.css"
       ],
       "js": [
-        "/assets/js/jquery-3.2.1.js",
-        "/assets/js/bootstrap.js",
+        "/assets/js/jquery-3.2.1.min.js",
+        "/assets/js/bootstrap.min.js",
         "/assets/js/canvasjs.min.js",
         "/assets/js/jquery.touchSwipe.min.js",
         "/assets/js/bloodhound.min.js",

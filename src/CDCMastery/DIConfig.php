@@ -47,8 +47,6 @@ return [
         $twig->addGlobal('cdc_debug', $debug);
         $twig->addGlobal('cur_url', parse_url($_SERVER[ 'REQUEST_URI' ], PHP_URL_PATH));
         $twig->addGlobal('logged_in', $loggedIn);
-        $twig->addGlobal('css_assets', $config->get(['twig', 'assets', 'css']));
-        $twig->addGlobal('js_assets', $config->get(['twig', 'assets', 'js']));
         $twig->addGlobal('passing_score', $config->get(['testing', 'passingScore']));
         $twig->addGlobal('support_email', $config->get(['system', 'support', 'email']));
         $twig->addGlobal('support_fb_url', $config->get(['support', 'facebook', 'url']));

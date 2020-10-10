@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "641a01cb065ad3f7ca3cce80162b4cfe",
+  "content-hash": "a176a399ef23c672aa63fa9666ce0b7e",
   "packages": [
     {
       "name": "doctrine/lexer",
@@ -35,16 +35,16 @@
         }
       },
       "autoload": {
-                "psr-4": {
-                    "Doctrine\\Common\\Lexer\\": "lib/Doctrine/Common/Lexer"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
+        "psr-4": {
+          "Doctrine\\Common\\Lexer\\": "lib/Doctrine/Common/Lexer"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
                     "name": "Guilherme Blanco",
                     "email": "guilhermeblanco@gmail.com"
                 },
@@ -58,16 +58,16 @@
                 }
             ],
             "description": "PHP Doctrine Lexer parser library that can be used in Top-Down, Recursive Descent Parsers.",
-            "homepage": "https://www.doctrine-project.org/projects/lexer.html",
-            "keywords": [
-                "annotations",
-                "docblock",
-                "lexer",
-                "parser",
-                "php"
-            ],
-            "time": "2020-05-25T17:44:05+00:00"
-        },
+      "homepage": "https://www.doctrine-project.org/projects/lexer.html",
+      "keywords": [
+        "annotations",
+        "docblock",
+        "lexer",
+        "parser",
+        "php"
+      ],
+      "time": "2020-05-25T17:44:05+00:00"
+    },
     {
       "name": "egulias/email-validator",
       "version": "2.1.22",
@@ -82,25 +82,25 @@
         "reference": "68e418ec08fbfc6f58f6fd2eea70ca8efc8cc7d5",
         "shasum": ""
       },
-            "require": {
-                "doctrine/lexer": "^1.0.1",
-                "php": ">=5.5",
-                "symfony/polyfill-intl-idn": "^1.10"
-            },
-            "require-dev": {
-                "dominicsayers/isemail": "^3.0.7",
-                "phpunit/phpunit": "^4.8.36|^7.5.15",
-                "satooshi/php-coveralls": "^1.0.1"
-            },
-            "suggest": {
-                "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
-            },
-            "type": "library",
-            "extra": {
-              "branch-alias": {
-                "dev-master": "2.1.x-dev"
-              }
-            },
+      "require": {
+        "doctrine/lexer": "^1.0.1",
+        "php": ">=5.5",
+        "symfony/polyfill-intl-idn": "^1.10"
+      },
+      "require-dev": {
+        "dominicsayers/isemail": "^3.0.7",
+        "phpunit/phpunit": "^4.8.36|^7.5.15",
+        "satooshi/php-coveralls": "^1.0.1"
+      },
+      "suggest": {
+        "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
+      },
+      "type": "library",
+      "extra": {
+        "branch-alias": {
+          "dev-master": "2.1.x-dev"
+        }
+      },
       "autoload": {
         "psr-4": {
           "Egulias\\EmailValidator\\": "src"
@@ -329,6 +329,115 @@
       "time": "2020-09-30T07:37:11+00:00"
     },
     {
+      "name": "matthiasmullie/minify",
+      "version": "1.3.63",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/matthiasmullie/minify.git",
+        "reference": "9ba1b459828adc13430f4dd6c49dae4950dc4117"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/9ba1b459828adc13430f4dd6c49dae4950dc4117",
+        "reference": "9ba1b459828adc13430f4dd6c49dae4950dc4117",
+        "shasum": ""
+      },
+      "require": {
+        "ext-pcre": "*",
+        "matthiasmullie/path-converter": "~1.1",
+        "php": ">=5.3.0"
+      },
+      "require-dev": {
+        "friendsofphp/php-cs-fixer": "~2.0",
+        "matthiasmullie/scrapbook": "~1.0",
+        "phpunit/phpunit": "~4.8"
+      },
+      "suggest": {
+        "psr/cache-implementation": "Cache implementation to use with Minify::cache"
+      },
+      "bin": [
+        "bin/minifycss",
+        "bin/minifyjs"
+      ],
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "MatthiasMullie\\Minify\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Matthias Mullie",
+          "email": "minify@mullie.eu",
+          "homepage": "http://www.mullie.eu",
+          "role": "Developer"
+        }
+      ],
+      "description": "CSS & JavaScript minifier, in PHP. Removes whitespace, strips comments, combines files (incl. @import statements and small assets in CSS files), and optimizes/shortens a few common programming patterns.",
+      "homepage": "http://www.minifier.org",
+      "keywords": [
+        "JS",
+        "css",
+        "javascript",
+        "minifier",
+        "minify"
+      ],
+      "time": "2020-01-21T20:21:08+00:00"
+    },
+    {
+      "name": "matthiasmullie/path-converter",
+      "version": "1.1.3",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/matthiasmullie/path-converter.git",
+        "reference": "e7d13b2c7e2f2268e1424aaed02085518afa02d9"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/e7d13b2c7e2f2268e1424aaed02085518afa02d9",
+        "reference": "e7d13b2c7e2f2268e1424aaed02085518afa02d9",
+        "shasum": ""
+      },
+      "require": {
+        "ext-pcre": "*",
+        "php": ">=5.3.0"
+      },
+      "require-dev": {
+        "phpunit/phpunit": "~4.8"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "MatthiasMullie\\PathConverter\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Matthias Mullie",
+          "email": "pathconverter@mullie.eu",
+          "homepage": "http://www.mullie.eu",
+          "role": "Developer"
+        }
+      ],
+      "description": "Relative path converter",
+      "homepage": "http://github.com/matthiasmullie/path-converter",
+      "keywords": [
+        "converter",
+        "path",
+        "paths",
+        "relative"
+      ],
+      "time": "2019-02-05T23:41:09+00:00"
+    },
+    {
       "name": "monolog/monolog",
       "version": "1.25.5",
       "source": {
@@ -359,16 +468,16 @@
         "phpunit/phpunit": "~4.5",
         "ruflin/elastica": ">=0.90 <3.0",
         "sentry/sentry": "^0.13",
-                "swiftmailer/swiftmailer": "^5.3|^6.0"
-            },
-            "suggest": {
-                "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
-                "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
-                "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
-                "ext-mongo": "Allow sending log messages to a MongoDB server",
-                "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
-                "mongodb/mongodb": "Allow sending log messages to a MongoDB server via PHP Driver",
-                "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
+        "swiftmailer/swiftmailer": "^5.3|^6.0"
+      },
+      "suggest": {
+        "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
+        "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
+        "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
+        "ext-mongo": "Allow sending log messages to a MongoDB server",
+        "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
+        "mongodb/mongodb": "Allow sending log messages to a MongoDB server via PHP Driver",
+        "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
                 "php-console/php-console": "Allow sending log messages to Google Chrome",
                 "rollbar/rollbar": "Allow sending log messages to Rollbar",
                 "ruflin/elastica": "Allow sending log messages to an Elastic Search server",
@@ -591,15 +700,15 @@
             ],
             "description": "Generic and extensible callable invoker",
             "homepage": "https://github.com/PHP-DI/Invoker",
-            "keywords": [
-                "callable",
-                "dependency",
-                "dependency-injection",
-                "injection",
-                "invoke",
-                "invoker"
-            ],
-            "time": "2020-08-01T15:36:25+00:00"
+          "keywords": [
+            "callable",
+            "dependency",
+            "dependency-injection",
+            "injection",
+            "invoke",
+            "invoker"
+          ],
+          "time": "2020-08-01T15:36:25+00:00"
         },
     {
       "name": "php-di/php-di",
@@ -615,16 +724,16 @@
         "reference": "96a9ddb0c5d790d120c3332821be09d9bc9db288",
         "shasum": ""
       },
-            "require": {
-                "opis/closure": "^3.5.5",
-                "php": ">=7.2.0",
-                "php-di/invoker": "^2.0",
-                "php-di/phpdoc-reader": "^2.0.1",
-                "psr/container": "^1.0"
-            },
-            "provide": {
-                "psr/container-implementation": "^1.0"
-            },
+      "require": {
+        "opis/closure": "^3.5.5",
+        "php": ">=7.2.0",
+        "php-di/invoker": "^2.0",
+        "php-di/phpdoc-reader": "^2.0.1",
+        "psr/container": "^1.0"
+      },
+      "provide": {
+        "psr/container-implementation": "^1.0"
+      },
             "require-dev": {
                 "doctrine/annotations": "~1.2",
                 "friendsofphp/php-cs-fixer": "^2.4",
@@ -714,15 +823,15 @@
                 "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
                 "shasum": ""
             },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
+          "require": {
+            "php": ">=5.3.0"
+          },
+          "type": "library",
+          "extra": {
+            "branch-alias": {
+              "dev-master": "1.0.x-dev"
+            }
+          },
           "autoload": {
             "psr-4": {
               "Psr\\Container\\": "src/"
@@ -966,16 +1075,16 @@
       },
       "type": "library",
       "extra": {
-                "branch-alias": {
-                    "dev-master": "6.2-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "lib/swift_required.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
+        "branch-alias": {
+          "dev-master": "6.2-dev"
+        }
+      },
+      "autoload": {
+        "files": [
+          "lib/swift_required.php"
+        ]
+      },
+      "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -988,15 +1097,15 @@
                     "email": "fabien@symfony.com"
                 }
             ],
-            "description": "Swiftmailer, free feature-rich PHP mailer",
-            "homepage": "https://swiftmailer.symfony.com",
-            "keywords": [
-                "email",
-                "mail",
-                "mailer"
-            ],
-            "time": "2019-11-12T09:31:26+00:00"
-        },
+      "description": "Swiftmailer, free feature-rich PHP mailer",
+      "homepage": "https://swiftmailer.symfony.com",
+      "keywords": [
+        "email",
+        "mail",
+        "mailer"
+      ],
+      "time": "2019-11-12T09:31:26+00:00"
+    },
     {
       "name": "symfony/http-foundation",
       "version": "v4.4.15",
@@ -1011,16 +1120,16 @@
         "reference": "10683b407c3b6087c64619ebc97a87e36ea62c92",
         "shasum": ""
       },
-            "require": {
-                "php": ">=7.1.3",
-                "symfony/mime": "^4.3|^5.0",
-                "symfony/polyfill-mbstring": "~1.1"
-            },
-            "require-dev": {
-                "predis/predis": "~1.0",
-                "symfony/expression-language": "^3.4|^4.0|^5.0"
-            },
-            "type": "library",
+      "require": {
+        "php": ">=7.1.3",
+        "symfony/mime": "^4.3|^5.0",
+        "symfony/polyfill-mbstring": "~1.1"
+      },
+      "require-dev": {
+        "predis/predis": "~1.0",
+        "symfony/expression-language": "^3.4|^4.0|^5.0"
+      },
+      "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "4.4-dev"
@@ -1043,15 +1152,15 @@
                     "name": "Fabien Potencier",
                     "email": "fabien@symfony.com"
                 },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
+              {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+              }
             ],
-            "description": "Symfony HttpFoundation Component",
-            "homepage": "https://symfony.com",
+      "description": "Symfony HttpFoundation Component",
+      "homepage": "https://symfony.com",
       "time": "2020-09-27T14:14:06+00:00"
-        },
+    },
     {
       "name": "symfony/mime",
       "version": "v5.1.7",
@@ -1066,16 +1175,16 @@
         "reference": "4404d6545125863561721514ad9388db2661eec5",
         "shasum": ""
       },
-            "require": {
-                "php": ">=7.2.5",
-                "symfony/polyfill-intl-idn": "^1.10",
-                "symfony/polyfill-mbstring": "^1.0",
-                "symfony/polyfill-php80": "^1.15"
-            },
-            "conflict": {
-                "symfony/mailer": "<4.4"
-            },
-            "require-dev": {
+      "require": {
+        "php": ">=7.2.5",
+        "symfony/polyfill-intl-idn": "^1.10",
+        "symfony/polyfill-mbstring": "^1.0",
+        "symfony/polyfill-php80": "^1.15"
+      },
+      "conflict": {
+        "symfony/mailer": "<4.4"
+      },
+      "require-dev": {
                 "egulias/email-validator": "^2.1.10",
                 "symfony/dependency-injection": "^4.4|^5.0"
             },

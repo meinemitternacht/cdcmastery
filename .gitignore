@@ -2,3 +2,5 @@
 vendor/
 includes/config.inc.php
 src/CDCMastery/config.json
+public/assets/css/bundle.min.css
+public/assets/js/bundle.min.js

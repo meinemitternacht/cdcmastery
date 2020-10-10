@@ -16,12 +16,8 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% for cssPath in css_assets %}
-        <link href="{{ cssPath }}?20201009" rel="stylesheet" type="text/css">
-    {% endfor %}
-    {% for jsPath in js_assets %}
-        <script src="{{ jsPath }}"></script>
-    {% endfor %}
+    <link href="/assets/css/bundle.min.css?20201009" rel="stylesheet" type="text/css">
+    <script src="/assets/js/bundle.min.js?20201009"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
