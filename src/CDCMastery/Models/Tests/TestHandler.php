@@ -275,6 +275,8 @@ class TestHandler
             return [];
         }
 
+        $practice = $this->test->getType() === Test::TYPE_PRACTICE;
+
         $question = $this->getQuestion();
         $afsc = $this->afscs->fetch($question->getAfscUuid());
 
@@ -284,20 +286,28 @@ class TestHandler
 
         $answerList = $this->answers->fetchByQuestion($afsc, $question);
 
-        ArrayHelpers::shuffle($answerList);
-
-        $answerData = [];
-        foreach ($answerList as $answer) {
-            $answerData[] = [
-                'uuid' => $answer->getUuid(),
-                'text' => $answer->getText(),
-            ];
+        if (!$practice) {
+            ArrayHelpers::shuffle($answerList);
         }
 
         $storedAnswer = $this->test_data_helpers->fetch(
             $this->getTest(),
             $this->getQuestion()
         );
+
+        $answerData = [];
+        foreach ($answerList as $answer) {
+            $answer_data_entry = [
+                'uuid' => $answer->getUuid(),
+                'text' => $answer->getText(),
+            ];
+
+            if ($practice && $storedAnswer) {
+                $answer_data_entry[ 'correct' ] = $answer->isCorrect();
+            }
+
+            $answerData[] = $answer_data_entry;
+        }
 
         $numAnswered = $this->test_data_helpers->count($this->test);
 
@@ -382,7 +392,13 @@ class TestHandler
         $this->test_data_helpers->save($questionResponse);
         $this->test->setNumAnswered($this->getNumAnswered());
         $this->test->setLastUpdated(new DateTime());
-        $this->next();
+
+        if ($this->test->getType() === Test::TYPE_NORMAL) {
+            $this->next();
+            return;
+        }
+
+        $this->save(); /* save test in practice mode since ->next() wasn't called */
     }
 
     /**

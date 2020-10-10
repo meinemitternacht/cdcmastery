@@ -40,3 +40,7 @@ textarea.tall {
 .answer-padding-left {
     padding-left: 0.8rem;
 }
+
+.answer-left-border-thick {
+    border-left: 0.5em solid;
+}

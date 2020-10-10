@@ -26,6 +26,7 @@
             var $questionIdx = $('#questionIdx');
             var $totalQuestions = $('#totalQuestions');
             var $scoreTest = $('#scoreTest');
+            var $qaResult = $('#qaResult');
             var $btnScoreTest = $('#btnScoreTest');
 
             var $div_navFirst = $('#navFirst');
@@ -80,7 +81,7 @@
                 performAction(ACTION_SCORE_TEST);
             });
 
-            $(window).keydown(function(e) {
+            $(window).keydown(function (e) {
                 switch (e.keyCode) {
                     case 35: /* End */
                         e.preventDefault();
@@ -123,6 +124,7 @@
 
             function performAction(action, payload) {
                 $testContainer.addClass('running');
+                $qaResult.hide();
 
                 var jsonData;
 
@@ -135,7 +137,7 @@
                             return;
                         }
 
-                        if (typeof(questionUuid) === "undefined" || questionUuid === null || questionUuid === '') {
+                        if (typeof (questionUuid) === "undefined" || questionUuid === null || questionUuid === '') {
                             return;
                         }
 
@@ -169,7 +171,7 @@
                         return;
                 }
 
-                $.ajax('/tests/' + TEST_ID,{
+                $.ajax('/tests/' + TEST_ID, {
                     'data': JSON.stringify(jsonData),
                     'type': 'POST',
                     'processData': false,
@@ -203,8 +205,10 @@
                 $question.html(payload.display.question.text);
                 $.data($question, 'uuid', payload.display.question.uuid);
 
+                var correct_answer = false;
+                var show_qa_feedback = false;
                 for (var i = 0; i < 4; i++) {
-                    if (typeof(payload.display.answers[i]) === "undefined" || payload.display.answers[i] === null) {
+                    if (typeof (payload.display.answers[i]) === "undefined" || payload.display.answers[i] === null) {
                         continue;
                     }
 
@@ -231,16 +235,67 @@
                     element.html(answer.text);
                     $.data(element, 'uuid', answer.uuid);
 
-                    if (payload.display.selection === answer.uuid) {
-                        element.addClass('selected');
-                    } else if (element.hasClass('selected')) {
+                    if (element.hasClass('selected')) {
                         element.removeClass('selected');
                     }
+
+                    if (element.hasClass('list-group-item-success')) {
+                        element.removeClass('list-group-item-success');
+                    }
+
+                    if (element.hasClass('list-group-item-danger')) {
+                        element.removeClass('list-group-item-danger');
+                    }
+
+                    if (element.hasClass('answer-left-border-thick')) {
+                        element.removeClass('answer-left-border-thick');
+                    }
+
+                    if (typeof (answer.correct) === "undefined") {
+                        if (payload.display.selection === answer.uuid) {
+                            element.addClass('selected');
+                        }
+
+                        continue;
+                    }
+
+                    show_qa_feedback = true;
+                    if (payload.display.selection === answer.uuid) {
+                        element.addClass('answer-left-border-thick');
+                    }
+
+                    if (payload.display.selection === answer.uuid && answer.correct) {
+                        element.addClass('list-group-item-success');
+                        correct_answer = true;
+                    }
+
+                    if (payload.display.selection === answer.uuid && !answer.correct) {
+                        element.addClass('list-group-item-danger');
+                        correct_answer = false;
+                    }
+
+                    if (payload.display.selection !== answer.uuid && answer.correct) {
+                        element.addClass('list-group-item-success');
+                    }
                 }
+
+                if (!show_qa_feedback) {
+                    return;
+                }
+
+                $qaResult.removeClass('alert-success');
+                $qaResult.removeClass('alert-danger');
+
+                $qaResult.html(correct_answer
+                    ? "That's the right answer!"
+                    : "Sorry, that answer is incorrect.");
+
+                $qaResult.addClass(correct_answer ? 'alert-success' : 'alert-danger');
+                $qaResult.fadeIn();
             }
 
-            function updateProgress( payload ) {
-                if (typeof(payload.questions) === "undefined") {
+            function updateProgress(payload) {
+                if (typeof (payload.questions) === "undefined") {
                     return;
                 }
 
@@ -261,8 +316,8 @@
                 $totalQuestions.html(payload.questions.total);
             }
 
-            function populateUnansweredQuestions( payload ) {
-                if (typeof(payload.questions) === "undefined") {
+            function populateUnansweredQuestions(payload) {
+                if (typeof (payload.questions) === "undefined") {
                     return;
                 }
 
@@ -276,7 +331,7 @@
 
                 $unansweredContainer.empty();
                 for (var i = 0; i < payload.questions.unanswered.length; i++) {
-                    if (typeof(payload.questions.unanswered[i]) === "undefined" || payload.questions.unanswered[i] === null || payload.questions.unanswered[i] === '') {
+                    if (typeof (payload.questions.unanswered[i]) === "undefined" || payload.questions.unanswered[i] === null || payload.questions.unanswered[i] === '') {
                         continue;
                     }
 
@@ -315,6 +370,7 @@
                 <div class="clearfix">&nbsp;</div>
                 <a href="#" id="btnScoreTest" class="btn btn-default">Score Test</a>
             </div>
+            <div id="qaResult" class="alert text-center" style="display: none"></div>
             <div id="question" class="well well-lg"></div>
             <div id="test-answers" class="list-group">
                 <div id="answer1" class="list-group-item answer"></div>
