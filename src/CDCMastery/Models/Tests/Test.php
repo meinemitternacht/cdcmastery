@@ -14,8 +14,14 @@ class Test
     public const STATE_COMPLETE = 0;
     public const STATE_INCOMPLETE = 1;
 
+    /* do not reorder these values */
     public const TYPE_NORMAL = 0;
     public const TYPE_PRACTICE = 1;
+
+    public const TYPE_STRINGS = [
+        self::TYPE_NORMAL => 'NORMAL',
+        self::TYPE_PRACTICE => 'PRACTICE',
+    ];
 
     public const MAX_QUESTIONS = 500;
     public const SCORE_PRECISION = 2;

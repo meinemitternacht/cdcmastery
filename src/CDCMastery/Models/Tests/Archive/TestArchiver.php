@@ -3,7 +3,7 @@ declare(strict_types=1);
 declare(ticks=1);
 
 
-namespace CDCMastery\Models\CdcData\Archive;
+namespace CDCMastery\Models\Tests\Archive;
 
 
 use CDCMastery\Helpers\DateTimeHelpers;
@@ -201,6 +201,7 @@ class TestArchiver
         $td_elem->addChild('totalQuestions', (string)$test->getNumQuestions());
         $td_elem->addChild('questionsMissed', (string)$test->getNumMissed());
         $td_elem->addChild('testScore', (string)$test->getScore());
+        $td_elem->addChild('testType', Test::TYPE_STRINGS[ $test->getType() ] ?? 'UNKNOWN');
 
         foreach ($qas as $qa) {
             $answer = $qa->getAnswer();

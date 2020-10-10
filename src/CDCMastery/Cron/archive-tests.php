@@ -2,7 +2,7 @@
 declare(strict_types=1);
 declare(ticks=1);
 
-use CDCMastery\Models\CdcData\Archive\TestArchiver;
+use CDCMastery\Models\Tests\Archive\TestArchiver;
 use DI\Container;
 use Monolog\Logger;
 
