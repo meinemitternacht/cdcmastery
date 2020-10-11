@@ -36,6 +36,12 @@
                                     N
                                 </span>
                             {% endif %}
+                            {% if test.archived %}
+                                <span class="badge badge-sm badge-warning"
+                                      title="Archived Test">
+                                        A
+                                    </span>
+                            {% endif %}
                         </td>
                         <td class="hidden-xs hidden-sm" title="{{ test.afsc }}">
                             {% if test.afsc|length > 0 %}

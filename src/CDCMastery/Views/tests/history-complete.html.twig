@@ -13,6 +13,7 @@
                 <table id="tests-table" class="table table-hover">
                     <thead>
                     <tr>
+                        <th>Type</th>
                         <th>{{ sortlink('afscList','AFSC',sort)|raw }}</th>
                         <th>Questions</th>
                         <th>{{ sortlink('timeStarted','Time Started',sort)|raw }}</th>
@@ -24,6 +25,25 @@
                     {% for test in tests %}
                         <tr class="{% if test.score >= passing_score %} bg-success{% else %} bg-danger{% endif %}"
                             style="cursor:pointer" data-uuid="{{ test.uuid }}">
+                            <td>
+                                {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
+                                    <span class="badge badge-sm badge-info"
+                                          title="Practice Test">
+                                        P
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-sm badge-success"
+                                          title="Normal Test">
+                                        N
+                                    </span>
+                                {% endif %}
+                                {% if test.archived %}
+                                    <span class="badge badge-sm badge-warning"
+                                          title="Archived Test">
+                                        A
+                                    </span>
+                                {% endif %}
+                            </td>
                             <td title="{{ test.afsc }}">
                                 {% if test.afsc|length > 0 %}
                                     {{ test.afsc|length > 35 ? test.afsc|slice(0, 35) ~ '...' : test.afsc }}
@@ -36,12 +56,6 @@
                             <td>{{ test.time.completed }}</td>
                             <td>
                                 {{ test.score }}%
-                                {% if test.type == constant('CDCMastery\\Models\\Tests\\Test::TYPE_PRACTICE') %}
-                                    <span class="badge badge-sm badge-info"
-                                          title="Practice Test">
-                                        P
-                                    </span>
-                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

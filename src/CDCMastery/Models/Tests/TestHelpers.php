@@ -198,6 +198,7 @@ SQL;
             $out[] = [
                 'uuid' => $test->getUuid(),
                 'type' => $test->getType(),
+                'archived' => $test->isArchived(),
                 'user' => [
                     'uuid' => $test->getUserUuid(),
                 ],
