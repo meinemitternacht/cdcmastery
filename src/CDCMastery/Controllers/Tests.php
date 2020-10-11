@@ -13,6 +13,7 @@ use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\CdcData\CdcDataCollection;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\Tests\Archive\ArchiveReader;
 use CDCMastery\Models\Tests\QuestionResponse;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
@@ -839,6 +840,22 @@ class Tests extends RootController
             $last_updated = $last_updated->format(DateTimeHelpers::DT_FMT_LONG);
         }
 
+        $archived_data = null;
+        if ($test->isArchived()) {
+            $user = $this->users->fetch($this->auth_helpers->get_user_uuid());
+
+            if (!$user) {
+                $this->flash()->add(
+                    MessageTypes::ERROR,
+                    'You do not exist.'
+                );
+
+                return $this->redirect('/auth/logout');
+            }
+
+            $archived_data = (new ArchiveReader($this->log))->fetch_test($user, $test);
+        }
+
         $data = [
             'showUser' => false,
             'testType' => $test->getType(),
@@ -851,6 +868,7 @@ class Tests extends RootController
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $testData,
+            'archivedData' => $archived_data,
         ];
 
         return $this->render(
@@ -936,7 +954,7 @@ class Tests extends RootController
             return false;
         }
 
-        if (!$validate_afscs) {
+        if (!$validate_afscs || $test->isArchived()) {
             return true;
         }
 

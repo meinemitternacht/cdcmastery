@@ -16,6 +16,7 @@ use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\AnswerCollection;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Messages\MessageTypes;
+use CDCMastery\Models\Tests\Archive\ArchiveReader;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
@@ -198,6 +199,11 @@ class Tests extends Admin
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data->count($test);
 
+        $archived_data = null;
+        if ($test->isArchived()) {
+            $archived_data = (new ArchiveReader($this->log))->fetch_test($user, $test);
+        }
+
         $data = [
             'user' => $user,
             'test' => $test,
@@ -214,6 +220,7 @@ class Tests extends Admin
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
             'allowScoring' => $this->auth_helpers->assert_admin() && !$time_completed,
+            'archivedData' => $archived_data,
         ];
 
         return $this->render(

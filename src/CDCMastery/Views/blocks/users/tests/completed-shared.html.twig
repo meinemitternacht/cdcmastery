@@ -86,10 +86,42 @@
         </div>
     </div>
     <div class="col-md-8">
-        {% if isArchived %}
+        {% if isArchived and not archivedData.questions %}
             <div class="alert alert-info">
                 This test has been archived and is no longer available to view. All tests older than one year are
                 automatically archived in order to provide the smoothest experience for all of our users.
+            </div>
+        {% elseif isArchived and archivedData.questions %}
+            <div class="alert alert-info">
+                This test is archived and a snapshot of question and answer data is shown below.
+            </div>
+        {% endif %}
+        {% if archivedData.questions %}
+            <div class="list-group">
+                {% for key, response in archivedData.questions %}
+                    <div class="list-group-item list-group-item-{% if response.correct %}success{% else %}danger{% endif %}">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h4 class="list-group-item-heading text-primary">
+                                    {{ key + 1 }}.
+                                    {{ response.questionText }}
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row row-spacer-sm text-black">
+                            <div class="col-xs-12">
+                                <p class="list-group-item-text">
+                                    {% if not response.correct %}
+                                        <span class="glyphicon glyphicon-plus rotate-45 text-danger"></span>
+                                    {% else %}
+                                        <span class="glyphicon glyphicon-ok text-success"></span>
+                                    {% endif %}
+                                    <span class="answer-padding-left">{{ response.answerText }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% elseif testData %}
             <div class="list-group">
@@ -128,7 +160,7 @@
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
+        {% elseif not isArchived %}
             <div class="alert alert-info">
                 Currently, we do not have the data for this test available.
             </div>

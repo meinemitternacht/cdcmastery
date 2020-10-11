@@ -24,6 +24,7 @@ use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\Subordinates\SubordinateStats;
 use CDCMastery\Models\Statistics\TestStats;
+use CDCMastery\Models\Tests\Archive\ArchiveReader;
 use CDCMastery\Models\Tests\Offline\OfflineTestCollection;
 use CDCMastery\Models\Tests\Offline\OfflineTestHandler;
 use CDCMastery\Models\Tests\Test;
@@ -634,6 +635,11 @@ class TrainingOverview extends RootController
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data_helpers->count($test);
 
+        $archived_data = null;
+        if ($test->isArchived()) {
+            $archived_data = (new ArchiveReader($this->log))->fetch_test($user, $test);
+        }
+
         $data = [
             'cur_user' => $cur_user,
             'cur_role' => $cur_role,
@@ -650,6 +656,7 @@ class TrainingOverview extends RootController
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
+            'archivedData' => $archived_data,
         ];
 
         return $this->render(

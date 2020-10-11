@@ -19,6 +19,7 @@ use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\Bases\Bases as BaseStats;
+use CDCMastery\Models\Tests\Archive\ArchiveReader;
 use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Tests\TestDataHelpers;
@@ -291,6 +292,11 @@ class Bases extends Admin
         $n_questions = $test->getNumQuestions();
         $n_answered = $this->test_data->count($test);
 
+        $archived_data = null;
+        if ($test->isArchived()) {
+            $archived_data = (new ArchiveReader($this->log))->fetch_test($user, $test);
+        }
+
         $data = [
             'user' => $user,
             'base' => $base,
@@ -305,6 +311,7 @@ class Bases extends Admin
             'score' => $test->getScore(),
             'isArchived' => $test->isArchived(),
             'testData' => $test_data,
+            'archivedData' => $archived_data,
         ];
 
         return $this->render(
