@@ -167,7 +167,7 @@ class Tests extends RootController
 
         $this->tests->delete($test->getUuid());
 
-        $this->log->info("delete test :: {$user->getName()} [{$user->getUuid()}] :: {$test->getUuid()}");
+        $this->log->info("delete test :: {$test->getUuid()} :: {$user->getName()} [{$user->getUuid()}]");
 
         $this->flash()->add(MessageTypes::SUCCESS,
                             'The specified test has been removed from the database');
