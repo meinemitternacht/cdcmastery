@@ -6,6 +6,7 @@ use CDCMastery\Controllers\Admin;
 use CDCMastery\Controllers\Admin\Activations;
 use CDCMastery\Controllers\Admin\AfscApprovals;
 use CDCMastery\Controllers\Admin\CdcData;
+use CDCMastery\Controllers\Admin\DatabaseStats;
 use CDCMastery\Controllers\Admin\FlashCards;
 use CDCMastery\Controllers\Admin\OfficeSymbols;
 use CDCMastery\Controllers\Admin\RoleApprovals;
@@ -418,6 +419,12 @@ return simpleDispatcher(static function (RouteCollector $r) {
                 'show_afsc_users',
             ]);
         });
+
+        /** @uses \CDCMastery\Controllers\Admin\DatabaseStats::show_home() */
+        $r->addRoute('GET', '/db/stats', [
+            DatabaseStats::class,
+            'show_home',
+        ]);
 
         /** @uses \CDCMastery\Controllers\Admin::show_memcached_stats() */
         $r->addRoute('GET', '/memcached/stats', [

@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace CDCMastery\Helpers;
 
 
-use Monolog\Logger;
 use mysqli;
 use mysqli_stmt;
+use Psr\Log\LoggerInterface;
 
 class DBLogHelper
 {
     /**
-     * @param Logger $logger
+     * @param LoggerInterface $logger
      * @param string $method
      * @param string $query
      * @param mixed $stmt_or_db
      */
-    public static function query_error(Logger $logger, string $method, string $query, $stmt_or_db = null): void
+    public static function query_error(LoggerInterface $logger, string $method, string $query, $stmt_or_db = null): void
     {
         $stmt_error = '[null statement]';
         if ($stmt_or_db instanceof mysqli_stmt) {

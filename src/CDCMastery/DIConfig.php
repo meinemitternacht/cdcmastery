@@ -24,6 +24,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 use Twig\Extension\DebugExtension;
@@ -31,7 +32,7 @@ use Twig\Loader\FilesystemLoader;
 
 
 return [
-    Environment::class => static function (ContainerInterface $c) {
+    Environment::class => static function (ContainerInterface $c): Environment {
         $config = $c->get(Config::class);
         $auth_helpers = $c->get(AuthHelpers::class);
         $loader = new FilesystemLoader(VIEWS_DIR);
@@ -79,7 +80,10 @@ return [
 
         return $twig;
     },
-    Logger::class => static function (ContainerInterface $c) {
+    LoggerInterface::class => static function (ContainerInterface $c): LoggerInterface {
+        return $c->get(Logger::class);
+    },
+    Logger::class => static function (ContainerInterface $c): Logger {
         $config = $c->get(Config::class);
 
         $logger = new Monolog\Logger($config->get(['system', 'log', 'name']));
@@ -132,7 +136,7 @@ return [
 
         return $logger;
     },
-    Memcached::class => static function (ContainerInterface $c) {
+    Memcached::class => static function (ContainerInterface $c): Memcached {
         $memcached = new Memcached();
 
         $hostList = $c->get(Config::class)->get(['system', 'memcached']);
@@ -154,7 +158,7 @@ return [
 
         return $memcached;
     },
-    mysqli::class => static function (ContainerInterface $c) {
+    mysqli::class => static function (ContainerInterface $c): mysqli {
         $config = $c->get(Config::class);
 
         $db_conf = $config->get(['system', 'debug'])
@@ -181,13 +185,13 @@ return [
         $db->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
         return $db;
     },
-    Session::class => static function () {
+    Session::class => static function (): Session {
         $session = new Session();
         $session->start();
 
         return $session;
     },
-    Swift_Mailer::class => static function (ContainerInterface $c) {
+    Swift_Mailer::class => static function (ContainerInterface $c): Swift_Mailer {
         $config = $c->get(Config::class);
         $settings = [
             'host' => $config->get(['email', 'host']),

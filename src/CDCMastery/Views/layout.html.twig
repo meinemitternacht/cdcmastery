@@ -173,6 +173,11 @@
                                         View memcached Stats
                                     </a>
                                 </li>
+                                <li{% if cur_url == "/admin/db/stats" %} class="active"{% endif %}>
+                                    <a href="/admin/db/stats" title="View Database Stats">
+                                        View Database Stats
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                     {% endif %}
