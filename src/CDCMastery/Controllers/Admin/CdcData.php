@@ -284,7 +284,7 @@ class CdcData extends Admin
         $this->questions->save($afsc, $question);
         $this->answers->saveArray($afsc, $answers);
 
-        $this->log->alert("add question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$question->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
+        $this->log->info("add question :: {$afsc->getName()} [{$afsc->getUuid()}] :: {$question->getUuid()} :: user {$this->auth_helpers->get_user_uuid()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
