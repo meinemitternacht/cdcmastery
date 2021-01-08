@@ -10,23 +10,30 @@ declare(strict_types=1);
 namespace CDCMastery\Models\FlashCards;
 
 
+use CDCMastery\Helpers\DateTimeHelpers;
 use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\CdcData\Afsc;
+use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Sorting\Cards\CardCategorySortOption;
 use CDCMastery\Models\Sorting\ISortOption;
 use CDCMastery\Models\Users\User;
+use DateTime;
 use Monolog\Logger;
 use mysqli;
 
 class CategoryCollection
 {
+    private const CHUNK_LEN = 512;
+
     protected mysqli $db;
     protected Logger $log;
+    protected Config $cfg;
 
-    public function __construct(mysqli $mysqli, Logger $logger)
+    public function __construct(mysqli $mysqli, Logger $logger, Config $cfg)
     {
         $this->db = $mysqli;
         $this->log = $logger;
+        $this->cfg = $cfg;
     }
 
     public function count(): int
@@ -139,6 +146,33 @@ SQL;
 
         if ($res === false) {
             DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+        }
+    }
+
+    public function deleteArray(array $uuids, int $chunk_len = self::CHUNK_LEN): void
+    {
+        if (!$uuids) {
+            return;
+        }
+
+        $uuidsFiltered = array_map(
+            [$this->db, 'real_escape_string'],
+            $uuids
+        );
+
+        foreach (array_chunk($uuidsFiltered, $chunk_len) as $filtered_chunk) {
+            $uuidsString = implode("','", $filtered_chunk);
+
+            $qry = <<<SQL
+DELETE FROM flashCardCategories
+WHERE uuid IN ('{$uuidsString}')
+SQL;
+
+            $res = $this->db->query($qry);
+
+            if ($res === false) {
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            }
         }
     }
 
@@ -552,6 +586,88 @@ SQL;
 
         $res->free();
         return $this->create_objects($rows);
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function fetchExpired(): array
+    {
+        $dt_empty = new DateTime();
+        $dt_populated = clone $dt_empty;
+
+        $dt_empty = $dt_empty->modify($this->cfg->get(['cards', 'retention', 'empty']))
+                             ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+        $dt_populated = $dt_populated->modify($this->cfg->get(['cards', 'retention', 'populated']))
+                                     ->format(DateTimeHelpers::DT_FMT_DB_DAY_START);
+
+        /* empty categories */
+        $qry = <<<SQL
+SELECT
+  flashCardCategories.uuid
+FROM
+  flashCardCategories
+LEFT JOIN
+  userData uD on flashCardCategories.categoryCreatedBy = uD.uuid
+WHERE flashCardCategories.uuid NOT IN
+  (
+    SELECT DISTINCT(uuid) FROM flashCardData
+  )
+  AND userLastLogin < '{$dt_empty}';
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        $uuids = [];
+        if (!$res->num_rows) {
+            goto skip_empty;
+        }
+
+        while ($row = $res->fetch_assoc()) {
+            $uuids[] = $row[ 'uuid' ];
+        }
+
+        $res->close();
+
+        skip_empty:
+        /* populated categories */
+        $qry = <<<SQL
+SELECT
+  flashCardCategories.uuid
+FROM
+  flashCardCategories
+LEFT JOIN
+  userData uD on flashCardCategories.categoryCreatedBy = uD.uuid
+WHERE userLastLogin < '{$dt_populated}';
+SQL;
+
+        $res = $this->db->query($qry);
+
+        if ($res === false) {
+            DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+            return [];
+        }
+
+        if (!$res->num_rows) {
+            return [];
+        }
+
+        while ($row = $res->fetch_assoc()) {
+            $uuids[] = $row[ 'uuid' ];
+        }
+
+        $res->close();
+
+        if (!$uuids) {
+            return [];
+        }
+
+        return $this->fetchArray(array_unique($uuids));
     }
 
     public function filterAfsc(?array $sort_options = null, ?int $start = null, ?int $limit = null): array

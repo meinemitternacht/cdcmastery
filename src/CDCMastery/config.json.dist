@@ -5,6 +5,12 @@
       "directory": "/home/vhosts/cdcmastery.com/xml-archive"
     }
   },
+  "cards": {
+    "retention": {
+      "empty": "-6 months",
+      "populated": "-2 years"
+    }
+  },
   "database": {
     "dev": {
       "host": "127.0.0.1",
