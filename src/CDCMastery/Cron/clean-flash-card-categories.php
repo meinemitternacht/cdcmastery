@@ -11,12 +11,23 @@ use Monolog\Logger;
 define('CRON_ROOT', realpath(__DIR__));
 define('CHUNK_SIZE', 128); /* deletion batch size */
 
+$mutex = sem_get(ftok(__FILE__, 'i'));
 /** @var Container $c */
 $c = require CRON_ROOT . "/../Bootstrap.php";
 
 try {
-    $config = $c->get(Config::class);
     $log = $c->get(Logger::class);
+} catch (Throwable $e) {
+    exit(1);
+}
+
+if (!sem_acquire($mutex, true)) {
+    $log->alert('flash cards: unable to begin garbage collection because the mutex is locked');
+    exit(1);
+}
+
+try {
+    $config = $c->get(Config::class);
     $users = $c->get(UserCollection::class);
     $categories = $c->get(CategoryCollection::class);
 
@@ -45,4 +56,6 @@ try {
         $log->debug($e);
         $log->emergency('cannot clean up flash card categories');
     }
+} finally {
+    sem_release($mutex);
 }

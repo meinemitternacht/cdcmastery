@@ -52,8 +52,9 @@ class EmailQueue
 
     public function process(): bool
     {
+        $this->lock();
+
         try {
-            $this->lock();
             $emails = $this->emails->fetchAll();
 
             if (!$emails) {

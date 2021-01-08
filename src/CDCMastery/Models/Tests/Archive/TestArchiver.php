@@ -50,7 +50,11 @@ class TestArchiver
 
     private function lock(): void
     {
-        sem_acquire($this->mutex);
+        if (!sem_acquire($this->mutex, true)) {
+            $msg = 'unable to acquire test archiver lock';
+            $this->log->debug($msg);
+            throw new RuntimeException($msg);
+        }
     }
 
     private function unlock(): void
@@ -60,9 +64,9 @@ class TestArchiver
 
     public function process(): void
     {
-        try {
-            $this->lock();
+        $this->lock();
 
+        try {
             $n_archivable = $this->tests->countArchivable();
             $n_archivable_fmt = number_format($n_archivable);
 

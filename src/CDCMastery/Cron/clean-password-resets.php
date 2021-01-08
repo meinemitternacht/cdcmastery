@@ -7,11 +7,22 @@ use Monolog\Logger;
 
 define('CRON_ROOT', realpath(__DIR__));
 
+$mutex = sem_get(ftok(__FILE__, 'i'));
 /** @var Container $c */
 $c = require CRON_ROOT . "/../Bootstrap.php";
 
 try {
     $log = $c->get(Logger::class);
+} catch (Throwable $e) {
+    exit(1);
+}
+
+if (!sem_acquire($mutex, true)) {
+    $log->alert('password resets: unable to begin garbage collection because the mutex is locked');
+    exit(1);
+}
+
+try {
     $resets = $c->get(PasswordResetCollection::class);
     $pw_resets = $resets->fetchAll();
 
@@ -32,4 +43,6 @@ try {
         $log->debug($e);
         $log->emergency('cannot clean up password resets');
     }
+} finally {
+    sem_release($mutex);
 }

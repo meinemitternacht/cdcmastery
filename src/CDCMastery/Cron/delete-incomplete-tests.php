@@ -14,12 +14,17 @@ $c = require realpath(__DIR__) . "/../Bootstrap.php";
 
 try {
     $log = $c->get(Logger::class);
-    $tests = $c->get(TestCollection::class);
+} catch (Throwable $e) {
+    exit(1);
+}
 
-    if (!sem_acquire($mutex, true)) {
-        $log->alert('incomplete tests: unable to begin garbage collection because the mutex is locked');
-        exit(1);
-    }
+if (!sem_acquire($mutex, true)) {
+    $log->alert('incomplete tests: unable to begin garbage collection because the mutex is locked');
+    exit(1);
+}
+
+try {
+    $tests = $c->get(TestCollection::class);
 
     $log->debug('incomplete tests: start garbage collection');
 
