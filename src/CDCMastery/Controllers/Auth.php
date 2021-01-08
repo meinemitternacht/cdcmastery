@@ -699,10 +699,10 @@ class Auth extends RootController
 
         if ($pending_role) {
             $this->pending_roles->save(new PendingRole($user->getUuid(), $pending_role->getUuid(), new DateTime()));
-            $this->log->info("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$pending_role->getType()}");
+            $this->log->alert("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$pending_role->getType()}");
         }
 
-        $this->log->alert("register user :: {$user->getName()} [{$user->getUuid()}] :: email {$user->getEmail()}");
+        $this->log->info("register user :: {$user->getName()} [{$user->getUuid()}] :: email {$user->getEmail()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,

@@ -314,7 +314,7 @@ class Profile extends RootController
 
         $request = new PendingRole($user->getUuid(), $role->getUuid(), new DateTime());
         $this->pending_roles->save($request);
-        $this->log->info("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$role->getType()}");
+        $this->log->alert("queue pending role :: {$user->getName()} [{$user->getUuid()}] :: {$role->getType()}");
 
         $this->flash()->add(
             MessageTypes::SUCCESS,
