@@ -11,12 +11,12 @@ use CDCMastery\Models\Auth\AuthHelpers;
 use CDCMastery\Models\Bases\BaseCollection;
 use CDCMastery\Models\CdcData\Afsc;
 use CDCMastery\Models\CdcData\AfscCollection;
+use CDCMastery\Models\FlashCards\CategoryCollection;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
 use CDCMastery\Models\Statistics\TestStats;
-use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\Associations\Afsc\UserAfscActions;
 use CDCMastery\Models\Users\Associations\Subordinate\SubordinateActions;
@@ -53,6 +53,7 @@ class Profile extends RootController
     private UserTrainingManagerAssociations $tm_assocs;
     private UserSupervisorAssociations $su_assocs;
     private UserHelpers $user_helpers;
+    private CategoryCollection $categories;
 
     public function __construct(
         Logger $logger,
@@ -70,7 +71,8 @@ class Profile extends RootController
         UserAfscAssociations $afsc_assocs,
         UserTrainingManagerAssociations $tm_assocs,
         UserSupervisorAssociations $su_assocs,
-        UserHelpers $user_helpers
+        UserHelpers $user_helpers,
+        CategoryCollection $categories
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -87,6 +89,7 @@ class Profile extends RootController
         $this->tm_assocs = $tm_assocs;
         $this->su_assocs = $su_assocs;
         $this->user_helpers = $user_helpers;
+        $this->categories = $categories;
     }
 
     private function get_user(string $uuid): User
@@ -595,9 +598,9 @@ class Profile extends RootController
         $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
         $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
         $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
+        $fc_cats = $this->categories->fetchAllByUser($user);
 
         $subs = null;
-
         switch ($role->getType()) {
             case Role::TYPE_SUPERVISOR:
                 $subs = $this->users->fetchArray($this->su_assocs->fetchAllBySupervisor($user), $user_sort);
@@ -620,6 +623,9 @@ class Profile extends RootController
                 'tm' => $tm_assocs,
                 'su' => $su_assocs,
                 'subordinates' => $subs,
+                'flash_cards' => [
+                    'categories' => $fc_cats,
+                ],
             ],
             'stats' => [
                 'tests' => [

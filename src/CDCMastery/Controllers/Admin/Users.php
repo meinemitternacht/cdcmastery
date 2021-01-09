@@ -19,6 +19,7 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\Config\Config;
 use CDCMastery\Models\Email\EmailCollection;
+use CDCMastery\Models\FlashCards\CategoryCollection;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbol;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
@@ -66,6 +67,7 @@ class Users extends Admin
     private PasswordResetCollection $pw_resets;
     private ActivationCollection $activations;
     private UserHelpers $user_helpers;
+    private CategoryCollection $categories;
 
     /**
      * Users constructor.
@@ -113,7 +115,8 @@ class Users extends Admin
         UserSupervisorAssociations $su_assocs,
         PasswordResetCollection $pw_resets,
         ActivationCollection $activations,
-        UserHelpers $user_helpers
+        UserHelpers $user_helpers,
+        CategoryCollection $categories
     ) {
         parent::__construct($logger, $twig, $session, $auth_helpers, $cache, $config);
 
@@ -132,6 +135,7 @@ class Users extends Admin
         $this->pw_resets = $pw_resets;
         $this->activations = $activations;
         $this->user_helpers = $user_helpers;
+        $this->categories = $categories;
     }
 
     private function get_user(string $uuid): User
@@ -967,6 +971,7 @@ class Users extends Admin
         $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
         $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
         $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
+        $fc_cats = $this->categories->fetchAllByUser($user);
 
         $subs = null;
 
@@ -992,6 +997,9 @@ class Users extends Admin
                 'tm' => $tm_assocs,
                 'su' => $su_assocs,
                 'subordinates' => $subs,
+                'flash_cards' => [
+                    'categories' => $fc_cats,
+                ],
             ],
             'stats' => [
                 'tests' => [

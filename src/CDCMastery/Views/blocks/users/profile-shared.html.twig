@@ -233,3 +233,30 @@
         </div>
     {% endif %}
 </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+        <div class="panel panel-info text-center">
+            <div class="panel-heading">
+                <h5>Visible Flash Cards</h5>
+            </div>
+            <div class="panel-body">
+                {% if assocs.flash_cards.categories %}
+                    {% for cat in assocs.flash_cards.categories %}
+                        <div>
+                            {% include "blocks/cards/category-type-icon.html.twig" %}
+                            {% if restricted %}
+                                {{ cat.name }}
+                            {% else %}
+                                <a href="/admin/cards/{{ cat.uuid }}">
+                                    {{ cat.name }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    No associations found.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

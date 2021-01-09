@@ -19,6 +19,7 @@ use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
 use CDCMastery\Models\CdcData\QuestionAnswersCollection;
 use CDCMastery\Models\Email\EmailCollection;
+use CDCMastery\Models\FlashCards\CategoryCollection;
 use CDCMastery\Models\Messages\MessageTypes;
 use CDCMastery\Models\OfficeSymbols\OfficeSymbolCollection;
 use CDCMastery\Models\Sorting\Users\UserSortOption;
@@ -69,6 +70,7 @@ class TrainingOverview extends RootController
     private EmailCollection $emails;
     private OfflineTestCollection $offline_tests;
     private QuestionAnswersCollection $qas;
+    private CategoryCollection $categories;
 
     public function __construct(
         Logger $logger,
@@ -91,7 +93,8 @@ class TrainingOverview extends RootController
         ActivationCollection $activations,
         EmailCollection $emails,
         OfflineTestCollection $offline_tests,
-        QuestionAnswersCollection $qas
+        QuestionAnswersCollection $qas,
+        CategoryCollection $categories
     ) {
         parent::__construct($logger, $twig, $session);
 
@@ -113,6 +116,7 @@ class TrainingOverview extends RootController
         $this->emails = $emails;
         $this->offline_tests = $offline_tests;
         $this->qas = $qas;
+        $this->categories = $categories;
     }
 
     private function get_user(string $uuid): User
@@ -845,6 +849,7 @@ class TrainingOverview extends RootController
         $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
         $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
         $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
+        $fc_cats = $this->categories->fetchAllByUser($user);
 
         $subs = null;
         switch ($role->getType()) {
@@ -871,6 +876,9 @@ class TrainingOverview extends RootController
                 'tm' => $tm_assocs,
                 'su' => $su_assocs,
                 'subordinates' => $subs,
+                'flash_cards' => [
+                    'categories' => $fc_cats,
+                ],
             ],
             'stats' => [
                 'tests' => [
