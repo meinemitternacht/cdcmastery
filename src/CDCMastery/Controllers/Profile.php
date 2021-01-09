@@ -582,71 +582,19 @@ class Profile extends RootController
             return $this->redirect('/');
         }
 
-        $u_symbol = $user->getOfficeSymbol();
-        if ($u_symbol) {
-            $symbol = $this->symbols->fetch($u_symbol);
-        }
-
-        $user_sort = [
-            new UserSortOption(UserSortOption::COL_NAME_LAST),
-            new UserSortOption(UserSortOption::COL_NAME_FIRST),
-            new UserSortOption(UserSortOption::COL_RANK),
-            new UserSortOption(UserSortOption::COL_BASE),
-        ];
-
-        $afscs = $this->afscs->fetchAll(AfscCollection::SHOW_ALL);
-        $afsc_assocs = $this->afsc_assocs->fetchAllByUser($user);
-        $tm_assocs = $this->users->fetchArray($this->tm_assocs->fetchAllByUser($user), $user_sort);
-        $su_assocs = $this->users->fetchArray($this->su_assocs->fetchAllByUser($user), $user_sort);
-        $fc_cats = $this->categories->fetchAllByUser($user);
-
-        $subs = null;
-        switch ($role->getType()) {
-            case Role::TYPE_SUPERVISOR:
-                $subs = $this->users->fetchArray($this->su_assocs->fetchAllBySupervisor($user), $user_sort);
-                break;
-            case Role::TYPE_TRAINING_MANAGER:
-                $subs = $this->users->fetchArray($this->tm_assocs->fetchAllByTrainingManager($user), $user_sort);
-                break;
-        }
-
-        $data = [
-            'user' => $user,
-            'base' => $base,
-            'symbol' => $symbol ?? null,
-            'role' => $role,
-            'afscs' => [
-                'authorized' => array_intersect_key($afscs, array_flip($afsc_assocs->getAuthorized())),
-                'pending' => array_intersect_key($afscs, array_flip($afsc_assocs->getPending())),
-            ],
-            'assocs' => [
-                'tm' => $tm_assocs,
-                'su' => $su_assocs,
-                'subordinates' => $subs,
-                'flash_cards' => [
-                    'categories' => $fc_cats,
-                ],
-            ],
-            'stats' => [
-                'tests' => [
-                    'complete' => [
-                        'count' => $this->test_stats->userCountOverall($user),
-                        'avg' => $this->test_stats->userAverageOverall($user),
-                    ],
-                    'incomplete' => [
-                        'count' => $this->test_stats->userCountIncompleteOverall($user),
-                    ],
-                    'practice' => [
-                        'count' => $this->test_stats->userCountPracticeOverall($user),
-                    ],
-                ],
-            ],
-        ];
-
         return $this->render(
             'profile/home.html.twig',
-            $data
-        );
+            UserHelpers::profile_common($user,
+                                        $base,
+                                        $role,
+                                        $this->users,
+                                        $this->afscs,
+                                        $this->symbols,
+                                        $this->categories,
+                                        $this->afsc_assocs,
+                                        $this->tm_assocs,
+                                        $this->su_assocs,
+                                        $this->test_stats));
     }
 
     public function show_role_request(): Response
