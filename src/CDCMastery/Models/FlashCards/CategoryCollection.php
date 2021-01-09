@@ -590,9 +590,12 @@ SQL;
 
     /**
      * @return Category[]
+     *  Delete private flash card categories that are empty, or those that have not been used in a few years
      */
     public function fetchExpired(): array
     {
+        $cat_type = Category::TYPE_PRIVATE;
+
         $dt_empty = new DateTime();
         $dt_populated = clone $dt_empty;
 
@@ -613,6 +616,7 @@ WHERE flashCardCategories.uuid NOT IN
   (
     SELECT DISTINCT(uuid) FROM flashCardData
   )
+  AND categoryType = '{$cat_type}'
   AND userLastLogin < '{$dt_empty}';
 SQL;
 
@@ -643,7 +647,8 @@ FROM
   flashCardCategories
 LEFT JOIN
   userData uD on flashCardCategories.categoryCreatedBy = uD.uuid
-WHERE userLastLogin < '{$dt_populated}';
+WHERE userLastLogin < '{$dt_populated}'
+  AND categoryType = '{$cat_type}'
 SQL;
 
         $res = $this->db->query($qry);
