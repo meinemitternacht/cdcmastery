@@ -176,7 +176,7 @@ class Tests extends Admin
                 'You cannot view your own incomplete test'
             );
 
-            return $this->redirect("/admin/tests");
+            return $this->redirect("/admin/tests/incomplete");
         }
 
         $test_data = $this->test_data->list($test);
