@@ -131,7 +131,7 @@ $users = $c->get(UserCollection::class);
 $questions = $c->get(QuestionCollection::class);
 $tests = $c->get(TestCollection::class);
 
-$sys_user = $users->fetch($config->get(['system', 'user']));
+$sys_user = $users->fetch($config->get(['system', 'uuid']));
 
 $afsc = $afscs->fetch('2af71c41-05d9-4a38-9c98-fb7914fac28c');
 $cdc = $cdc_data->fetch($afsc);
