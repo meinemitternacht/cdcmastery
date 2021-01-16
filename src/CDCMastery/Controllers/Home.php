@@ -20,6 +20,7 @@ use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\UserCollection;
 use DateTime;
+use DateTimeZone;
 use JsonException;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
@@ -169,6 +170,24 @@ class Home extends RootController
         $daysAgo_90 = DateTimeHelpers::x_days_ago(90);
         $now = new DateTime();
 
+        /* @todo create a form and database table to manage these */
+        $news_flash_items = [];
+        $news_flash_items[] = [
+            'message' => <<<MSG
+All tests for 2W171 between 12/20/20 and 1/15/21 have been removed due to the presence of incomplete question data.
+More than 100 self-test questions were inadvertently added to the database under the testing category for this AFSC.
+These questions have been moved to their own flash card category and is viewable to the users associated with that AFSC.
+MSG,
+            'created' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-01-16 21:00:00', new DateTimeZone('EST')),
+            'expires' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-02-15 00:00:01', new DateTimeZone('EST')),
+        ];
+
+        $news_flash_items = array_filter($news_flash_items, static function (array $v) use ($now): bool {
+            /** @var DateTime $expires */
+            $expires = $v[ 'expires' ];
+            return $expires->getTimestamp() > $now->getTimestamp();
+        });
+
         $data = [
             'generalStats' => [
                 'avg' => [
@@ -196,6 +215,7 @@ class Home extends RootController
                 'complete' => $tests_complete,
                 'incomplete' => $tests_incomplete,
             ],
+            'news_flash_items' => $news_flash_items,
         ];
 
         return $this->render('home/home.html.twig',
