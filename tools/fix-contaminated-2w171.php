@@ -12,6 +12,7 @@ use CDCMastery\Models\FlashCards\Card;
 use CDCMastery\Models\FlashCards\CardCollection;
 use CDCMastery\Models\FlashCards\Category;
 use CDCMastery\Models\FlashCards\CategoryCollection;
+use CDCMastery\Models\Tests\Test;
 use CDCMastery\Models\Tests\TestCollection;
 use CDCMastery\Models\Users\UserCollection;
 use Psr\Container\ContainerInterface;
@@ -206,7 +207,7 @@ delete_tests: {
 
     $n_tgt_tests = count($tgt_tests);
     echo "found {$n_tgt_tests} tests\n";
-    $tests->deleteArray($tgt_tests);
+    $tests->deleteArray(array_map(static function (Test $v): string { return $v->getUuid(); }, $tgt_tests));
 
     echo "deleted tests\n";
 }
