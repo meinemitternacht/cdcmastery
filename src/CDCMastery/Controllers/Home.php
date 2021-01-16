@@ -176,7 +176,8 @@ class Home extends RootController
             'message' => <<<MSG
 All tests for 2W171 between 12/20/20 and 1/15/21 have been removed due to the presence of incomplete question data.
 More than 100 self-test questions were inadvertently added to the database under the testing category for this AFSC.
-These questions have been moved to their own flash card category and is viewable to the users associated with that AFSC.
+These questions have been moved to their own flash card category and are viewable to the users associated with that 
+AFSC.
 MSG,
             'created' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-01-16 21:00:00', new DateTimeZone('EST')),
             'expires' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-02-15 00:00:01', new DateTimeZone('EST')),
