@@ -143,7 +143,7 @@ load_data: {
     }
 
     /** @var QuestionAnswers[] $qa_diff */
-    $qa_diff = array_diff_key(array_flip($qa_keyed), $good_questions);
+    $qa_diff = array_diff_key($qa_keyed, array_flip($good_questions));
 
     if (!$qa_diff) {
         echo "no foreign questions found\n";
