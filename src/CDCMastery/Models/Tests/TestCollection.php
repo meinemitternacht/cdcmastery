@@ -9,6 +9,7 @@ use CDCMastery\Helpers\DBLogHelper;
 use CDCMastery\Models\Bases\Base;
 use CDCMastery\Models\CdcData\AfscCollection;
 use CDCMastery\Models\CdcData\AfscHelpers;
+use CDCMastery\Models\CdcData\Question;
 use CDCMastery\Models\CdcData\QuestionCollection;
 use CDCMastery\Models\CdcData\QuestionHelpers;
 use CDCMastery\Models\Users\User;
@@ -19,6 +20,7 @@ use RuntimeException;
 
 class TestCollection
 {
+    private const Q_SEARCH_CHUNK_SIZE = 100; /* find test IDs using this many questions at a time */
     public const TABLE_NAME = 'testCollection';
 
     public const COL_AFSC_LIST = 'afscList';
@@ -718,6 +720,53 @@ SQL;
         }
 
         return $this->create_objects($rows);
+    }
+
+    /**
+     * @param Question[] $questions
+     * @return Test[]
+     *  Find all tests that used any of the target questions.
+     *  This will not perform well, but it is fine for async offline scripts.
+     */
+    public function fetchAllByQuestions(
+        array $questions
+    ): array {
+        $q_uuids = array_map(static function (Question $v): string { return $v->getUuid(); }, $questions);
+
+        if (!$q_uuids) {
+            return [];
+        }
+
+        $t_uuids = [];
+        foreach (array_chunk($q_uuids, self::Q_SEARCH_CHUNK_SIZE) as $q_uuids_chunk) {
+            $q_uuids_str = implode("','", $q_uuids_chunk);
+
+            $qry = <<<SQL
+SELECT
+  DISTINCT(testUUID)
+FROM testData
+WHERE questionUUID IN ('{$q_uuids_str}')
+SQL;
+
+            $res = $this->db->query($qry);
+
+            if ($res === false) {
+                DBLogHelper::query_error($this->log, __METHOD__, $qry, $this->db);
+                return [];
+            }
+
+            while ($row = $res->fetch_assoc()) {
+                $t_uuids[] = $row[ 'testUUID' ];
+            }
+
+            $res->free();
+        }
+
+        if (!$t_uuids) {
+            return [];
+        }
+
+        return $this->fetchArray(array_unique($t_uuids));
     }
 
     public function fetchArchivable(int $limit = 1000): array
