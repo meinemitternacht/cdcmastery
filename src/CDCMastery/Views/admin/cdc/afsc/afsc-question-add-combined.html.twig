@@ -6,6 +6,16 @@
         <h3><span class="text-muted">Add Question</span> - {{ afsc.name }}</h3>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning">
+                Please, <strong>do not use this facility to add self-test questions</strong>.  Those are more
+                appropriately added to a new or existing Flash Card category.
+
+                <a href="/admin/cards">Click Here</a> to manage Flash Cards.
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-9">
             <a class="text-primary" href="/admin/cdc/afsc/{{ afsc.uuid }}/questions/add/legacy">Switch to Legacy
                 View</a>
