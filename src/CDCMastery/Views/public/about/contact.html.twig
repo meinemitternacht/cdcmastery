@@ -1,10 +1,6 @@
 {% extends "layout.html.twig" %}
 {% set page_title = "Contact Us" %}
 {% block main %}
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous"
-            src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v8.0&appId=1461301517496019&autoLogAppEvents=1"
-            nonce="RTI59EoS"></script>
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
@@ -14,105 +10,27 @@
                 <div class="col-md-12">
                     <div class="well well-sm text-justify">
                         <p>
-                            If you have already created a ticket, or would like to create a new ticket, please choose an
-                            option below. I (the site administrator) make every effort to respond in a timely
-                            manner, but please bear in mind that I am the only one responding to support requests
-                            for over 20,000 users. My current employer and my family also compete for my attention,
-                            so please be patient when making a support request.
+                            If you have a support request that cannot be handled by your Training Manager or Supervisor,
+                            please e-mail me using the address below. Please note that I no longer actively maintain
+                            this service, but will assist as time permits.
                         </p>
                         <p>
-                            <strong>It may take up to 72 hours for a response.</strong>
+                            For technical site issues, such as error messages or broken pages, please report the issue
+                            using GitHub.
                         </p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-6 col-md-4">
-                    <div class="panel panel-info">
-                        <div class="panel-heading text-center">
-                            <h5>Request Assistance</h5>
-                        </div>
-                        <div class="panel-body text-justify panel-min-250">
-                            <p>
-                                If you encounter an issue with a site, or need assistance with a site-related task,
-                                please open a help ticket using the link below. All ticket responses will be sent via
-                                e-mail to the specified address.
-                            </p>
-                            <p>
-                                <strong>
-                                    Please use a personal e-mail address when submitting a ticket. The system cannot
-                                    reliably send e-mail to addresses ending in .mil.
-                                </strong>
-                            </p>
-                        </div>
-                        <div class="panel-footer text-center">
-                            <button class="btn btn-success" id="feedback-form">Request Assistance</button>
-
-                            <script id="zammad_form_script"
-                                    src="https://help.cdcmastery.com/assets/form/form.js"></script>
-
-                            <script>
-                                $(function () {
-                                    $('#feedback-form').ZammadForm({
-                                        messageTitle: 'Request Assistance',
-                                        messageSubmit: 'Create Ticket',
-                                        messageThankYou: 'Thank you for your inquiry (#%s)! We\'ll contact you as soon as possible.',
-                                        modal: true
-                                    });
-                                });
-                            </script>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-4">
-                    <div class="panel panel-info text-center">
-                        <div class="panel-heading">
-                            <h5>View / Create Tickets</h5>
-                        </div>
-                        <div class="panel-body text-left panel-min-250">
-                            <p>
-                                To submit a ticket using the helpdesk, click the link below and create an account.
-                            </p>
-                            <p>
-                                <em>
-                                    Please note, the helpdesk is a separate system, and to view information about your
-                                    tickets you will need to create an account on that site.
-                                </em>
-                            </p>
-                        </div>
-                        <div class="panel-footer">
-                            <a href="https://help.cdcmastery.com/#signup"
-                               class="btn btn-info">
-                                Access Helpdesk
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-4">
-                    <div class="fb-page" data-href="https://www.facebook.com/CDCMastery/"
-                         data-tabs="timeline"
-                         data-width=""
-                         data-height="375"
-                         data-small-header="true"
-                         data-adapt-container-width="true"
-                         data-hide-cover="false"
-                         data-show-facepile="true">
-                        <blockquote cite="https://www.facebook.com/CDCMastery/" class="fb-xfbml-parse-ignore">
-                            <a href="https://www.facebook.com/CDCMastery/">
-                                CDCMastery
-                            </a>
-                        </blockquote>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
                     <div class="list-group text-center">
-                        <a class="list-group-item list-group-item-info"
-                           href="{{ support_fb_url }}"
-                           target="_blank">
-                            <span class="glyphicon glyphicon-link"></span> {{ support_fb_display }}
-                        </a>
+                        <div class="list-group-item">
+                            <a href="https://github.com/meinemitternacht/cdcmastery/issues"
+                               alt="CDCMastery Project Issues: GitHub">
+                                <span class="glyphicon glyphicon-link"></span>
+                                github.com/meinemitternacht/cdcmastery/issues
+                            </a>
+                        </div>
                         <div class="list-group-item">
                             <span class="glyphicon glyphicon-envelope"></span> support -AT- cdcmastery.com
                         </div>
