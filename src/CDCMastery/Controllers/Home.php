@@ -174,13 +174,10 @@ class Home extends RootController
         $news_flash_items = [];
         $news_flash_items[] = [
             'message' => <<<MSG
-All tests for 2W171 between 12/20/20 and 1/15/21 have been removed due to the presence of incomplete question data.
-More than 100 self-test questions were inadvertently added to the database under the testing category for this AFSC.
-These questions have been moved to their own flash card category and are viewable to the users associated with that 
-AFSC.
+A server migration is scheduled to occur between 10/30/2023 and 11/1/2023. The site may experience connectivity issues during that time.
 MSG,
-            'created' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-01-16 21:00:00', new DateTimeZone('EST')),
-            'expires' => DateTime::createFromFormat('Y-m-d H:i:s', '2021-02-15 00:00:01', new DateTimeZone('EST')),
+            'created' => DateTime::createFromFormat('Y-m-d H:i:s', '2023-10-29 00:00:00', new DateTimeZone('EST')),
+            'expires' => DateTime::createFromFormat('Y-m-d H:i:s', '2023-11-01 00:00:01', new DateTimeZone('EST')),
         ];
 
         $news_flash_items = array_filter($news_flash_items, static function (array $v) use ($now): bool {
